@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+// TODO: Fix evaluation interface so the evaluator returns entire
+//       result, and display can properly handle variable width font.
+// TODO: Fix font handling and scaling in result display.
+// TODO: Fix placement of inverse trig buttons.
+// TODO: Add Degree/Radian switch and display.
+// TODO: Handle physical keyboard correctly.
+// TODO: Fix internationalization, including result.
+// TODO: Check and fix accessability issues.
+// TODO: Support pasting of at least full result.  (Rounding?)
+// TODO: Copy/paste in formula.
+
 package com.android.calculator2;
 
 import android.animation.Animator;
@@ -25,6 +36,9 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,27 +46,35 @@ import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroupOverlay;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 
 import com.android.calculator2.CalculatorEditText.OnTextSizeChangeListener;
-import com.android.calculator2.CalculatorExpressionEvaluator.EvaluateCallback;
+
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.IOException;
+import java.text.DecimalFormatSymbols;  // TODO: May eventually not need this here.
 
 public class Calculator extends Activity
-        implements OnTextSizeChangeListener, EvaluateCallback, OnLongClickListener {
-
-    private static final String NAME = Calculator.class.getName();
-
-    // instance state keys
-    private static final String KEY_CURRENT_STATE = NAME + "_currentState";
-    private static final String KEY_CURRENT_EXPRESSION = NAME + "_currentExpression";
+        implements OnTextSizeChangeListener, OnLongClickListener, OnMenuItemClickListener {
 
     /**
      * Constant for an invalid resource id.
@@ -60,8 +82,32 @@ public class Calculator extends Activity
     public static final int INVALID_RES_ID = -1;
 
     private enum CalculatorState {
-        INPUT, EVALUATE, RESULT, ERROR
+        INPUT,          // Result and formula both visible, no evaluation requested,
+                        // Though result may be visible on bottom line.
+        EVALUATE,       // Both visible, evaluation requested, evaluation/animation incomplete.
+        INIT,           // Very temporary state used as alternative to EVALUATE
+                        // during reinitialization.  Do not animate on completion.
+        ANIMATE,        // Result computed, animation to enlarge result window in progress.
+        RESULT,         // Result displayed, formula invisible.
+                        // If we are in RESULT state, the formula was evaluated without
+                        // error to initial precision.
+        ERROR           // Error displayed: Formula visible, result shows error message.
+                        // Display similar to INPUT state.
     }
+    // Normal transition sequence is
+    // INPUT -> EVALUATE -> ANIMATE -> RESULT (or ERROR) -> INPUT
+    // A RESULT -> ERROR transition is possible in rare corner cases, in which
+    // a higher precision evaluation exposes an error.  This is possible, since we
+    // initially evaluate assuming we were given a well-defined problem.  If we
+    // were actually asked to compute sqrt(<extremely tiny negative number>) we produce 0
+    // unless we are asked for enough precision that we can distinguish the argument from zero.
+    // TODO: Consider further heuristics to reduce the chance of observing this?
+    //       It already seems to be observable only in contrived cases.
+    // ANIMATE, ERROR, and RESULT are translated to an INIT state if the application
+    // is restarted in that state.  This leads us to recompute and redisplay the result
+    // ASAP.
+    // TODO: Possibly save a bit more information, e.g. its initial display string
+    // or most significant digit position, to speed up restart.
 
     private final TextWatcher mFormulaTextWatcher = new TextWatcher() {
         @Override
@@ -75,7 +121,7 @@ public class Calculator extends Activity
         @Override
         public void afterTextChanged(Editable editable) {
             setState(CalculatorState.INPUT);
-            mEvaluator.evaluate(editable, Calculator.this);
+            mEvaluator.evaluateAndShowResult();
         }
     };
 
@@ -96,26 +142,23 @@ public class Calculator extends Activity
         }
     };
 
-    private final Editable.Factory mFormulaEditableFactory = new Editable.Factory() {
-        @Override
-        public Editable newEditable(CharSequence source) {
-            final boolean isEdited = mCurrentState == CalculatorState.INPUT
-                    || mCurrentState == CalculatorState.ERROR;
-            return new CalculatorExpressionBuilder(source, mTokenizer, isEdited);
-        }
-    };
+    private static final String NAME = Calculator.class.getName();
+    private static final String KEY_DISPLAY_STATE = NAME + "_display_state";
+    private static final String KEY_EVAL_STATE = NAME + "_eval_state";
+                // Associated value is a byte array holding both mCalculatorState
+                // and the (much more complex) evaluator state.
 
     private CalculatorState mCurrentState;
-    private CalculatorExpressionTokenizer mTokenizer;
-    private CalculatorExpressionEvaluator mEvaluator;
+    private Evaluator mEvaluator;
 
     private View mDisplayView;
     private CalculatorEditText mFormulaEditText;
-    private CalculatorEditText mResultEditText;
+    private CalculatorResult mResult;
     private ViewPager mPadViewPager;
     private View mDeleteButton;
     private View mEqualButton;
     private View mClearButton;
+    private View mOverflowMenuButton;
 
     private View mCurrentButton;
     private Animator mCurrentAnimator;
@@ -127,31 +170,57 @@ public class Calculator extends Activity
 
         mDisplayView = findViewById(R.id.display);
         mFormulaEditText = (CalculatorEditText) findViewById(R.id.formula);
-        mResultEditText = (CalculatorEditText) findViewById(R.id.result);
+        mResult = (CalculatorResult) findViewById(R.id.result);
         mPadViewPager = (ViewPager) findViewById(R.id.pad_pager);
         mDeleteButton = findViewById(R.id.del);
         mClearButton = findViewById(R.id.clr);
-
         mEqualButton = findViewById(R.id.pad_numeric).findViewById(R.id.eq);
         if (mEqualButton == null || mEqualButton.getVisibility() != View.VISIBLE) {
             mEqualButton = findViewById(R.id.pad_operator).findViewById(R.id.eq);
         }
+        mOverflowMenuButton = findViewById(R.id.overflow_menu);
 
-        mTokenizer = new CalculatorExpressionTokenizer(this);
-        mEvaluator = new CalculatorExpressionEvaluator(mTokenizer);
+        mEvaluator = new Evaluator(this, mResult);
+        mResult.setEvaluator(mEvaluator);
 
-        savedInstanceState = savedInstanceState == null ? Bundle.EMPTY : savedInstanceState;
-        setState(CalculatorState.values()[
-                savedInstanceState.getInt(KEY_CURRENT_STATE, CalculatorState.INPUT.ordinal())]);
-        mFormulaEditText.setText(mTokenizer.getLocalizedExpression(
-                savedInstanceState.getString(KEY_CURRENT_EXPRESSION, "")));
-        mEvaluator.evaluate(mFormulaEditText.getText(), this);
-
-        mFormulaEditText.setEditableFactory(mFormulaEditableFactory);
+        if (savedInstanceState != null) {
+            setState(CalculatorState.values()[
+                savedInstanceState.getInt(KEY_DISPLAY_STATE,
+                                          CalculatorState.INPUT.ordinal())]);
+            byte[] state =
+                    savedInstanceState.getByteArray(KEY_EVAL_STATE);
+            if (state != null) {
+                try (ObjectInput in = new ObjectInputStream(new ByteArrayInputStream(state))) {
+                    mEvaluator.restoreInstanceState(in);
+                } catch (Throwable ignored) {
+                    // When in doubt, revert to clean state
+                    mCurrentState = CalculatorState.INPUT;
+                    mEvaluator.clear();
+                }
+            }
+        }
         mFormulaEditText.addTextChangedListener(mFormulaTextWatcher);
         mFormulaEditText.setOnKeyListener(mFormulaOnKeyListener);
         mFormulaEditText.setOnTextSizeChangeListener(this);
         mDeleteButton.setOnLongClickListener(this);
+        if (mCurrentState == CalculatorState.EVALUATE) {
+            // Odd case.  Evaluation probably took a long time.  Let user ask for it again
+            mCurrentState = CalculatorState.INPUT;
+            // TODO: This can happen if the user rotates the screen.
+            // Is this rotate-to-abort behavior correct?  Revisit after experimentation.
+        }
+        if (mCurrentState != CalculatorState.INPUT) {
+            setState(CalculatorState.INIT);
+            mEvaluator.evaluateAndShowResult();
+            mEvaluator.requireResult();
+        } else {
+            redisplayFormula();
+            mEvaluator.evaluateAndShowResult();
+        }
+        // TODO: We're currently not saving and restoring scroll position.
+        //       We probably should.  Details may require care to deal with:
+        //         - new display size
+        //         - slow recomputation if we've scrolled far.
     }
 
     @Override
@@ -162,17 +231,26 @@ public class Calculator extends Activity
         }
 
         super.onSaveInstanceState(outState);
-
-        outState.putInt(KEY_CURRENT_STATE, mCurrentState.ordinal());
-        outState.putString(KEY_CURRENT_EXPRESSION,
-                mTokenizer.getNormalizedExpression(mFormulaEditText.getText().toString()));
+        outState.putInt(KEY_DISPLAY_STATE, mCurrentState.ordinal());
+        ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+        try (ObjectOutput out = new ObjectOutputStream(byteArrayStream)) {
+            mEvaluator.saveInstanceState(out);
+        } catch (IOException e) {
+            // Impossible; No IO involved.
+            throw new AssertionError("Impossible IO exception", e);
+        }
+        outState.putByteArray(KEY_EVAL_STATE, byteArrayStream.toByteArray());
     }
 
     private void setState(CalculatorState state) {
         if (mCurrentState != state) {
+            if (state == CalculatorState.INPUT) {
+                restoreDisplayPositions();
+            }
             mCurrentState = state;
 
-            if (state == CalculatorState.RESULT || state == CalculatorState.ERROR) {
+            if (mCurrentState == CalculatorState.RESULT
+                    || mCurrentState == CalculatorState.ERROR) {
                 mDeleteButton.setVisibility(View.GONE);
                 mClearButton.setVisibility(View.VISIBLE);
             } else {
@@ -180,15 +258,15 @@ public class Calculator extends Activity
                 mClearButton.setVisibility(View.GONE);
             }
 
-            if (state == CalculatorState.ERROR) {
+            if (mCurrentState == CalculatorState.ERROR) {
                 final int errorColor = getResources().getColor(R.color.calculator_error_color);
                 mFormulaEditText.setTextColor(errorColor);
-                mResultEditText.setTextColor(errorColor);
+                mResult.setTextColor(errorColor);
                 getWindow().setStatusBarColor(errorColor);
             } else {
                 mFormulaEditText.setTextColor(
                         getResources().getColor(R.color.display_formula_text_color));
-                mResultEditText.setTextColor(
+                mResult.setTextColor(
                         getResources().getColor(R.color.display_result_text_color));
                 getWindow().setStatusBarColor(
                         getResources().getColor(R.color.calculator_accent_color));
@@ -219,10 +297,26 @@ public class Calculator extends Activity
         }
     }
 
+
     public void onButtonClick(View view) {
         mCurrentButton = view;
+        int id = view.getId();
 
-        switch (view.getId()) {
+        // Always cancel in-progress evaluation.
+        // If we were waiting for the result, do nothing else.
+        mEvaluator.cancelAll();
+        if (mCurrentState == CalculatorState.EVALUATE
+                || mCurrentState == CalculatorState.ANIMATE) {
+            onCancelled();
+            return;
+        }
+        switch (id) {
+            case R.id.overflow_menu:
+                PopupMenu menu = constructPopupMenu();
+                if (menu != null) {
+                    menu.show();
+                }
+                break;
             case R.id.eq:
                 onEquals();
                 break;
@@ -232,18 +326,31 @@ public class Calculator extends Activity
             case R.id.clr:
                 onClear();
                 break;
-            case R.id.fun_cos:
-            case R.id.fun_ln:
-            case R.id.fun_log:
-            case R.id.fun_sin:
-            case R.id.fun_tan:
-                // Add left parenthesis after functions.
-                mFormulaEditText.append(((Button) view).getText() + "(");
-                break;
             default:
-                mFormulaEditText.append(((Button) view).getText());
+                if (mCurrentState == CalculatorState.ERROR) {
+                    setState(CalculatorState.INPUT);
+                }
+                if (mCurrentState == CalculatorState.RESULT) {
+                    if (KeyMaps.isBinary(id) || KeyMaps.isSuffix(id)) {
+                        mEvaluator.collapse();
+                    } else {
+                        mEvaluator.clear();
+                    }
+                }
+                if (!mEvaluator.append(id)) {
+                    // TODO: Some user visible feedback?
+                }
+                // TODO: Could do this more incrementally.
+                redisplayFormula();
+                setState(CalculatorState.INPUT);
+                mResult.clear();
+                mEvaluator.evaluateAndShowResult();
                 break;
         }
+    }
+
+    void redisplayFormula() {
+        mFormulaEditText.setText(mEvaluator.getExpr().toString(this));
     }
 
     @Override
@@ -257,20 +364,28 @@ public class Calculator extends Activity
         return false;
     }
 
-    @Override
-    public void onEvaluate(String expr, String result, int errorResourceId) {
+    // Initial evaluation completed successfully.  Initiate display.
+    public void onEvaluate(int initDisplayPrec, String truncatedWholeNumber) {
         if (mCurrentState == CalculatorState.INPUT) {
-            mResultEditText.setText(result);
-        } else if (errorResourceId != INVALID_RES_ID) {
-            onError(errorResourceId);
-        } else if (!TextUtils.isEmpty(result)) {
-            onResult(result);
-        } else if (mCurrentState == CalculatorState.EVALUATE) {
-            // The current expression cannot be evaluated -> return to the input state.
-            setState(CalculatorState.INPUT);
+            // Just update small result display.
+            mResult.displayResult(initDisplayPrec, truncatedWholeNumber);
+        } else { // in EVALUATE or INIT state
+            mResult.displayResult(initDisplayPrec, truncatedWholeNumber);
+            onResult(mCurrentState != CalculatorState.INIT);
+            setState(CalculatorState.RESULT);
         }
+    }
 
-        mFormulaEditText.requestFocus();
+    public void onCancelled() {
+        // We should be in EVALUATE state.
+        // Display is still in input state.
+        setState(CalculatorState.INPUT);
+    }
+
+    // Reevaluation completed; ask result to redisplay current value.
+    public void onReevaluate()
+    {
+        mResult.redisplay();
     }
 
     @Override
@@ -302,17 +417,17 @@ public class Calculator extends Activity
     private void onEquals() {
         if (mCurrentState == CalculatorState.INPUT) {
             setState(CalculatorState.EVALUATE);
-            mEvaluator.evaluate(mFormulaEditText.getText(), this);
+            mEvaluator.requireResult();
         }
     }
 
     private void onDelete() {
         // Delete works like backspace; remove the last character from the expression.
-        final Editable formulaText = mFormulaEditText.getEditableText();
-        final int formulaLength = formulaText.length();
-        if (formulaLength > 0) {
-            formulaText.delete(formulaLength - 1, formulaLength);
-        }
+        mEvaluator.cancelAll();
+        mEvaluator.getExpr().delete();
+        redisplayFormula();
+        mResult.clear();
+        mEvaluator.evaluateAndShowResult();
     }
 
     private void reveal(View sourceView, int colorRes, AnimatorListener listener) {
@@ -370,94 +485,221 @@ public class Calculator extends Activity
     }
 
     private void onClear() {
-        if (TextUtils.isEmpty(mFormulaEditText.getText())) {
+        if (mEvaluator.getExpr().isEmpty()) {
             return;
         }
-
+        mResult.clear();
+        mEvaluator.clear();
         reveal(mCurrentButton, R.color.calculator_accent_color, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mFormulaEditText.getEditableText().clear();
+                redisplayFormula();
             }
         });
     }
 
-    private void onError(final int errorResourceId) {
+    // Evaluation encountered en error.  Display the error.
+    void onError(final int errorResourceId) {
         if (mCurrentState != CalculatorState.EVALUATE) {
             // Only animate error on evaluate.
-            mResultEditText.setText(errorResourceId);
             return;
         }
 
+        setState(CalculatorState.ANIMATE);
         reveal(mCurrentButton, R.color.calculator_error_color, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 setState(CalculatorState.ERROR);
-                mResultEditText.setText(errorResourceId);
+                mResult.displayError(errorResourceId);
             }
         });
     }
 
-    private void onResult(final String result) {
+
+    // Animate movement of result into the top formula slot.
+    // Result window now remains translated in the top slot while the result is displayed.
+    // (We convert it back to formula use only when the user provides new input.)
+    // Historical note: In the Lollipop version, this invisibly and instantaeously moved
+    // formula and result displays back at the end of the animation.  We no longer do that,
+    // so that we can continue to properly support scrolling of the result.
+    // We assume the result already contains the text to be expanded.
+    private void onResult(boolean animate) {
         // Calculate the values needed to perform the scale and translation animations,
         // accounting for how the scale will affect the final position of the text.
+        // We want to fix the character size in the display to avoid weird effects
+        // when we scroll.
         final float resultScale =
-                mFormulaEditText.getVariableTextSize(result) / mResultEditText.getTextSize();
+                mFormulaEditText.getVariableTextSize(mResult.getText().toString())
+                                                     / mResult.getTextSize() - 0.1f;
+        // FIXME:  This doesn't work correctly.  The -0.1 is a fudge factor to
+        // improve things slightly.  Remove when fixed.
         final float resultTranslationX = (1.0f - resultScale) *
-                (mResultEditText.getWidth() / 2.0f - mResultEditText.getPaddingEnd());
+                (mResult.getWidth() / 2.0f - mResult.getPaddingEnd());
         final float resultTranslationY = (1.0f - resultScale) *
-                (mResultEditText.getHeight() / 2.0f - mResultEditText.getPaddingBottom()) +
-                (mFormulaEditText.getBottom() - mResultEditText.getBottom()) +
-                (mResultEditText.getPaddingBottom() - mFormulaEditText.getPaddingBottom());
+                (mResult.getHeight() / 2.0f - mResult.getPaddingBottom()) +
+                (mFormulaEditText.getBottom() - mResult.getBottom()) +
+                (mResult.getPaddingBottom() - mFormulaEditText.getPaddingBottom());
         final float formulaTranslationY = -mFormulaEditText.getBottom();
 
-        // Use a value animator to fade to the final text color over the course of the animation.
-        final int resultTextColor = mResultEditText.getCurrentTextColor();
-        final int formulaTextColor = mFormulaEditText.getCurrentTextColor();
-        final ValueAnimator textColorAnimator =
-                ValueAnimator.ofObject(new ArgbEvaluator(), resultTextColor, formulaTextColor);
-        textColorAnimator.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                mResultEditText.setTextColor((int) valueAnimator.getAnimatedValue());
-            }
-        });
+        // TODO: Reintroduce textColorAnimator?
+        //       The initial and final colors seemed to be the same in L.
+        //       With the new model, the result logically changes back to a formula
+        //       only when we switch back to INPUT state, so it's unclear that animating
+        //       a color change here makes sense.
+        if (animate) {
+            final AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playTogether(
+                    ObjectAnimator.ofFloat(mResult, View.SCALE_X, resultScale),
+                    ObjectAnimator.ofFloat(mResult, View.SCALE_Y, resultScale),
+                    ObjectAnimator.ofFloat(mResult, View.TRANSLATION_X, resultTranslationX),
+                    ObjectAnimator.ofFloat(mResult, View.TRANSLATION_Y, resultTranslationY),
+                    ObjectAnimator.ofFloat(mFormulaEditText, View.TRANSLATION_Y,
+                                           formulaTranslationY));
+            animatorSet.setDuration(
+                    getResources().getInteger(android.R.integer.config_longAnimTime));
+            animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
+            animatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    // Result should already be displayed; no need to do anything.
+                }
 
-        final AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(
-                textColorAnimator,
-                ObjectAnimator.ofFloat(mResultEditText, View.SCALE_X, resultScale),
-                ObjectAnimator.ofFloat(mResultEditText, View.SCALE_Y, resultScale),
-                ObjectAnimator.ofFloat(mResultEditText, View.TRANSLATION_X, resultTranslationX),
-                ObjectAnimator.ofFloat(mResultEditText, View.TRANSLATION_Y, resultTranslationY),
-                ObjectAnimator.ofFloat(mFormulaEditText, View.TRANSLATION_Y, formulaTranslationY));
-        animatorSet.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
-        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mResultEditText.setText(result);
-            }
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    setState(CalculatorState.RESULT);
+                    mCurrentAnimator = null;
+                }
+            });
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                // Reset all of the values modified during the animation.
-                mResultEditText.setTextColor(resultTextColor);
-                mResultEditText.setScaleX(1.0f);
-                mResultEditText.setScaleY(1.0f);
-                mResultEditText.setTranslationX(0.0f);
-                mResultEditText.setTranslationY(0.0f);
-                mFormulaEditText.setTranslationY(0.0f);
-
-                // Finally update the formula to use the current result.
-                mFormulaEditText.setText(result);
-                setState(CalculatorState.RESULT);
-
-                mCurrentAnimator = null;
-            }
-        });
-
-        mCurrentAnimator = animatorSet;
-        animatorSet.start();
+            mCurrentAnimator = animatorSet;
+            animatorSet.start();
+        } else /* No animation desired; get there fast, e.g. when restarting */ {
+            mResult.setScaleX(resultScale);
+            mResult.setScaleY(resultScale);
+            mResult.setTranslationX(resultTranslationX);
+            mResult.setTranslationY(resultTranslationY);
+            mFormulaEditText.setTranslationY(formulaTranslationY);
+        }
     }
+
+    // Restore positions of the formula and result displays back to their original,
+    // pre-animation state.
+    private void restoreDisplayPositions() {
+        // Clear result.
+        mResult.setText("");
+        // Reset all of the values modified during the animation.
+        mResult.setScaleX(1.0f);
+        mResult.setScaleY(1.0f);
+        mResult.setTranslationX(0.0f);
+        mResult.setTranslationY(0.0f);
+        mFormulaEditText.setTranslationY(0.0f);
+
+        mFormulaEditText.requestFocus();
+     }
+
+    // Overflow menu handling.
+    private PopupMenu constructPopupMenu() {
+        final PopupMenu popupMenu = new PopupMenu(this, mOverflowMenuButton);
+        mOverflowMenuButton.setOnTouchListener(popupMenu.getDragToOpenListener());
+        final Menu menu = popupMenu.getMenu();
+        popupMenu.inflate(R.menu.menu);
+        popupMenu.setOnMenuItemClickListener(this);
+        onPrepareOptionsMenu(menu);
+        return popupMenu;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_help:
+                displayHelpMessage();
+                return true;
+            case R.id.menu_about:
+                displayAboutPage();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void displayHelpMessage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        if (mPadViewPager != null) {
+            builder.setMessage(getResources().getString(R.string.help_message)
+                               + getResources().getString(R.string.help_pager));
+        } else {
+            builder.setMessage(R.string.help_message);
+        }
+        builder.setNegativeButton(R.string.dismiss,
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface d, int which) { }
+                    })
+               .show();
+    }
+
+    private void displayAboutPage() {
+        WebView wv = new WebView(this);
+        wv.loadUrl("file:///android_asset/about.txt");
+        new AlertDialog.Builder(this)
+                .setView(wv)
+                .setNegativeButton(R.string.dismiss,
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface d, int which) { }
+                    })
+                .show();
+    }
+
+    // TODO: Probably delete the following method and all of its callers before release.
+    //       Definitely delete most of its callers.
+    private static final String LOG_TAG = "Calculator";
+
+    static void log(String message) {
+        Log.v(LOG_TAG, message);
+    }
+
+    // EVERYTHING BELOW HERE was preserved from the KitKat version of the
+    // calculator, since we expect to need it again once functionality is a bit more
+    // more complete.  But it has not yet been wired in correctly, and
+    // IS CURRENTLY UNUSED.
+
+    // Is s a valid constant?
+    // TODO: Possibly generalize to scientific notation, hexadecimal, etc.
+    static boolean isConstant(CharSequence s) {
+        boolean sawDecimal = false;
+        boolean sawDigit = false;
+        final char decimalPt = DecimalFormatSymbols.getInstance().getDecimalSeparator();
+        int len = s.length();
+        int i = 0;
+        while (i < len && Character.isWhitespace(s.charAt(i))) ++i;
+        if (i < len && s.charAt(i) == '-') ++i;
+        for (; i < len; ++i) {
+            char c = s.charAt(i);
+            if (c == '.' || c == decimalPt) {
+                if (sawDecimal) return false;
+                sawDecimal = true;
+            } else if (Character.isDigit(c)) {
+                sawDigit = true;
+            } else {
+                break;
+            }
+        }
+        while (i < len && Character.isWhitespace(s.charAt(i))) ++i;
+        return i == len && sawDigit;
+    }
+
+    // Paste a valid character sequence representing a constant.
+    void paste(CharSequence s) {
+        mEvaluator.cancelAll();
+        if (mCurrentState == CalculatorState.RESULT) {
+            mEvaluator.clear();
+        }
+        int len = s.length();
+        for (int i = 0; i < len; ++i) {
+            char c = s.charAt(i);
+            if (!Character.isWhitespace(c)) {
+                mEvaluator.append(KeyMaps.keyForChar(c));
+            }
+        }
+    }
+
 }

@@ -43,6 +43,27 @@
         android:text="@string/fun_tan" />
 
     <Button
+        android:id="@+id/fun_arcsin"
+        style="@style/PadButtonStyle.Advanced"
+        android:contentDescription="@string/desc_fun_arcsin"
+        android:onClick="onButtonClick"
+        android:text="@string/fun_arcsin" />
+
+    <Button
+        android:id="@+id/fun_arccos"
+        style="@style/PadButtonStyle.Advanced"
+        android:contentDescription="@string/desc_fun_arccos"
+        android:onClick="onButtonClick"
+        android:text="@string/fun_arccos" />
+
+    <Button
+        android:id="@+id/fun_arctan"
+        style="@style/PadButtonStyle.Advanced"
+        android:contentDescription="@string/desc_fun_arctan"
+        android:onClick="onButtonClick"
+        android:text="@string/fun_arctan" />
+
+    <Button
         android:id="@+id/fun_ln"
         style="@style/PadButtonStyle.Advanced"
         android:contentDescription="@string/desc_fun_ln"

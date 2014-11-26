@@ -69,7 +69,7 @@
         <item name="android:paddingStart">20dip</item>
         <item name="android:paddingEnd">20dip</item>
         <item name="android:columnCount">3</item>
-        <item name="android:rowCount">4</item>
+        <item name="android:rowCount">5</item>
     </style>
 
     <style name="PadLayoutStyle.Numeric">

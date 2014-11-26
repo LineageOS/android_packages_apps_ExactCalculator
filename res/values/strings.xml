@@ -20,10 +20,14 @@
     <!-- Name of the application. [CHAR_LIMIT=NONE] -->
     <string name="app_name">Calculator</string>
 
-    <!-- Error displayed when expression evaluates to NaN. [CHAR_LIMIT=14] -->
+    <!-- Error displayed when expression evaluates a function at undefined point. [CHAR_LIMIT=14] -->
     <string name="error_nan">Not a number</string>
     <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=14] -->
-    <string name="error_syntax">Error</string>
+    <string name="error_syntax">Malformed expression</string>
+    <!-- Error displayed when evaluation is manually aborted. [CHAR_LIMIT=14] -->
+    <string name="error_aborted">Aborted</string>
+    <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=14] -->
+    <string name="error_overflow">Infinite?</string>
 
     <!-- Decimal separator (e.g. "1.23"). [CHAR_LIMIT=1] -->
     <string name="dec_point">.</string>
@@ -59,6 +63,14 @@
     <string name="fun_sin">sin</string>
     <!-- Abbrev. name of tangent function (e.g. "tan(π)". [CHAR_LIMIT=3] -->
     <string name="fun_tan">tan</string>
+    <!-- Abbrev. name of cosine function (e.g. "arccos(π)". Often cos with a -1 superscript [CHAR_LIMIT=5] -->
+    <string name="fun_arccos">cos\u207B\u00B9</string>
+    <!-- Abbrev. name of sine function (e.g. "arcsin(π)". [CHAR_LIMIT=5] -->
+    <string name="fun_arcsin">sin\u207B\u00B9</string>
+    <!-- Abbrev. name of tangent function (e.g. "arctan(π)". [CHAR_LIMIT=5] -->
+    <string name="fun_arctan">tan\u207B\u00B9</string>
+    <!-- Ellipsis string used in display (e.g. "...". [CHAR_LIMIT=3] -->
+    <string name="ellipsis">\u2026</string>
 
     <!-- Clear operation to clear the currently entered expression. [CHAR_LIMIT=3] -->
     <string name="clr">clr</string>
@@ -91,6 +103,12 @@
     <string name="desc_fun_sin">sine</string>
     <!-- Content description for 'tan' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_fun_tan">tangent</string>
+    <!-- Content description for 'arccos' button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_fun_arccos">inverse cosine</string>
+    <!-- Content description for 'arcsin' button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_fun_arcsin">inverse sine</string>
+    <!-- Content description for 'arctan' button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_fun_arctan">inverse tangent</string>
 
     <!-- Content description for '+' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_add">plus</string>
@@ -113,5 +131,27 @@
     <string name="desc_del">delete</string>
     <!-- Content description for '=' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_eq">equals</string>
+
+    <!-- TODO: Revisit everything below here -->
+    <!-- Displayed briefly to indicate not-yet-computed digit. -->
+    <string name="guessed_digit">"?"</string>
+    <!-- Dialog message when a computation is cancelled by the user. -->
+    <string name="cancelled">Computation cancelled!</string>
+    <!-- Button label to dismiss informative text message. -->
+    <string name="dismiss">Dismiss</string>
+    <!-- Dialog message when a computation times out. -->
+    <string name="timeout">Timed out trying to compute an infinite or huge number</string>
+    <!-- Button label for "remove timeout" button. -->
+    <string name="ok_remove_timeout">OK, but longer timeouts, please!</string>
+    <!-- Help menu entry for context menu. -->
+    <string name="help">Help!</string>
+    <!-- Content description for overflow menu button. -->
+    <string name="overflow_menu_description">overflow menu</string>
+    <!-- The help message that's displayed in response to pushing the above button. -->
+    <string name="help_message">Use the keys to enter a standard arithmetic expression. It\'s fine to omit multiplication symbols and trailing parentheses.  The result displayed after hitting = is computed to an error of less than one in the last displayed digit.  Drag the display to see more digits.\n\nComputations involving infinite values may take forever.  Touch a button to terminate computation or wait for the timeout.</string>
+    <!-- Help message addendum for pager. -->
+    <string name="help_pager">\n\nSwipe the keyboard to the left to see additional functions.</string>
+    <!-- About menu entry; leads mostly to (English language!) copyright notice.  -->
+    <string name="about">About &amp; Copyright</string>
 
 </resources>

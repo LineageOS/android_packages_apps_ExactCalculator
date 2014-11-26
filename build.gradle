@@ -53,6 +53,6 @@ repositories {
 }
 
 dependencies {
-    compile files("arity-2.1.2.jar")
+    compile files("cr.jar")
     compile "com.android.support:support-v4:+"
 }

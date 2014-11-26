@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (C) 2014 The Android Open Source Project
+  Copyright (C) 2015 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -13,32 +13,32 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
+
   -->
 
-<RelativeLayout
+<!--
+  TODO: Use framework Toolbar instead of custom overflow menu.
+  -->
+
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/display"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="horizontal"
     android:background="@color/display_background_color"
+    android:gravity="right"
     android:elevation="4dip">
 
-    <com.android.calculator2.CalculatorEditText
-        android:id="@+id/formula"
-        style="@style/DisplayEditTextStyle.Formula"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text|textNoSuggestions"
-        android:textColor="@color/display_formula_text_color" />
+   <!-- Degree/Radian display goes here.  Use gravity="left" -->
 
-    <com.android.calculator2.CalculatorResult
-        android:id="@+id/result"
-        style="@style/DisplayEditTextStyle.Result"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/formula"
-        android:inputType="none"
-        android:focusable="false"
-        android:textColor="@color/display_result_text_color" />
+   <ImageButton
+        android:id="@+id/overflow_menu"
+        android:layout_width="48dip"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_more_vert_grey600_24dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/overflow_menu_description"
+        android:onClick="onButtonClick" />
 
-</RelativeLayout>
+</LinearLayout>

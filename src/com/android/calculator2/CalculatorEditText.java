@@ -33,6 +33,10 @@ import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * EditText adapted for Calculator display.
+ */
+
 public class CalculatorEditText extends EditText {
 
     private final static ActionMode.Callback NO_SELECTION_ACTION_MODE_CALLBACK =
@@ -116,6 +120,8 @@ public class CalculatorEditText extends EditText {
                 MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
         setTextSize(TypedValue.COMPLEX_UNIT_PX, getVariableTextSize(getText().toString()));
     }
+
+    public int getWidthConstraint() { return mWidthConstraint; }
 
     @Override
     public Parcelable onSaveInstanceState() {

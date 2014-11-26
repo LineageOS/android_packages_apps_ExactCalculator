@@ -21,6 +21,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+   <!-- Unclear we actually have the vertical space to do this.  Revisit! -->
+   <include
+        layout="@layout/extras"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <include
         layout="@layout/display"
         android:layout_width="match_parent"
