@@ -102,7 +102,7 @@ class Evaluator {
     // The following are valid only if an evaluation
     // completed successfully.
         private CR mVal;               // value of mExpr as constructive real
-        private BigInteger mIntVal;    // value of mExpr as int or null
+        private BoundedRational mRatVal; // value of mExpr as rational or null
         private int mLastDigs;   // Last digit argument passed to getString()
                                  // for this result, or the initial preferred
                                  // precision.
@@ -224,10 +224,10 @@ class Evaluator {
 
     // Result of initial asynchronous computation
     private static class InitialResult {
-        InitialResult(CR val, BigInteger intVal, String s, int p, int idp) {
+        InitialResult(CR val, BoundedRational ratVal, String s, int p, int idp) {
             mErrorResourceId = Calculator.INVALID_RES_ID;
             mVal = val;
-            mIntVal = intVal;
+            mRatVal = ratVal;
             mNewCache = s;
             mNewCacheDigs = p;
             mInitDisplayPrec = idp;
@@ -235,7 +235,7 @@ class Evaluator {
         InitialResult(int errorResourceId) {
             mErrorResourceId = errorResourceId;
             mVal = CR.valueOf(0);
-            mIntVal = BigInteger.valueOf(0);
+            mRatVal = BoundedRational.ZERO;
             mNewCache = "BAD";
             mNewCacheDigs = 0;
             mInitDisplayPrec = 0;
@@ -245,7 +245,7 @@ class Evaluator {
         }
         final int mErrorResourceId;
         final CR mVal;
-        final BigInteger mIntVal;
+        final BoundedRational mRatVal;
         final String mNewCache;       // Null iff it can't be computed.
         final int mNewCacheDigs;
         final int mInitDisplayPrec;
@@ -337,19 +337,21 @@ class Evaluator {
                 int prec = 3;  // Enough for short representation
                 String initCache = res.mVal.toString(prec);
                 int msd = getMsdPos(initCache);
-                if (res.mIntVal == null && msd == INVALID_MSD) {
+                if (BoundedRational.asBigInteger(res.mRatVal) == null
+                        && msd == INVALID_MSD) {
                     prec = MAX_MSD_PREC;
                     initCache = res.mVal.toString(prec);
                     msd = getMsdPos(initCache);
                 }
-                int initDisplayPrec = getPreferredPrec(initCache, msd,
-                                                       res.mIntVal != null);
+                int initDisplayPrec =
+                        getPreferredPrec(initCache, msd,
+                             BoundedRational.digitsRequired(res.mRatVal));
                 int newPrec = initDisplayPrec + EXTRA_DIGITS;
                 if (newPrec > prec) {
                     prec = newPrec;
                     initCache = res.mVal.toString(prec);
                 }
-                return new InitialResult(res.mVal, res.mIntVal,
+                return new InitialResult(res.mVal, res.mRatVal,
                                          initCache, prec, initDisplayPrec);
             } catch (CalculatorExpr.SyntaxError e) {
                 return new InitialResult(R.string.error_syntax);
@@ -372,7 +374,7 @@ class Evaluator {
                 return;
             }
             mVal = result.mVal;
-            mIntVal = result.mIntVal;
+            mRatVal = result.mRatVal;
             mCache = result.mNewCache;
             mCacheDigs = result.mNewCacheDigs;
             mLastDigs = result.mInitDisplayPrec;
@@ -410,13 +412,20 @@ class Evaluator {
     // displayed result, given the number of characters we
     // have room for and the current string approximation for
     // the result.
+    // lastDigit is the position of the last digit on the right
+    // or Integer.MAX_VALUE.
     // May be called in non-UI thread.
-    int getPreferredPrec(String cache, int msd, boolean isInt) {
+    int getPreferredPrec(String cache, int msd, int lastDigit) {
         int lineLength = mResult.getMaxChars();
         int wholeSize = cache.indexOf('.');
-        if (isInt && wholeSize <= lineLength) {
+        // Don't display decimal point if result is an integer.
+        if (lastDigit == 0) lastDigit = -1;
+        if (lastDigit != Integer.MAX_VALUE
+                && ((wholeSize <= lineLength && lastDigit == 0)
+                    || wholeSize + lastDigit + 1 /* d.p. */ <= lineLength)) {
             // Prefer to display as integer, without decimal point
-            return -1;
+            if (lastDigit == 0) return -1;
+            return lastDigit;
         }
         if (msd > wholeSize && msd <= wholeSize + 4) {
             // Display number without scientific notation.
@@ -471,7 +480,7 @@ class Evaluator {
     // schedule reevaluation and redisplay, with higher precision.
     int getMsd() {
         if (mMsd != INVALID_MSD) return mMsd;
-        if (mIntVal != null && mIntVal.compareTo(BigInteger.ZERO) == 0) {
+        if (mRatVal != null && mRatVal.signum() == 0) {
             return INVALID_MSD;  // None exists
         }
         int res = INVALID_MSD;
@@ -740,6 +749,14 @@ class Evaluator {
         return mExpr.add(id);
     }
 
+    void setDegreeMode() {
+        mDegreeMode = true;
+    }
+
+    void setRadianMode() {
+        mDegreeMode = false;
+    }
+
     // Abbreviate the current expression to a pre-evaluated
     // expression node, which will display as a short number.
     // This should not be called unless the expression was
@@ -750,9 +767,10 @@ class Evaluator {
     // though it may generate errors of various kinds.
     // E.g. sqrt(-10^-1000)
     void collapse () {
+        BigInteger intVal = BoundedRational.asBigInteger(mRatVal);
         CalculatorExpr abbrvExpr = mExpr.abbreviate(
-                                      mVal, mIntVal, mDegreeMode,
-                                      getShortString(mCache, mIntVal));
+                                      mVal, mRatVal, mDegreeMode,
+                                      getShortString(mCache, intVal));
         clear();
         mExpr.append(abbrvExpr);
     }

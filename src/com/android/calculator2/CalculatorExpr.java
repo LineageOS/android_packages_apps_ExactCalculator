@@ -75,7 +75,8 @@ class CalculatorExpr {
         TokenKind kind() { return TokenKind.OPERATOR; }
     }
 
-    // A (possibly incomplete) numerical constant
+    // A (possibly incomplete) numerical constant.
+    // Supports addition and removal of trailing characters; hence mutable.
     private static class Constant extends Token implements Cloneable {
         private boolean mSawDecimal;
         String mWhole;  // part before decimal point
@@ -136,11 +137,6 @@ class CalculatorExpr {
             return (mSawDecimal == false && mWhole.isEmpty());
         }
 
-        boolean isInt() {
-            return !mSawDecimal || mFraction.isEmpty()
-                   || new BigInteger(mFraction).equals(BigInteger.ZERO);
-        }
-
         @Override
         public String toString() {
             String result = mWhole;
@@ -149,6 +145,12 @@ class CalculatorExpr {
                 result += mFraction;
             }
             return result;
+        }
+
+        public BoundedRational toRational() {
+            BigInteger num = new BigInteger(mWhole + mFraction);
+            BigInteger den = BigInteger.TEN.pow(mFraction.length());
+            return new BoundedRational(num, den);
         }
 
         @Override
@@ -210,14 +212,14 @@ class CalculatorExpr {
     //       thread.
     private static class PreEval extends Token {
         final CR mValue;
-        final BigInteger mIntValue;
+        final BoundedRational mRatValue;
         private final CalculatorExpr mExpr;
         private final EvalContext mContext;
         private final String mShortRep;
-        PreEval(CR val, BigInteger intVal, CalculatorExpr expr, EvalContext ec,
+        PreEval(CR val, BoundedRational ratVal, CalculatorExpr expr, EvalContext ec,
                 String shortRep) {
             mValue = val;
-            mIntValue = intVal;
+            mRatValue = ratVal;
             mExpr = expr;
             mContext = ec;
             mShortRep = shortRep;
@@ -262,12 +264,12 @@ class CalculatorExpr {
                 // TODO: Deal better with slow evaluations.
                 EvalRet res = mExpr.evalExpr(0,mContext);
                 mValue = res.mVal;
-                mIntValue = res.mIntVal;
+                mRatValue = res.mRatVal;
                 mShortRep = in.readUTF();
                 inMap.get().put(index, this);
             } else {
                 mValue = prev.mValue;
-                mIntValue = prev.mIntValue;
+                mRatValue = prev.mRatValue;
                 mExpr = prev.mExpr;
                 mContext = prev.mContext;
                 mShortRep = prev.mShortRep;
@@ -427,10 +429,10 @@ class CalculatorExpr {
     // The caller supplies the value, degree mode, and short
     // string representation, which must have been previously computed.
     // Thus this is guaranteed to terminate reasonably quickly.
-    CalculatorExpr abbreviate(CR val, BigInteger intVal,
+    CalculatorExpr abbreviate(CR val, BoundedRational ratVal,
                               boolean dm, String sr) {
         CalculatorExpr result = new CalculatorExpr();
-        Token t = new PreEval(val, intVal,
+        Token t = new PreEval(val, ratVal,
                               new CalculatorExpr(
                                         (ArrayList<Token>)mExpr.clone()),
                               new EvalContext(dm), sr);
@@ -439,16 +441,17 @@ class CalculatorExpr {
     }
 
     // Internal evaluation functions return an EvalRet triple.
-    // We compute integer (BigInteger) results when possible, both as
+    // We compute rational (BoundedRational) results when possible, both as
     // a performance optimization, and to detect errors exactly when we can.
     private class EvalRet {
         int mPos; // Next position (expression index) to be parsed
         final CR mVal; // Constructive Real result of evaluating subexpression
-        final BigInteger mIntVal;  // Exact Integer value or null if not integer
-        EvalRet(int p, CR v, BigInteger i) {
+        final BoundedRational mRatVal;  // Exact Rational value or null if
+                                        // irrational or hard to compute.
+        EvalRet(int p, CR v, BoundedRational r) {
             mPos = p;
             mVal = v;
-            mIntVal = i;
+            mRatVal = r;
         }
     }
 
@@ -521,14 +524,14 @@ class CalculatorExpr {
         if (t instanceof Constant) {
             Constant c = (Constant)t;
             value = CR.valueOf(c.toString(),10);
-            return new EvalRet(i+1, value,
-                               c.isInt()? new BigInteger(c.mWhole) : null);
+            return new EvalRet(i+1, value, c.toRational());
         }
         if (t instanceof PreEval) {
             PreEval p = (PreEval)t;
-            return new EvalRet(i+1, p.mValue, p.mIntValue);
+            return new EvalRet(i+1, p.mValue, p.mRatValue);
         }
         EvalRet argVal;
+        BoundedRational ratVal;
         switch(((Operator)(t)).mId) {
         case R.id.const_pi:
             return new EvalRet(i+1, CR.PI, null);
@@ -538,42 +541,58 @@ class CalculatorExpr {
             // Seems to have highest precedence
             // Does not add implicit paren
             argVal = evalUnary(i+1, ec);
+            ratVal = BoundedRational.sqrt(argVal.mRatVal);
+            if (ratVal != null) break;
             return new EvalRet(argVal.mPos, argVal.mVal.sqrt(), null);
         case R.id.lparen:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
-            return new EvalRet(argVal.mPos, argVal.mVal, argVal.mIntVal);
+            return new EvalRet(argVal.mPos, argVal.mVal, argVal.mRatVal);
         case R.id.fun_sin:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            ratVal = ec.mDegreeMode? BoundedRational.degreeSin(argVal.mRatVal)
+                                     : BoundedRational.sin(argVal.mRatVal);
+            if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
-                toRadians(argVal.mVal,ec).sin(), null);
+                    toRadians(argVal.mVal,ec).sin(), null);
         case R.id.fun_cos:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            ratVal = ec.mDegreeMode? BoundedRational.degreeCos(argVal.mRatVal)
+                                     : BoundedRational.cos(argVal.mRatVal);
+            if (ratVal == null) break;
             return new EvalRet(argVal.mPos,
-                toRadians(argVal.mVal,ec).cos(), null);
+                    toRadians(argVal.mVal,ec).cos(), null);
         case R.id.fun_tan:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            ratVal = ec.mDegreeMode? BoundedRational.degreeTan(argVal.mRatVal)
+                                     : BoundedRational.tan(argVal.mRatVal);
+            if (ratVal != null) break;
             CR argCR = toRadians(argVal.mVal, ec);
             return new EvalRet(argVal.mPos,
-                argCR.sin().divide(argCR.cos()), null);
+                    argCR.sin().divide(argCR.cos()), null);
         case R.id.fun_ln:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            ratVal = BoundedRational.ln(argVal.mRatVal);
+            if (ratVal != null) break;
             return new EvalRet(argVal.mPos, argVal.mVal.ln(), null);
         case R.id.fun_log:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
-            // FIXME: Heuristically test argument sign
+            ratVal = BoundedRational.log(argVal.mRatVal);
+            if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
                                argVal.mVal.ln().divide(CR.valueOf(10).ln()),
                                null);
         case R.id.fun_arcsin:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
-            // FIXME: Heuristically test argument in range
+            ratVal = ec.mDegreeMode? BoundedRational.degreeAsin(argVal.mRatVal)
+                                     : BoundedRational.asin(argVal.mRatVal);
+            if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
                                fromRadians(UnaryCRFunction
                                    .asinFunction.execute(argVal.mVal),ec),
@@ -581,7 +600,9 @@ class CalculatorExpr {
         case R.id.fun_arccos:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
-            // FIXME: Heuristically test argument in range
+            ratVal = ec.mDegreeMode? BoundedRational.degreeAcos(argVal.mRatVal)
+                                     : BoundedRational.acos(argVal.mRatVal);
+            if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
                                fromRadians(UnaryCRFunction
                                    .acosFunction.execute(argVal.mVal),ec),
@@ -589,6 +610,9 @@ class CalculatorExpr {
         case R.id.fun_arctan:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            ratVal = ec.mDegreeMode? BoundedRational.degreeAtan(argVal.mRatVal)
+                                     : BoundedRational.atan(argVal.mRatVal);
+            if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
                                fromRadians(UnaryCRFunction
                                    .atanFunction.execute(argVal.mVal),ec),
@@ -596,24 +620,8 @@ class CalculatorExpr {
         default:
             throw new SyntaxError("Unrecognized token in expression");
         }
-    }
-
-    // Generalized factorial.
-    // Compute n * (n - step) * (n - 2 * step) * ...
-    // This can be used to compute factorial a bit faster, especially
-    // if BigInteger uses sub-quadratic multiplication.
-    private static BigInteger genFactorial(long n, long step) {
-        if (n > 4 * step) {
-            BigInteger prod1 = genFactorial(n, 2 * step);
-            BigInteger prod2 = genFactorial(n - step, 2 * step);
-            return prod1.multiply(prod2);
-        } else {
-            BigInteger res = BigInteger.valueOf(n);
-            for (long i = n - step; i > 1; i -= step) {
-                res = res.multiply(BigInteger.valueOf(i));
-            }
-            return res;
-        }
+        // We have a rational value.
+        return new EvalRet(argVal.mPos, ratVal.CRValue(), ratVal);
     }
 
     // Compute an integral power of a constructive real.
@@ -634,27 +642,35 @@ class CalculatorExpr {
         return tmp.multiply(tmp);
     }
 
+    private static final int TEST_PREC = -100;
+                     // Test for integer-ness to 100 bits past binary point.
+    private static final BigInteger MASK =
+            BigInteger.ONE.shiftLeft(-TEST_PREC).subtract(BigInteger.ONE);
+    private static boolean isApprInt(CR x) {
+        BigInteger appr = x.get_appr(TEST_PREC);
+        return appr.and(MASK).signum() == 0;
+    }
+
     private EvalRet evalFactorial(int i, EvalContext ec) {
         EvalRet tmp = evalUnary(i, ec);
         int cpos = tmp.mPos;
         CR cval = tmp.mVal;
-        BigInteger ival = tmp.mIntVal;
+        BoundedRational ratVal = tmp.mRatVal;
         while (isOperator(cpos, R.id.op_fact)) {
-            if (ival == null) {
+            if (ratVal == null) {
                 // Assume it was an integer, but we
                 // didn't figure it out.
-                // Calculator2 may have used the Gamma function.
-                ival = cval.BigIntegerValue();
+                // KitKat may have used the Gamma function.
+                if (!isApprInt(cval)) {
+                    throw new ArithmeticException("factorial(non-integer)");
+                }
+                ratVal = new BoundedRational(cval.BigIntegerValue());
             }
-            if (ival.compareTo(BigInteger.ZERO) <= 0
-                || ival.compareTo(BIG_BILLION) > 0) {
-                throw new ArithmeticException("Bad factorial argument");
-            }
-            ival = genFactorial(ival.longValue(), 1);
+            ratVal = BoundedRational.fact(ratVal);
             ++cpos;
         }
-        if (ival != null) cval = CR.valueOf(ival);
-        return new EvalRet(cpos, cval, ival);
+        if (ratVal != null) cval = ratVal.CRValue();
+        return new EvalRet(cpos, cval, ratVal);
     }
 
     private EvalRet evalFactor(int i, EvalContext ec)
@@ -662,34 +678,28 @@ class CalculatorExpr {
         final EvalRet result1 = evalFactorial(i, ec);
         int cpos = result1.mPos;  // current position
         CR cval = result1.mVal;   // value so far
-        BigInteger ival = result1.mIntVal;  // int value so far
+        BoundedRational ratVal = result1.mRatVal;  // int value so far
         if (isOperator(cpos, R.id.op_pow)) {
             final EvalRet exp = evalSignedFactor(cpos+1, ec);
             cpos = exp.mPos;
-            if (ival != null && ival.equals(BigInteger.ONE)) {
-                // 1^x = 1
-                return new EvalRet(cpos, cval, ival);
+            // Try completely rational evaluation first.
+            ratVal = BoundedRational.pow(ratVal, exp.mRatVal);
+            if (ratVal != null) {
+                return new EvalRet(cpos, ratVal.CRValue(), ratVal);
             }
-            if (exp.mIntVal != null) {
-                if (ival != null
-                    && exp.mIntVal.compareTo(BigInteger.ZERO) >= 0
-                    && exp.mIntVal.compareTo(BIG_MILLION) < 0
-                    && ival.abs().compareTo(BIG_MILLION) < 0) {
-                    // Use pure integer exponentiation
-                    ival = ival.pow(exp.mIntVal.intValue());
-                    cval = CR.valueOf(ival);
-                } else {
-                    // Integer exponent, cval may be negative;
-                    // use repeated squaring.  Unsafe to use ln().
-                    ival = null;
-                    cval = pow(cval, exp.mIntVal);
-                }
+            // Power with integer exponent is defined for negative base.
+            // Thus we handle that case separately.
+            // We punt if the exponent is an integer computed from irrational
+            // values.  That wouldn't work reliably with floating point either.
+            BigInteger int_exp = BoundedRational.asBigInteger(exp.mRatVal);
+            if (int_exp != null) {
+                cval = pow(cval, int_exp);
             } else {
-                ival = null;
                 cval = cval.ln().multiply(exp.mVal).exp();
             }
+            ratVal = null;
         }
-        return new EvalRet(cpos, cval, ival);
+        return new EvalRet(cpos, cval, ratVal);
     }
 
     private EvalRet evalSignedFactor(int i, EvalContext ec)
@@ -699,10 +709,9 @@ class CalculatorExpr {
         EvalRet tmp = evalFactor(cpos, ec);
         cpos = tmp.mPos;
         CR cval = negative? tmp.mVal.negate() : tmp.mVal;
-        BigInteger ival = (negative && tmp.mIntVal != null)?
-                              tmp.mIntVal.negate()
-                              : tmp.mIntVal;
-        return new EvalRet(cpos, cval, ival);
+        BoundedRational ratVal = negative? BoundedRational.negate(tmp.mRatVal)
+                                         : tmp.mRatVal;
+        return new EvalRet(cpos, cval, ratVal);
     }
 
     private boolean canStartFactor(int i) {
@@ -727,34 +736,31 @@ class CalculatorExpr {
         boolean is_div = false;
         int cpos = tmp.mPos;   // Current position in expression.
         CR cval = tmp.mVal;    // Current value.
-        BigInteger ival = tmp.mIntVal;
+        BoundedRational ratVal = tmp.mRatVal; // Current rational value.
         while ((is_mul = isOperator(cpos, R.id.op_mul))
                || (is_div = isOperator(cpos, R.id.op_div))
                || canStartFactor(cpos)) {
             if (is_mul || is_div) ++cpos;
             tmp = evalTerm(cpos, ec);
             if (is_div) {
-                if (ival != null && tmp.mIntVal != null
-                    && ival.mod(tmp.mIntVal) == BigInteger.ZERO) {
-                    ival = ival.divide(tmp.mIntVal);
-                    cval = CR.valueOf(ival);
-                } else {
+                ratVal = BoundedRational.divide(ratVal, tmp.mRatVal);
+                if (ratVal == null) {
                     cval = cval.divide(tmp.mVal);
-                    ival = null;
+                } else {
+                    cval = ratVal.CRValue();
                 }
             } else {
-                if (ival != null && tmp.mIntVal != null) {
-                    ival = ival.multiply(tmp.mIntVal);
-                    cval = CR.valueOf(ival);
-                } else {
+                ratVal = BoundedRational.multiply(ratVal, tmp.mRatVal);
+                if (ratVal == null) {
                     cval = cval.multiply(tmp.mVal);
-                    ival = null;
+                } else {
+                    cval = ratVal.CRValue();
                 }
             }
             cpos = tmp.mPos;
             is_mul = is_div = false;
         }
-        return new EvalRet(cpos, cval, ival);
+        return new EvalRet(cpos, cval, ratVal);
     }
 
     private EvalRet evalExpr(int i, EvalContext ec) throws ArithmeticException {
@@ -762,40 +768,38 @@ class CalculatorExpr {
         boolean is_plus;
         int cpos = tmp.mPos;
         CR cval = tmp.mVal;
-        BigInteger ival = tmp.mIntVal;
+        BoundedRational ratVal = tmp.mRatVal;
         while ((is_plus = isOperator(cpos, R.id.op_add))
                || isOperator(cpos, R.id.op_sub)) {
             tmp = evalTerm(cpos+1, ec);
             if (is_plus) {
-                if (ival != null && tmp.mIntVal != null) {
-                    ival = ival.add(tmp.mIntVal);
-                    cval = CR.valueOf(ival);
-                } else {
+                ratVal = BoundedRational.add(ratVal, tmp.mRatVal);
+                if (ratVal == null) {
                     cval = cval.add(tmp.mVal);
-                    ival = null;
+                } else {
+                    cval = ratVal.CRValue();
                 }
             } else {
-                if (ival != null && tmp.mIntVal != null) {
-                    ival = ival.subtract(tmp.mIntVal);
-                    cval = CR.valueOf(ival);
-                } else {
+                ratVal = BoundedRational.subtract(ratVal, tmp.mRatVal);
+                if (ratVal == null) {
                     cval = cval.subtract(tmp.mVal);
-                    ival = null;
+                } else {
+                    cval = ratVal.CRValue();
                 }
             }
             cpos = tmp.mPos;
         }
-        return new EvalRet(cpos, cval, ival);
+        return new EvalRet(cpos, cval, ratVal);
     }
 
     // Externally visible evaluation result.
     public class EvalResult {
-        EvalResult (CR val, BigInteger intVal) {
+        EvalResult (CR val, BoundedRational ratVal) {
             mVal = val;
-            mIntVal = intVal;
+            mRatVal = ratVal;
         }
         final CR mVal;
-        final BigInteger mIntVal;
+        final BoundedRational mRatVal;
     }
 
     // Evaluate the entire expression, returning null in the event
@@ -809,7 +813,7 @@ class CalculatorExpr {
             EvalContext ec = new EvalContext(degreeMode);
             EvalRet res = evalExpr(0, ec);
             if (res.mPos != mExpr.size()) return null;
-            return new EvalResult(res.mVal, res.mIntVal);
+            return new EvalResult(res.mVal, res.mRatVal);
         } catch (IndexOutOfBoundsException e) {
             throw new SyntaxError("Unexpected expression end");
         }
