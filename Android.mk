@@ -27,6 +27,10 @@ LOCAL_SDK_VERSION := current
 
 LOCAL_PACKAGE_NAME := ExactCalculator
 
+LOCAL_PROGUARD_FLAG_FILES := proguard.flags
+
 LOCAL_AAPT_FLAGS := --rename-manifest-package com.android.exactcalculator
 
 include $(BUILD_PACKAGE)
+
+include $(call all-makefiles-under,$(LOCAL_PATH))

@@ -62,9 +62,13 @@ public class BoundedRational {
     }
 
     // Debug or log messages only, not pretty.
+    public String toString() {
+        return mNum.toString() + "/" + mDen.toString();
+    }
+
     public static String toString(BoundedRational r) {
         if (r == null) return "not a small rational";
-        return r.mNum.toString() + "/" + r.mDen.toString();
+        return r.toString();
     }
 
     // Primarily for debugging; clearly not exact
@@ -113,7 +117,7 @@ public class BoundedRational {
     }
 
     public int signum() {
-        return mDen.signum() * mDen.signum();
+        return mNum.signum() * mDen.signum();
     }
 
     public boolean equals(BoundedRational r) {
@@ -184,7 +188,7 @@ public class BoundedRational {
         if (!num_sqrt.multiply(num_sqrt).equals(r.mNum)) return null;
         final BigInteger den_sqrt = BigInteger.valueOf(Math.round(Math.sqrt(
                                                    r.mDen.doubleValue())));
-        if (!num_sqrt.multiply(den_sqrt).equals(r.mDen)) return null;
+        if (!den_sqrt.multiply(den_sqrt).equals(r.mDen)) return null;
         return new BoundedRational(num_sqrt, den_sqrt);
     }
 

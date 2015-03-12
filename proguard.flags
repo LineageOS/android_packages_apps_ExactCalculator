@@ -1,0 +1,4 @@
+# Some small BoundedRational methods like equals() are not used by the
+# calculator, but crucial for testing.
+
+-keepclassmembers class com.android.calculator2.BoundedRational { *; }
