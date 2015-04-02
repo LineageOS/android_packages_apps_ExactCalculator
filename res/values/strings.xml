@@ -69,6 +69,12 @@
     <string name="fun_arcsin">sin\u207B\u00B9</string>
     <!-- Abbrev. name of tangent function (e.g. "arctan(π)". [CHAR_LIMIT=5] -->
     <string name="fun_arctan">tan\u207B\u00B9</string>
+    <!-- Abbrev. name of degree mode [CHAR_LIMIT=5] -->
+    <!-- Used both as button label and for status indicator on top -->
+    <string name="mode_deg">deg</string>
+    <!-- Abbrev. name of radian mode [CHAR_LIMIT=5] -->
+    <!-- Used both as button label and for status indicator on top -->
+    <string name="mode_rad">rad</string>
     <!-- Ellipsis string used in display (e.g. "...". [CHAR_LIMIT=3] -->
     <string name="ellipsis">\u2026</string>
 
@@ -122,6 +128,10 @@
     <string name="desc_op_pow">power</string>
     <!-- Content description for '√' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_sqrt">square root</string>
+    <!-- Content description for sitch to radian button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_mode_rad">switch to radians</string>
+    <!-- Content description for switch to degree button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_mode_deg">switch to degrees</string>
     <!-- Content description for '-' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_sub">minus</string>
 

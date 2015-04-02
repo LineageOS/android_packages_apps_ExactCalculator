@@ -126,4 +126,11 @@
         android:onClick="onButtonClick"
         android:text="@string/op_sqrt" />
 
+    <Button
+        android:id="@+id/mode_deg_rad"
+        style="@style/PadButtonStyle.Advanced"
+        android:contentDescription="@string/desc_mode_rad"
+        android:onClick="onButtonClick"
+        android:textAllCaps="true" />
+
 </com.android.calculator2.CalculatorPadLayout>

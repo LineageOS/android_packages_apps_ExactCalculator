@@ -27,15 +27,21 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@color/display_background_color"
-    android:gravity="right"
     android:elevation="4dip">
 
-   <!-- Degree/Radian display goes here.  Use gravity="left" -->
+   <TextView
+        android:id="@+id/deg_rad"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="20sp"
+        android:textAllCaps="true"
+        android:background="@color/display_background_color" />
 
    <ImageButton
         android:id="@+id/overflow_menu"
         android:layout_width="48dip"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:src="@drawable/ic_more_vert_grey600_24dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/overflow_menu_description"

@@ -76,7 +76,7 @@
         <item name="android:paddingStart">16dip</item>
         <item name="android:paddingEnd">16dip</item>
         <item name="android:columnCount">6</item>
-        <item name="android:rowCount">2</item>
+        <item name="android:rowCount">3</item>
     </style>
 
     <style name="PadLayoutStyle.Numeric">

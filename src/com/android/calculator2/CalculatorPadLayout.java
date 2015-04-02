@@ -63,10 +63,9 @@ public class CalculatorPadLayout extends ViewGroup {
         final int paddingBottom = getPaddingBottom();
 
         final boolean isRTL = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-        final int columnWidth =
-                Math.round((float) (right - left - paddingLeft - paddingRight)) / mColumnCount;
-        final int rowHeight =
-                Math.round((float) (bottom - top - paddingTop - paddingBottom)) / mRowCount;
+        int columnCount = mColumnCount;
+        int columnWidth = (right - left - paddingLeft - paddingRight) / columnCount;
+        final int rowHeight = (bottom - top - paddingTop - paddingBottom) / mRowCount;
 
         int rowIndex = 0, columnIndex = 0;
         for (int childIndex = 0; childIndex < getChildCount(); ++childIndex) {
@@ -80,7 +79,7 @@ public class CalculatorPadLayout extends ViewGroup {
             final int childTop = paddingTop + lp.topMargin + rowIndex * rowHeight;
             final int childBottom = childTop - lp.topMargin - lp.bottomMargin + rowHeight;
             final int childLeft = paddingLeft + lp.leftMargin +
-                    (isRTL ? (mColumnCount - 1) - columnIndex : columnIndex) * columnWidth;
+                    (isRTL ? (columnCount - 1) - columnIndex : columnIndex) * columnWidth;
             final int childRight = childLeft - lp.leftMargin - lp.rightMargin + columnWidth;
 
             final int childWidth = childRight - childLeft;
@@ -93,8 +92,15 @@ public class CalculatorPadLayout extends ViewGroup {
             }
             childView.layout(childLeft, childTop, childRight, childBottom);
 
-            rowIndex = (rowIndex + (columnIndex + 1) / mColumnCount) % mRowCount;
-            columnIndex = (columnIndex + 1) % mColumnCount;
+            columnIndex = (columnIndex + 1) % columnCount;
+            if (columnIndex == 0 && rowIndex + 1 < mRowCount) {
+                rowIndex++;
+                if (rowIndex + 1 == mRowCount) {
+                    // Distribute the remainder evenly in the last row.
+                    columnCount = getChildCount() - childIndex - 1;
+                    columnWidth = (right - left - paddingLeft - paddingRight) / columnCount;
+                }
+            }
         }
     }
 

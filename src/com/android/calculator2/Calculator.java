@@ -39,6 +39,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -154,11 +155,13 @@ public class Calculator extends Activity
     private View mDisplayView;
     private CalculatorEditText mFormulaEditText;
     private CalculatorResult mResult;
+    private TextView mDegRadDisplay;
     private ViewPager mPadViewPager;
     private View mDeleteButton;
     private View mEqualButton;
     private View mClearButton;
     private View mOverflowMenuButton;
+    private Button mDegRadButton;
 
     private View mCurrentButton;
     private Animator mCurrentAnimator;
@@ -171,6 +174,7 @@ public class Calculator extends Activity
         mDisplayView = findViewById(R.id.display);
         mFormulaEditText = (CalculatorEditText) findViewById(R.id.formula);
         mResult = (CalculatorResult) findViewById(R.id.result);
+        mDegRadDisplay = (TextView) findViewById(R.id.deg_rad);
         mPadViewPager = (ViewPager) findViewById(R.id.pad_pager);
         mDeleteButton = findViewById(R.id.del);
         mClearButton = findViewById(R.id.clr);
@@ -179,6 +183,7 @@ public class Calculator extends Activity
             mEqualButton = findViewById(R.id.pad_operator).findViewById(R.id.eq);
         }
         mOverflowMenuButton = findViewById(R.id.overflow_menu);
+        mDegRadButton = (Button)findViewById(R.id.mode_deg_rad);
 
         mEvaluator = new Evaluator(this, mResult);
         mResult.setEvaluator(mEvaluator);
@@ -203,6 +208,7 @@ public class Calculator extends Activity
         mFormulaEditText.setOnKeyListener(mFormulaOnKeyListener);
         mFormulaEditText.setOnTextSizeChangeListener(this);
         mDeleteButton.setOnLongClickListener(this);
+        updateDegreeMode(mEvaluator.getDegreeMode());
         if (mCurrentState == CalculatorState.EVALUATE) {
             // Odd case.  Evaluation probably took a long time.  Let user ask for it again
             mCurrentState = CalculatorState.INPUT;
@@ -297,6 +303,22 @@ public class Calculator extends Activity
         }
     }
 
+    // Update the top corner degree/radian display and mode button
+    // to reflect the indicated current degree mode (true = degrees)
+    // TODO: Hide the top corner display until the advanced panel is exposed.
+    private void updateDegreeMode(boolean dm) {
+        Resources res = getResources();
+        String descr;
+        if (dm) {
+            mDegRadDisplay.setText(R.string.mode_deg);
+            mDegRadButton.setText(R.string.mode_rad);
+            mDegRadButton.setContentDescription(res.getString(R.string.desc_mode_rad));
+        } else {
+            mDegRadDisplay.setText(R.string.mode_rad);
+            mDegRadButton.setText(R.string.mode_deg);
+            mDegRadButton.setContentDescription(res.getString(R.string.desc_mode_deg));
+        }
+    }
 
     public void onButtonClick(View view) {
         mCurrentButton = view;
@@ -325,6 +347,19 @@ public class Calculator extends Activity
                 break;
             case R.id.clr:
                 onClear();
+                break;
+            case R.id.mode_deg_rad:
+                boolean mode = !mEvaluator.getDegreeMode();
+                updateDegreeMode(mode);
+                if (mCurrentState == CalculatorState.RESULT) {
+                    mEvaluator.collapse();  // Capture result evaluated in old mode
+                    redisplayFormula();
+                }
+                // In input mode, we reinterpret already entered trig functions.
+                mEvaluator.setDegreeMode(mode);
+                setState(CalculatorState.INPUT);
+                mResult.clear();
+                mEvaluator.evaluateAndShowResult();
                 break;
             default:
                 if (mCurrentState == CalculatorState.ERROR) {

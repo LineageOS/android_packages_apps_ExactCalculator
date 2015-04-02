@@ -170,6 +170,7 @@ class Evaluator {
         mResult = resultDisplay;
         mExpr = new CalculatorExpr();
         mTimeoutHandler = new Handler();
+        mDegreeMode = false;  // Remain compatible with previous versions.
     }
 
     // Result of asynchronous reevaluation
@@ -749,12 +750,12 @@ class Evaluator {
         return mExpr.add(id);
     }
 
-    void setDegreeMode() {
-        mDegreeMode = true;
+    void setDegreeMode(boolean degrees) {
+        mDegreeMode = degrees;
     }
 
-    void setRadianMode() {
-        mDegreeMode = false;
+    boolean getDegreeMode() {
+        return mDegreeMode;
     }
 
     // Abbreviate the current expression to a pre-evaluated
