@@ -18,11 +18,15 @@
 
 <!--
   TODO: Use framework Toolbar instead of custom overflow menu.
+  Together with setActionBar, that should also fix the COPY/PASTE
+  ugliness.
+  It is not immediately obvious how to get the layout inside the
+  Toolbar correct.
   -->
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/display"
+    android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"

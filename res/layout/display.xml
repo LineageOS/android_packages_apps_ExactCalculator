@@ -29,16 +29,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text|textNoSuggestions"
+        android:textIsSelectable="false"
         android:textColor="@color/display_formula_text_color" />
+
+    <!--
+      We lay the result out to full width, but are careful to use only
+      2/3 of the space, so that we have room when we expand.
+      -->
 
     <com.android.calculator2.CalculatorResult
         android:id="@+id/result"
-        style="@style/DisplayEditTextStyle.Result"
+        style="@style/DisplayTextStyle.Result"
+        android:layout_alignParentRight="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/formula"
         android:inputType="none"
-        android:focusable="false"
+        android:clickable="true"
+        android:textIsSelectable="false"
         android:textColor="@color/display_result_text_color" />
 
 </RelativeLayout>

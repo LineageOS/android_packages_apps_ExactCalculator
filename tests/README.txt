@@ -10,8 +10,8 @@ There are two kinds of tests:
 
 1. A superficial test of calculator functionality through the UI.
 This is a resurrected version of a test that appeared in KitKat.
-It's currently mostly a placeholder and some basic infrastructure for
-future tests.
+This is currently only a placeholder for regression tests we shouldn't
+forget; it doesn't yet actually do much of anything.
 
 2. A test of the BoundedRationals library that mostly checks for agreement
 with the constructive reals (CR) package.  (The BoundedRationals package

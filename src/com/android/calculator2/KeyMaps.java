@@ -18,8 +18,14 @@ package com.android.calculator2;
 
 import android.content.res.Resources;
 import android.content.Context;
+import android.app.Activity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+
 import java.text.DecimalFormatSymbols;
+import java.util.HashMap;
+import java.util.Locale;
 
 public class KeyMaps {
     // Map key id to corresponding (internationalized) display string
@@ -145,19 +151,31 @@ public class KeyMaps {
         }
     }
 
-    final static char decimalPt =
+    static char decimalPt =
                 DecimalFormatSymbols.getInstance().getDecimalSeparator();
+
+    static char mPiChar;
+
+    static char mFactChar;
+
+    static HashMap<String, Integer> sKeyValForFun;
+        // Key value corresponding to given function name.
+        // We include both localized and English names.
+
+    static String sLocaleForFunMap = "none";
+        // Locale string corresponding to preceding ma and character
+        // constants.
+        // We recompute the map if this is not the current locale.
 
     // Return the button id corresponding to the supplied character
     // or NO_ID
-    // TODO: Should probably also check on characters used as button
-    // labels.  But those don't really seem to be internationalized.
-    public static int keyForChar(char c) {
+    // Called only by UI thread.
+    public static int keyForChar(char c, Activity a) {
+        validateFunMap(a);
         if (Character.isDigit(c)) {
             int i = Character.digit(c, 10);
             return KeyMaps.keyForDigVal(i);
         }
-        if (c == decimalPt) return R.id.dec_point;
         switch (c) {
         case '.':
             return R.id.dec_point;
@@ -169,12 +187,99 @@ public class KeyMaps {
             return R.id.op_mul;
         case '/':
             return R.id.op_div;
+        // TODO: We have an issue if any of the localized function
+        // names start with 'e' or 'p'.  That doesn't currently appear
+        // to be the case.  In fact the first letters of the Latin
+        // allphabet ones seem rather predictable.
         case 'e':
+        case 'E':
             return R.id.const_e;
+        case 'p':
+        case 'P':
+            return R.id.const_pi;
         case '^':
             return R.id.op_pow;
+        case '!':
+            return R.id.op_fact;
+        case '(':
+            return R.id.lparen;
+        case ')':
+            return R.id.rparen;
         default:
+            if (c == decimalPt) return R.id.dec_point;
+            if (c == mPiChar) return R.id.const_pi;
+                // pi is not translated, but it might be typable on
+                // a Greek keyboard, so we check ...
             return View.NO_ID;
         }
+    }
+
+    // Add information corresponding to the given button id to
+    // sKeyValForFun.
+    static void addButton(int button_id, Activity a) {
+        Button button = (Button)a.findViewById(button_id);
+        sKeyValForFun.put(button.getText().toString(), button_id);
+    }
+
+    // Ensure that the preceding map and character constants are
+    // initialized and correspond to the current locale.
+    // Called only by a single thread, namely the UI thread.
+    static void validateFunMap(Activity a) {
+        Locale locale = Locale.getDefault();
+        String lname = locale.toString();
+        if (lname != sLocaleForFunMap) {
+            Log.v ("Calculator", "Setting local to: " + lname);
+            sKeyValForFun = new HashMap<String, Integer>();
+            sKeyValForFun.put("sin", R.id.fun_sin);
+            sKeyValForFun.put("cos", R.id.fun_cos);
+            sKeyValForFun.put("tan", R.id.fun_tan);
+            sKeyValForFun.put("arcsin", R.id.fun_arcsin);
+            sKeyValForFun.put("arccos", R.id.fun_arccos);
+            sKeyValForFun.put("arctan", R.id.fun_arctan);
+            sKeyValForFun.put("asin", R.id.fun_arcsin);
+            sKeyValForFun.put("acos", R.id.fun_arccos);
+            sKeyValForFun.put("atan", R.id.fun_arctan);
+            sKeyValForFun.put("ln", R.id.fun_ln);
+            sKeyValForFun.put("log", R.id.fun_log);
+            sKeyValForFun.put("sqrt", R.id.op_sqrt); // special treatment
+            addButton(R.id.fun_sin, a);
+            addButton(R.id.fun_cos, a);
+            addButton(R.id.fun_tan, a);
+            addButton(R.id.fun_arcsin, a);
+            addButton(R.id.fun_arccos, a);
+            addButton(R.id.fun_arctan, a);
+            addButton(R.id.fun_ln, a);
+            addButton(R.id.fun_log, a);
+
+            // Set locale-dependent character "constants"
+            decimalPt =
+                DecimalFormatSymbols.getInstance().getDecimalSeparator();
+            Resources res = a.getResources();
+            mPiChar = mFactChar = 0;
+            String piString = res.getString(R.string.const_pi);
+            if (piString.length() == 1) mPiChar = piString.charAt(0);
+            String factString = res.getString(R.string.op_fact);
+            if (factString.length() == 1) mFactChar = factString.charAt(0);
+
+            sLocaleForFunMap = lname;
+        }
+    }
+
+    // Return function button id for the substring of s starting
+    // at pos and ending with the next "(".
+    // Return NO_ID if there is none.
+    // We check for both standard English names and localized
+    // button labels, though those don't seem to differ much.
+    // Called only by a single thread, namely the UI thread.
+    public static int funForString(String s, int pos, Activity a) {
+        validateFunMap(a);
+        int parenPos = s.indexOf('(', pos);
+        if (parenPos != -1) {
+            String funString = s.substring(pos, parenPos);
+            Integer keyValue = sKeyValForFun.get(funString);
+            if (keyValue == null) return View.NO_ID;
+            return keyValue;
+        }
+        return View.NO_ID;
     }
 }

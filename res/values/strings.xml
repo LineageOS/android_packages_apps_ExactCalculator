@@ -141,6 +141,8 @@
     <string name="desc_del">delete</string>
     <!-- Content description for '=' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_eq">equals</string>
+    <!-- Toast shown when text is copied to the clipboard. -->
+    <string name="text_copied_toast">Text copied.</string>
 
     <!-- TODO: Revisit everything below here -->
     <!-- Displayed briefly to indicate not-yet-computed digit. -->
@@ -158,10 +160,18 @@
     <!-- Content description for overflow menu button. -->
     <string name="overflow_menu_description">overflow menu</string>
     <!-- The help message that's displayed in response to pushing the above button. -->
-    <string name="help_message">Use the keys to enter a standard arithmetic expression. It\'s fine to omit multiplication symbols and trailing parentheses.  The result displayed after hitting = is computed to an error of less than one in the last displayed digit.  Drag the display to see more digits.\n\nComputations involving infinite values may take forever.  Touch a button to terminate computation or wait for the timeout.</string>
+    <string name="help_message">Use the keys to enter a standard arithmetic expression. It\'s fine to omit multiplication symbols and trailing parentheses.  Long press delete key to clear. Drag the display to see more digits.\n\nComputations involving infinite values may take forever.  Wait for the timeout or touch a button to terminate computation.</string>
     <!-- Help message addendum for pager. -->
     <string name="help_pager">\n\nSwipe the keyboard to the left to see additional functions.</string>
     <!-- About menu entry; leads mostly to (English language!) copyright notice.  -->
     <string name="about">About &amp; Copyright</string>
+    <!-- Overflow menu entry to display result including leading digits. -->
+    <string name="leading">Answer with leading digits</string>
+    <!-- Overflow menu entry to display result as fraction. -->
+    <string name="fraction">Answer as fraction</string>
+    <!-- Appended indicator (for "leading" display) that result is exact. -->
+    <string name="exact">(exact)</string>
+    <!-- Indicator (for "leading" display) that result is inexact. -->
+    <string name="approximate">(±1 in last digit)</string>
 
 </resources>

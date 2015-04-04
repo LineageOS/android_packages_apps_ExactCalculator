@@ -119,6 +119,9 @@ public class BRTest extends TestCase {
     }
 
     public void testBR() {
+        BoundedRational b = new BoundedRational(4,-6);
+        check(b.toString().equals("4/-6"), "toString(4/-6)");
+        check(b.toNiceString().equals("-2/3"),"toNiceString(4/-6)");
         checkEq(BR_0, CR.valueOf(0), "0");
         checkEq(BR_390, CR.valueOf(390), "390");
         checkEq(BR_15, CR.valueOf(15), "15");

@@ -26,12 +26,12 @@
         <item name="android:textSize">48sp</item>
     </style>
 
-    <style name="DisplayEditTextStyle.Result">
+    <style name="DisplayTextStyle.Result">
         <item name="android:paddingTop">26dip</item>
         <item name="android:paddingBottom">46dip</item>
         <item name="android:paddingStart">44dip</item>
         <item name="android:paddingEnd">44dip</item>
-        <item name="android:textSize">48sp</item>
+        <item name="android:textSize">36sp</item>
     </style>
 
     <style name="PadButtonStyle.Advanced">

@@ -69,36 +69,46 @@
 
 package com.android.calculator2;
 
-import android.text.TextUtils;
-import android.view.KeyEvent;
-import android.widget.EditText;
-import android.content.Context;
-import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Context;
+import android.content.res.Resources;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
-
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.math.BigInteger;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.text.DecimalFormatSymbols;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.widget.EditText;
 
 import com.hp.creals.CR;
 import com.hp.creals.PrecisionOverflowError;
 import com.hp.creals.AbortedError;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
+import java.util.TimeZone;
+
 class Evaluator {
     private final Calculator mCalculator;
     private final CalculatorResult mResult;  // The result display View
     private CalculatorExpr mExpr;      // Current calculator expression
+    private CalculatorExpr mSaved;     // Last saved expression.
+                                       // Either null or contains a single
+                                       // preevaluated node.
+    private String mSavedName;         // A hopefully unique name associated
+                                       // with mSaved.
     // The following are valid only if an evaluation
     // completed successfully.
         private CR mVal;               // value of mExpr as constructive real
@@ -169,6 +179,8 @@ class Evaluator {
         mCalculator = calculator;
         mResult = resultDisplay;
         mExpr = new CalculatorExpr();
+        mSaved = new CalculatorExpr();
+        mSavedName = "none";
         mTimeoutHandler = new Handler();
         mDegreeMode = false;  // Remain compatible with previous versions.
     }
@@ -381,7 +393,24 @@ class Evaluator {
             mLastDigs = result.mInitDisplayPrec;
             int dotPos = mCache.indexOf('.');
             String truncatedWholePart = mCache.substring(0, dotPos);
-            mCalculator.onEvaluate(result.mInitDisplayPrec,truncatedWholePart);
+            // Recheck display precision; it may change, since
+            // display dimensions may have been unknow the first time.
+            // In that case the initial evaluation precision should have
+            // been conservative.
+            // TODO: Could optimize by remembering display size and
+            // checking for change.
+            int init_prec = result.mInitDisplayPrec;
+            int msd = getMsdPos(mCache);
+            int new_init_prec = getPreferredPrec(mCache, msd,
+                                BoundedRational.digitsRequired(mRatVal));
+            if (new_init_prec < init_prec) {
+                init_prec = new_init_prec;
+            } else {
+                // They should be equal.  But nothing horrible should
+                // happen if they're not. e.g. because
+                // CalculatorResult.MAX_WIDTH was too small.
+            }
+            mCalculator.onEvaluate(init_prec,truncatedWholePart);
         }
         @Override
         protected void onCancelled(InitialResult result) {
@@ -657,6 +686,11 @@ class Evaluator {
             return res;
     }
 
+    // Return rational representation of current result, if any.
+    public BoundedRational getRational() {
+        return mRatVal;
+    }
+
     private void clearCache() {
         mCache = null;
         mCacheDigs = mCacheDigsReq = 0;
@@ -699,7 +733,6 @@ class Evaluator {
     // leaving the expression displayed.
     boolean cancelAll() {
         if (mCurrentReevaluator != null) {
-            Calculator.log("Cancelling reevaluator");
             mCurrentReevaluator.cancel(true);
             mCacheDigsReq = mCacheDigs;
             // Backgound computation touches only constructive reals.
@@ -707,7 +740,6 @@ class Evaluator {
             mCurrentReevaluator = null;
         }
         if (mEvaluator != null) {
-            Calculator.log("Cancelling evaluator");
             mEvaluator.cancel(true);
             // There seems to be no good way to wait for cancellation
             // to complete, and the evaluation continues to look at
@@ -727,8 +759,10 @@ class Evaluator {
             CalculatorExpr.initExprInput();
             mDegreeMode = in.readBoolean();
             mExpr = new CalculatorExpr(in);
+            mSavedName = in.readUTF();
+            mSaved = new CalculatorExpr(in);
         } catch (IOException e) {
-            Calculator.log("" + e);
+            Log.v("Calculator", "Exception while restoring:\n" + e);
         }
     }
 
@@ -737,8 +771,10 @@ class Evaluator {
             CalculatorExpr.initExprOutput();
             out.writeBoolean(mDegreeMode);
             mExpr.write(out);
+            out.writeUTF(mSavedName);
+            mSaved.write(out);
         } catch (IOException e) {
-            Calculator.log("" + e);
+            Log.v("Calculator", "Exception while saving state:\n" + e);
         }
     }
 
@@ -774,6 +810,51 @@ class Evaluator {
                                       getShortString(mCache, intVal));
         clear();
         mExpr.append(abbrvExpr);
+    }
+
+    // Same as above, but put result in mSaved, leaving mExpr alone.
+    // Return false if result is unavailable.
+    boolean collapseToSaved() {
+        if (mCache == null) return false;
+        BigInteger intVal = BoundedRational.asBigInteger(mRatVal);
+        CalculatorExpr abbrvExpr = mExpr.abbreviate(
+                                      mVal, mRatVal, mDegreeMode,
+                                      getShortString(mCache, intVal));
+        mSaved.clear();
+        mSaved.append(abbrvExpr);
+        return true;
+    }
+
+    Uri uriForSaved() {
+        return new Uri.Builder().scheme("tag")
+                                .encodedOpaquePart(mSavedName)
+                                .build();
+    }
+
+    // Collapse the current expression to mSaved and return a URI
+    // describing this particular result, so that we can refer to it
+    // later.
+    Uri capture() {
+        if (!collapseToSaved()) return null;
+        // Generate a new (entirely private) URI for this result.
+        // Attempt to conform to RFC4151, though it's unclear it matters.
+        Date date = new Date();
+        TimeZone tz = TimeZone.getDefault();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        df.setTimeZone(tz);
+        String isoDate = df.format(new Date());
+        mSavedName = "calculator2.android.com," + isoDate + ":"
+                     + (new Random().nextInt() & 0x3fffffff);
+        Uri tag = uriForSaved();
+        return tag;
+    }
+
+    boolean isLastSaved(Uri uri) {
+        return uri.equals(uriForSaved());
+    }
+
+    void addSaved() {
+        mExpr.append(mSaved);
     }
 
     // Retrieve the main expression being edited.

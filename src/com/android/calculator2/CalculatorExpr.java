@@ -16,13 +16,6 @@
 
 package com.android.calculator2;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.math.BigInteger;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 
 import com.hp.creals.CR;
 import com.hp.creals.UnaryCRFunction;
@@ -30,6 +23,15 @@ import com.hp.creals.PrecisionOverflowError;
 import com.hp.creals.AbortedError;
 
 import android.content.Context;
+
+import java.math.BigInteger;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 
 // A mathematical expression represented as a sequence of "tokens".
 // Many tokes are represented by button ids for the corresponding operator.
@@ -137,9 +139,25 @@ class CalculatorExpr {
             return (mSawDecimal == false && mWhole.isEmpty());
         }
 
+        // Produces human-readable string, as typed.
+        // Decimal separator is mapped to canonical character.
         @Override
         public String toString() {
             String result = mWhole;
+            if (mSawDecimal) {
+                result += DecimalFormatSymbols.getInstance()
+                                              .getDecimalSeparator();
+                result += mFraction;
+            }
+            return result;
+        }
+
+        // Eliminates leading decimal, which some of our
+        // other packages don't like.
+        // Doesn't internationalize decimnal point.
+        public String toNiceString() {
+            String result = mWhole;
+            if (result.isEmpty()) result = "0";
             if (mSawDecimal) {
                 result += '.';
                 result += mFraction;
@@ -148,7 +166,9 @@ class CalculatorExpr {
         }
 
         public BoundedRational toRational() {
-            BigInteger num = new BigInteger(mWhole + mFraction);
+            String whole = mWhole;
+            if (whole.isEmpty()) whole = "0";
+            BigInteger num = new BigInteger(whole + mFraction);
             BigInteger den = BigInteger.TEN.pow(mFraction.length());
             return new BoundedRational(num, den);
         }
@@ -523,7 +543,7 @@ class CalculatorExpr {
         CR value;
         if (t instanceof Constant) {
             Constant c = (Constant)t;
-            value = CR.valueOf(c.toString(),10);
+            value = CR.valueOf(c.toNiceString(),10);
             return new EvalRet(i+1, value, c.toRational());
         }
         if (t instanceof PreEval) {
@@ -561,7 +581,7 @@ class CalculatorExpr {
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
             ratVal = ec.mDegreeMode? BoundedRational.degreeCos(argVal.mRatVal)
                                      : BoundedRational.cos(argVal.mRatVal);
-            if (ratVal == null) break;
+            if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
                     toRadians(argVal.mVal,ec).cos(), null);
         case R.id.fun_tan:
@@ -741,7 +761,7 @@ class CalculatorExpr {
                || (is_div = isOperator(cpos, R.id.op_div))
                || canStartFactor(cpos)) {
             if (is_mul || is_div) ++cpos;
-            tmp = evalTerm(cpos, ec);
+            tmp = evalSignedFactor(cpos, ec);
             if (is_div) {
                 ratVal = BoundedRational.divide(ratVal, tmp.mRatVal);
                 if (ratVal == null) {

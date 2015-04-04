@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 The Android Open Source Project
+ * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,38 @@
 
 package com.android.calculator2;
 
-import android.widget.TextView;
+import android.content.ClipboardManager;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Color;
+import android.net.Uri;
+import android.widget.TextView;
 import android.widget.OverScroller;
-import android.view.GestureDetector;
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
 import android.text.Editable;
 import android.text.Spanned;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.ActionMode;
+import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Toast;
 
 import android.support.v4.view.ViewCompat;
 
 
 // A text widget that is "infinitely" scrollable to the right,
 // and obtains the text to display via a callback to Logic.
-public class CalculatorResult extends CalculatorEditText {
+public class CalculatorResult extends TextView {
     final static int MAX_RIGHT_SCROLL = 100000000;
     final static int INVALID = MAX_RIGHT_SCROLL + 10000;
         // A larger value is unlikely to avoid running out of space
@@ -63,11 +73,21 @@ public class CalculatorResult extends CalculatorEditText {
     private int mLastPos;   // Position already reflected in display.
     private int mMinPos;    // Maximum position before all digits
                             // digits disappear of the right.
-    private int mCharWidth; // Use monospaced font for now.
-                            // This shouldn't be much harder with a variable
-                            // width font, except it may be even less smooth
-        // FIXME: This is not really a fixed width font anymore.
+    private Object mWidthLock = new Object();
+                            // Protects the next two fields.
+    private int mWidthConstraint = -1;
+                            // Our total width in pixels.
+    private int mCharWidth = 1;
+                            // Maximum character width.
+                            // For now we pretend that all characters
+                            // have this width.
+                            // TODO: We're not really using a fixed
+                            // width font.  But it appears to be close
+                            // enough for the characters we use that
+                            // the difference is not noticeable.
     private Paint mPaint;   // Paint object matching display.
+    private static final int MAX_WIDTH = 100;
+                            // Maximum number of digits displayed
 
     public CalculatorResult(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -106,35 +126,53 @@ public class CalculatorResult extends CalculatorEditText {
                     ViewCompat.postInvalidateOnAnimation(CalculatorResult.this);
                     return true;
                 }
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    startActionMode(mCopyActionModeCallback);
+                }
             });
         setOnTouchListener(mTouchListener);
         setHorizontallyScrolling(false);  // do it ourselves
         setCursorVisible(false);
-        setTypeface(Typeface.MONOSPACE);
-        mPaint = getPaint();
-        mCharWidth = (int) mPaint.measureText("5");
+
+        // Copy ActionMode is triggered explicitly, not through
+        // setCustomSelectionActionModeCallback.
     }
 
     void setEvaluator(Evaluator evaluator) {
         mEvaluator = evaluator;
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        mPaint = getPaint();
+        // We assume that "5" has maximal width.  We measure a
+        // long string to make sure that spaces are included.
+        StringBuilder sb = new StringBuilder(MAX_WIDTH);
+        for (int i = 0; i < MAX_WIDTH; ++i) {
+            sb.append('5');
+        }
+        synchronized(mWidthLock) {
+            mWidthConstraint = MeasureSpec.getSize(widthMeasureSpec)
+                                - getPaddingLeft() - getPaddingRight();
+            mCharWidth = (int)Math.ceil(mPaint.measureText(sb.toString())
+                                    / MAX_WIDTH);
+        }
+    }
+
     // Display a new result, given initial displayed
     // precision and the string representing the whole part of
     // the number to be displayed.
     // We pass the string, instead of just the length, so we have
-    // one less place to fix in case we ever decide to use a variable
-    // width font.
+    // one less place to fix in case we ever decide to
+    // correctly use a variable width font.
     void displayResult(int initPrec, String truncatedWholePart) {
         mLastPos = INVALID;
         mCurrentPos = initPrec * mCharWidth;
         mMinPos = - (int) Math.ceil(mPaint.measureText(truncatedWholePart));
         redisplay();
-    }
-
-    // May be called from non-UI thread, but after initialization.
-    int getCharWidth() {
-        return mCharWidth;
     }
 
     void displayError(int resourceId) {
@@ -143,21 +181,41 @@ public class CalculatorResult extends CalculatorEditText {
     }
 
     // Return entire result (within reason) up to current displayed precision.
-    public CharSequence getFullText() {
-        if (!mScrollable) return getText();
+    public String getFullText() {
+        if (!mScrollable) return getText().toString();
         int currentCharPos = mCurrentPos/mCharWidth;
         return mEvaluator.getString(currentCharPos, 1000000);
     }
 
+    public boolean fullTextIsExact() {
+        BoundedRational rat = mEvaluator.getRational();
+        int currentCharPos = mCurrentPos/mCharWidth;
+        if (currentCharPos == -1) {
+            // Suppressing decimal point; still showing all
+            // integral digits.
+            currentCharPos = 0;
+        }
+        // TODO: Could handle scientific notation cases better;
+        // We currently treat those conservatively as approximate.
+        return (currentCharPos >= BoundedRational.digitsRequired(rat));
+    }
+
+    // May be called asynchronously from non-UI thread.
     int getMaxChars() {
-        int result = getWidthConstraint() / mCharWidth;
-        // FIXME: We can apparently finish evaluating before 
-        // onMeasure in CalculatorEditText has been called, in
-        // which case we get 0 or -1 as the width constraint.
-        // Perhaps guess conservatively here and reevaluate
-        // in InitialResult.onPostExecute?
+        // We only use 2/3 of the available space, since the
+        // left 1/3 of the result is not visible when it is shown
+        // in large size.
+        int result;
+        synchronized(mWidthLock) {
+            result = 2 * mWidthConstraint / (3 * mCharWidth);
+            // We can apparently finish evaluating before
+            // onMeasure in CalculatorEditText has been called, in
+            // which case we get 0 or -1 as the width constraint.
+        }
         if (result <= 0) {
-            return 8;
+            // Return something conservatively big, to force sufficient
+            // evaluation.
+            return MAX_WIDTH;
         } else {
             return result;
         }
@@ -176,7 +234,7 @@ public class CalculatorResult extends CalculatorEditText {
         if (epos > 0 && result.indexOf('.') == -1) {
           // Gray out exponent if used as position indicator
             SpannableString formattedResult = new SpannableString(result);
-            formattedResult.setSpan(new ForegroundColorSpan(Color.GRAY),
+            formattedResult.setSpan(new ForegroundColorSpan(Color.LTGRAY),
                                     epos, result.length(),
                                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             setText(formattedResult);
@@ -199,6 +257,63 @@ public class CalculatorResult extends CalculatorEditText {
                 ViewCompat.postInvalidateOnAnimation(this);
             }
         }
+    }
+
+    // Copy support:
+
+    private ActionMode.Callback mCopyActionModeCallback =
+                                new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.copy, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+            case R.id.menu_copy:
+                copyContent();
+                mode.finish();
+                return true;
+            default:
+                return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+        }
+    };
+
+    private void setPrimaryClip(ClipData clip) {
+        ClipboardManager clipboard = (ClipboardManager) getContext().
+                getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboard.setPrimaryClip(clip);
+    }
+
+    private void copyContent() {
+        final CharSequence text = getFullText();
+        ClipboardManager clipboard =
+                (ClipboardManager) getContext().getSystemService(
+                        Context.CLIPBOARD_SERVICE);
+        // We include a tag URI, to allow us to recognize our
+        // own results and handle them specially.
+        ClipData.Item newItem = new ClipData.Item(text, null,
+                                          mEvaluator.capture());
+        String[] mimeTypes =
+                new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN};
+        ClipData cd = new ClipData("calculator result",
+                                   mimeTypes, newItem);
+        clipboard.setPrimaryClip(cd);
+        Toast.makeText(getContext(), R.string.text_copied_toast,
+                       Toast.LENGTH_SHORT).show();
     }
 
 }

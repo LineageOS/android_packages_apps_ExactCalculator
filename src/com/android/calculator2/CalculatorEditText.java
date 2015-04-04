@@ -16,18 +16,24 @@
 
 package com.android.calculator2;
 
+import android.content.ClipboardManager;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetricsInt;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Parcelable;
 import android.text.method.ScrollingMovementMethod;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ActionMode;
+import android.view.GestureDetector;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.EditText;
@@ -39,15 +45,31 @@ import android.widget.TextView;
 
 public class CalculatorEditText extends EditText {
 
-    private final static ActionMode.Callback NO_SELECTION_ACTION_MODE_CALLBACK =
+
+    private final ActionMode.Callback mPasteActionModeCallback =
             new ActionMode.Callback() {
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            return false;
+            switch (item.getItemId()) {
+            case R.id.menu_paste:
+                pasteContent();
+                mode.finish();
+                return true;
+            default:
+                return false;
+            }
         }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            ClipboardManager clipboard =
+                (ClipboardManager) getContext().getSystemService(
+                        Context.CLIPBOARD_SERVICE);
+            if (clipboard.hasPrimaryClip()) {
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.paste, menu);
+                return true;
+            }
             // Prevents the selection action mode on double tap.
             return false;
         }
@@ -62,6 +84,25 @@ public class CalculatorEditText extends EditText {
         }
     };
 
+    private PasteListener mPasteListener;
+
+    public void setPasteListener(PasteListener pasteListener) {
+        mPasteListener = pasteListener;
+    }
+
+    private void pasteContent() {
+        ClipboardManager clipboard =
+                (ClipboardManager) getContext().getSystemService(
+                        Context.CLIPBOARD_SERVICE);
+        ClipData cd = clipboard.getPrimaryClip();
+        ClipData.Item item = cd.getItemAt(0);
+        // TODO: Should we handle multiple selections?
+        Uri uri = item.getUri();
+        if (uri == null || !mPasteListener.paste(uri)) {
+            mPasteListener.paste(item.coerceToText(getContext()).toString());
+        }
+    }
+
     private final float mMaximumTextSize;
     private final float mMinimumTextSize;
     private final float mStepTextSize;
@@ -72,6 +113,14 @@ public class CalculatorEditText extends EditText {
 
     private int mWidthConstraint = -1;
     private OnTextSizeChangeListener mOnTextSizeChangeListener;
+
+    final GestureDetector mLongTouchDetector =
+        new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public void onLongPress(MotionEvent e) {
+                startActionMode(mPasteActionModeCallback);
+            }
+        });
 
     public CalculatorEditText(Context context) {
         this(context, null);
@@ -95,7 +144,9 @@ public class CalculatorEditText extends EditText {
 
         a.recycle();
 
-        setCustomSelectionActionModeCallback(NO_SELECTION_ACTION_MODE_CALLBACK);
+        // Paste ActionMode is triggered explicitly, not through
+        // setCustomSelectionActionModeCallback.
+
         if (isFocusable()) {
             setMovementMethod(ScrollingMovementMethod.getInstance());
         }
@@ -104,13 +155,9 @@ public class CalculatorEditText extends EditText {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-            // Hack to prevent keyboard and insertion handle from showing.
-            cancelLongPress();
-        }
-        return super.onTouchEvent(event);
-    }
+    public boolean onTouchEvent(MotionEvent e) {
+        return mLongTouchDetector.onTouchEvent(e);
+    };
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -203,5 +250,10 @@ public class CalculatorEditText extends EditText {
 
     public interface OnTextSizeChangeListener {
         void onTextSizeChanged(TextView textView, float oldSize);
+    }
+
+    public interface PasteListener {
+        void paste(String s);
+        boolean paste(Uri u);
     }
 }

@@ -32,6 +32,14 @@
         <item name="android:gravity">bottom|end</item>
     </style>
 
+    <style name="DisplayTextStyle" parent="@android:style/Widget.Material.Light.TextView">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:gravity">bottom|end</item>
+    </style>
+
     <style name="PadButtonStyle" parent="@android:style/Widget.Material.Light.Button.Borderless">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

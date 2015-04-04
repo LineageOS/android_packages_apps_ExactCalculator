@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-// TODO: This is currently not hooked up to anything.  I started writing
-// it to capture my thoughts on heuristics for detecting specific exact
-// values.
-
 package com.android.calculator2;
 
 // We implement rational numbers of bounded size.
@@ -64,6 +60,16 @@ public class BoundedRational {
     // Debug or log messages only, not pretty.
     public String toString() {
         return mNum.toString() + "/" + mDen.toString();
+    }
+
+    // Output to user, more expensive, less useful for debugging
+    public String toNiceString() {
+        BoundedRational nicer = reduce().positive_den();
+        String result = nicer.mNum.toString();
+        if (!nicer.mDen.equals(BigInteger.ONE)) {
+            result += "/" + nicer.mDen;
+        }
+        return result;
     }
 
     public static String toString(BoundedRational r) {
