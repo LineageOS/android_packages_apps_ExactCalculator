@@ -148,17 +148,28 @@ public class CalculatorResult extends TextView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         mPaint = getPaint();
-        // We assume that "5" has maximal width.  We measure a
-        // long string to make sure that spaces are included.
+        char testChar = KeyMaps.translateResult("5").charAt(0);
+        // TODO: Redo on Locale change?  Doesn't seem to matter?
+        // We try to determine the maximal size of a digit plus
+        // corresponding inter-character space.
+        // We assume that "5" has maximal width.  Since any
+        // string includes one fewer inter-character space than
+        // characters, me measure one that's longer than any real
+        // display string, and then divide by the number of characters.
+        // This should bound the per-character space we need for any
+        // real string.
         StringBuilder sb = new StringBuilder(MAX_WIDTH);
         for (int i = 0; i < MAX_WIDTH; ++i) {
-            sb.append('5');
+            sb.append(testChar);
         }
+        final int newWidthConstraint =
+                MeasureSpec.getSize(widthMeasureSpec)
+                - getPaddingLeft() - getPaddingRight();
+        final int newCharWidth =
+                (int)Math.ceil(mPaint.measureText(sb.toString()) / MAX_WIDTH);
         synchronized(mWidthLock) {
-            mWidthConstraint = MeasureSpec.getSize(widthMeasureSpec)
-                                - getPaddingLeft() - getPaddingRight();
-            mCharWidth = (int)Math.ceil(mPaint.measureText(sb.toString())
-                                    / MAX_WIDTH);
+            mWidthConstraint = newWidthConstraint;
+            mCharWidth = newCharWidth;
         }
     }
 
@@ -170,7 +181,9 @@ public class CalculatorResult extends TextView {
     // correctly use a variable width font.
     void displayResult(int initPrec, String truncatedWholePart) {
         mLastPos = INVALID;
-        mCurrentPos = initPrec * mCharWidth;
+        synchronized(mWidthLock) {
+            mCurrentPos = initPrec * mCharWidth;
+        }
         mMinPos = - (int) Math.ceil(mPaint.measureText(truncatedWholePart));
         redisplay();
     }
@@ -180,16 +193,19 @@ public class CalculatorResult extends TextView {
         setText(resourceId);
     }
 
+    private final int MAX_COPY_SIZE = 1000000;
+
     // Return entire result (within reason) up to current displayed precision.
     public String getFullText() {
         if (!mScrollable) return getText().toString();
-        int currentCharPos = mCurrentPos/mCharWidth;
-        return mEvaluator.getString(currentCharPos, 1000000);
+        int currentCharPos = getCurrentCharPos();
+        return KeyMaps.translateResult(
+                          mEvaluator.getString(currentCharPos, MAX_COPY_SIZE));
     }
 
     public boolean fullTextIsExact() {
         BoundedRational rat = mEvaluator.getRational();
-        int currentCharPos = mCurrentPos/mCharWidth;
+        int currentCharPos = getCurrentCharPos();
         if (currentCharPos == -1) {
             // Suppressing decimal point; still showing all
             // integral digits.
@@ -221,16 +237,22 @@ public class CalculatorResult extends TextView {
         }
     }
 
+    int getCurrentCharPos() {
+        synchronized(mWidthLock) {
+            return mCurrentPos/mCharWidth;
+        }
+    }
+
     void clear() {
         setText("");
     }
 
     void redisplay() {
-        int currentCharPos = mCurrentPos/mCharWidth;
+        int currentCharPos = getCurrentCharPos();
         int maxChars = getMaxChars();
         String result = mEvaluator.getString(currentCharPos, maxChars);
         int epos = result.indexOf('e');
-        // TODO: Internationalization for decimal point?
+        result = KeyMaps.translateResult(result);
         if (epos > 0 && result.indexOf('.') == -1) {
           // Gray out exponent if used as position indicator
             SpannableString formattedResult = new SpannableString(result);

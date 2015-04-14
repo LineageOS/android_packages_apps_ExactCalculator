@@ -63,6 +63,7 @@ public class BoundedRational {
     }
 
     // Output to user, more expensive, less useful for debugging
+    // Not internationalized.
     public String toNiceString() {
         BoundedRational nicer = reduce().positive_den();
         String result = nicer.mNum.toString();

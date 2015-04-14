@@ -24,9 +24,15 @@
 //       result, and formatting of exponent etc. is done separately.
 // TODO: Better indication of when the result is known to be exact.
 // TODO: Fix placement of inverse trig buttons.
-// TODO: Fix internationalization, particularly for result.
 // TODO: Check and possibly fix accessability issues.
-// TODO: Copy & more general paste in formula?
+// TODO: Copy & more general paste in formula?  Note that this requires
+//       great care: Currently the text version of a displayed formula
+//       is not directly useful for re-evaluating the formula later, since
+//       it contains ellipses representing subexpressions evaluated with
+//       a different degree mode.  Rather than supporting copy from the
+//       formula window, we may eventually want to support generation of a
+//       more useful text version in a separate window.  It's not clear
+//       this is worth the added (code and user) complexity.
 
 package com.android.calculator2;
 
@@ -210,6 +216,7 @@ public class Calculator extends Activity
 
         mEvaluator = new Evaluator(this, mResult);
         mResult.setEvaluator(mEvaluator);
+        KeyMaps.setActivity(this);
 
         if (savedInstanceState != null) {
             setState(CalculatorState.values()[
@@ -748,7 +755,7 @@ public class Calculator extends Activity
 
     private void displayFraction() {
         BoundedRational result = mEvaluator.getRational();
-        displayMessage(result.toNiceString());
+        displayMessage(KeyMaps.translateResult(result.toNiceString()));
     }
 
     // Display full result to currently evaluated precision
@@ -787,7 +794,7 @@ public class Calculator extends Activity
         int len = moreChars.length();
         while (current < len) {
             char c = moreChars.charAt(current);
-            int k = KeyMaps.keyForChar(c, this);
+            int k = KeyMaps.keyForChar(c);
             if (k != View.NO_ID) {
                 mCurrentButton = findViewById(k);
                 addKeyToExpr(k);
@@ -798,7 +805,7 @@ public class Calculator extends Activity
                 }
                 continue;
             }
-            int f = KeyMaps.funForString(moreChars, current, this);
+            int f = KeyMaps.funForString(moreChars, current);
             if (f != View.NO_ID) {
                 mCurrentButton = findViewById(f);
                 addKeyToExpr(f);

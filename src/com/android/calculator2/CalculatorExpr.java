@@ -140,22 +140,22 @@ class CalculatorExpr {
         }
 
         // Produces human-readable string, as typed.
-        // Decimal separator is mapped to canonical character.
+        // Result is internationalized.
         @Override
         public String toString() {
             String result = mWhole;
             if (mSawDecimal) {
-                result += DecimalFormatSymbols.getInstance()
-                                              .getDecimalSeparator();
+                result += '.';
                 result += mFraction;
             }
-            return result;
+            return KeyMaps.translateResult(result);
         }
 
         // Eliminates leading decimal, which some of our
         // other packages don't like.
-        // Doesn't internationalize decimnal point.
-        public String toNiceString() {
+        // Meant for machine consumption:
+        // Doesn't internationalize decimal point or digits.
+        public String toEasyString() {
             String result = mWhole;
             if (result.isEmpty()) result = "0";
             if (mSawDecimal) {
@@ -236,8 +236,8 @@ class CalculatorExpr {
         private final CalculatorExpr mExpr;
         private final EvalContext mContext;
         private final String mShortRep;
-        PreEval(CR val, BoundedRational ratVal, CalculatorExpr expr, EvalContext ec,
-                String shortRep) {
+        PreEval(CR val, BoundedRational ratVal, CalculatorExpr expr,
+                EvalContext ec, String shortRep) {
             mValue = val;
             mRatValue = ratVal;
             mExpr = expr;
@@ -543,7 +543,7 @@ class CalculatorExpr {
         CR value;
         if (t instanceof Constant) {
             Constant c = (Constant)t;
-            value = CR.valueOf(c.toNiceString(),10);
+            value = CR.valueOf(c.toEasyString(),10);
             return new EvalRet(i+1, value, c.toRational());
         }
         if (t instanceof PreEval) {

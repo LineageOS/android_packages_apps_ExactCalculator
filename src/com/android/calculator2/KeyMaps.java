@@ -27,8 +27,13 @@ import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Locale;
 
+// KeyMap instances are not meaningful; everything here is static.
+// All functions are either pure, or are assumed to be called only from
+// a single UI thread.
+
 public class KeyMaps {
-    // Map key id to corresponding (internationalized) display string
+    // Map key id to corresponding (internationalized) display string.
+    // Pure function.
     public static String toString(int id, Context context) {
         Resources res = context.getResources();
         switch(id) {
@@ -38,13 +43,13 @@ public class KeyMaps {
         case R.id.op_fact:          return res.getString(R.string.op_fact);
         case R.id.fun_sin:          return res.getString(R.string.fun_sin)
                                             + res.getString(R.string.lparen);
-        case R.id.fun_cos:          return res.getString(R.string.fun_cos) 
+        case R.id.fun_cos:          return res.getString(R.string.fun_cos)
                                             + res.getString(R.string.lparen);
         case R.id.fun_tan:          return res.getString(R.string.fun_tan)
                                             + res.getString(R.string.lparen);
         case R.id.fun_arcsin:       return res.getString(R.string.fun_arcsin)
                                             + res.getString(R.string.lparen);
-        case R.id.fun_arccos:       return res.getString(R.string.fun_arccos) 
+        case R.id.fun_arccos:       return res.getString(R.string.fun_arccos)
                                             + res.getString(R.string.lparen);
         case R.id.fun_arctan:       return res.getString(R.string.fun_arctan)
                                             + res.getString(R.string.lparen);
@@ -75,6 +80,7 @@ public class KeyMaps {
     }
 
     // Does a button id correspond to a binary operator?
+    // Pure function.
     public static boolean isBinary(int id) {
         switch(id) {
         case R.id.op_pow:
@@ -96,6 +102,7 @@ public class KeyMaps {
     public static final int NOT_DIGIT = 10;
 
     // Map key id to digit or NOT_DIGIT
+    // Pure function.
     public static int digVal(int id) {
         switch (id) {
         case R.id.digit_0:
@@ -124,6 +131,7 @@ public class KeyMaps {
     }
 
     // Map digit to corresponding key.  Inverse of above.
+    // Pure function.
     public static int keyForDigVal(int v) {
         switch(v) {
         case 0:
@@ -151,7 +159,7 @@ public class KeyMaps {
         }
     }
 
-    static char decimalPt =
+    static char mDecimalPt =
                 DecimalFormatSymbols.getInstance().getDecimalSeparator();
 
     static char mPiChar;
@@ -162,16 +170,30 @@ public class KeyMaps {
         // Key value corresponding to given function name.
         // We include both localized and English names.
 
-    static String sLocaleForFunMap = "none";
-        // Locale string corresponding to preceding ma and character
+    static HashMap<Character, String> sOutputForResultChar;
+        // Result string corresponding to a character in the
+        // calculator result.
+        // The string values in the map are expected to be one character
+        // long.
+
+    static String sLocaleForMaps = "none";
+        // Locale string corresponding to preceding map and character
         // constants.
         // We recompute the map if this is not the current locale.
+
+    static Activity mActivity;  // Activity to use for looking up
+                                // buttons.
+
+    // Called only by UI thread.
+    public static void setActivity(Activity a) {
+        mActivity = a;
+    }
 
     // Return the button id corresponding to the supplied character
     // or NO_ID
     // Called only by UI thread.
-    public static int keyForChar(char c, Activity a) {
-        validateFunMap(a);
+    public static int keyForChar(char c) {
+        validateMaps();
         if (Character.isDigit(c)) {
             int i = Character.digit(c, 10);
             return KeyMaps.keyForDigVal(i);
@@ -206,7 +228,7 @@ public class KeyMaps {
         case ')':
             return R.id.rparen;
         default:
-            if (c == decimalPt) return R.id.dec_point;
+            if (c == mDecimalPt) return R.id.dec_point;
             if (c == mPiChar) return R.id.const_pi;
                 // pi is not translated, but it might be typable on
                 // a Greek keyboard, so we check ...
@@ -216,18 +238,24 @@ public class KeyMaps {
 
     // Add information corresponding to the given button id to
     // sKeyValForFun.
-    static void addButton(int button_id, Activity a) {
-        Button button = (Button)a.findViewById(button_id);
+    static void addButtonToFunMap(int button_id) {
+        Button button = (Button)mActivity.findViewById(button_id);
         sKeyValForFun.put(button.getText().toString(), button_id);
+    }
+
+    // Ditto, but for sOutputForResultChar.
+    static void addButtonToOutputMap(char c, int button_id) {
+        Button button = (Button)mActivity.findViewById(button_id);
+        sOutputForResultChar.put(c, button.getText().toString());
     }
 
     // Ensure that the preceding map and character constants are
     // initialized and correspond to the current locale.
     // Called only by a single thread, namely the UI thread.
-    static void validateFunMap(Activity a) {
+    static void validateMaps() {
         Locale locale = Locale.getDefault();
         String lname = locale.toString();
-        if (lname != sLocaleForFunMap) {
+        if (lname != sLocaleForMaps) {
             Log.v ("Calculator", "Setting local to: " + lname);
             sKeyValForFun = new HashMap<String, Integer>();
             sKeyValForFun.put("sin", R.id.fun_sin);
@@ -242,26 +270,42 @@ public class KeyMaps {
             sKeyValForFun.put("ln", R.id.fun_ln);
             sKeyValForFun.put("log", R.id.fun_log);
             sKeyValForFun.put("sqrt", R.id.op_sqrt); // special treatment
-            addButton(R.id.fun_sin, a);
-            addButton(R.id.fun_cos, a);
-            addButton(R.id.fun_tan, a);
-            addButton(R.id.fun_arcsin, a);
-            addButton(R.id.fun_arccos, a);
-            addButton(R.id.fun_arctan, a);
-            addButton(R.id.fun_ln, a);
-            addButton(R.id.fun_log, a);
+            addButtonToFunMap(R.id.fun_sin);
+            addButtonToFunMap(R.id.fun_cos);
+            addButtonToFunMap(R.id.fun_tan);
+            addButtonToFunMap(R.id.fun_arcsin);
+            addButtonToFunMap(R.id.fun_arccos);
+            addButtonToFunMap(R.id.fun_arctan);
+            addButtonToFunMap(R.id.fun_ln);
+            addButtonToFunMap(R.id.fun_log);
 
             // Set locale-dependent character "constants"
-            decimalPt =
+            mDecimalPt =
                 DecimalFormatSymbols.getInstance().getDecimalSeparator();
-            Resources res = a.getResources();
+            Resources res = mActivity.getResources();
             mPiChar = mFactChar = 0;
             String piString = res.getString(R.string.const_pi);
             if (piString.length() == 1) mPiChar = piString.charAt(0);
             String factString = res.getString(R.string.op_fact);
             if (factString.length() == 1) mFactChar = factString.charAt(0);
 
-            sLocaleForFunMap = lname;
+            sOutputForResultChar = new HashMap<Character, String>();
+            sOutputForResultChar.put('e', "E");
+            sOutputForResultChar.put('E', "E");
+            sOutputForResultChar.put('.', String.valueOf(mDecimalPt));
+            sOutputForResultChar.put(res.getString(R.string.ellipsis).charAt(0),
+                                     res.getString(R.string.ellipsis));
+            sOutputForResultChar.put('/', "/");
+                        // Translate numbers for fraction display, but not
+                        // the separating slash, which appears to be
+                        // universal.
+            addButtonToOutputMap('-', R.id.op_sub);
+            for (int i = 0; i <= 9; ++i) {
+                addButtonToOutputMap((char)('0' + i), keyForDigVal(i));
+            }
+
+            sLocaleForMaps = lname;
+
         }
     }
 
@@ -271,8 +315,8 @@ public class KeyMaps {
     // We check for both standard English names and localized
     // button labels, though those don't seem to differ much.
     // Called only by a single thread, namely the UI thread.
-    public static int funForString(String s, int pos, Activity a) {
-        validateFunMap(a);
+    public static int funForString(String s, int pos) {
+        validateMaps();
         int parenPos = s.indexOf('(', pos);
         if (parenPos != -1) {
             String funString = s.substring(pos, parenPos);
@@ -282,4 +326,24 @@ public class KeyMaps {
         }
         return View.NO_ID;
     }
+
+    // Called only by UI thread.
+    public static String translateResult(String s) {
+        StringBuilder result = new StringBuilder();
+        int len = s.length();
+        validateMaps();
+        for (int i = 0; i < len; ++i) {
+            char c = s.charAt(i);
+            String translation = sOutputForResultChar.get(c);
+            if (translation == null) {
+                // Should not get here.
+                Log.v("Calculator", "Bad character:" + c);
+                result.append(String.valueOf(c));
+            } else {
+                result.append(translation);
+            }
+        }
+        return result.toString();
+    }
+
 }

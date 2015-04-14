@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// TODO: Replace explicit BigInteger arithmetic with BoundedRational.
-//       Let UI query the required number of digits to display exactly.
-
 //
 // This implements the calculator evaluation logic.
 // An evaluation is started with a call to evaluateAndShowResult().
@@ -469,17 +466,28 @@ class Evaluator {
     // the string cache (presumed to contain at least 5 characters)
     // and possibly the exact integer i.
     private String getShortString(String cache, BigInteger i) {
+        // The result is internationalized; we only display it.
+        String res;
+        boolean need_ellipsis = false;
+
         if (i != null && i.abs().compareTo(BIG_MILLION) < 0) {
-            return(i.toString());
+            res = i.toString();
         } else {
-            String res = cache.substring(0,5);
+            res = cache.substring(0,5);
             // Avoid a trailing period; doesn't work with ellipsis
             if (res.charAt(3) != '.') {
                 res = res.substring(0,4);
             }
-            return res + mCalculator.getResources()
-                                    .getString(R.string.ellipsis);
+            // TODO: Don't do this in the unlikely case this is the
+            // full representation.
+            need_ellipsis = true;
         }
+        res = KeyMaps.translateResult(res);
+        if (need_ellipsis) {
+            res += mCalculator.getResources()
+                              .getString(R.string.ellipsis);
+        }
+        return res;
     }
 
     // Return the most significant digit position in the given string
@@ -680,9 +688,6 @@ class Evaluator {
                 res = mCalculator.getResources().getString(R.string.ellipsis)
                        + res.substring(1, res.length());
             }
-            // TODO: This and/or CR formatting needs to deal with
-            // internationalization.
-            // Probably use java.text.DecimalFormatSymbols directly
             return res;
     }
 
