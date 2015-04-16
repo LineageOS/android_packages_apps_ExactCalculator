@@ -19,7 +19,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="DisplayEditTextStyle.Formula">
-        <item name="android:paddingTop">72dip</item>
+        <item name="android:paddingTop">16dip</item>
         <item name="android:paddingBottom">32dip</item>
         <item name="android:paddingStart">44dip</item>
         <item name="android:paddingEnd">44dip</item>

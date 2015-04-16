@@ -23,11 +23,27 @@
     android:background="@color/display_background_color"
     android:elevation="4dip">
 
+    <Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize">
+
+       <TextView
+            android:id="@+id/deg_rad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="16sp"
+            android:textAllCaps="true" />
+
+    </Toolbar>
+
     <com.android.calculator2.CalculatorEditText
         android:id="@+id/formula"
         style="@style/DisplayEditTextStyle.Formula"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
         android:inputType="text|textNoSuggestions"
         android:textIsSelectable="false"
         android:textColor="@color/display_formula_text_color" />
@@ -36,17 +52,12 @@
       We lay the result out to full width, but are careful to use only
       2/3 of the space, so that we have room when we expand.
       -->
-
     <com.android.calculator2.CalculatorResult
         android:id="@+id/result"
         style="@style/DisplayTextStyle.Result"
-        android:layout_alignParentRight="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/formula"
-        android:inputType="none"
-        android:clickable="true"
-        android:textIsSelectable="false"
         android:textColor="@color/display_result_text_color" />
 
 </RelativeLayout>

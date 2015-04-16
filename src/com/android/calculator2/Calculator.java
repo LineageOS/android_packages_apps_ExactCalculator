@@ -73,10 +73,8 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroupOverlay;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.android.calculator2.CalculatorEditText.OnTextSizeChangeListener;
 
@@ -90,7 +88,7 @@ import java.io.IOException;
 import java.text.DecimalFormatSymbols;  // TODO: May eventually not need this here.
 
 public class Calculator extends Activity
-        implements OnTextSizeChangeListener, OnLongClickListener, OnMenuItemClickListener, CalculatorEditText.PasteListener {
+        implements OnTextSizeChangeListener, OnLongClickListener, CalculatorEditText.PasteListener {
 
     /**
      * Constant for an invalid resource id.
@@ -178,15 +176,15 @@ public class Calculator extends Activity
     private Evaluator mEvaluator;
 
     private View mDisplayView;
+    private TextView mModeView;
     private CalculatorEditText mFormulaEditText;
     private CalculatorResult mResult;
-    private TextView mDegRadDisplay;
+
     private ViewPager mPadViewPager;
     private View mDeleteButton;
-    private View mEqualButton;
     private View mClearButton;
-    private View mOverflowMenuButton;
-    private Button mDegRadButton;
+    private View mEqualButton;
+    private TextView mModeButton;
 
     private View mCurrentButton;
     private Animator mCurrentAnimator;
@@ -199,11 +197,16 @@ public class Calculator extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculator);
+        setActionBar((Toolbar) findViewById(R.id.toolbar));
+
+        // Hide all default options in the ActionBar.
+        getActionBar().setDisplayOptions(0);
 
         mDisplayView = findViewById(R.id.display);
+        mModeView = (TextView) findViewById(R.id.deg_rad);
         mFormulaEditText = (CalculatorEditText) findViewById(R.id.formula);
         mResult = (CalculatorResult) findViewById(R.id.result);
-        mDegRadDisplay = (TextView) findViewById(R.id.deg_rad);
+
         mPadViewPager = (ViewPager) findViewById(R.id.pad_pager);
         mDeleteButton = findViewById(R.id.del);
         mClearButton = findViewById(R.id.clr);
@@ -211,8 +214,7 @@ public class Calculator extends Activity
         if (mEqualButton == null || mEqualButton.getVisibility() != View.VISIBLE) {
             mEqualButton = findViewById(R.id.pad_operator).findViewById(R.id.eq);
         }
-        mOverflowMenuButton = findViewById(R.id.overflow_menu);
-        mDegRadButton = (Button)findViewById(R.id.mode_deg_rad);
+        mModeButton = (TextView) findViewById(R.id.mode_deg_rad);
 
         mEvaluator = new Evaluator(this, mResult);
         mResult.setEvaluator(mEvaluator);
@@ -278,7 +280,7 @@ public class Calculator extends Activity
 
     // Set the state, updating delete label and display colors.
     // This restores display positions on moving to INPUT.
-    // But movement/animation for moving to RESULT has already been done. 
+    // But movement/animation for moving to RESULT has already been done.
     private void setState(CalculatorState state) {
         if (mCurrentState != state) {
             if (state == CalculatorState.INPUT) {
@@ -308,6 +310,8 @@ public class Calculator extends Activity
                 getWindow().setStatusBarColor(
                         getResources().getColor(R.color.calculator_accent_color));
             }
+
+            invalidateOptionsMenu();
         }
     }
 
@@ -338,16 +342,14 @@ public class Calculator extends Activity
     // to reflect the indicated current degree mode (true = degrees)
     // TODO: Hide the top corner display until the advanced panel is exposed.
     private void updateDegreeMode(boolean dm) {
-        Resources res = getResources();
-        String descr;
         if (dm) {
-            mDegRadDisplay.setText(R.string.mode_deg);
-            mDegRadButton.setText(R.string.mode_rad);
-            mDegRadButton.setContentDescription(res.getString(R.string.desc_mode_rad));
+            mModeView.setText(R.string.mode_deg);
+            mModeButton.setText(R.string.mode_rad);
+            mModeButton.setContentDescription(getString(R.string.desc_mode_rad));
         } else {
-            mDegRadDisplay.setText(R.string.mode_rad);
-            mDegRadButton.setText(R.string.mode_deg);
-            mDegRadButton.setContentDescription(res.getString(R.string.desc_mode_deg));
+            mModeView.setText(R.string.mode_rad);
+            mModeButton.setText(R.string.mode_deg);
+            mModeButton.setContentDescription(getString(R.string.desc_mode_deg));
         }
     }
 
@@ -379,23 +381,20 @@ public class Calculator extends Activity
 
     public void onButtonClick(View view) {
         mCurrentButton = view;
-        int id = view.getId();
 
         // Always cancel in-progress evaluation.
         // If we were waiting for the result, do nothing else.
         mEvaluator.cancelAll();
+
         if (mCurrentState == CalculatorState.EVALUATE
                 || mCurrentState == CalculatorState.ANIMATE) {
             onCancelled();
             return;
         }
+
+
+        final int id = view.getId();
         switch (id) {
-            case R.id.overflow_menu:
-                PopupMenu menu = constructPopupMenu();
-                if (menu != null) {
-                    menu.show();
-                }
-                break;
             case R.id.eq:
                 onEquals();
                 break;
@@ -453,6 +452,9 @@ public class Calculator extends Activity
 
     // Initial evaluation completed successfully.  Initiate display.
     public void onEvaluate(int initDisplayPrec, String truncatedWholeNumber) {
+        // Invalidate any options that may depend on the current result.
+        invalidateOptionsMenu();
+
         if (mCurrentState == CalculatorState.INPUT) {
             // Just update small result display.
             mResult.displayResult(initDisplayPrec, truncatedWholeNumber);
@@ -697,25 +699,25 @@ public class Calculator extends Activity
         mFormulaEditText.requestFocus();
      }
 
-    // Overflow menu handling.
-    private PopupMenu constructPopupMenu() {
-        final PopupMenu popupMenu = new PopupMenu(this, mOverflowMenuButton);
-        mOverflowMenuButton.setOnTouchListener(popupMenu.getDragToOpenListener());
-        popupMenu.inflate(R.menu.overflow);
-        final Menu menu = popupMenu.getMenu();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.overflow, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
         if (mCurrentState != CalculatorState.RESULT) {
             menu.findItem(R.id.menu_fraction).setEnabled(false);
             menu.findItem(R.id.menu_leading).setEnabled(false);
         } else if (mEvaluator.getRational() == null) {
             menu.findItem(R.id.menu_fraction).setEnabled(false);
         }
-        popupMenu.setOnMenuItemClickListener(this);
-        onPrepareOptionsMenu(menu);
-        return popupMenu;
+        return true;
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_help:
                 displayHelpMessage();

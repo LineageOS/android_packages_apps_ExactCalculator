@@ -95,6 +95,10 @@ public class CalculatorResult extends TextView {
         mGestureDetector = new GestureDetector(context,
             new GestureDetector.SimpleOnGestureListener() {
                 @Override
+                public boolean onDown(MotionEvent e) {
+                    return true;
+                }
+                @Override
                 public boolean onFling(MotionEvent e1, MotionEvent e2,
                                        float velocityX, float velocityY) {
                     if (!mScroller.isFinished()) {
