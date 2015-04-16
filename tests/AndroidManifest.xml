@@ -17,14 +17,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.calculator2.tests">
 
-    <uses-sdk
-        android:minSdkVersion="21" />
+    <uses-sdk android:minSdkVersion="21" />
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
         android:targetPackage="com.android.exactcalculator"
-        android:label="BoundedRational and Calculator Functional Test">
-    </instrumentation>
+        android:label="BoundedRational and Calculator Functional Test" />
 
     <application>
         <uses-library android:name="android.test.runner" />
