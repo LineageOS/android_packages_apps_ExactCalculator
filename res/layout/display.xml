@@ -33,8 +33,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:textSize="16sp"
-            android:textAllCaps="true" />
+            android:textAllCaps="true"
+            android:textSize="16sp" />
 
     </Toolbar>
 
@@ -44,9 +44,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
-        android:inputType="text|textNoSuggestions"
-        android:textIsSelectable="false"
-        android:textColor="@color/display_formula_text_color" />
+        android:inputType="none"
+        android:longClickable="true"
+        android:singleLine="true"
+        android:textColor="@color/display_formula_text_color"
+        android:textIsSelectable="false" />
 
     <!--
       We lay the result out to full width, but are careful to use only

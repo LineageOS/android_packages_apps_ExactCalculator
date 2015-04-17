@@ -36,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -43,7 +44,7 @@ import android.widget.TextView;
  * EditText adapted for Calculator display.
  */
 
-public class CalculatorEditText extends EditText {
+public class CalculatorEditText extends EditText implements View.OnLongClickListener{
 
 
     private final ActionMode.Callback mPasteActionModeCallback =
@@ -114,14 +115,6 @@ public class CalculatorEditText extends EditText {
     private int mWidthConstraint = -1;
     private OnTextSizeChangeListener mOnTextSizeChangeListener;
 
-    final GestureDetector mLongTouchDetector =
-        new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public void onLongPress(MotionEvent e) {
-                startActionMode(mPasteActionModeCallback);
-            }
-        });
-
     public CalculatorEditText(Context context) {
         this(context, null);
     }
@@ -146,6 +139,7 @@ public class CalculatorEditText extends EditText {
 
         // Paste ActionMode is triggered explicitly, not through
         // setCustomSelectionActionModeCallback.
+        setOnLongClickListener(this);
 
         if (isFocusable()) {
             setMovementMethod(ScrollingMovementMethod.getInstance());
@@ -155,9 +149,10 @@ public class CalculatorEditText extends EditText {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent e) {
-        return mLongTouchDetector.onTouchEvent(e);
-    };
+    public boolean onLongClick(View v) {
+        startActionMode(mPasteActionModeCallback);
+        return true;
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
