@@ -153,7 +153,7 @@ class Evaluator {
     private int mCacheDigsReq;  // Number of digits that have been
                                 // requested.  Only touched by UI
                                 // thread.
-    private final int INVALID_MSD = Integer.MIN_VALUE;
+    private final int INVALID_MSD = Integer.MAX_VALUE;
     private int mMsd = INVALID_MSD;  // Position of most significant digit
                                      // in current cached result, if determined.
                                      // This is just the index in mCache
@@ -440,7 +440,7 @@ class Evaluator {
     // have room for and the current string approximation for
     // the result.
     // lastDigit is the position of the last digit on the right
-    // or Integer.MAX_VALUE.
+    // if there is such a thing, or Integer.MAX_VALUE.
     // May be called in non-UI thread.
     int getPreferredPrec(String cache, int msd, int lastDigit) {
         int lineLength = mResult.getMaxChars();
@@ -459,7 +459,14 @@ class Evaluator {
             // Treat leading zero as msd.
             msd = wholeSize - 1;
         }
-        return Math.min(msd, MAX_MSD_PREC) - wholeSize + lineLength - 2;
+        if (msd > wholeSize + MAX_MSD_PREC) {
+            // Display a probably but uncertain 0 as "0.000000000",
+            // without exponent.  That's a judgment call, but less likely
+            // to confuse naive users.  A more informative and confusing
+            // option would be to use a large negative exponent.
+            return lineLength - 2;
+        }
+        return msd - wholeSize + lineLength - 2;
     }
 
     // Get a short representation of the value represented by

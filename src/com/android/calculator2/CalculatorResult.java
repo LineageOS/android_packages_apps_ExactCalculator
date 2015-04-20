@@ -64,6 +64,9 @@ public class CalculatorResult extends TextView {
     private Evaluator mEvaluator;
     private boolean mScrollable = false;
                             // A scrollable result is currently displayed.
+    private boolean mValid = false;
+                            // The result holds something valid; either a
+                            // a number or an error message.
     private int mCurrentPos;// Position of right of display relative
                             // to decimal point, in pixels.
                             // Large positive values mean the decimal
@@ -193,6 +196,7 @@ public class CalculatorResult extends TextView {
     }
 
     void displayError(int resourceId) {
+        mValid = true;
         mScrollable = false;
         setText(resourceId);
     }
@@ -201,6 +205,7 @@ public class CalculatorResult extends TextView {
 
     // Return entire result (within reason) up to current displayed precision.
     public String getFullText() {
+        if (!mValid) return "";
         if (!mScrollable) return getText().toString();
         int currentCharPos = getCurrentCharPos();
         return KeyMaps.translateResult(
@@ -248,6 +253,7 @@ public class CalculatorResult extends TextView {
     }
 
     void clear() {
+        mValid = false;
         setText("");
     }
 
@@ -267,6 +273,7 @@ public class CalculatorResult extends TextView {
         } else {
             setText(result);
         }
+        mValid = true;
         mScrollable = true;
     }
 

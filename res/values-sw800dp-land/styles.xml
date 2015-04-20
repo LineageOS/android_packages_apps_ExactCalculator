@@ -20,7 +20,7 @@
 
     <style name="DisplayEditTextStyle.Formula">
         <item name="android:paddingTop">16dip</item>
-        <item name="android:paddingBottom">26dip</item>
+        <item name="android:paddingBottom">42dip</item>
         <item name="android:paddingStart">44dip</item>
         <item name="android:paddingEnd">44dip</item>
         <item name="minTextSize">56sp</item>
@@ -29,7 +29,7 @@
     </style>
 
     <style name="DisplayTextStyle.Result">
-        <item name="android:paddingTop">26dip</item>
+        <item name="android:paddingTop">10dip</item>
         <item name="android:paddingBottom">46dip</item>
         <item name="android:paddingStart">44dip</item>
         <item name="android:paddingEnd">44dip</item>

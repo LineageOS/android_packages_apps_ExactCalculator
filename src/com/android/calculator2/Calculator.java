@@ -168,6 +168,7 @@ public class Calculator extends Activity
 
     private static final String NAME = Calculator.class.getName();
     private static final String KEY_DISPLAY_STATE = NAME + "_display_state";
+    private static final String KEY_UNPROCESSED_CHARS = NAME + "_unprocessed_chars";
     private static final String KEY_EVAL_STATE = NAME + "_eval_state";
                 // Associated value is a byte array holding both mCalculatorState
                 // and the (much more complex) evaluator state.
@@ -224,8 +225,11 @@ public class Calculator extends Activity
             setState(CalculatorState.values()[
                 savedInstanceState.getInt(KEY_DISPLAY_STATE,
                                           CalculatorState.INPUT.ordinal())]);
-            byte[] state =
-                    savedInstanceState.getByteArray(KEY_EVAL_STATE);
+            CharSequence unprocessed = savedInstanceState.getCharSequence(KEY_UNPROCESSED_CHARS);
+            if (unprocessed != null) {
+                mUnprocessedChars = unprocessed.toString();
+            }
+            byte[] state = savedInstanceState.getByteArray(KEY_EVAL_STATE);
             if (state != null) {
                 try (ObjectInput in = new ObjectInputStream(new ByteArrayInputStream(state))) {
                     mEvaluator.restoreInstanceState(in);
@@ -268,6 +272,7 @@ public class Calculator extends Activity
 
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_DISPLAY_STATE, mCurrentState.ordinal());
+        outState.putCharSequence(KEY_UNPROCESSED_CHARS, mUnprocessedChars);
         ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
         try (ObjectOutput out = new ObjectOutputStream(byteArrayStream)) {
             mEvaluator.saveInstanceState(out);
@@ -588,12 +593,13 @@ public class Calculator extends Activity
         if (mEvaluator.getExpr().isEmpty()) {
             return;
         }
-        mUnprocessedChars = null;
-        mResult.clear();
-        mEvaluator.clear();
         reveal(mCurrentButton, R.color.calculator_accent_color, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                mUnprocessedChars = null;
+                mResult.clear();
+                mEvaluator.clear();
+                setState(CalculatorState.INPUT);
                 redisplayFormula();
             }
         });
@@ -639,7 +645,7 @@ public class Calculator extends Activity
         // This is how much we want to move the bottom.
         // Now compensate for the fact that we're
         // simultaenously expanding it around its center by half its height
-        resultTranslationY += mResult.getHeight() * (resultScale-1)/2;
+        resultTranslationY += mResult.getHeight() * (resultScale - 1)/2;
         final float formulaTranslationY = -mFormulaEditText.getBottom();
 
         // TODO: Reintroduce textColorAnimator?
