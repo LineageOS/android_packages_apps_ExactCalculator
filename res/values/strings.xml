@@ -75,8 +75,6 @@
     <!-- Abbrev. name of radian mode [CHAR_LIMIT=5] -->
     <!-- Used both as button label and for status indicator on top -->
     <string name="mode_rad">rad</string>
-    <!-- Ellipsis string used in display (e.g. "...". [CHAR_LIMIT=3] -->
-    <string name="ellipsis">\u2026</string>
 
     <!-- Clear operation to clear the currently entered expression. [CHAR_LIMIT=3] -->
     <string name="clr">clr</string>

@@ -48,8 +48,8 @@ import android.support.v4.view.ViewCompat;
 // A text widget that is "infinitely" scrollable to the right,
 // and obtains the text to display via a callback to Logic.
 public class CalculatorResult extends TextView {
-    final static int MAX_RIGHT_SCROLL = 100000000;
-    final static int INVALID = MAX_RIGHT_SCROLL + 10000;
+    static final int MAX_RIGHT_SCROLL = 100000000;
+    static final int INVALID = MAX_RIGHT_SCROLL + 10000;
         // A larger value is unlikely to avoid running out of space
     final OverScroller mScroller;
     final GestureDetector mGestureDetector;
@@ -202,13 +202,122 @@ public class CalculatorResult extends TextView {
 
     private final int MAX_COPY_SIZE = 1000000;
 
+    // Format a result returned by Evaluator.getString() into a single
+    // line containing ellipses (if appropriate) and an exponent
+    // (if appropriate).  digs is the value that was passed to
+    // getString and thus identifies the significance of the
+    // rightmost digit.
+    // We add two distinct kinds of exponents:
+    // 1) If the final result contains the leading digit we use standard
+    //   scientific notation.
+    // 2) If not, we add an exponent corresponding to an interpretation
+    //   of the final result as an integer.
+    // We add an ellipsis on the left if the result was truncated.
+    // We add ellipses and exponents in a way that leaves most digits
+    // in the position they would have been in had we not done so.
+    // This minimizes jumps as a result of scrolling.
+    // Result is NOT internationalized, uses "e" for exponent.
+    // last_included[0] is set to the position of the last digit we
+    // actually include; thus caller can tell whether result is exact.
+    public String formatResult(String res, int digs,
+                               int maxDigs, boolean truncated,
+                               boolean negative) {
+        if (truncated) {
+            res = KeyMaps.ELLIPSIS + res.substring(1, res.length());
+        }
+        int decIndex = res.indexOf('.');
+        int resLen = res.length();
+        if (decIndex == -1 && digs != -1) {
+            // No decimal point displayed, and it's not just
+            // to the right of the last digit.
+            // Add an exponent to let the user track which
+            // digits are currently displayed.
+            // This is a bit tricky, since the number of displayed
+            // digits affects the displayed exponent, which can
+            // affect the room we have for mantissa digits.
+            // We occasionally display one digit too few.
+            // This is sometimes unavoidable, but we could
+            // avoid it in more cases.
+            int exp = digs > 0 ? -digs : -digs - 1;
+                    // Can be used as TYPE (2) EXPONENT.
+                    // -1 accounts for decimal point.
+            int msd;  // Position of most significant digit in res
+                      // or indication its outside res.
+            boolean hasPoint = false;
+            if (truncated) {
+                msd = -1;
+            } else {
+                msd = Evaluator.getMsdPos(res);  // INVALID_MSD is OK
+            }
+            if (msd < maxDigs - 1 && msd >= 0) {
+                // TYPE (1) EXPONENT computation and transformation:
+                // Leading digit is in display window.
+                // Use standard calculator scientific notation
+                // with one digit to the left of the decimal point.
+                // Insert decimal point and delete leading zeroes.
+                    String fraction = res.substring(msd + 1, resLen);
+                    res = (negative ? "-" : "")
+                          + res.substring(msd, msd+1) + "." + fraction;
+                exp += resLen - msd - 1;
+                    // Original exp was correct for decimal point at right
+                    // of fraction.  Adjust by length of fraction.
+                resLen = res.length();
+                hasPoint = true;
+            }
+            if (exp != 0 || truncated) {
+                // Actually add the exponent of either type:
+                String expAsString = Integer.toString(exp);
+                int expDigits = expAsString.length();
+                int dropDigits = expDigits + 1;
+                        // Drop digits even if there is room.
+                        // Otherwise the scrolling gets jumpy.
+                if (dropDigits >= resLen - 1) {
+                    dropDigits = Math.max(resLen - 2, 0);
+                    // Jumpy is better than no mantissa.
+                }
+                if (!hasPoint) {
+                    // Special handling for TYPE(2) EXPONENT:
+                    exp += dropDigits;
+                    expAsString = Integer.toString(exp);
+                        // Adjust for digits we are about to drop
+                        // to drop to make room for exponent.
+                    // This can affect the room we have for the
+                    // mantissa. We adjust only for positive exponents,
+                    // when it could otherwise result in a truncated
+                    // displayed result.
+                    if (exp > 0 && expAsString.length() > expDigits) {
+                        // ++expDigits; (dead code)
+                        ++dropDigits;
+                        ++exp;
+                        // This cannot increase the length a second time.
+                    }
+                }
+                res = res.substring(0, resLen - dropDigits);
+                res = res + "e" + expAsString;
+            } // else don't add zero exponent
+        }
+        return res;
+    }
+
+    // Get formatted, but not internationalized, result from
+    // mEvaluator.
+    private String getFormattedResult(int pos, int maxSize) {
+        final boolean truncated[] = new boolean[1];
+        final boolean negative[] = new boolean[1];
+        final int requested_prec[] = {pos};
+        final String raw_res = mEvaluator.getString(requested_prec, maxSize,
+                                                    truncated, negative);
+        return formatResult(raw_res, requested_prec[0], maxSize,
+                            truncated[0], negative[0]);
+   }
+
     // Return entire result (within reason) up to current displayed precision.
     public String getFullText() {
         if (!mValid) return "";
         if (!mScrollable) return getText().toString();
         int currentCharPos = getCurrentCharPos();
         return KeyMaps.translateResult(
-                          mEvaluator.getString(currentCharPos, MAX_COPY_SIZE));
+                getFormattedResult(currentCharPos, MAX_COPY_SIZE));
     }
 
     public boolean fullTextIsExact() {
@@ -233,7 +342,7 @@ public class CalculatorResult extends TextView {
         synchronized(mWidthLock) {
             result = 2 * mWidthConstraint / (3 * mCharWidth);
             // We can apparently finish evaluating before
-            // onMeasure in CalculatorEditText has been called, in
+            // onMeasure in CalculatorText has been called, in
             // which case we get 0 or -1 as the width constraint.
         }
         if (result <= 0) {
@@ -259,7 +368,7 @@ public class CalculatorResult extends TextView {
     void redisplay() {
         int currentCharPos = getCurrentCharPos();
         int maxChars = getMaxChars();
-        String result = mEvaluator.getString(currentCharPos, maxChars);
+        String result = getFormattedResult(currentCharPos, maxChars);
         int epos = result.indexOf('e');
         result = KeyMaps.translateResult(result);
         if (epos > 0 && result.indexOf('.') == -1) {

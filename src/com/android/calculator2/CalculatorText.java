@@ -37,14 +37,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 /**
- * EditText adapted for Calculator display.
+ * TextView adapted for Calculator display.
  */
 
-public class CalculatorEditText extends EditText implements View.OnLongClickListener{
+public class CalculatorText extends TextView implements View.OnLongClickListener{
 
 
     private final ActionMode.Callback mPasteActionModeCallback =
@@ -115,24 +114,24 @@ public class CalculatorEditText extends EditText implements View.OnLongClickList
     private int mWidthConstraint = -1;
     private OnTextSizeChangeListener mOnTextSizeChangeListener;
 
-    public CalculatorEditText(Context context) {
+    public CalculatorText(Context context) {
         this(context, null);
     }
 
-    public CalculatorEditText(Context context, AttributeSet attrs) {
+    public CalculatorText(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CalculatorEditText(Context context, AttributeSet attrs, int defStyle) {
+    public CalculatorText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         final TypedArray a = context.obtainStyledAttributes(
-                attrs, R.styleable.CalculatorEditText, defStyle, 0);
+                attrs, R.styleable.CalculatorText, defStyle, 0);
         mMaximumTextSize = a.getDimension(
-                R.styleable.CalculatorEditText_maxTextSize, getTextSize());
+                R.styleable.CalculatorText_maxTextSize, getTextSize());
         mMinimumTextSize = a.getDimension(
-                R.styleable.CalculatorEditText_minTextSize, getTextSize());
-        mStepTextSize = a.getDimension(R.styleable.CalculatorEditText_stepTextSize,
+                R.styleable.CalculatorText_minTextSize, getTextSize());
+        mStepTextSize = a.getDimension(R.styleable.CalculatorText_stepTextSize,
                 (mMaximumTextSize - mMinimumTextSize) / 3);
 
         a.recycle();
@@ -141,9 +140,9 @@ public class CalculatorEditText extends EditText implements View.OnLongClickList
         // setCustomSelectionActionModeCallback.
         setOnLongClickListener(this);
 
-        if (isFocusable()) {
-            setMovementMethod(ScrollingMovementMethod.getInstance());
-        }
+        // Enable scrolling
+        setMovementMethod(ScrollingMovementMethod.getInstance());
+
         setTextSize(TypedValue.COMPLEX_UNIT_PX, mMaximumTextSize);
         setMinHeight(getLineHeight() + getCompoundPaddingBottom() + getCompoundPaddingTop());
     }
@@ -166,23 +165,10 @@ public class CalculatorEditText extends EditText implements View.OnLongClickList
     public int getWidthConstraint() { return mWidthConstraint; }
 
     @Override
-    public Parcelable onSaveInstanceState() {
-        super.onSaveInstanceState();
-
-        // EditText will freeze any text with a selection regardless of getFreezesText() ->
-        // return null to prevent any state from being preserved at the instance level.
-        return null;
-    }
-
-    @Override
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
 
         final int textLength = text.length();
-        if (getSelectionStart() != textLength || getSelectionEnd() != textLength) {
-            // Pin the selection to the end of the current text.
-            setSelection(textLength);
-        }
         setTextSize(TypedValue.COMPLEX_UNIT_PX, getVariableTextSize(text.toString()));
     }
 

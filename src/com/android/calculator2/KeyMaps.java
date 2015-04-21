@@ -101,6 +101,8 @@ public class KeyMaps {
 
     public static final int NOT_DIGIT = 10;
 
+    public static final String ELLIPSIS = "\u2026";
+
     // Map key id to digit or NOT_DIGIT
     // Pure function.
     public static int digVal(int id) {
@@ -293,8 +295,7 @@ public class KeyMaps {
             sOutputForResultChar.put('e', "E");
             sOutputForResultChar.put('E', "E");
             sOutputForResultChar.put('.', String.valueOf(mDecimalPt));
-            sOutputForResultChar.put(res.getString(R.string.ellipsis).charAt(0),
-                                     res.getString(R.string.ellipsis));
+            sOutputForResultChar.put(ELLIPSIS.charAt(0), ELLIPSIS);
             sOutputForResultChar.put('/', "/");
                         // Translate numbers for fraction display, but not
                         // the separating slash, which appears to be

@@ -124,8 +124,8 @@ class Evaluator {
     private final char decimalPt =
                 DecimalFormatSymbols.getInstance().getDecimalSeparator();
 
-    private final static int MAX_DIGITS = 100;  // Max digits displayed at once.
-    private final static int EXTRA_DIGITS = 20;
+    private static final int MAX_DIGITS = 100;  // Max digits displayed at once.
+    private static final int EXTRA_DIGITS = 20;
                 // Extra computed digits to minimize probably we will have
                 // to change our minds about digits we already displayed.
                 // (The correct digits are technically not computable using our
@@ -137,7 +137,7 @@ class Evaluator {
                 // We do use these extra digits to display while we are
                 // computing the correct answer.  Thus they may be
                 // temporarily visible.
-   private final static int PRECOMPUTE_DIGITS = 20;
+   private static final int PRECOMPUTE_DIGITS = 20;
                                 // Extra digits computed to minimize
                                 // reevaluations during scrolling.
 
@@ -153,12 +153,12 @@ class Evaluator {
     private int mCacheDigsReq;  // Number of digits that have been
                                 // requested.  Only touched by UI
                                 // thread.
-    private final int INVALID_MSD = Integer.MAX_VALUE;
+    public static final int INVALID_MSD = Integer.MAX_VALUE;
     private int mMsd = INVALID_MSD;  // Position of most significant digit
                                      // in current cached result, if determined.
                                      // This is just the index in mCache
                                      // holding the msd.
-    private final int MAX_MSD_PREC = 100;
+    private static final int MAX_MSD_PREC = 100;
                              // The largest number of digits to the right
                              // of the decimal point to which we will
                              // evaluate to compute proper scientific
@@ -332,10 +332,10 @@ class Evaluator {
         }
         @Override
         protected void onPreExecute() {
-            long timeout = mRequired? mTimeout : mQuickTimeout;
+            long timeout = mRequired ? mTimeout : mQuickTimeout;
             if (timeout != 0) {
                 mTimeoutHandler.postDelayed(
-                    (mRequired? mTimeoutRunnable : mQuickTimeoutRunnable),
+                    (mRequired ? mTimeoutRunnable : mQuickTimeoutRunnable),
                     timeout);
             }
         }
@@ -491,15 +491,14 @@ class Evaluator {
         }
         res = KeyMaps.translateResult(res);
         if (need_ellipsis) {
-            res += mCalculator.getResources()
-                              .getString(R.string.ellipsis);
+            res += KeyMaps.ELLIPSIS;
         }
         return res;
     }
 
     // Return the most significant digit position in the given string
     // or INVALID_MSD.
-    private int getMsdPos(String s) {
+    public static int getMsdPos(String s) {
         int len = s.length();
         int nonzeroPos = -1;
         for (int i = 0; i < len; ++i) {
@@ -563,44 +562,61 @@ class Evaluator {
         return res;
     }
 
-    // TODO: The following should be refactored, particularly since
-    // maxDigs should probably depend on the width of characters in
-    // the result.
-    // And we should try to at leas factor out the code to add the exponent.
-    //
-    // Return result to digs digits to the right of the decimal point
-    // (minus any space occupied by exponent included in the result).
+    private static final int MIN_DIGS = 5;
+            // Leave at least this many digits from the whole number
+            // part on the screen, to avoid silly displays like 1E1.
+    // Return result to exactly prec[0] digits to the right of the
+    // decimal point.
     // The result should be no longer than maxDigs.
+    // No exponent or other indication of precision is added.
     // The result is returned immediately, based on the
     // current cache contents, but it may contain question
     // marks for unknown digits.  It may also use uncertain
     // digits within EXTRA_DIGITS.  If either of those occurred,
     // schedule a reevaluation and redisplay operation.
+    // Uncertain digits never appear to the left of the decimal point.
     // digs may be negative to only retrieve digits to the left
-    // of the decimal point.  (digs = 0 means we include
-    // the decimal point, but nothing to the right.  Digs = -1
+    // of the decimal point.  (prec[0] = 0 means we include
+    // the decimal point, but nothing to the right.  prec[0] = -1
     // means we drop the decimal point and start at the ones
     // position.  Should not be invoked if mVal is null.
-    String getString(int digs, int maxDigs) {
+    // This essentially just returns a substring of the full result;
+    // a leading minus sign or leading digits can be dropped.
+    // Result uses US conventions; is NOT internationalized.
+    // We set negative[0] if the number as a whole is negative,
+    // since we may drop the minus sign.
+    // We set truncated[0] if leading nonzero digits were dropped.
+    // getRational() can be used to determine whether the result
+    // is exact, or whether we dropped trailing digits.
+    // If the requested prec[0] value is out of range, we update
+    // it in place and use the updated value.
+    public String getString(int[] prec, int maxDigs,
+                            boolean[] truncated, boolean[] negative) {
+        int digs = prec[0];
         mLastDigs = digs;
         // Make sure we eventually get a complete answer
             ensureCachePrec(digs + EXTRA_DIGITS);
             if (mCache == null) {
                 // Nothing to do now; seems to happen on rare occasion
-                // with weird user input timing; will be fixed later.
+                // with weird user input timing;
+                // Will repair itself in a jiffy.
                 return getPadding(1);
             }
         // Compute an appropriate substring of mCache.
         // We avoid returning a huge string to minimize string
         // allocation during scrolling.
         // Pad as needed.
-            boolean truncated = false;  // Leading digits dropped.
-            int len = mCache.length();
-            // Don't scroll left past leftmost digit in mCache.
+            final int len = mCache.length();
+            final boolean myNegative = mCache.charAt(0) == '-';
+            negative[0] = myNegative;
+            // Don't scroll left past leftmost digits in mCache
+            // unless that still leaves an integer.
                 int integralDigits = len - mCacheDigs;
                                 // includes 1 for dec. pt
-                if (mCache.charAt(0) == '-') --integralDigits;
-                if (digs < -integralDigits + 1) digs = -integralDigits + 1;
+                if (myNegative) --integralDigits;
+                int minDigs = Math.min(-integralDigits + MIN_DIGS, -1);
+                digs = Math.max(digs, minDigs);
+                prec[0] = digs;
             int offset = mCacheDigs - digs; // trailing digits to drop
             int deficit = 0;  // The number of digits we're short
             if (offset < 0) {
@@ -612,88 +628,14 @@ class Evaluator {
             int startIndx = (endIndx + deficit <= maxDigs) ?
                                 0
                                 : endIndx + deficit - maxDigs;
-            String res;
-            if (startIndx != 0) {
-                truncated = true;
-            }
-            res = mCache.substring(startIndx, endIndx);
+            truncated[0] = (startIndx > getMsd());
+            String res = mCache.substring(startIndx, endIndx);
             if (deficit > 0) {
                 res = res + getPadding(deficit);
                 // Since we always compute past the decimal point,
                 // this never fills in the spot where the decimal point
                 // should go, and the rest of this can treat the
                 // made-up symbols as though they were digits.
-            }
-        // Include exponent if necessary.
-        // Replace least significant digits as necessary.
-            if (res.indexOf('.') == -1 && digs != 1) {
-                // No decimal point displayed, and it's not just
-                // to the right of the last digit.
-                // Add an exponent to let the user track which
-                // digits are currently displayed.
-                // This is a bit tricky, since the number of displayed
-                // digits affects the displayed exponent, which can
-                // affect the room we have for mantissa digits.
-                // We occasionally display one digit too few.
-                // This is sometimes unavoidable, but we could
-                // avoid it in more cases.
-                int exp = (digs > 0)? -digs : -digs - 1;
-                        // accounts for decimal point
-                int msd = getMsd();
-                boolean hasPoint = false;
-                final int minFractionDigits = 6;
-                if (msd < endIndx - minFractionDigits && msd >= startIndx) {
-                    // Leading digit is in display window
-                    // Use standard calculator scientific notation
-                    // with one digit to the left of the decimal point.
-                    // Insert decimal point and delete leading zeroes.
-                        int hasMinus = mCache.charAt(0) == '-'? 1 : 0;
-                        int resLen = res.length();
-                        int resZeroes = leadingZeroes(res);
-                        String fraction =
-                              res.substring(msd+1 - startIndx,
-                                            resLen - 1 - hasMinus);
-                        res = (hasMinus != 0? "-" : "")
-                              + mCache.substring(msd, msd+1) + "."
-                              + fraction;
-                    exp += resLen - resZeroes - 1 - hasMinus;
-                        // Decimal point moved across original res, except for
-                        // leading digit and zeroes, and possibly minus sign.
-                    truncated = false; // in spite of dropping leading 0s
-                    hasPoint = true;
-                }
-                if (exp != 0 || truncated) {
-                    String expAsString = Integer.toString(exp);
-                    int expDigits = expAsString.length();
-                    int resLen = res.length();
-                    int dropDigits = resLen + expDigits + 1 - maxDigs;
-                    if (dropDigits < 0) {
-                        dropDigits = 0;
-                    } else {
-                        if (!hasPoint) {
-                            exp += dropDigits;
-                                // Adjust for digits we are about to drop
-                                // to drop to make room for exponent.
-                            // This can affect the room we have for the
-                            // mantissa. We adjust only for positive exponents,
-                            // when it could otherwise result in a truncated
-                            // displayed result.
-                            if (exp > 0 && dropDigits > 0 &&
-                                Integer.toString(exp).length() > expDigits) {
-                                // ++expDigits; (dead code)
-                                ++dropDigits;
-                                ++exp;
-                                // This cannot increase the length a second time.
-                            }
-                        }
-                        res = res.substring(0, resLen - dropDigits);
-                    }
-                    res = res + "e" + exp;
-                } // else don't add zero exponent
-            }
-            if (truncated) {
-                res = mCalculator.getResources().getString(R.string.ellipsis)
-                       + res.substring(1, res.length());
             }
             return res;
     }

@@ -38,15 +38,16 @@
 
     </Toolbar>
 
-    <com.android.calculator2.CalculatorEditText
+    <com.android.calculator2.CalculatorText
         android:id="@+id/formula"
-        style="@style/DisplayEditTextStyle.Formula"
+        style="@style/DisplayTextStyle.Formula"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
-        android:inputType="none"
+        android:ellipsize="none"
         android:longClickable="true"
         android:singleLine="true"
+        android:scrollHorizontally="true"
         android:textColor="@color/display_formula_text_color"
         android:textIsSelectable="false" />
 

@@ -571,7 +571,7 @@ class CalculatorExpr {
         case R.id.fun_sin:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
-            ratVal = ec.mDegreeMode? BoundedRational.degreeSin(argVal.mRatVal)
+            ratVal = ec.mDegreeMode ? BoundedRational.degreeSin(argVal.mRatVal)
                                      : BoundedRational.sin(argVal.mRatVal);
             if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
@@ -579,7 +579,7 @@ class CalculatorExpr {
         case R.id.fun_cos:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
-            ratVal = ec.mDegreeMode? BoundedRational.degreeCos(argVal.mRatVal)
+            ratVal = ec.mDegreeMode ? BoundedRational.degreeCos(argVal.mRatVal)
                                      : BoundedRational.cos(argVal.mRatVal);
             if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
@@ -587,7 +587,7 @@ class CalculatorExpr {
         case R.id.fun_tan:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
-            ratVal = ec.mDegreeMode? BoundedRational.degreeTan(argVal.mRatVal)
+            ratVal = ec.mDegreeMode ? BoundedRational.degreeTan(argVal.mRatVal)
                                      : BoundedRational.tan(argVal.mRatVal);
             if (ratVal != null) break;
             CR argCR = toRadians(argVal.mVal, ec);
@@ -610,7 +610,7 @@ class CalculatorExpr {
         case R.id.fun_arcsin:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
-            ratVal = ec.mDegreeMode? BoundedRational.degreeAsin(argVal.mRatVal)
+            ratVal = ec.mDegreeMode ? BoundedRational.degreeAsin(argVal.mRatVal)
                                      : BoundedRational.asin(argVal.mRatVal);
             if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
@@ -620,7 +620,7 @@ class CalculatorExpr {
         case R.id.fun_arccos:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
-            ratVal = ec.mDegreeMode? BoundedRational.degreeAcos(argVal.mRatVal)
+            ratVal = ec.mDegreeMode ? BoundedRational.degreeAcos(argVal.mRatVal)
                                      : BoundedRational.acos(argVal.mRatVal);
             if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
@@ -630,7 +630,7 @@ class CalculatorExpr {
         case R.id.fun_arctan:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
-            ratVal = ec.mDegreeMode? BoundedRational.degreeAtan(argVal.mRatVal)
+            ratVal = ec.mDegreeMode ? BoundedRational.degreeAtan(argVal.mRatVal)
                                      : BoundedRational.atan(argVal.mRatVal);
             if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
@@ -725,11 +725,11 @@ class CalculatorExpr {
     private EvalRet evalSignedFactor(int i, EvalContext ec)
                     throws ArithmeticException {
         final boolean negative = isOperator(i, R.id.op_sub);
-        int cpos = negative? i + 1 : i;
+        int cpos = negative ? i + 1 : i;
         EvalRet tmp = evalFactor(cpos, ec);
         cpos = tmp.mPos;
-        CR cval = negative? tmp.mVal.negate() : tmp.mVal;
-        BoundedRational ratVal = negative? BoundedRational.negate(tmp.mRatVal)
+        CR cval = negative ? tmp.mVal.negate() : tmp.mVal;
+        BoundedRational ratVal = negative ? BoundedRational.negate(tmp.mRatVal)
                                          : tmp.mRatVal;
         return new EvalRet(cpos, cval, ratVal);
     }

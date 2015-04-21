@@ -76,7 +76,7 @@ import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
-import com.android.calculator2.CalculatorEditText.OnTextSizeChangeListener;
+import com.android.calculator2.CalculatorText.OnTextSizeChangeListener;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
@@ -88,7 +88,7 @@ import java.io.IOException;
 import java.text.DecimalFormatSymbols;  // TODO: May eventually not need this here.
 
 public class Calculator extends Activity
-        implements OnTextSizeChangeListener, OnLongClickListener, CalculatorEditText.PasteListener {
+        implements OnTextSizeChangeListener, OnLongClickListener, CalculatorText.PasteListener {
 
     /**
      * Constant for an invalid resource id.
@@ -178,7 +178,7 @@ public class Calculator extends Activity
 
     private View mDisplayView;
     private TextView mModeView;
-    private CalculatorEditText mFormulaEditText;
+    private CalculatorText mFormulaText;
     private CalculatorResult mResult;
 
     private ViewPager mPadViewPager;
@@ -205,7 +205,7 @@ public class Calculator extends Activity
 
         mDisplayView = findViewById(R.id.display);
         mModeView = (TextView) findViewById(R.id.deg_rad);
-        mFormulaEditText = (CalculatorEditText) findViewById(R.id.formula);
+        mFormulaText = (CalculatorText) findViewById(R.id.formula);
         mResult = (CalculatorResult) findViewById(R.id.result);
 
         mPadViewPager = (ViewPager) findViewById(R.id.pad_pager);
@@ -240,9 +240,9 @@ public class Calculator extends Activity
                 }
             }
         }
-        mFormulaEditText.setOnKeyListener(mFormulaOnKeyListener);
-        mFormulaEditText.setOnTextSizeChangeListener(this);
-        mFormulaEditText.setPasteListener(this);
+        mFormulaText.setOnKeyListener(mFormulaOnKeyListener);
+        mFormulaText.setOnTextSizeChangeListener(this);
+        mFormulaText.setPasteListener(this);
         mDeleteButton.setOnLongClickListener(this);
         updateDegreeMode(mEvaluator.getDegreeMode());
         if (mCurrentState == CalculatorState.EVALUATE) {
@@ -304,11 +304,11 @@ public class Calculator extends Activity
 
             if (mCurrentState == CalculatorState.ERROR) {
                 final int errorColor = getResources().getColor(R.color.calculator_error_color);
-                mFormulaEditText.setTextColor(errorColor);
+                mFormulaText.setTextColor(errorColor);
                 mResult.setTextColor(errorColor);
                 getWindow().setStatusBarColor(errorColor);
             } else {
-                mFormulaEditText.setTextColor(
+                mFormulaText.setTextColor(
                         getResources().getColor(R.color.display_formula_text_color));
                 mResult.setTextColor(
                         getResources().getColor(R.color.display_result_text_color));
@@ -438,9 +438,9 @@ public class Calculator extends Activity
             formatted.setSpan(new ForegroundColorSpan(Color.RED),
                               formula.length(), formatted.length(),
                               Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            mFormulaEditText.setText(formatted);
+            mFormulaText.setText(formatted);
         } else {
-            mFormulaEditText.setText(formula);
+            mFormulaText.setText(formula);
         }
     }
 
@@ -638,7 +638,7 @@ public class Calculator extends Activity
         // slot and small result slot.
         final float resultScale = 1.5f;
         final float resultTranslationX = -mResult.getWidth() * (resultScale - 1)/2;
-                // mFormulaEditText is aligned with mResult on the right.
+                // mFormulaText is aligned with mResult on the right.
                 // When we enlarge it around its center, the right side
                 // moves to the right.  This compensates.
         float resultTranslationY = -mResult.getHeight();
@@ -646,7 +646,7 @@ public class Calculator extends Activity
         // Now compensate for the fact that we're
         // simultaenously expanding it around its center by half its height
         resultTranslationY += mResult.getHeight() * (resultScale - 1)/2;
-        final float formulaTranslationY = -mFormulaEditText.getBottom();
+        final float formulaTranslationY = -mFormulaText.getBottom();
 
         // TODO: Reintroduce textColorAnimator?
         //       The initial and final colors seemed to be the same in L.
@@ -660,7 +660,7 @@ public class Calculator extends Activity
                     ObjectAnimator.ofFloat(mResult, View.SCALE_Y, resultScale),
                     ObjectAnimator.ofFloat(mResult, View.TRANSLATION_X, resultTranslationX),
                     ObjectAnimator.ofFloat(mResult, View.TRANSLATION_Y, resultTranslationY),
-                    ObjectAnimator.ofFloat(mFormulaEditText, View.TRANSLATION_Y,
+                    ObjectAnimator.ofFloat(mFormulaText, View.TRANSLATION_Y,
                                            formulaTranslationY));
             animatorSet.setDuration(
                     getResources().getInteger(android.R.integer.config_longAnimTime));
@@ -685,7 +685,7 @@ public class Calculator extends Activity
             mResult.setScaleY(resultScale);
             mResult.setTranslationX(resultTranslationX);
             mResult.setTranslationY(resultTranslationY);
-            mFormulaEditText.setTranslationY(formulaTranslationY);
+            mFormulaText.setTranslationY(formulaTranslationY);
             setState(CalculatorState.RESULT);
         }
     }
@@ -700,9 +700,9 @@ public class Calculator extends Activity
         mResult.setScaleY(1.0f);
         mResult.setTranslationX(0.0f);
         mResult.setTranslationY(0.0f);
-        mFormulaEditText.setTranslationY(0.0f);
+        mFormulaText.setTranslationY(0.0f);
 
-        mFormulaEditText.requestFocus();
+        mFormulaText.requestFocus();
      }
 
     @Override

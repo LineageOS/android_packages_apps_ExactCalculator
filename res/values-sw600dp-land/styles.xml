@@ -18,7 +18,7 @@
 <!-- Styles for landscape 600dip-wide tablet (e.g. Nexus 7). -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="DisplayEditTextStyle.Formula">
+    <style name="DisplayTextStyle.Formula">
         <item name="android:paddingTop">0dip</item>
         <item name="android:paddingBottom">52dip</item>
         <item name="android:paddingStart">44dip</item>
