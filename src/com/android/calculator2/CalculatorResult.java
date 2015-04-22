@@ -88,7 +88,6 @@ public class CalculatorResult extends TextView {
                             // width font.  But it appears to be close
                             // enough for the characters we use that
                             // the difference is not noticeable.
-    private Paint mPaint;   // Paint object matching display.
     private static final int MAX_WIDTH = 100;
                             // Maximum number of digits displayed
 
@@ -154,7 +153,6 @@ public class CalculatorResult extends TextView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        mPaint = getPaint();
         char testChar = KeyMaps.translateResult("5").charAt(0);
         // TODO: Redo on Locale change?  Doesn't seem to matter?
         // We try to determine the maximal size of a digit plus
@@ -173,7 +171,8 @@ public class CalculatorResult extends TextView {
                 MeasureSpec.getSize(widthMeasureSpec)
                 - getPaddingLeft() - getPaddingRight();
         final int newCharWidth =
-                (int)Math.ceil(mPaint.measureText(sb.toString()) / MAX_WIDTH);
+                (int)Math.ceil(getPaint().measureText(sb.toString())
+                               / MAX_WIDTH);
         synchronized(mWidthLock) {
             mWidthConstraint = newWidthConstraint;
             mCharWidth = newCharWidth;
@@ -191,7 +190,7 @@ public class CalculatorResult extends TextView {
         synchronized(mWidthLock) {
             mCurrentPos = initPrec * mCharWidth;
         }
-        mMinPos = - (int) Math.ceil(mPaint.measureText(truncatedWholePart));
+        mMinPos = - (int) Math.ceil(getPaint().measureText(truncatedWholePart));
         redisplay();
     }
 
