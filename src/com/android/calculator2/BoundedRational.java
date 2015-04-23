@@ -65,7 +65,7 @@ public class BoundedRational {
     // Output to user, more expensive, less useful for debugging
     // Not internationalized.
     public String toNiceString() {
-        BoundedRational nicer = reduce().positive_den();
+        BoundedRational nicer = reduce().positiveDen();
         String result = nicer.mNum.toString();
         if (!nicer.mDen.equals(BigInteger.ONE)) {
             result += "/" + nicer.mDen;
@@ -93,7 +93,7 @@ public class BoundedRational {
     }
 
     // return an equivalent fraction with a positive denominator.
-    private BoundedRational positive_den() {
+    private BoundedRational positiveDen() {
         if (mDen.compareTo(BigInteger.ZERO) > 0) return this;
         return new BoundedRational(mNum.negate(), mDen.negate());
     }
@@ -109,7 +109,7 @@ public class BoundedRational {
     // Return null if none exists.
     private BoundedRational maybeReduce() {
         if (!tooBig()) return this;
-        BoundedRational result = positive_den();
+        BoundedRational result = positiveDen();
         if (!result.tooBig()) return this;
         result = result.reduce();
         if (!result.tooBig()) return this;
@@ -186,7 +186,7 @@ public class BoundedRational {
         // Return non-null if numerator and denominator are small perfect
         // squares.
         if (r == null) return null;
-        r = r.positive_den().reduce();
+        r = r.positiveDen().reduce();
         if (r.mNum.compareTo(BigInteger.ZERO) < 0) {
             throw new ArithmeticException("sqrt(negative)");
         }
@@ -384,19 +384,20 @@ public class BoundedRational {
             return new BoundedRational(1);
         }
         if (base == null) return null;
-        exp = exp.reduce().positive_den();
+        exp = exp.reduce().positiveDen();
         if (!exp.mDen.equals(BigInteger.ONE)) return null;
         return base.pow(exp.mNum);
     }
 
     public static BoundedRational ln(BoundedRational r) {
-        if (r != null && r.signum() < 0) {
-            throw new ArithmeticException("log(negative)");
+        if (r != null && r.signum() <= 0) {
+            throw new ArithmeticException("log(non-positive)");
         }
         return map1to0(r);
     }
 
     // Return the base 10 log of n, if n is a power of 10, -1 otherwise.
+    // n must be positive.
     private static long b10Log(BigInteger n) {
         // This algorithm is very naive, but we doubt it matters.
         long count = 0;
@@ -412,10 +413,10 @@ public class BoundedRational {
 
     public static BoundedRational log(BoundedRational r) {
         if (r == null) return null;
-        if (r.signum() < 0) {
-            throw new ArithmeticException("log(negative)");
+        if (r.signum() <= 0) {
+            throw new ArithmeticException("log(non-positive)");
         }
-        r = r.reduce();
+        r = r.reduce().positiveDen();
         if (r == null) return null;
         if (r.mDen.equals(BigInteger.ONE)) {
             long log = b10Log(r.mNum);
