@@ -170,10 +170,16 @@ public class BoundedRational {
         return new BoundedRational(num,den).maybeReduce();
     }
 
+    public static class ZeroDivisionException extends ArithmeticException {
+        public ZeroDivisionException() {
+            super("Division by zero");
+        }
+    }
+
     static BoundedRational inverse(BoundedRational r) {
         if (r == null) return null;
         if (r.mNum.equals(BigInteger.ZERO)) {
-            throw new ArithmeticException("Divide by Zero");
+            throw new ZeroDivisionException();
         }
         return new BoundedRational(r.mDen, r.mNum);
     }

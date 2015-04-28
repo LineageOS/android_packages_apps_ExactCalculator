@@ -149,7 +149,7 @@ public class CalculatorText extends TextView implements View.OnLongClickListener
 
     @Override
     public boolean onLongClick(View v) {
-        startActionMode(mPasteActionModeCallback);
+        startActionMode(mPasteActionModeCallback, ActionMode.TYPE_FLOATING);
         return true;
     }
 

@@ -343,7 +343,6 @@ class Evaluator {
         protected InitialResult doInBackground(Void... nothing) {
             try {
                 CalculatorExpr.EvalResult res = mExpr.eval(mDm);
-                if (res == null) return null;
                 int prec = 3;  // Enough for short representation
                 String initCache = res.mVal.toString(prec);
                 int msd = getMsdPos(initCache);
@@ -365,6 +364,10 @@ class Evaluator {
                                          initCache, prec, initDisplayPrec);
             } catch (CalculatorExpr.SyntaxError e) {
                 return new InitialResult(R.string.error_syntax);
+            } catch (BoundedRational.ZeroDivisionException e) {
+                // Division by zero caught by BoundedRational;
+                // the easy and more common case.
+                return new InitialResult(R.string.error_zero_divide);
             } catch(ArithmeticException e) {
                 return new InitialResult(R.string.error_nan);
             } catch(PrecisionOverflowError e) {

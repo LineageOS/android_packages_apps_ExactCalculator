@@ -239,19 +239,18 @@ public class Calculator extends Activity
                     mEvaluator.clear();
                 }
             }
+        } else {
+            mCurrentState = CalculatorState.INPUT;
+            mEvaluator.clear();
         }
         mFormulaText.setOnKeyListener(mFormulaOnKeyListener);
         mFormulaText.setOnTextSizeChangeListener(this);
         mFormulaText.setPasteListener(this);
         mDeleteButton.setOnLongClickListener(this);
         updateDegreeMode(mEvaluator.getDegreeMode());
-        if (mCurrentState == CalculatorState.EVALUATE) {
-            // Odd case.  Evaluation probably took a long time.  Let user ask for it again
-            mCurrentState = CalculatorState.INPUT;
-            // TODO: This can happen if the user rotates the screen.
-            // Is this rotate-to-abort behavior correct?  Revisit after experimentation.
-        }
         if (mCurrentState != CalculatorState.INPUT) {
+            // Just reevaluate.
+            redisplayFormula();
             setState(CalculatorState.INIT);
             mEvaluator.requireResult();
         } else {
@@ -607,19 +606,20 @@ public class Calculator extends Activity
 
     // Evaluation encountered en error.  Display the error.
     void onError(final int errorResourceId) {
-        if (mCurrentState != CalculatorState.EVALUATE) {
-            // Only animate error on evaluate.
-            return;
+        if (mCurrentState == CalculatorState.EVALUATE) {
+            setState(CalculatorState.ANIMATE);
+            reveal(mCurrentButton, R.color.calculator_error_color,
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                           setState(CalculatorState.ERROR);
+                           mResult.displayError(errorResourceId);
+                        }
+                    });
+        } else if (mCurrentState == CalculatorState.INIT) {
+            setState(CalculatorState.ERROR);
+            mResult.displayError(errorResourceId);
         }
-
-        setState(CalculatorState.ANIMATE);
-        reveal(mCurrentButton, R.color.calculator_error_color, new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                setState(CalculatorState.ERROR);
-                mResult.displayError(errorResourceId);
-            }
-        });
     }
 
 

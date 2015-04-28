@@ -396,7 +396,23 @@ class CalculatorExpr {
     // TODO: We probably only need this for expressions consisting of
     // a single PreEval "token", and may want to check that.
     void append(CalculatorExpr expr2) {
+        // Check that we're not concatenating Constant or PreEval
+        // tokens, since the result would look like a single constant
+        int s = mExpr.size();
         int s2 = expr2.mExpr.size();
+        // Check that we're not concatenating Constant or PreEval
+        // tokens, since the result would look like a single constant,
+        // with very mysterious results for the user.
+        if (s != 0 && s2 != 0) {
+            Token last = mExpr.get(s-1);
+            Token first = expr2.mExpr.get(0);
+            if (!(first instanceof Operator) && !(last instanceof Operator)) {
+                // Fudge it by adding an explicit multiplication.
+                // We would have interpreted it as such anyway, and this
+                // makes it recognizable to the user.
+                mExpr.add(new Operator(R.id.op_mul));
+            }
+        }
         for (int i = 0; i < s2; ++i) {
             mExpr.add(expr2.mExpr.get(i));
         }
@@ -558,12 +574,22 @@ class CalculatorExpr {
         case R.id.const_e:
             return new EvalRet(i+1, CR.valueOf(1).exp(), null);
         case R.id.op_sqrt:
-            // Seems to have highest precedence
-            // Does not add implicit paren
-            argVal = evalUnary(i+1, ec);
-            ratVal = BoundedRational.sqrt(argVal.mRatVal);
-            if (ratVal != null) break;
-            return new EvalRet(argVal.mPos, argVal.mVal.sqrt(), null);
+            // Seems to have highest precedence.
+            // Does not add implicit paren.
+            // Does seem to accept a leading minus.
+            if (isOperator(i+1, R.id.op_sub)) {
+                argVal = evalUnary(i+2, ec);
+                ratVal = BoundedRational.sqrt(
+                                BoundedRational.negate(argVal.mRatVal));
+                if (ratVal != null) break;
+                return new EvalRet(argVal.mPos,
+                                   argVal.mVal.negate().sqrt(), null);
+            } else {
+                argVal = evalUnary(i+1, ec);
+                ratVal = BoundedRational.sqrt(argVal.mRatVal);
+                if (ratVal != null) break;
+                return new EvalRet(argVal.mPos, argVal.mVal.sqrt(), null);
+            }
         case R.id.lparen:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
@@ -832,7 +858,9 @@ class CalculatorExpr {
         try {
             EvalContext ec = new EvalContext(degreeMode);
             EvalRet res = evalExpr(0, ec);
-            if (res.mPos != mExpr.size()) return null;
+            if (res.mPos != mExpr.size()) {
+                throw new SyntaxError("Failed to parse full expression");
+            }
             return new EvalResult(res.mVal, res.mRatVal);
         } catch (IndexOutOfBoundsException e) {
             throw new SyntaxError("Unexpected expression end");

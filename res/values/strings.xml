@@ -22,12 +22,14 @@
 
     <!-- Error displayed when expression evaluates a function at undefined point. [CHAR_LIMIT=14] -->
     <string name="error_nan">Not a number</string>
-    <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=14] -->
-    <string name="error_syntax">Malformed expression</string>
-    <!-- Error displayed when evaluation is manually aborted. [CHAR_LIMIT=14] -->
+    <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=16] -->
+    <string name="error_syntax">Bad expression</string>
+    <!-- Error displayed when evaluation is manually aborted. [CHAR_LIMIT=16] -->
     <string name="error_aborted">Aborted</string>
-    <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=14] -->
+    <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=16] -->
     <string name="error_overflow">Infinite?</string>
+    <!-- Error displayed when we diagnose a division by zero.  [CHAR_LIMIT=16] -->
+    <string name="error_zero_divide">Division by 0</string>
 
     <!-- Decimal separator (e.g. "1.23"). [CHAR_LIMIT=1] -->
     <string name="dec_point">.</string>
@@ -142,7 +144,6 @@
     <!-- Toast shown when text is copied to the clipboard. -->
     <string name="text_copied_toast">Text copied.</string>
 
-    <!-- TODO: Revisit everything below here -->
     <!-- Displayed briefly to indicate not-yet-computed digit. -->
     <string name="guessed_digit">"?"</string>
     <!-- Dialog message when a computation is cancelled by the user. -->
@@ -150,17 +151,17 @@
     <!-- Button label to dismiss informative text message. -->
     <string name="dismiss">Dismiss</string>
     <!-- Dialog message when a computation times out. -->
-    <string name="timeout">Timed out trying to compute an infinite or huge number</string>
+    <string name="timeout">That\'s too hard! Undefined or infinite value?</string>
     <!-- Button label for "remove timeout" button. -->
     <string name="ok_remove_timeout">OK, but longer timeouts, please!</string>
     <!-- Help menu entry for context menu. -->
-    <string name="help">Help!</string>
+    <string name="help">Help</string>
     <!-- Content description for overflow menu button. -->
     <string name="overflow_menu_description">overflow menu</string>
     <!-- The help message that's displayed in response to pushing the above button. -->
     <string name="help_message">Use the keys to enter a standard arithmetic expression. It\'s fine to omit multiplication symbols and trailing parentheses.  Long press delete key to clear. Drag the display to see more digits.\n\nComputations involving infinite values may take forever.  Wait for the timeout or touch a button to terminate computation.</string>
     <!-- Help message addendum for pager. -->
-    <string name="help_pager">\n\nSwipe the keyboard to the left to see additional functions.</string>
+    <string name="help_pager">\n\nSwipe the operator pad to the left to see additional functions.</string>
     <!-- About menu entry; leads mostly to (English language!) copyright notice.  -->
     <string name="about">About &amp; Copyright</string>
     <!-- Overflow menu entry to display result including leading digits. -->

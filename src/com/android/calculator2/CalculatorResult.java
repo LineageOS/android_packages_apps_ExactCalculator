@@ -107,8 +107,9 @@ public class CalculatorResult extends TextView {
                         mCurrentPos = mScroller.getFinalX();
                     }
                     mScroller.forceFinished(true);
-                    CalculatorResult.this.cancelLongPress();                                        // Ignore scrolls of error string, etc.
-                        if (!mScrollable) return true;
+                    CalculatorResult.this.cancelLongPress();
+                    // Ignore scrolls of error string, etc.
+                    if (!mScrollable) return true;
                     mScroller.fling(mCurrentPos, 0, - (int) velocityX,
                                     0  /* horizontal only */, mMinPos,
                                     MAX_RIGHT_SCROLL, 0, 0);
@@ -134,7 +135,8 @@ public class CalculatorResult extends TextView {
                 }
                 @Override
                 public void onLongPress(MotionEvent e) {
-                    startActionMode(mCopyActionModeCallback);
+                    startActionMode(mCopyActionModeCallback,
+                                    ActionMode.TYPE_FLOATING);
                 }
             });
         setOnTouchListener(mTouchListener);
