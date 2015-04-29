@@ -63,6 +63,18 @@
 // of a result that has this property and additionally is computed to
 // a significantly higher precision.  Thus we almost always round correctly
 // towards zero.  (Fully correct rounding towards zero is not computable.)
+//
+// Initial expression evaluation may time out.  This may happen in the
+// case of domain errors such as division by zero, or for large computations.
+// We do not currently time out reevaluations to higher precision, since
+// the original evaluation prevcluded a domain error that could result
+// in non-termination.  (We may discover that a presumed zero result is
+// actually slightly negative when re-evaluated; but that results in an
+// exception, which we can handle.)  The user can abort either kind
+// of computation.
+//
+// We ensure that only one evaluation of either kind (AsyncReevaluator
+// or AsyncDisplayResult) is running at a time.
 
 package com.android.calculator2;
 
@@ -124,7 +136,6 @@ class Evaluator {
     private final char decimalPt =
                 DecimalFormatSymbols.getInstance().getDecimalSeparator();
 
-    private static final int MAX_DIGITS = 100;  // Max digits displayed at once.
     private static final int EXTRA_DIGITS = 20;
                 // Extra computed digits to minimize probably we will have
                 // to change our minds about digits we already displayed.
@@ -171,6 +182,11 @@ class Evaluator {
     private AsyncDisplayResult mEvaluator;
         // Currently running expression evaluator, if any.
 
+    private boolean mChangedValue;
+        // Last insertion or deletion may have changed the display value
+        // of the expression.
+        // We handle deletions very conservatively.
+
     Evaluator(Calculator calculator,
               CalculatorResult resultDisplay) {
         mCalculator = calculator;
@@ -216,7 +232,10 @@ class Evaluator {
         protected void onPostExecute(ReevalResult result) {
             if (result == null) {
                 // This should only be possible in the extremely rare
-                // case of encountering a domain error while reevaluating.
+                // case of encountering a domain error while reevaluating
+                // or in case of a precision overflow.  We don't know of
+                // a way to get the latter with a plausible amount of
+                // user input.
                 mCalculator.onError(R.string.error_nan);
             } else {
                 if (result.mNewCacheDigs < mCacheDigs) {
@@ -262,13 +281,14 @@ class Evaluator {
     }
 
     private void displayCancelledMessage() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mCalculator);
-        builder.setMessage(R.string.cancelled);
-        builder.setPositiveButton(android.R.string.ok,
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface d, int which) { }
-            });
-        builder.create();
+        new AlertDialog.Builder(mCalculator)
+            .setMessage(R.string.cancelled)
+            .setPositiveButton(android.R.string.ok,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface d, int which) { }
+                })
+            .create()
+            .show();
     }
 
     private final long MAX_TIMEOUT = 60000;
@@ -278,45 +298,34 @@ class Evaluator {
     private long mTimeout = 2000;  // Timeout for requested evaluations,
                                    // in milliseconds.
                                    // This is currently not saved and restored
-                                   // with the state; we initially
-                                   // reenable the timeout when the
+                                   // with the state; we reset
+                                   // the timeout when the
                                    // calculator is restarted.
                                    // We'll call that a feature; others
                                    // might argue it's a bug.
-    private final long mQuickTimeout = 50;
+    private final long mQuickTimeout = 1500;
                                    // Timeout for unrequested, speculative
                                    // evaluations, in milliseconds.
+                                   // Could be shorter with a faster asin()
+                                   // implementation.
 
     private void displayTimeoutMessage() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mCalculator);
-        builder.setMessage(R.string.timeout);
-        builder.setNegativeButton(android.R.string.ok,
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface d, int which) { }
-            });
-        builder.setPositiveButton(R.string.ok_remove_timeout,
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface d, int which) {
-                    mTimeout = MAX_TIMEOUT;
-                }
-            });
-        builder.create().show();
+        AlertDialog.Builder b = new AlertDialog.Builder(mCalculator);
+        b.setMessage(R.string.timeout)
+         .setNegativeButton(android.R.string.ok,
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface d, int which) { }
+                    });
+        if (mTimeout != MAX_TIMEOUT) {
+            b.setPositiveButton(R.string.ok_remove_timeout,
+                   new DialogInterface.OnClickListener() {
+                       public void onClick(DialogInterface d, int which) {
+                           mTimeout = MAX_TIMEOUT;
+                       }
+                   });
+        }
+        b.create().show();
     }
-
-    final Runnable mTimeoutRunnable = new Runnable () {
-        public void run () {
-            if (cancelAll()) {
-                displayTimeoutMessage();
-            }
-        }
-    };
-
-    final Runnable mQuickTimeoutRunnable = new Runnable () {
-        public void run () {
-            // Quietly cancel; we didn't really need it.
-            cancelAll();
-        }
-    };
 
     // Compute initial cache contents and result when we're good and ready.
     // We leave the expression display up, with scrolling
@@ -326,23 +335,43 @@ class Evaluator {
     class AsyncDisplayResult extends AsyncTask<Void, Void, InitialResult> {
         private boolean mDm;  // degrees
         private boolean mRequired; // Result was requested by user.
+        private boolean mTimedOut = false;
+        private Runnable mTimeoutRunnable = null;
         AsyncDisplayResult(boolean dm, boolean required) {
             mDm = dm;
             mRequired = required;
+        }
+        private void handleTimeOut() {
+            boolean running = (getStatus() != AsyncTask.Status.FINISHED);
+            if (running && cancel(true)) {
+                mEvaluator = null;
+                // Replace mExpr with clone to avoid races if task
+                // still runs for a while.
+                mExpr = (CalculatorExpr)mExpr.clone();
+                mTimedOut = true;
+                if (mRequired) {
+                    displayTimeoutMessage();
+                }
+            }
         }
         @Override
         protected void onPreExecute() {
             long timeout = mRequired ? mTimeout : mQuickTimeout;
             if (timeout != 0) {
-                mTimeoutHandler.postDelayed(
-                    (mRequired ? mTimeoutRunnable : mQuickTimeoutRunnable),
-                    timeout);
+                mTimeoutRunnable = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            handleTimeOut();
+                                        }
+                                    };
+                mTimeoutHandler.postDelayed(mTimeoutRunnable, timeout);
+                mTimedOut = false;
             }
         }
         @Override
         protected InitialResult doInBackground(Void... nothing) {
             try {
-                CalculatorExpr.EvalResult res = mExpr.eval(mDm);
+                CalculatorExpr.EvalResult res = mExpr.eval(mDm, mRequired);
                 int prec = 3;  // Enough for short representation
                 String initCache = res.mVal.toString(prec);
                 int msd = getMsdPos(initCache);
@@ -362,7 +391,7 @@ class Evaluator {
                 }
                 return new InitialResult(res.mVal, res.mRatVal,
                                          initCache, prec, initDisplayPrec);
-            } catch (CalculatorExpr.SyntaxError e) {
+            } catch (CalculatorExpr.SyntaxException e) {
                 return new InitialResult(R.string.error_syntax);
             } catch (BoundedRational.ZeroDivisionException e) {
                 // Division by zero caught by BoundedRational;
@@ -414,8 +443,9 @@ class Evaluator {
         }
         @Override
         protected void onCancelled(InitialResult result) {
-            mTimeoutHandler.removeCallbacks(mTimeoutRunnable);
-            displayCancelledMessage();
+            if (mRequired && !mTimedOut) {
+                displayCancelledMessage();
+            } // Otherwise timeout processing displayed message.
             mCalculator.onCancelled();
             // Just drop the evaluation; Leave expression displayed.
             return;
@@ -659,26 +689,35 @@ class Evaluator {
         clearCache();
     }
 
-    // Begin evaluation of result and display when ready
+    // Begin evaluation of result and display when ready.
+    // We assume this is called after each insertion and deletion.
+    // Thus if we are called twice with the same effective end of
+    // the formula, the evaluation is redundant.
     void evaluateAndShowResult() {
-        if (mEvaluator == null) {
-            clearCache();
-            mEvaluator = new AsyncDisplayResult(mDegreeMode, false);
-            mEvaluator.execute();
-        } // else already in progress
+        if (!mChangedValue) {
+            // Already done or in progress.
+            return;
+        }
+        cancelAll();
+        clearCache();
+        mEvaluator = new AsyncDisplayResult(mDegreeMode, false);
+        mEvaluator.execute();
     }
 
     // Ensure that we either display a result or complain.
     // Does not invalidate a previously computed cache.
+    // We presume that any prior result was computed using the same
+    // expression.
     void requireResult() {
-        if (mCache == null) {
+        if (mCache == null || mExpr.hasTrailingOperators()) {
             // Restart evaluator in requested mode, i.e. with
-            // longer timeout.
+            // longer timeout, not ignoring trailing operators.
             cancelAll();
+            clearCache();
             mEvaluator = new AsyncDisplayResult(mDegreeMode, true);
             mEvaluator.execute();
         } else {
-            // Notify immediately.
+            // Notify immediately, reusing existing result.
             int dotPos = mCache.indexOf('.');
             String truncatedWholePart = mCache.substring(0, dotPos);
             mCalculator.onEvaluate(mLastDigs,truncatedWholePart);
@@ -736,14 +775,23 @@ class Evaluator {
     }
 
     // Append a button press to the current expression.
-    // Return false if we rejected the addition due to obvious
+    // Return false if we rejected the insertion due to obvious
     // syntax issues, and the expression is unchanged.
     // Return true otherwise.
     boolean append(int id) {
+        mChangedValue = (KeyMaps.digVal(id) != KeyMaps.NOT_DIGIT
+                        || KeyMaps.isSuffix(id)
+                        || id == R.id.const_pi || id == R.id.const_e);
         return mExpr.add(id);
     }
 
+    void delete() {
+        mChangedValue = true;
+        mExpr.delete();
+    }
+
     void setDegreeMode(boolean degrees) {
+        mChangedValue = true;
         mDegreeMode = degrees;
     }
 

@@ -23,6 +23,7 @@ import com.hp.creals.PrecisionOverflowError;
 import com.hp.creals.AbortedError;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.math.BigInteger;
 import java.io.DataInput;
@@ -273,7 +274,7 @@ class CalculatorExpr {
             PreEval prev = inMap.get().get(index);
             if (prev == null) {
                 mExpr = new CalculatorExpr(in);
-                mContext = new EvalContext(in);
+                mContext = new EvalContext(in, mExpr.mExpr.size());
                 // Recompute other fields
                 // We currently do this in the UI thread, but we
                 // only create PreEval expressions that were
@@ -282,7 +283,14 @@ class CalculatorExpr {
                 // constructive real, which involves substantial
                 // work only in fairly contrived circumstances.
                 // TODO: Deal better with slow evaluations.
-                EvalRet res = mExpr.evalExpr(0,mContext);
+                EvalRet res = null;
+                try {
+                    res = mExpr.evalExpr(0, mContext);
+                } catch (SyntaxException e) {
+                    // Should be impossible, since we only write out
+                    // expressions that can be evaluated.
+                    Log.e("Calculator", "Unexpected syntax exception" + e);
+                }
                 mValue = res.mVal;
                 mRatValue = res.mRatVal;
                 mShortRep = in.readUTF();
@@ -358,7 +366,7 @@ class CalculatorExpr {
         boolean binary = KeyMaps.isBinary(id);
         if (s == 0 && binary && id != R.id.op_sub) return false;
         if (binary && hasTrailingBinary()
-            && (id != R.id.op_sub || isOperator(s-1, R.id.op_sub))) {
+            && (id != R.id.op_sub || isOperatorUnchecked(s-1, R.id.op_sub))) {
             return false;
         }
         boolean isConstPiece = (d != KeyMaps.NOT_DIGIT || id == R.id.dec_point);
@@ -471,7 +479,7 @@ class CalculatorExpr {
         Token t = new PreEval(val, ratVal,
                               new CalculatorExpr(
                                         (ArrayList<Token>)mExpr.clone()),
-                              new EvalContext(dm), sr);
+                              new EvalContext(dm, mExpr.size()), sr);
         result.mExpr.add(t);
         return result;
     }
@@ -493,15 +501,17 @@ class CalculatorExpr {
 
     // And take a context argument:
     private static class EvalContext {
-        // Memory register contents are not included here,
-        // since we now make that an explicit part of the expression
+        public final int mPrefixLength; // Length of prefix to evaluate.
+                            // Not explicitly saved.
+        public final boolean mDegreeMode;
         // If we add any other kinds of evaluation modes, they go here.
-        boolean mDegreeMode;
-        EvalContext(boolean degreeMode) {
+        EvalContext(boolean degreeMode, int len) {
             mDegreeMode = degreeMode;
+            mPrefixLength = len;
         }
-        EvalContext(DataInput in) throws IOException {
+        EvalContext(DataInput in, int len) throws IOException {
             mDegreeMode = in.readBoolean();
+            mPrefixLength = len;
         }
         void write(DataOutput out) throws IOException {
             out.writeBoolean(mDegreeMode);
@@ -532,18 +542,22 @@ class CalculatorExpr {
     // in the event of a syntax error.  We expect that to be caught in
     // eval below.
 
-    private boolean isOperator(int i, int op) {
-        if (i >= mExpr.size()) return false;
+    private boolean isOperatorUnchecked(int i, int op) {
         Token t = mExpr.get(i);
         if (!(t instanceof Operator)) return false;
         return ((Operator)(t)).mId == op;
     }
 
-    static class SyntaxError extends Error {
-        public SyntaxError() {
+    private boolean isOperator(int i, int op, EvalContext ec) {
+        if (i >= ec.mPrefixLength) return false;
+        return isOperatorUnchecked(i, op);
+    }
+
+    static class SyntaxException extends Exception {
+        public SyntaxException() {
             super();
         }
-        public SyntaxError(String s) {
+        public SyntaxException(String s) {
             super(s);
         }
     }
@@ -553,8 +567,7 @@ class CalculatorExpr {
     // They return both the expression value (as constructive real and,
     // if applicable, as BigInteger) and the position of the next token
     // that was not used as part of the evaluation.
-    private EvalRet evalUnary(int i, EvalContext ec)
-                    throws ArithmeticException {
+    private EvalRet evalUnary(int i, EvalContext ec) throws SyntaxException {
         Token t = mExpr.get(i);
         CR value;
         if (t instanceof Constant) {
@@ -577,7 +590,7 @@ class CalculatorExpr {
             // Seems to have highest precedence.
             // Does not add implicit paren.
             // Does seem to accept a leading minus.
-            if (isOperator(i+1, R.id.op_sub)) {
+            if (isOperator(i+1, R.id.op_sub, ec)) {
                 argVal = evalUnary(i+2, ec);
                 ratVal = BoundedRational.sqrt(
                                 BoundedRational.negate(argVal.mRatVal));
@@ -592,11 +605,11 @@ class CalculatorExpr {
             }
         case R.id.lparen:
             argVal = evalExpr(i+1, ec);
-            if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
             return new EvalRet(argVal.mPos, argVal.mVal, argVal.mRatVal);
         case R.id.fun_sin:
             argVal = evalExpr(i+1, ec);
-            if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
             ratVal = ec.mDegreeMode ? BoundedRational.degreeSin(argVal.mRatVal)
                                      : BoundedRational.sin(argVal.mRatVal);
             if (ratVal != null) break;
@@ -604,7 +617,7 @@ class CalculatorExpr {
                     toRadians(argVal.mVal,ec).sin(), null);
         case R.id.fun_cos:
             argVal = evalExpr(i+1, ec);
-            if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
             ratVal = ec.mDegreeMode ? BoundedRational.degreeCos(argVal.mRatVal)
                                      : BoundedRational.cos(argVal.mRatVal);
             if (ratVal != null) break;
@@ -612,7 +625,7 @@ class CalculatorExpr {
                     toRadians(argVal.mVal,ec).cos(), null);
         case R.id.fun_tan:
             argVal = evalExpr(i+1, ec);
-            if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
             ratVal = ec.mDegreeMode ? BoundedRational.degreeTan(argVal.mRatVal)
                                      : BoundedRational.tan(argVal.mRatVal);
             if (ratVal != null) break;
@@ -621,13 +634,13 @@ class CalculatorExpr {
                     argCR.sin().divide(argCR.cos()), null);
         case R.id.fun_ln:
             argVal = evalExpr(i+1, ec);
-            if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
             ratVal = BoundedRational.ln(argVal.mRatVal);
             if (ratVal != null) break;
             return new EvalRet(argVal.mPos, argVal.mVal.ln(), null);
         case R.id.fun_log:
             argVal = evalExpr(i+1, ec);
-            if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
             ratVal = BoundedRational.log(argVal.mRatVal);
             if (ratVal != null) break;
             return new EvalRet(argVal.mPos,
@@ -635,7 +648,7 @@ class CalculatorExpr {
                                null);
         case R.id.fun_arcsin:
             argVal = evalExpr(i+1, ec);
-            if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
             ratVal = ec.mDegreeMode ? BoundedRational.degreeAsin(argVal.mRatVal)
                                      : BoundedRational.asin(argVal.mRatVal);
             if (ratVal != null) break;
@@ -645,7 +658,7 @@ class CalculatorExpr {
                                null);
         case R.id.fun_arccos:
             argVal = evalExpr(i+1, ec);
-            if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
             ratVal = ec.mDegreeMode ? BoundedRational.degreeAcos(argVal.mRatVal)
                                      : BoundedRational.acos(argVal.mRatVal);
             if (ratVal != null) break;
@@ -655,7 +668,7 @@ class CalculatorExpr {
                                null);
         case R.id.fun_arctan:
             argVal = evalExpr(i+1, ec);
-            if (isOperator(argVal.mPos, R.id.rparen)) argVal.mPos++;
+            if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
             ratVal = ec.mDegreeMode ? BoundedRational.degreeAtan(argVal.mRatVal)
                                      : BoundedRational.atan(argVal.mRatVal);
             if (ratVal != null) break;
@@ -664,7 +677,7 @@ class CalculatorExpr {
                                    .atanFunction.execute(argVal.mVal),ec),
                                null);
         default:
-            throw new SyntaxError("Unrecognized token in expression");
+            throw new SyntaxException("Unrecognized token in expression");
         }
         // We have a rational value.
         return new EvalRet(argVal.mPos, ratVal.CRValue(), ratVal);
@@ -697,12 +710,12 @@ class CalculatorExpr {
         return appr.and(MASK).signum() == 0;
     }
 
-    private EvalRet evalFactorial(int i, EvalContext ec) {
+    private EvalRet evalFactorial(int i, EvalContext ec) throws SyntaxException {
         EvalRet tmp = evalUnary(i, ec);
         int cpos = tmp.mPos;
         CR cval = tmp.mVal;
         BoundedRational ratVal = tmp.mRatVal;
-        while (isOperator(cpos, R.id.op_fact)) {
+        while (isOperator(cpos, R.id.op_fact, ec)) {
             if (ratVal == null) {
                 // Assume it was an integer, but we
                 // didn't figure it out.
@@ -719,13 +732,12 @@ class CalculatorExpr {
         return new EvalRet(cpos, cval, ratVal);
     }
 
-    private EvalRet evalFactor(int i, EvalContext ec)
-                    throws ArithmeticException {
+    private EvalRet evalFactor(int i, EvalContext ec) throws SyntaxException {
         final EvalRet result1 = evalFactorial(i, ec);
         int cpos = result1.mPos;  // current position
         CR cval = result1.mVal;   // value so far
         BoundedRational ratVal = result1.mRatVal;  // int value so far
-        if (isOperator(cpos, R.id.op_pow)) {
+        if (isOperator(cpos, R.id.op_pow, ec)) {
             final EvalRet exp = evalSignedFactor(cpos+1, ec);
             cpos = exp.mPos;
             // Try completely rational evaluation first.
@@ -748,9 +760,8 @@ class CalculatorExpr {
         return new EvalRet(cpos, cval, ratVal);
     }
 
-    private EvalRet evalSignedFactor(int i, EvalContext ec)
-                    throws ArithmeticException {
-        final boolean negative = isOperator(i, R.id.op_sub);
+    private EvalRet evalSignedFactor(int i, EvalContext ec) throws SyntaxException {
+        final boolean negative = isOperator(i, R.id.op_sub, ec);
         int cpos = negative ? i + 1 : i;
         EvalRet tmp = evalFactor(cpos, ec);
         cpos = tmp.mPos;
@@ -775,16 +786,15 @@ class CalculatorExpr {
         }
     }
 
-    private EvalRet evalTerm(int i, EvalContext ec)
-                    throws ArithmeticException {
+    private EvalRet evalTerm(int i, EvalContext ec) throws SyntaxException {
         EvalRet tmp = evalSignedFactor(i, ec);
         boolean is_mul = false;
         boolean is_div = false;
         int cpos = tmp.mPos;   // Current position in expression.
         CR cval = tmp.mVal;    // Current value.
         BoundedRational ratVal = tmp.mRatVal; // Current rational value.
-        while ((is_mul = isOperator(cpos, R.id.op_mul))
-               || (is_div = isOperator(cpos, R.id.op_div))
+        while ((is_mul = isOperator(cpos, R.id.op_mul, ec))
+               || (is_div = isOperator(cpos, R.id.op_div, ec))
                || canStartFactor(cpos)) {
             if (is_mul || is_div) ++cpos;
             tmp = evalSignedFactor(cpos, ec);
@@ -809,14 +819,14 @@ class CalculatorExpr {
         return new EvalRet(cpos, cval, ratVal);
     }
 
-    private EvalRet evalExpr(int i, EvalContext ec) throws ArithmeticException {
+    private EvalRet evalExpr(int i, EvalContext ec) throws SyntaxException {
         EvalRet tmp = evalTerm(i, ec);
         boolean is_plus;
         int cpos = tmp.mPos;
         CR cval = tmp.mVal;
         BoundedRational ratVal = tmp.mRatVal;
-        while ((is_plus = isOperator(cpos, R.id.op_add))
-               || isOperator(cpos, R.id.op_sub)) {
+        while ((is_plus = isOperator(cpos, R.id.op_add, ec))
+               || isOperator(cpos, R.id.op_sub, ec)) {
             tmp = evalTerm(cpos+1, ec);
             if (is_plus) {
                 ratVal = BoundedRational.add(ratVal, tmp.mRatVal);
@@ -848,22 +858,63 @@ class CalculatorExpr {
         final BoundedRational mRatVal;
     }
 
+    // Return the starting position of the sequence of trailing operators
+    // that cannot be meaningfully evaluated.
+    private int trailingOpsStart() {
+        int result = mExpr.size();
+        while (result > 0) {
+            Token last = mExpr.get(result - 1);
+            if (!(last instanceof Operator)) break;
+            Operator o = (Operator)last;
+            if (KeyMaps.isSuffix(o.mId) || o.mId == R.id.const_pi
+                                        || o.mId == R.id.const_e) {
+                break;
+            }
+            --result;
+        }
+        return result;
+    }
+
+    public boolean hasTrailingOperators() {
+        return trailingOpsStart() != mExpr.size();
+    }
+
+    // Is the current expression worth evaluating?
+    public boolean hasInterestingOps() {
+        int last = trailingOpsStart();
+        int first = 0;
+        if (last > first && isOperatorUnchecked(first, R.id.op_sub)) {
+            // Leading minus is not by itself interesting.
+            first++;
+        }
+        for (int i = first; i < last; ++i) {
+            Token t1 = mExpr.get(i);
+            if (!(t1 instanceof Constant)) return true;
+            // We consider preevaluated expressions "interesting",
+            // since the evaluation will usually result in more precision
+            // than the "short representation".
+        }
+        return false;
+    }
+
     // Evaluate the entire expression, returning null in the event
     // of an error.
     // Not called from the UI thread, but should not be called
     // concurrently with modifications to the expression.
-    EvalResult eval(boolean degreeMode) throws SyntaxError,
-                        ArithmeticException, PrecisionOverflowError
+    EvalResult eval(boolean degreeMode, boolean required) throws SyntaxException
+                        // And unchecked exceptions thrown by CR
+                        // and BoundedRational.
     {
         try {
-            EvalContext ec = new EvalContext(degreeMode);
+            int prefixLen = required ? mExpr.size() : trailingOpsStart();
+            EvalContext ec = new EvalContext(degreeMode, prefixLen);
             EvalRet res = evalExpr(0, ec);
-            if (res.mPos != mExpr.size()) {
-                throw new SyntaxError("Failed to parse full expression");
+            if (res.mPos != prefixLen) {
+                throw new SyntaxException("Failed to parse full expression");
             }
             return new EvalResult(res.mVal, res.mRatVal);
         } catch (IndexOutOfBoundsException e) {
-            throw new SyntaxError("Unexpected expression end");
+            throw new SyntaxException("Unexpected expression end");
         }
     }
 

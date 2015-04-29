@@ -379,8 +379,11 @@ public class Calculator extends Activity
         // TODO: Could do this more incrementally.
         redisplayFormula();
         setState(CalculatorState.INPUT);
-        mResult.clear();
-        mEvaluator.evaluateAndShowResult();
+        if (mEvaluator.getExpr().hasInterestingOps()) {
+            mEvaluator.evaluateAndShowResult();
+        } else {
+            mResult.clear();
+        }
     }
 
     public void onButtonClick(View view) {
@@ -395,7 +398,6 @@ public class Calculator extends Activity
             onCancelled();
             return;
         }
-
 
         final int id = view.getId();
         switch (id) {
@@ -419,7 +421,9 @@ public class Calculator extends Activity
                 mEvaluator.setDegreeMode(mode);
                 setState(CalculatorState.INPUT);
                 mResult.clear();
-                mEvaluator.evaluateAndShowResult();
+                if (mEvaluator.getExpr().hasInterestingOps()) {
+                    mEvaluator.evaluateAndShowResult();
+                }
                 break;
             default:
                 addKeyToExpr(id);
@@ -472,6 +476,7 @@ public class Calculator extends Activity
         // We should be in EVALUATE state.
         // Display is still in input state.
         setState(CalculatorState.INPUT);
+        mResult.clear();
     }
 
     // Reevaluation completed; ask result to redisplay current value.
@@ -507,7 +512,7 @@ public class Calculator extends Activity
     }
 
     private void onEquals() {
-        if (mCurrentState == CalculatorState.INPUT) {
+        if (mCurrentState == CalculatorState.INPUT && !mEvaluator.getExpr().isEmpty()) {
             setState(CalculatorState.EVALUATE);
             mEvaluator.requireResult();
         }
@@ -526,10 +531,10 @@ public class Calculator extends Activity
             if (len > 0) {
                 mUnprocessedChars = mUnprocessedChars.substring(0, len-1);
             } else {
-                mEvaluator.getExpr().delete();
+                mEvaluator.delete();
             }
         } else {
-            mEvaluator.getExpr().delete();
+            mEvaluator.delete();
         }
         redisplayAfterFormulaChange();
     }
@@ -619,6 +624,8 @@ public class Calculator extends Activity
         } else if (mCurrentState == CalculatorState.INIT) {
             setState(CalculatorState.ERROR);
             mResult.displayError(errorResourceId);
+        } else {
+            mResult.clear();
         }
     }
 
