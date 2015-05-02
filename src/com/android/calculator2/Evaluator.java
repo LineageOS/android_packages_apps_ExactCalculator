@@ -859,6 +859,7 @@ class Evaluator {
     }
 
     void addSaved() {
+        mChangedValue = true;
         mExpr.append(mSaved);
     }
 
