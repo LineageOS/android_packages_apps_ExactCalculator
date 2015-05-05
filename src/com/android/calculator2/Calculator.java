@@ -40,14 +40,11 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -55,13 +52,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
-import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -72,7 +65,6 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroupOverlay;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -85,7 +77,6 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.IOException;
-import java.text.DecimalFormatSymbols;  // TODO: May eventually not need this here.
 
 public class Calculator extends Activity
         implements OnTextSizeChangeListener, OnLongClickListener, CalculatorText.PasteListener {
@@ -714,35 +705,37 @@ public class Calculator extends Activity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.overflow, menu);
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.activity_calculator, menu);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mCurrentState != CalculatorState.RESULT) {
-            menu.findItem(R.id.menu_fraction).setEnabled(false);
-            menu.findItem(R.id.menu_leading).setEnabled(false);
-        } else if (mEvaluator.getRational() == null) {
-            menu.findItem(R.id.menu_fraction).setEnabled(false);
-        }
+        super.onPrepareOptionsMenu(menu);
+
+        // Show the leading option when displaying a result.
+        menu.findItem(R.id.menu_leading).setVisible(mCurrentState == CalculatorState.RESULT);
+
+        // Show the fraction option when displaying a rational result.
+        menu.findItem(R.id.menu_fraction).setVisible(mCurrentState == CalculatorState.RESULT
+                && mEvaluator.getRational() != null);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_help:
-                displayHelpMessage();
-                return true;
-            case R.id.menu_about:
-                displayAboutPage();
+            case R.id.menu_leading:
+                displayFull();
                 return true;
             case R.id.menu_fraction:
                 displayFraction();
                 return true;
-            case R.id.menu_leading:
-                displayFull();
+            case R.id.menu_licenses:
+                startActivity(new Intent(this, Licenses.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -757,15 +750,6 @@ public class Calculator extends Activity
                         public void onClick(DialogInterface d, int which) { }
                     })
                .show();
-    }
-
-    private void displayHelpMessage() {
-        Resources res = getResources();
-        String msg = res.getString(R.string.help_message);
-        if (mPadViewPager != null) {
-            msg += res.getString(R.string.help_pager);
-        }
-        displayMessage(msg);
     }
 
     private void displayFraction() {
@@ -783,18 +767,6 @@ public class Calculator extends Activity
             msg += res.getString(R.string.approximate);
         }
         displayMessage(msg);
-    }
-
-    private void displayAboutPage() {
-        WebView wv = new WebView(this);
-        wv.loadUrl("file:///android_asset/about.txt");
-        new AlertDialog.Builder(this)
-                .setView(wv)
-                .setNegativeButton(R.string.dismiss,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface d, int which) { }
-                    })
-                .show();
     }
 
     // Add input characters to the end of the expression by mapping them to

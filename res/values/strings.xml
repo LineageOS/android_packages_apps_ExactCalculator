@@ -154,23 +154,16 @@
     <string name="timeout">That\'s too hard! Undefined or infinite value?</string>
     <!-- Button label for "remove timeout" button. -->
     <string name="ok_remove_timeout">OK, but longer timeouts, please!</string>
-    <!-- Help menu entry for context menu. -->
-    <string name="help">Help</string>
-    <!-- Content description for overflow menu button. -->
-    <string name="overflow_menu_description">overflow menu</string>
-    <!-- The help message that's displayed in response to pushing the above button. -->
-    <string name="help_message">Use the keys to enter a standard arithmetic expression. It\'s fine to omit multiplication symbols and trailing parentheses.  Long press delete key to clear. Drag the display to see more digits.\n\nComputations involving infinite values may take forever.  Wait for the timeout or touch a button to terminate computation.</string>
-    <!-- Help message addendum for pager. -->
-    <string name="help_pager">\n\nSwipe the operator pad to the left to see additional functions.</string>
-    <!-- About menu entry; leads mostly to (English language!) copyright notice.  -->
-    <string name="about">About &amp; Copyright</string>
-    <!-- Overflow menu entry to display result including leading digits. -->
-    <string name="leading">Answer with leading digits</string>
-    <!-- Overflow menu entry to display result as fraction. -->
-    <string name="fraction">Answer as fraction</string>
     <!-- Appended indicator (for "leading" display) that result is exact. -->
     <string name="exact">(exact)</string>
     <!-- Indicator (for "leading" display) that result is inexact. -->
     <string name="approximate">(±1 in last digit)</string>
+
+    <!-- Menu option to display result including leading digits. [CHAR_LIMIT=16] -->
+    <string name="menu_leading">Answer with leading digits</string>
+    <!-- Menu option to display result as fraction. [CHAR_LIMIT=16] -->
+    <string name="menu_fraction">Answer as fraction</string>
+    <!-- Menu option to view the app's open source licenses. [CHAR_LIMIT=16] -->
+    <string name="menu_licenses">Open source licenses</string>
 
 </resources>
