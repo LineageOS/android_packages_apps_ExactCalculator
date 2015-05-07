@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (C) 2014 The Android Open Source Project
+  Copyright (C) 2015 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -20,71 +20,91 @@
     <!-- Name of the application. [CHAR_LIMIT=NONE] -->
     <string name="app_name">Calculator</string>
 
-    <!-- Error displayed when expression evaluates a function at undefined point. [CHAR_LIMIT=14] -->
-    <string name="error_nan">Not a number</string>
-    <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=16] -->
-    <string name="error_syntax">Bad expression</string>
-    <!-- Error displayed when evaluation is manually aborted. [CHAR_LIMIT=16] -->
-    <string name="error_aborted">Aborted</string>
-    <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=16] -->
-    <string name="error_overflow">Infinite?</string>
-    <!-- Error displayed when we diagnose a division by zero.  [CHAR_LIMIT=16] -->
-    <string name="error_zero_divide">Division by 0</string>
+    <!-- Constant for Euler's number (i.e. "2.7182…"). [CHAR_LIMIT=1] -->
+    <string name="const_e" translatable="false">e</string>
+    <!-- Constant for pi (i.e. "3.1415…"). [CHAR_LIMIT=1] -->
+    <string name="const_pi" translatable="false">π</string>
 
-    <!-- Decimal separator (e.g. "1.23"). [CHAR_LIMIT=1] -->
+    <!-- Left parenthesis (e.g. "log(", "2 × (3 - 1)". [CHAR_LIMIT=1] -->
+    <string name="lparen" translatable="false">(</string>
+    <!-- Right parenthesis (e.g. "log(2)", "(3 - 1) × 2". [CHAR_LIMIT=1] -->
+    <string name="rparen" translatable="false">)</string>
+
+    <!--
+      Decimal separator (e.g. "1.23" or "1,23").
+
+      This should be whatever character is appropriate for use as a decimal sign for a given locale
+      when used with Arabic numerals (i.e. 0, 1, 2, 3, ...)
+
+      [CHAR_LIMIT=1]
+      -->
     <string name="dec_point">.</string>
 
     <!-- Decimal representation of zero (e.g. "0", "10", "1.0", "1e0"). [CHAR_LIMIT=1] -->
-    <string name="digit_0">0</string>
+    <string name="digit_0" translatable="false">0</string>
     <!-- Decimal representation of one (e.g. "1", "11", "1.1", "1e1"). [CHAR_LIMIT=1] -->
-    <string name="digit_1">1</string>
+    <string name="digit_1" translatable="false">1</string>
     <!-- Decimal representation of two (e.g. "2", "22", "2.2", "2e2"). [CHAR_LIMIT=1] -->
-    <string name="digit_2">2</string>
+    <string name="digit_2" translatable="false">2</string>
     <!-- Decimal representation of three (e.g. "3", "33", "3.3", "3e3"). [CHAR_LIMIT=1] -->
-    <string name="digit_3">3</string>
+    <string name="digit_3" translatable="false">3</string>
     <!-- Decimal representation of four (e.g. "4", "44", "4.4", "4e4"). [CHAR_LIMIT=1] -->
-    <string name="digit_4">4</string>
+    <string name="digit_4" translatable="false">4</string>
     <!-- Decimal representation of five (e.g. "5", "55", "5.5", "5e5"). [CHAR_LIMIT=1] -->
-    <string name="digit_5">5</string>
+    <string name="digit_5" translatable="false">5</string>
     <!-- Decimal representation of six (e.g. "6", "66", "6.6", "6e6"). [CHAR_LIMIT=1] -->
-    <string name="digit_6">6</string>
+    <string name="digit_6" translatable="false">6</string>
     <!-- Decimal representation of seven (e.g. "7", "77", "7.7", "7e7"). [CHAR_LIMIT=1] -->
-    <string name="digit_7">7</string>
+    <string name="digit_7" translatable="false">7</string>
     <!-- Decimal representation of eight (e.g. "8", "88", "8.8", "8e8"). [CHAR_LIMIT=1] -->
-    <string name="digit_8">8</string>
+    <string name="digit_8" translatable="false">8</string>
     <!-- Decimal representation of eight (e.g. "9", "99", "9.9", "9e9"). [CHAR_LIMIT=1] -->
-    <string name="digit_9">9</string>
+    <string name="digit_9" translatable="false">9</string>
 
-    <!-- Abbrev. name of cosine function (e.g. "cos(π)". [CHAR_LIMIT=3] -->
-    <string name="fun_cos">cos</string>
-    <!-- Natural logarithm function (e.g. "ln(2)"). [CHAR_LIMIT=3] -->
-    <string name="fun_ln">ln</string>
-    <!-- Logarithm function (e.g. "log(10)"). [CHAR_LIMIT=3] -->
-    <string name="fun_log">log</string>
-    <!-- Abbrev. name of sine function (e.g. "sin(π)". [CHAR_LIMIT=3] -->
-    <string name="fun_sin">sin</string>
-    <!-- Abbrev. name of tangent function (e.g. "tan(π)". [CHAR_LIMIT=3] -->
-    <string name="fun_tan">tan</string>
-    <!-- Abbrev. name of cosine function (e.g. "arccos(π)". Often cos with a -1 superscript [CHAR_LIMIT=5] -->
-    <string name="fun_arccos">cos\u207B\u00B9</string>
+    <!-- Addition operator (e.g. "1 + 2"). [CHAR_LIMIT=1] -->
+    <string name="op_add" translatable="false">+</string>
+    <!-- Divide operator (e.g. "1 ÷ 2"). [CHAR_LIMIT=1] -->
+    <string name="op_div" translatable="false">÷</string>
+    <!-- Factorial operator (e.g. "2!"). [CHAR_LIMIT=1] -->
+    <string name="op_fact" translatable="false">!</string>
+    <!-- Multiply operator (e.g. "1 × 2"). [CHAR_LIMIT=1] -->
+    <string name="op_mul" translatable="false">×</string>
+    <!-- Power operator (e.g. "1 ^ 2"). [CHAR_LIMIT=1] -->
+    <string name="op_pow" translatable="false">^</string>
+    <!-- Square root operator (e.g. "√1"). [CHAR_LIMIT=1] -->
+    <string name="op_sqrt" translatable="false">√</string>
+    <!-- Subtraction operator (e.g. "1 - 2"). [CHAR_LIMIT=1] -->
+    <string name="op_sub" translatable="false">−</string>
+
+    <!-- Abbrev. name of cosine function (e.g. "cos(π)". [CHAR_LIMIT=4] -->
+    <string name="fun_cos" translatable="false">cos</string>
+    <!-- Natural logarithm function (e.g. "ln(2)"). [CHAR_LIMIT=4] -->
+    <string name="fun_ln" translatable="false">ln</string>
+    <!-- Logarithm function (e.g. "log(10)"). [CHAR_LIMIT=4] -->
+    <string name="fun_log" translatable="false">log</string>
+    <!-- Abbrev. name of sine function (e.g. "sin(π)". [CHAR_LIMIT=4] -->
+    <string name="fun_sin" translatable="false">sin</string>
+    <!-- Abbrev. name of tangent function (e.g. "tan(π)". [CHAR_LIMIT=4] -->
+    <string name="fun_tan" translatable="false">tan</string>
+    <!-- Abbrev. name of cosine function (e.g. "arccos(π)". [CHAR_LIMIT=5] -->
+    <string name="fun_arccos" translatable="false">cos\u207B\u00B9</string>
     <!-- Abbrev. name of sine function (e.g. "arcsin(π)". [CHAR_LIMIT=5] -->
-    <string name="fun_arcsin">sin\u207B\u00B9</string>
+    <string name="fun_arcsin" translatable="false">sin\u207B\u00B9</string>
     <!-- Abbrev. name of tangent function (e.g. "arctan(π)". [CHAR_LIMIT=5] -->
-    <string name="fun_arctan">tan\u207B\u00B9</string>
-    <!-- Abbrev. name of degree mode [CHAR_LIMIT=5] -->
-    <!-- Used both as button label and for status indicator on top -->
+    <string name="fun_arctan" translatable="false">tan\u207B\u00B9</string>
+
+    <!-- Abbrev. name of degree mode [CHAR_LIMIT=4] -->
     <string name="mode_deg">deg</string>
-    <!-- Abbrev. name of radian mode [CHAR_LIMIT=5] -->
-    <!-- Used both as button label and for status indicator on top -->
+    <!-- Abbrev. name of radian mode. [CHAR_LIMIT=4] -->
     <string name="mode_rad">rad</string>
 
-    <!-- Clear operation to clear the currently entered expression. [CHAR_LIMIT=3] -->
+    <!-- Equals button (e.g. "1 + 2 = ?"). [CHAR_LIMIT=1] -->
+    <string name="eq" translatable="false">=</string>
+    <!-- Clear button to clear the currently entered expression. [CHAR_LIMIT=4] -->
     <string name="clr">clr</string>
-    <!-- Delete operation to remove last entered token. [CHAR_LIMIT=3] -->
+    <!-- Delete button to remove last entered token. [CHAR_LIMIT=4] -->
     <string name="del">del</string>
 
-    <!-- Content Descriptions -->
-    <eat-comment />
 
     <!-- Content description for 'e' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_const_e">Euler\'s number</string>
@@ -141,22 +161,32 @@
     <string name="desc_del">delete</string>
     <!-- Content description for '=' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_eq">equals</string>
-    <!-- Toast shown when text is copied to the clipboard. -->
+
+    <!-- Error displayed when expression evaluates to an undefined result. [CHAR_LIMIT=16] -->
+    <string name="error_nan">Not a number</string>
+    <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=16] -->
+    <string name="error_syntax">Bad expression</string>
+    <!-- Error displayed when evaluation is manually aborted. [CHAR_LIMIT=16] -->
+    <string name="error_aborted">Aborted</string>
+    <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=16] -->
+    <string name="error_overflow">Infinite?</string>
+    <!-- Error displayed when we diagnose a division by zero.  [CHAR_LIMIT=16] -->
+    <string name="error_zero_divide">Division by 0</string>
+
+    <!-- Toast shown when text is copied to the clipboard. [CHAR_LIMIT=40] -->
     <string name="text_copied_toast">Text copied.</string>
 
-    <!-- Displayed briefly to indicate not-yet-computed digit. -->
-    <string name="guessed_digit">"?"</string>
-    <!-- Dialog message when a computation is cancelled by the user. -->
+    <!-- Dialog message when a computation is cancelled by the user. [CHAR_LIMIT=NONE] -->
     <string name="cancelled">Computation cancelled!</string>
-    <!-- Button label to dismiss informative text message. -->
+    <!-- Button label to dismiss informative text message. [CHAR_LIMIT=12] -->
     <string name="dismiss">Dismiss</string>
-    <!-- Dialog message when a computation times out. -->
+    <!-- Dialog message when a computation times out. [CHAR_LIMIT=NONE] -->
     <string name="timeout">That\'s too hard! Undefined or infinite value?</string>
-    <!-- Button label for "remove timeout" button. -->
+    <!-- (Button label for "remove timeout" button. [CHAR_LIMIT=40] -->
     <string name="ok_remove_timeout">OK, but longer timeouts, please!</string>
-    <!-- Appended indicator (for "leading" display) that result is exact. -->
+    <!-- Appended indicator (for "leading" display) that result is exact. [CHAR_LIMIT=NONE] -->
     <string name="exact">(exact)</string>
-    <!-- Indicator (for "leading" display) that result is inexact. -->
+    <!-- Indicator (for "leading" display) that result is inexact. [CHAR_LIMIT=NONE] -->
     <string name="approximate">(±1 in last digit)</string>
 
     <!-- Menu option to display result including leading digits. [CHAR_LIMIT=16] -->

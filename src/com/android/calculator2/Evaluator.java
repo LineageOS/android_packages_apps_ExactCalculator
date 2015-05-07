@@ -110,6 +110,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 class Evaluator {
+
     private final Calculator mCalculator;
     private final CalculatorResult mResult;  // The result display View
     private CalculatorExpr mExpr;      // Current calculator expression
@@ -128,13 +129,16 @@ class Evaluator {
     private boolean mDegreeMode;       // Currently in degree (not radian) mode
     private final Handler mTimeoutHandler;
 
-    static final char MINUS = '\u2212';
-
     static final BigInteger BIG_MILLION = BigInteger.valueOf(1000000);
 
-
-    private final char decimalPt =
-                DecimalFormatSymbols.getInstance().getDecimalSeparator();
+    /**
+     * Character used as a placeholder for digits that are currently unknown in a result that is
+     * being computed.
+     * <p/>
+     * Note: the character must correspond closely to the width of a digit, otherwise the UI will
+     * visibly shift once the computation is finished.
+     */
+    private static final char CHAR_DIGIT_UNKNOWN = '\u2007';
 
     private static final int EXTRA_DIGITS = 20;
                 // Extra computed digits to minimize probably we will have
@@ -578,11 +582,8 @@ class Evaluator {
     // Return a string with n placeholder characters.
     private String getPadding(int n) {
         StringBuilder padding = new StringBuilder();
-        char something =
-            mCalculator.getResources()
-                       .getString(R.string.guessed_digit).charAt(0);
         for (int i = 0; i < n; ++i) {
-            padding.append(something);
+            padding.append(CHAR_DIGIT_UNKNOWN);
         }
         return padding.toString();
     }
