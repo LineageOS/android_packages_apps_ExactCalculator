@@ -189,11 +189,11 @@
     <!-- Indicator (for "leading" display) that result is inexact. [CHAR_LIMIT=NONE] -->
     <string name="approximate">(±1 in last digit)</string>
 
-    <!-- Menu option to display result including leading digits. [CHAR_LIMIT=16] -->
+    <!-- Menu option to display result including leading digits. [CHAR_LIMIT=40] -->
     <string name="menu_leading">Answer with leading digits</string>
-    <!-- Menu option to display result as fraction. [CHAR_LIMIT=16] -->
+    <!-- Menu option to display result as fraction. [CHAR_LIMIT=40] -->
     <string name="menu_fraction">Answer as fraction</string>
-    <!-- Menu option to view the app's open source licenses. [CHAR_LIMIT=16] -->
+    <!-- Menu option to view the app's open source licenses. [CHAR_LIMIT=40] -->
     <string name="menu_licenses">Open source licenses</string>
 
 </resources>
