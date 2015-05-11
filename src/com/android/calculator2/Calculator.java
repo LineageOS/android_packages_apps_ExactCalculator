@@ -147,6 +147,7 @@ public class Calculator extends Activity
                     }
                     char c = (char)raw;
                     if (c == '=') {
+                        mCurrentButton = mEqualButton;
                         onEquals();
                     } else {
                         addChars(String.valueOf(c));
