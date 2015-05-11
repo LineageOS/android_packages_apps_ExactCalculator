@@ -752,6 +752,7 @@ class Evaluator {
     }
 
     void restoreInstanceState(DataInput in) {
+        mChangedValue = true;
         try {
             CalculatorExpr.initExprInput();
             mDegreeMode = in.readBoolean();
