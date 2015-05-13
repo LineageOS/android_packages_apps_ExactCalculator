@@ -2,6 +2,7 @@ package com.android.calculator2;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.webkit.WebView;
 
 public class Licenses extends Activity {
@@ -16,5 +17,14 @@ public class Licenses extends Activity {
         webView.loadUrl(LICENSE_URL);
 
         setContentView(webView);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
