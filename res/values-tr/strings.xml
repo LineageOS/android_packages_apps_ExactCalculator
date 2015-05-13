@@ -60,10 +60,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"Tamam, ancak daha uzun zaman aşımı süreleri lütfen!"</string>
     <string name="exact" msgid="2597237880041789948">"(tam)"</string>
     <string name="approximate" msgid="7117143366610670836">"(Son basamakta ±1)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"Başında basamaklar olan yanıt"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Kesirli yanıt"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"Açık kaynak lisansları"</string>
 </resources>

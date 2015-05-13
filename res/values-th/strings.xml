@@ -60,10 +60,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"ตกลง แต่ขอเวลาอีกหน่อยนะ!"</string>
     <string name="exact" msgid="2597237880041789948">"(ลงตัว)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 ในหลักสุดท้าย)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"คำตอบที่มีเลขหน้า"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"ตอบเป็นเศษส่วน"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"ใบอนุญาตโอเพนซอร์ส"</string>
 </resources>

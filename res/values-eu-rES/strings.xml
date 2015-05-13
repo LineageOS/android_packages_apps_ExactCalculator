@@ -47,9 +47,9 @@
     <string name="desc_op_sub" msgid="2744940875059679129">"minus"</string>
     <string name="desc_clr" msgid="737502124268890797">"garbitu sarrera"</string>
     <string name="desc_del" msgid="7879515781929311432">"ezabatu"</string>
-    <string name="desc_eq" msgid="3349320880874699285">"berdin ikurra"</string>
+    <string name="desc_eq" msgid="3349320880874699285">"berdin"</string>
     <string name="error_nan" msgid="5674077944929888710">"Ez da zenbakia"</string>
-    <string name="error_syntax" msgid="4786987111228645602">"Adierazpen okerra"</string>
+    <string name="error_syntax" msgid="4786987111228645602">"Sintaxi-errorea"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Utzi egin da"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Infinitua?"</string>
     <string name="error_zero_divide" msgid="7085069126090779874">"0rekiko zatiketa"</string>
@@ -60,10 +60,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"Ados, baina ez dadila berriz gerta!"</string>
     <string name="exact" msgid="2597237880041789948">"(zehatza)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 azken digituan)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"Erantzun hasierako digituekin"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Erantzun zatiki gisa"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"Kode irekiko lizentziak"</string>
 </resources>

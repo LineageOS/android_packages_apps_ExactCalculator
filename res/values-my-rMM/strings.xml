@@ -60,10 +60,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"အိုကေ၊ ဒါပေမယ့် ကျေးဇူးပြု၍ ကုန်ဆုံးချိန်ကြာပါစေ!"</string>
     <string name="exact" msgid="2597237880041789948">"(အတိအကျ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(နောက်ဆုံးဂဏန်းတွင် ± 1)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"ဦးဆောင်ဂဏန်းနှင့်ဖြေ"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"အပိုင်းကဏန်းအဖြစ် အဖြေ"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"အခမဲ့ ရင်းမြစ် လိုင်စင်များ"</string>
 </resources>

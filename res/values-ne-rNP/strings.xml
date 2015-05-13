@@ -18,19 +18,19 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"क्यालकुलेटर"</string>
-    <string name="dec_point" msgid="8920102493070918054">"।"</string>
+    <string name="dec_point" msgid="8920102493070918054">"."</string>
     <string name="mode_deg" msgid="1146123354434332479">"डिग्री"</string>
-    <string name="mode_rad" msgid="1434228830085760996">"राड"</string>
+    <string name="mode_rad" msgid="1434228830085760996">"र्याड"</string>
     <string name="clr" msgid="6730945431543327337">"clr"</string>
     <string name="del" msgid="5878069000864178910">"del"</string>
-    <string name="desc_const_e" msgid="1889187337970539507">"युलरको अंक"</string>
-    <string name="desc_const_pi" msgid="5430918714009441655">"पाइ"</string>
+    <string name="desc_const_e" msgid="1889187337970539507">"युलरको नम्बर"</string>
+    <string name="desc_const_pi" msgid="5430918714009441655">"pi"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"थोप्लो"</string>
     <string name="desc_lparen" msgid="8688758170211924916">"बायाँ कोष्ठक"</string>
     <string name="desc_rparen" msgid="7920608385146151731">"बायाँ कोष्ठक"</string>
     <string name="desc_fun_cos" msgid="3787913784504974731">"कोसाइन"</string>
-    <string name="desc_fun_ln" msgid="2505119732546227166">"प्राकृतिक लघुगणक"</string>
-    <string name="desc_fun_log" msgid="4202230639814060062">"लघुगणक"</string>
+    <string name="desc_fun_ln" msgid="2505119732546227166">"नेचुरल लोगारिदम"</string>
+    <string name="desc_fun_log" msgid="4202230639814060062">"लोगारिदम"</string>
     <string name="desc_fun_sin" msgid="7425661271929838876">"साइन"</string>
     <string name="desc_fun_tan" msgid="3545496562069310036">"ट्यान्जेन्ट"</string>
     <string name="desc_fun_arccos" msgid="7583077865497939123">"व्युत्क्रम कोसाइन"</string>
@@ -38,32 +38,29 @@
     <string name="desc_fun_arctan" msgid="6891388393360447455">"व्युत्क्रम ट्यान्जेन्ट"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"जोड"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"भाग गर्नुहोस्"</string>
-    <string name="desc_op_fact" msgid="6142780103294179702">"क्रमगुणित"</string>
+    <string name="desc_op_fact" msgid="6142780103294179702">"फ्याक्टोरियल"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"पटक"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"पावर"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"वर्गमूल"</string>
     <string name="desc_mode_rad" msgid="5522614457355475195">"रेडियनमा स्विच गर्नुहोस्"</string>
     <string name="desc_mode_deg" msgid="5560289378379011831">"डिग्रीमा स्विच गर्नुहोस्"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"घटाउ"</string>
-    <string name="desc_clr" msgid="737502124268890797">"सफा गर्नुहोस्"</string>
+    <string name="desc_clr" msgid="737502124268890797">"खाली गर्नुहोस्"</string>
     <string name="desc_del" msgid="7879515781929311432">"मेटाउनुहोस्"</string>
     <string name="desc_eq" msgid="3349320880874699285">"बराबर"</string>
     <string name="error_nan" msgid="5674077944929888710">"एक नम्बर होइन"</string>
     <string name="error_syntax" msgid="4786987111228645602">"खराब अभिव्यक्ति"</string>
     <string name="error_aborted" msgid="3402238176316342537">"रद्द गरियो"</string>
     <string name="error_overflow" msgid="7800547394563434764">"अनन्त?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"० द्वारा विभाजन"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"पाठ प्रतिलिपी गरियो।"</string>
-    <string name="cancelled" msgid="615180456915976640">"गणना रद्द भयो!"</string>
+    <string name="error_zero_divide" msgid="7085069126090779874">"० द्वारा भाग"</string>
+    <string name="text_copied_toast" msgid="8845645964273481105">"पाठ प्रतिलिपि गरियो।"</string>
+    <string name="cancelled" msgid="615180456915976640">"कम्प्युटेसन रद्द भयो!"</string>
     <string name="dismiss" msgid="7872443888515066216">"खारेज गर्नुहोस्"</string>
     <string name="timeout" msgid="786323140644284782">"त्यो निकै कठिन छ! अपरिभाषित वा अनन्त मान?"</string>
     <string name="ok_remove_timeout" msgid="4252381882975743581">"ठीक छ, तर कृपया लामो टाइमआउट!"</string>
     <string name="exact" msgid="2597237880041789948">"(सही)"</string>
     <string name="approximate" msgid="7117143366610670836">"(अन्तिम अंकमा ±१)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"सामु अंकमा उत्तर"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"भाग रुपमा उत्तर"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"खुलास्रोत इजाजतपत्रहरू"</string>
 </resources>

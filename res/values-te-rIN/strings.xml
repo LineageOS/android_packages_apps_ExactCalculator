@@ -60,10 +60,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"సరే, కానీ ఇకమీదట గడువు సమయ ముగింపులు వద్దు!"</string>
     <string name="exact" msgid="2597237880041789948">"(సరిగ్గా)"</string>
     <string name="approximate" msgid="7117143366610670836">"(చివరి అంకెలో ±1)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"ఆధిక్య అంకెల్లో జవాబివ్వు"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"ఫ్రాక్షన్‌లో జవాబివ్వు"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"ఓపెన్ సోర్స్ లైసెన్స్‌లు"</string>
 </resources>

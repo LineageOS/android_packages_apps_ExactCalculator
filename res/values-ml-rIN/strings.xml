@@ -52,18 +52,15 @@
     <string name="error_syntax" msgid="4786987111228645602">"മോശം എക്‌സ്‌പ്രഷൻ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"പരാജയപ്പെട്ടു"</string>
     <string name="error_overflow" msgid="7800547394563434764">"അനന്തസംഖ്യയാണോ?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"പൂജ്യത്തിന്റെ ഖണ്ഡം"</string>
+    <string name="error_zero_divide" msgid="7085069126090779874">"പൂജ്യം കൊണ്ടുള്ള ഹരണം"</string>
     <string name="text_copied_toast" msgid="8845645964273481105">"ടെക്‌സ്‌റ്റ് പകർത്തി."</string>
     <string name="cancelled" msgid="615180456915976640">"കമ്പ്യൂട്ടേഷൻ റദ്ദാക്കി!"</string>
     <string name="dismiss" msgid="7872443888515066216">"നിരസിക്കുക"</string>
     <string name="timeout" msgid="786323140644284782">"അത് വളരെ പ്രയാസമുള്ളതാണ്! നിർവ്വചിക്കാനാകാത്തതോ അനന്തമോ ആയ മൂല്യമാണോ?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"ശരി, കാലഹരണപ്പെടൽ ദീർഘനേരത്തേക്ക് മാറ്റുക!"</string>
+    <string name="ok_remove_timeout" msgid="4252381882975743581">"ശരി, കാലഹരണപ്പെടൽ ദീർഘനേരത്തേക്കാക്കുക!"</string>
     <string name="exact" msgid="2597237880041789948">"(കൃത്യമായ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(അവസാനത്തെ അക്കത്തിനൊപ്പം ±1)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"അടുത്തുവരുന്ന അക്കങ്ങൾ ഉപയോഗിച്ച് ഉത്തരം നൽകുക"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"ഒരു ഭിന്നസംഖ്യയായി ഉത്തരം നൽകുക"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"ഓപ്പൺ സോഴ്‌സ് ലൈസൻസുകൾ"</string>
 </resources>

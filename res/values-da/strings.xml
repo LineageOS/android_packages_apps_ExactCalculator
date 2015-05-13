@@ -38,9 +38,9 @@
     <string name="desc_fun_arctan" msgid="6891388393360447455">"invers tangens"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"plustegn"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"divider"</string>
-    <string name="desc_op_fact" msgid="6142780103294179702">"fakultet"</string>
+    <string name="desc_op_fact" msgid="6142780103294179702">"faktor"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"gange"</string>
-    <string name="desc_op_pow" msgid="6010144442344099030">"strøm"</string>
+    <string name="desc_op_pow" msgid="6010144442344099030">"potens"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"kvadratrod"</string>
     <string name="desc_mode_rad" msgid="5522614457355475195">"skift til radianer"</string>
     <string name="desc_mode_deg" msgid="5560289378379011831">"skift til grader"</string>
@@ -60,10 +60,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"OK, men kan vi ikke få længere timeouts?"</string>
     <string name="exact" msgid="2597237880041789948">"(eksakt)"</string>
     <string name="approximate" msgid="7117143366610670836">"(± 1 i sidste ciffer)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"Svar med indledende cifre"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Svar som brøk"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"Open source-licenser"</string>
 </resources>

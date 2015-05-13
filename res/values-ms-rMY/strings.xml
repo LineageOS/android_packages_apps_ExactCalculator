@@ -25,7 +25,7 @@
     <string name="del" msgid="5878069000864178910">"pdm"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"Nombor Euler"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"pi"</string>
-    <string name="desc_dec_point" msgid="5725254504360445023">"mata"</string>
+    <string name="desc_dec_point" msgid="5725254504360445023">"titik"</string>
     <string name="desc_lparen" msgid="8688758170211924916">"tanda kurung kiri"</string>
     <string name="desc_rparen" msgid="7920608385146151731">"tanda kurung kanan"</string>
     <string name="desc_fun_cos" msgid="3787913784504974731">"kosinus"</string>
@@ -41,7 +41,7 @@
     <string name="desc_op_fact" msgid="6142780103294179702">"faktorial"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"kali"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"kuasa"</string>
-    <string name="desc_op_sqrt" msgid="6882241473601721767">"kuasa dua"</string>
+    <string name="desc_op_sqrt" msgid="6882241473601721767">"punca kuasa dua"</string>
     <string name="desc_mode_rad" msgid="5522614457355475195">"tukar kepada radian"</string>
     <string name="desc_mode_deg" msgid="5560289378379011831">"tukar kepada darjah"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"tolak"</string>
@@ -51,19 +51,16 @@
     <string name="error_nan" msgid="5674077944929888710">"Bukan nombor"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Ungkapan salah"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Dihenti paksa"</string>
-    <string name="error_overflow" msgid="7800547394563434764">"Tidak terhingga?"</string>
+    <string name="error_overflow" msgid="7800547394563434764">"Tak terhingga?"</string>
     <string name="error_zero_divide" msgid="7085069126090779874">"Dibahagi 0"</string>
     <string name="text_copied_toast" msgid="8845645964273481105">"Teks disalin."</string>
     <string name="cancelled" msgid="615180456915976640">"Pengiraan dibatalkan!"</string>
     <string name="dismiss" msgid="7872443888515066216">"Ketepikan"</string>
-    <string name="timeout" msgid="786323140644284782">"Itu terlalu susah! Nilai tidak tertakrif atau tidak terhingga?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"OK, tapi tolong berikan tamat masa yang lebih lama!"</string>
+    <string name="timeout" msgid="786323140644284782">"Itu terlalu susah! Nilai tak tertakrif atau tak terhingga?"</string>
+    <string name="ok_remove_timeout" msgid="4252381882975743581">"OK, tapi mohon berikan tamat masa yang lebih lama!"</string>
     <string name="exact" msgid="2597237880041789948">"(tepat)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 dalam digit terakhir)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"Jawapan dgn digit hadapan"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Jwpn sbg pecahan"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"Lesen sumber terbuka"</string>
 </resources>

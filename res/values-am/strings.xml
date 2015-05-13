@@ -51,19 +51,16 @@
     <string name="error_nan" msgid="5674077944929888710">"ቁጥር አይደለም"</string>
     <string name="error_syntax" msgid="4786987111228645602">"መጥፎ የሒሳብ ሐረግ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"ተቋርጧል"</string>
-    <string name="error_overflow" msgid="7800547394563434764">"የትየሌለ?"</string>
+    <string name="error_overflow" msgid="7800547394563434764">"የትየለሌ?"</string>
     <string name="error_zero_divide" msgid="7085069126090779874">"በ0 ማካፈል"</string>
     <string name="text_copied_toast" msgid="8845645964273481105">"ጽሑፍ ተቀድቷል።"</string>
     <string name="cancelled" msgid="615180456915976640">"ማስላት ተሰርዟል!"</string>
     <string name="dismiss" msgid="7872443888515066216">"አሰናብት"</string>
-    <string name="timeout" msgid="786323140644284782">"ይሄ በጣም ከባድ ነው! ያልተገለጸ ወይም የትየሌለ እሴት?"</string>
+    <string name="timeout" msgid="786323140644284782">"ይሄ በጣም ከባድ ነው! ያልተገለጸ ወይም የትየለሌ እሴት?"</string>
     <string name="ok_remove_timeout" msgid="4252381882975743581">"እሺ፣ ግን ረዘም ያለ የእረፍት ጊዜ ይሁን እባክህ!"</string>
     <string name="exact" msgid="2597237880041789948">"(ትክክለኛ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 በመጨረሻው አኃዝ ውስጥ)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"በሚመሩ አኃዞች መልስ"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"እንደ ክፍልፋይ መልስ"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"የክፍት ምንጭ ፍቃዶች"</string>
 </resources>
