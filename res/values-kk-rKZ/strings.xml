@@ -40,7 +40,7 @@
     <string name="desc_op_div" msgid="3032399266115257498">"бөлу"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"факториал"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"көбейту"</string>
-    <string name="desc_op_pow" msgid="6010144442344099030">"қуат"</string>
+    <string name="desc_op_pow" msgid="6010144442344099030">"дәреже"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"шаршы түбір"</string>
     <string name="desc_mode_rad" msgid="5522614457355475195">"радианға ауыстыру"</string>
     <string name="desc_mode_deg" msgid="5560289378379011831">"градусқа ауыстыру"</string>
@@ -52,18 +52,15 @@
     <string name="error_syntax" msgid="4786987111228645602">"Қате өрнек"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Тоқтатылды"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Шексіз бе?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"0-мен бөлу"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Мәтін көшірілген."</string>
+    <string name="error_zero_divide" msgid="7085069126090779874">"0-ге бөлу"</string>
+    <string name="text_copied_toast" msgid="8845645964273481105">"Мәтін көшірілді."</string>
     <string name="cancelled" msgid="615180456915976640">"Есептеуден бас тартылды!"</string>
     <string name="dismiss" msgid="7872443888515066216">"Жабу"</string>
     <string name="timeout" msgid="786323140644284782">"Бұл тым қиын! Анықталмаған немесе шексіз мән бе?"</string>
     <string name="ok_remove_timeout" msgid="4252381882975743581">"Жақсы, бірақ үзілістер ұзақ болсын!"</string>
     <string name="exact" msgid="2597237880041789948">"(дәл)"</string>
     <string name="approximate" msgid="7117143366610670836">"(соңғы цифрда ± 1)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"Бірінші цифрлармен жауап беру"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Фракция ретінде жауап беру"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"Ашық бастапқы код лицензиялары"</string>
 </resources>

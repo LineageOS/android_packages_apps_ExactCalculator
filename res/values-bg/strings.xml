@@ -60,10 +60,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"Добре – но, моля, удължете времето за изчакване!"</string>
     <string name="exact" msgid="2597237880041789948">"(точно)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 в последната цифра)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"Отг. с първите цифри"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Отг. като дроб"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"Лицензи за отв. код"</string>
 </resources>

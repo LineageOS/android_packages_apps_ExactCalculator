@@ -60,10 +60,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"没问题，但请延长超时时间！"</string>
     <string name="exact" msgid="2597237880041789948">"（精确）"</string>
     <string name="approximate" msgid="7117143366610670836">"（最后一位数字 ±1）"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"在结果中显示前导数"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"以分数形式显示结果"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"开放源代码许可"</string>
 </resources>

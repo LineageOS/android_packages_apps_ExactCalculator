@@ -30,12 +30,12 @@
     <string name="desc_rparen" msgid="7920608385146151731">"закрывающая скобка"</string>
     <string name="desc_fun_cos" msgid="3787913784504974731">"косинус"</string>
     <string name="desc_fun_ln" msgid="2505119732546227166">"натуральный логарифм"</string>
-    <string name="desc_fun_log" msgid="4202230639814060062">"логарифм"</string>
+    <string name="desc_fun_log" msgid="4202230639814060062">"десятичный логарифм"</string>
     <string name="desc_fun_sin" msgid="7425661271929838876">"синус"</string>
     <string name="desc_fun_tan" msgid="3545496562069310036">"тангенс"</string>
-    <string name="desc_fun_arccos" msgid="7583077865497939123">"обратный косинус"</string>
-    <string name="desc_fun_arcsin" msgid="8592309261123302915">"обратный синус"</string>
-    <string name="desc_fun_arctan" msgid="6891388393360447455">"обратный тангенс"</string>
+    <string name="desc_fun_arccos" msgid="7583077865497939123">"арккосинус"</string>
+    <string name="desc_fun_arcsin" msgid="8592309261123302915">"арксинус"</string>
+    <string name="desc_fun_arctan" msgid="6891388393360447455">"арктангенс"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"сложить"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"разделить"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"факториал"</string>
@@ -59,11 +59,8 @@
     <string name="timeout" msgid="786323140644284782">"Не удалось вычислить значение. Возможно, оно неопределенное или бесконечное."</string>
     <string name="ok_remove_timeout" msgid="4252381882975743581">"Увеличить время ожидания"</string>
     <string name="exact" msgid="2597237880041789948">"(точно)"</string>
-    <string name="approximate" msgid="7117143366610670836">"(последняя цифра указана приблизительно: ±1)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="approximate" msgid="7117143366610670836">"(±1 в последнем знаке)"</string>
+    <string name="menu_leading" msgid="2338520833272667740">"Округлить до первых значимых цифр"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Показать в виде дроби"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"Лицензии открытого ПО"</string>
 </resources>

@@ -19,10 +19,10 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"Калкулатор"</string>
     <string name="dec_point" msgid="8920102493070918054">","</string>
-    <string name="mode_deg" msgid="1146123354434332479">"степ."</string>
-    <string name="mode_rad" msgid="1434228830085760996">"рад."</string>
-    <string name="clr" msgid="6730945431543327337">"исч"</string>
-    <string name="del" msgid="5878069000864178910">"изб"</string>
+    <string name="mode_deg" msgid="1146123354434332479">"deg"</string>
+    <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
+    <string name="clr" msgid="6730945431543327337">"clr"</string>
+    <string name="del" msgid="5878069000864178910">"del"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"Ојлеров број"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"Пи"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"запирка"</string>
@@ -39,8 +39,8 @@
     <string name="desc_op_add" msgid="5539599782598050813">"плус"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"подели"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"факторијал"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"по"</string>
-    <string name="desc_op_pow" msgid="6010144442344099030">"на"</string>
+    <string name="desc_op_mul" msgid="1199902761534518529">"помножено"</string>
+    <string name="desc_op_pow" msgid="6010144442344099030">"на степен"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"квадратен корен"</string>
     <string name="desc_mode_rad" msgid="5522614457355475195">"префрли на радијани"</string>
     <string name="desc_mode_deg" msgid="5560289378379011831">"префрли на степени"</string>
@@ -60,10 +60,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"Во ред, но подолго истекување на времето, ве молам!"</string>
     <string name="exact" msgid="2597237880041789948">"(точно)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 во последната цифра)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"Одг.–вод. цифри"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Одгов. со дропка"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"Лиц. со отв. код"</string>
 </resources>

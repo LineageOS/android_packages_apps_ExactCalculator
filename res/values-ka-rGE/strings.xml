@@ -18,7 +18,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"კალკულატორი"</string>
-    <string name="dec_point" msgid="8920102493070918054">"."</string>
+    <string name="dec_point" msgid="8920102493070918054">","</string>
     <string name="mode_deg" msgid="1146123354434332479">"გრად."</string>
     <string name="mode_rad" msgid="1434228830085760996">"რად."</string>
     <string name="clr" msgid="6730945431543327337">"clr"</string>
@@ -45,25 +45,22 @@
     <string name="desc_mode_rad" msgid="5522614457355475195">"რადიანებზე გადართვა"</string>
     <string name="desc_mode_deg" msgid="5560289378379011831">"გრადუსებზე გადართვა"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"მინუსი"</string>
-    <string name="desc_clr" msgid="737502124268890797">"წაშლა"</string>
+    <string name="desc_clr" msgid="737502124268890797">"გასუფთავება"</string>
     <string name="desc_del" msgid="7879515781929311432">"წაშლა"</string>
     <string name="desc_eq" msgid="3349320880874699285">"ტოლია"</string>
     <string name="error_nan" msgid="5674077944929888710">"არ არის რიცხვი"</string>
-    <string name="error_syntax" msgid="4786987111228645602">"ცუდი ფრაზაა"</string>
+    <string name="error_syntax" msgid="4786987111228645602">"არასწორი ფრაზა"</string>
     <string name="error_aborted" msgid="3402238176316342537">"შეწყვეტილია"</string>
     <string name="error_overflow" msgid="7800547394563434764">"განუსაზღვრელი?"</string>
     <string name="error_zero_divide" msgid="7085069126090779874">"0-ზე გაყოფა"</string>
     <string name="text_copied_toast" msgid="8845645964273481105">"ტექსტი დაკოპირდა."</string>
     <string name="cancelled" msgid="615180456915976640">"გამოთვლა გაუქმდა!"</string>
     <string name="dismiss" msgid="7872443888515066216">"დახურვა"</string>
-    <string name="timeout" msgid="786323140644284782">"ეს ძალიან ძნელია! განუსაზღვრელი ან უსასრულო რიცხვი?"</string>
+    <string name="timeout" msgid="786323140644284782">"ეს ძალიან ძნელია! განუსაზღვრელი ან უსასრულო რიცხვი ხომ არ არის?"</string>
     <string name="ok_remove_timeout" msgid="4252381882975743581">"კარგი, მაგრამ უფრო ხანგრძლივი დროის ლიმიტი, გთხოვთ!"</string>
     <string name="exact" msgid="2597237880041789948">"(ზუსტი)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 ბოლო ციფრში)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"პირველი ციფრებით"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"პასუხი წილადით"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"ღია კოდის ლიცენ."</string>
 </resources>

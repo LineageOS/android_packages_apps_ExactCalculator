@@ -60,10 +60,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"De acordo! Pero con maiores tempos de espera."</string>
     <string name="exact" msgid="2597237880041789948">"(exacto)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 no último díxito)"</string>
-    <!-- no translation found for menu_leading (2338520833272667740) -->
-    <skip />
-    <!-- no translation found for menu_fraction (1247477377840252234) -->
-    <skip />
-    <!-- no translation found for menu_licenses (1890541368064108592) -->
-    <skip />
+    <string name="menu_leading" msgid="2338520833272667740">"Resposta con díxitos iniciais"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Resposta en fracción"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"Licenzas de código aberto"</string>
 </resources>
