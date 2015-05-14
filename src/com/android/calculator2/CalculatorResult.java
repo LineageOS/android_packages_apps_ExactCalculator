@@ -28,8 +28,8 @@ import android.net.Uri;
 import android.widget.TextView;
 import android.widget.OverScroller;
 import android.text.Editable;
-import android.text.Spanned;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -90,6 +90,8 @@ public class CalculatorResult extends TextView {
                             // the difference is not noticeable.
     private static final int MAX_WIDTH = 100;
                             // Maximum number of digits displayed
+    private ActionMode mActionMode;
+    private final ForegroundColorSpan mExponentColorSpan;
 
     public CalculatorResult(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -107,6 +109,7 @@ public class CalculatorResult extends TextView {
                         mCurrentPos = mScroller.getFinalX();
                     }
                     mScroller.forceFinished(true);
+                    stopActionMode();
                     CalculatorResult.this.cancelLongPress();
                     // Ignore scrolls of error string, etc.
                     if (!mScrollable) return true;
@@ -124,6 +127,7 @@ public class CalculatorResult extends TextView {
                         mCurrentPos = mScroller.getFinalX();
                     }
                     mScroller.forceFinished(true);
+                    stopActionMode();
                     CalculatorResult.this.cancelLongPress();
                     if (!mScrollable) return true;
                     int duration = (int)(e2.getEventTime() - e1.getEventTime());
@@ -135,13 +139,17 @@ public class CalculatorResult extends TextView {
                 }
                 @Override
                 public void onLongPress(MotionEvent e) {
-                    startActionMode(mCopyActionModeCallback,
-                                    ActionMode.TYPE_FLOATING);
+                    if (mValid) {
+                        mActionMode = startActionMode(mCopyActionModeCallback,
+                                ActionMode.TYPE_FLOATING);
+                    }
                 }
             });
         setOnTouchListener(mTouchListener);
         setHorizontallyScrolling(false);  // do it ourselves
         setCursorVisible(false);
+        mExponentColorSpan = new ForegroundColorSpan(
+                context.getColor(R.color.display_result_exponent_text_color));
 
         // Copy ActionMode is triggered explicitly, not through
         // setCustomSelectionActionModeCallback.
@@ -364,6 +372,7 @@ public class CalculatorResult extends TextView {
 
     void clear() {
         mValid = false;
+        mScrollable = false;
         setText("");
     }
 
@@ -376,8 +385,7 @@ public class CalculatorResult extends TextView {
         if (epos > 0 && result.indexOf('.') == -1) {
           // Gray out exponent if used as position indicator
             SpannableString formattedResult = new SpannableString(result);
-            formattedResult.setSpan(new ForegroundColorSpan(Color.LTGRAY),
-                                    epos, result.length(),
+            formattedResult.setSpan(mExponentColorSpan, epos, result.length(),
                                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             setText(formattedResult);
         } else {
@@ -432,8 +440,17 @@ public class CalculatorResult extends TextView {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
         }
     };
+
+    public boolean stopActionMode() {
+        if (mActionMode != null) {
+            mActionMode.finish();
+            return true;
+        }
+        return false;
+    }
 
     private void setPrimaryClip(ClipData clip) {
         ClipboardManager clipboard = (ClipboardManager) getContext().
