@@ -45,6 +45,7 @@ import android.widget.TextView;
 
 public class CalculatorText extends TextView implements View.OnLongClickListener{
 
+    private ActionMode mActionMode;
 
     private final ActionMode.Callback mPasteActionModeCallback =
             new ActionMode.Callback() {
@@ -76,6 +77,7 @@ public class CalculatorText extends TextView implements View.OnLongClickListener
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
         }
 
         @Override
@@ -149,7 +151,7 @@ public class CalculatorText extends TextView implements View.OnLongClickListener
 
     @Override
     public boolean onLongClick(View v) {
-        startActionMode(mPasteActionModeCallback, ActionMode.TYPE_FLOATING);
+        mActionMode = startActionMode(mPasteActionModeCallback, ActionMode.TYPE_FLOATING);
         return true;
     }
 
@@ -227,6 +229,14 @@ public class CalculatorText extends TextView implements View.OnLongClickListener
         // remove more than the available bottom padding otherwise clipping may occur.
         final FontMetricsInt fontMetrics = getPaint().getFontMetricsInt();
         return super.getCompoundPaddingBottom() - Math.min(getPaddingBottom(), fontMetrics.descent);
+    }
+
+    public boolean stopActionMode() {
+        if (mActionMode != null) {
+            mActionMode.finish();
+            return true;
+        }
+        return false;
     }
 
     public interface OnTextSizeChangeListener {
