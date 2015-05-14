@@ -122,6 +122,7 @@ public class Calculator extends Activity
         @Override
         public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
             if (keyEvent.getAction() != KeyEvent.ACTION_UP) return true;
+            stopActionMode();
             switch (keyCode) {
                 case KeyEvent.KEYCODE_NUMPAD_ENTER:
                 case KeyEvent.KEYCODE_ENTER:
@@ -311,15 +312,28 @@ public class Calculator extends Activity
         }
     }
 
+    // Stop any active ActionMode.  Return true if there was one.
+    private boolean stopActionMode() {
+        if (mResult.stopActionMode()) {
+            return true;
+        }
+        if (mFormulaText.stopActionMode()) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void onBackPressed() {
-        if (mPadViewPager == null || mPadViewPager.getCurrentItem() == 0) {
-            // If the user is currently looking at the first pad (or the pad is not paged),
-            // allow the system to handle the Back button.
-            super.onBackPressed();
-        } else {
-            // Otherwise, select the previous pad.
-            mPadViewPager.setCurrentItem(mPadViewPager.getCurrentItem() - 1);
+        if (!stopActionMode()) {
+            if (mPadViewPager != null && mPadViewPager.getCurrentItem() != 0) {
+                // Select the previous pad.
+                mPadViewPager.setCurrentItem(mPadViewPager.getCurrentItem() - 1);
+            } else {
+                // If the user is currently looking at the first pad (or the pad is not paged),
+                // allow the system to handle the Back button.
+                super.onBackPressed();
+            }
         }
     }
 
@@ -380,6 +394,7 @@ public class Calculator extends Activity
 
     public void onButtonClick(View view) {
         mCurrentButton = view;
+        stopActionMode();
 
         // Always cancel in-progress evaluation.
         // If we were waiting for the result, do nothing else.
