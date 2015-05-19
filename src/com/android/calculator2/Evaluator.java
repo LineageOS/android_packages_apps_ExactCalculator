@@ -131,15 +131,6 @@ class Evaluator {
 
     static final BigInteger BIG_MILLION = BigInteger.valueOf(1000000);
 
-    /**
-     * Character used as a placeholder for digits that are currently unknown in a result that is
-     * being computed.
-     * <p/>
-     * Note: the character must correspond closely to the width of a digit, otherwise the UI will
-     * visibly shift once the computation is finished.
-     */
-    private static final char CHAR_DIGIT_UNKNOWN = '\u2007';
-
     private static final int EXTRA_DIGITS = 20;
                 // Extra computed digits to minimize probably we will have
                 // to change our minds about digits we already displayed.
@@ -583,7 +574,7 @@ class Evaluator {
     private String getPadding(int n) {
         StringBuilder padding = new StringBuilder();
         for (int i = 0; i < n; ++i) {
-            padding.append(CHAR_DIGIT_UNKNOWN);
+            padding.append(' ');   // To be replaced during final translation.
         }
         return padding.toString();
     }
