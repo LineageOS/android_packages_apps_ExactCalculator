@@ -27,6 +27,9 @@ import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Locale;
 
+// This is a collection of various mapping functions between key ids,
+// characters, internationalized and noninternationalized characters, etc.
+//
 // KeyMap instances are not meaningful; everything here is static.
 // All functions are either pure, or are assumed to be called only from
 // a single UI thread.
@@ -161,30 +164,40 @@ public class KeyMaps {
         }
     }
 
-    static char mDecimalPt =
-                DecimalFormatSymbols.getInstance().getDecimalSeparator();
+    private static char mDecimalPt =
+            DecimalFormatSymbols.getInstance().getDecimalSeparator();
 
-    static char mPiChar;
+    private static char mPiChar;
 
-    static char mFactChar;
+    private static char mFactChar;
 
-    static HashMap<String, Integer> sKeyValForFun;
+    /**
+     * Character used as a placeholder for digits that are currently unknown
+     * in a result that is being computed.  We initially generate blanks, and
+     * then use this as a replacement during final translation.
+     * <p/>
+     * Note: the character must correspond closely to the width of a digit,
+     * otherwise the UI will visibly shift once the computation is finished.
+     */
+    private static final char CHAR_DIGIT_UNKNOWN = '\u2007';
+
+    private static HashMap<String, Integer> sKeyValForFun;
         // Key value corresponding to given function name.
         // We include both localized and English names.
 
-    static HashMap<Character, String> sOutputForResultChar;
+    private static HashMap<Character, String> sOutputForResultChar;
         // Result string corresponding to a character in the
         // calculator result.
         // The string values in the map are expected to be one character
         // long.
 
-    static String sLocaleForMaps = "none";
+    private static String sLocaleForMaps = "none";
         // Locale string corresponding to preceding map and character
         // constants.
         // We recompute the map if this is not the current locale.
 
-    static Activity mActivity;  // Activity to use for looking up
-                                // buttons.
+    private static Activity mActivity;  // Activity to use for looking up
+                                        // buttons.
 
     // Called only by UI thread.
     public static void setActivity(Activity a) {
@@ -295,6 +308,7 @@ public class KeyMaps {
             sOutputForResultChar.put('e', "E");
             sOutputForResultChar.put('E', "E");
             sOutputForResultChar.put('.', String.valueOf(mDecimalPt));
+            sOutputForResultChar.put(' ', String.valueOf(CHAR_DIGIT_UNKNOWN));
             sOutputForResultChar.put(ELLIPSIS.charAt(0), ELLIPSIS);
             sOutputForResultChar.put('/', "/");
                         // Translate numbers for fraction display, but not
