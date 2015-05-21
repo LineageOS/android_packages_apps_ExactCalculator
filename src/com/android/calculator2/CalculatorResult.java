@@ -48,7 +48,7 @@ import android.support.v4.view.ViewCompat;
 // A text widget that is "infinitely" scrollable to the right,
 // and obtains the text to display via a callback to Logic.
 public class CalculatorResult extends TextView {
-    static final int MAX_RIGHT_SCROLL = 100000000;
+    static final int MAX_RIGHT_SCROLL = 10000000;
     static final int INVALID = MAX_RIGHT_SCROLL + 10000;
         // A larger value is unlikely to avoid running out of space
     final OverScroller mScroller;
@@ -71,8 +71,10 @@ public class CalculatorResult extends TextView {
                             // Large positive values mean the decimal point is scrolled off the
                             // left of the display.  Zero means decimal point is barely displayed
                             // on the right.
-    private int mLastPos;   // Position already reflected in display.
-    private int mMinPos;    // Maximum position before all digits disappear of the right.
+    private int mLastPos;   // Position already reflected in display. Pixels.
+    private int mMinPos;    // Minimum position before all digits disappear off the right. Pixels.
+    private int mMaxPos;    // Maximum position before we start displaying the infinite
+                            // sequence of trailing zeroes on the right. Pixels.
     private Object mWidthLock = new Object();
                             // Protects the next two fields.
     private int mWidthConstraint = -1;
@@ -109,14 +111,14 @@ public class CalculatorResult extends TextView {
                     // Ignore scrolls of error string, etc.
                     if (!mScrollable) return true;
                     mScroller.fling(mCurrentPos, 0, - (int) velocityX, 0  /* horizontal only */,
-                                    mMinPos, MAX_RIGHT_SCROLL, 0, 0);
+                                    mMinPos, mMaxPos, 0, 0);
                     ViewCompat.postInvalidateOnAnimation(CalculatorResult.this);
                     return true;
                 }
                 @Override
                 public boolean onScroll(MotionEvent e1, MotionEvent e2,
                                         float distanceX, float distanceY) {
-                    // TODO: Should we be dealing with any edge effects here?
+                    int distance = (int)distanceX;
                     if (!mScroller.isFinished()) {
                         mCurrentPos = mScroller.getFinalX();
                     }
@@ -124,9 +126,14 @@ public class CalculatorResult extends TextView {
                     stopActionMode();
                     CalculatorResult.this.cancelLongPress();
                     if (!mScrollable) return true;
+                    if (mCurrentPos + distance < mMinPos) {
+                        distance = mMinPos - mCurrentPos;
+                    } else if (mCurrentPos + distance > mMaxPos) {
+                        distance = mMaxPos - mCurrentPos;
+                    }
                     int duration = (int)(e2.getEventTime() - e1.getEventTime());
                     if (duration < 1 || duration > 100) duration = 10;
-                    mScroller.startScroll(mCurrentPos, 0, (int)distanceX, 0, (int)duration);
+                    mScroller.startScroll(mCurrentPos, 0, distance, 0, (int)duration);
                     ViewCompat.postInvalidateOnAnimation(CalculatorResult.this);
                     return true;
                 }
@@ -177,18 +184,45 @@ public class CalculatorResult extends TextView {
         }
     }
 
-    // Display a new result, given initial displayed
-    // precision and the string representing the whole part of
-    // the number to be displayed.
-    // We pass the string, instead of just the length, so we have
-    // one less place to fix in case we ever decide to
-    // correctly use a variable width font.
-    void displayResult(int initPrec, String truncatedWholePart) {
+    // Given that the last non-zero digit is at pos, compute the precision we have to ask
+    // ask for to actually get the digit at pos displayed.  This is not an identity
+    // function, since we may need to drop digits to the right to make room for the exponent.
+    private int addExpSpace(int lastDigit) {
+        if (lastDigit < getMaxChars() - 1) {
+            // The decimal point will be in view when displaying the rightmost digit.
+            // no exponent needed.
+            // TODO: This will change if we stop scrolling to the left of the decimal
+            // point, which might be desirable in the traditional scientific notation case.
+            return lastDigit;
+        }
+        // When the last digit is displayed, the exponent will look like "e-<lastDigit>".
+        // The length of that string is the extra precision we need.
+        return lastDigit + (int)Math.ceil(Math.log10((double)lastDigit)) + 2;
+    }
+
+    // Display a new result, given initial displayed precision, position of the rightmost
+    // nonzero digit (or Integer.MAX_VALUE if non-terminating), and the string representing
+    // the whole part of the number to be displayed.
+    // We pass the string, instead of just the length, so we have one less place to fix in case
+    // we ever decide to fully handle a variable width font.
+    void displayResult(int initPrec, int leastDigPos, String truncatedWholePart) {
         mLastPos = INVALID;
         synchronized(mWidthLock) {
             mCurrentPos = initPrec * mCharWidth;
         }
-        mMinPos = - (int) Math.ceil(getPaint().measureText(truncatedWholePart));
+        // Should logically be
+        // mMinPos = - (int) Math.ceil(getPaint().measureText(truncatedWholePart)), but
+        // we eventually transalate to a character position by dividing by mCharWidth.
+        // To avoid rounding issues, we use the analogous computation here.
+        mMinPos = - truncatedWholePart.length() * mCharWidth;
+        if (leastDigPos < MAX_RIGHT_SCROLL) {
+            mMaxPos = Math.min(addExpSpace(leastDigPos) * mCharWidth, MAX_RIGHT_SCROLL);
+        } else {
+            mMaxPos = MAX_RIGHT_SCROLL;
+        }
+        mScrollable = (leastDigPos != (initPrec == -1 ? 0 : initPrec));
+                // We assume that initPrec allows most significant digit to be displayed.
+                // If there is nothing to the right of initPrec, there is no point in scrolling.
         redisplay();
     }
 
@@ -212,8 +246,6 @@ public class CalculatorResult extends TextView {
     // would have been in had we not done so.
     // This minimizes jumps as a result of scrolling.  Result is NOT internationalized,
     // uses "e" for exponent.
-    // last_included[0] is set to the position of the last digit we actually include;
-    // thus caller can tell whether result is exact.
     public String formatResult(String res, int digs,
                                int maxDigs, boolean truncated,
                                boolean negative) {
@@ -313,13 +345,16 @@ public class CalculatorResult extends TextView {
         return (currentCharPos >= BoundedRational.digitsRequired(rat));
     }
 
-    // May be called asynchronously from non-UI thread.
+    /**
+     * Return the maximum number of characters that will fit in the result display.
+     * May be called asynchronously from non-UI thread.
+     */
     int getMaxChars() {
-        // We only use 2/3 of the available space, since the left 1/3 of the result is not
-        // visible when it is shown in large size.
+        // We only use 4/5 of the available space, since at least the left 4/5 of the result
+        // is not visible when it is shown in large size.
         int result;
         synchronized(mWidthLock) {
-            result = 2 * mWidthConstraint / (3 * mCharWidth);
+            result = 4 * mWidthConstraint / (5 * mCharWidth);
             // We can apparently finish evaluating before onMeasure in CalculatorText has been
             // called, in which case we get 0 or -1 as the width constraint.
         }
@@ -328,6 +363,19 @@ public class CalculatorResult extends TextView {
             return MAX_WIDTH;
         } else {
             return result;
+        }
+    }
+
+    /**
+     * Return the fraction of the available character space occupied by the
+     * current result.
+     * Should be called only with a valid result displayed.
+     */
+    float getOccupancy() {
+        if (mScrollable) {
+            return 1.0f;
+        } else {
+            return (float)getText().length() / getMaxChars();
         }
     }
 
@@ -359,7 +407,6 @@ public class CalculatorResult extends TextView {
             setText(result);
         }
         mValid = true;
-        mScrollable = true;
     }
 
     @Override

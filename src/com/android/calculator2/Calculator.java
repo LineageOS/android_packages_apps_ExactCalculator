@@ -19,11 +19,7 @@
 //        Other menus are not handled brilliantly either.
 // TODO: Revisit handling of "Help" menu, so that it's more consistent
 //       with our conventions.
-// TODO: See if we can make scrolling look better, especially on small
-//       displays. Fix evaluation interface so the evaluator returns entire
-//       result, and formatting of exponent etc. is done separately.
 // TODO: Better indication of when the result is known to be exact.
-// TODO: Fix placement of inverse trig buttons.
 // TODO: Check and possibly fix accessability issues.
 // TODO: Copy & more general paste in formula?  Note that this requires
 //       great care: Currently the text version of a displayed formula
@@ -466,15 +462,12 @@ public class Calculator extends Activity
     }
 
     // Initial evaluation completed successfully.  Initiate display.
-    public void onEvaluate(int initDisplayPrec, String truncatedWholeNumber) {
+    public void onEvaluate(int initDisplayPrec, int leastDigPos, String truncatedWholeNumber) {
         // Invalidate any options that may depend on the current result.
         invalidateOptionsMenu();
 
-        if (mCurrentState == CalculatorState.INPUT) {
-            // Just update small result display.
-            mResult.displayResult(initDisplayPrec, truncatedWholeNumber);
-        } else { // in EVALUATE or INIT state
-            mResult.displayResult(initDisplayPrec, truncatedWholeNumber);
+        mResult.displayResult(initDisplayPrec, leastDigPos, truncatedWholeNumber);
+        if (mCurrentState != CalculatorState.INPUT) { // in EVALUATE or INIT state
             onResult(mCurrentState != CalculatorState.INIT);
         }
     }
@@ -646,20 +639,19 @@ public class Calculator extends Activity
     // We assume the result already contains the text to be expanded.
     private void onResult(boolean animate) {
         // Calculate the values needed to perform the scale and translation animations.
-        // We now fix the character size in the display to avoid weird effects
-        // when we scroll.
-        // Display.xml is designed to ensure exactly a 3/2 ratio between the formula
-        // slot and small result slot.
-        final float resultScale = 1.5f;
-        final float resultTranslationX = -mResult.getWidth() * (resultScale - 1)/2;
-                // mFormulaText is aligned with mResult on the right.
-                // When we enlarge it around its center, the right side
-                // moves to the right.  This compensates.
-        float resultTranslationY = -mResult.getHeight();
-        // This is how much we want to move the bottom.
-        // Now compensate for the fact that we're
-        // simultaenously expanding it around its center by half its height
-        resultTranslationY += mResult.getHeight() * (resultScale - 1)/2;
+        // The nominal font size in the result display is fixed.  But the magnification we
+        // use when the user hits "=" is variable, with a scrollable result always getting
+        // minimum magnification.
+        // Display.xml is designed to ensure that a 5/4 increase is always possible.
+        // More is possible if the display is not fully occupied.
+        // Pivot the result around the bottom of the text.
+        final float resultScale = (float)Math.min(1.25f / mResult.getOccupancy(), 2.0);
+        // Keep the right end of text fixed as we scale.
+        mResult.setPivotX(mResult.getWidth() - mResult.getPaddingRight());
+        // Move result up to take place of formula.  Scale around top of formula.
+        mResult.setPivotY(mResult.getPaddingTop());
+        float resultTranslationY = -mFormulaText.getHeight();
+        // Move formula off screen.
         final float formulaTranslationY = -mFormulaText.getBottom();
 
         // TODO: Reintroduce textColorAnimator?
@@ -672,7 +664,6 @@ public class Calculator extends Activity
             animatorSet.playTogether(
                     ObjectAnimator.ofFloat(mResult, View.SCALE_X, resultScale),
                     ObjectAnimator.ofFloat(mResult, View.SCALE_Y, resultScale),
-                    ObjectAnimator.ofFloat(mResult, View.TRANSLATION_X, resultTranslationX),
                     ObjectAnimator.ofFloat(mResult, View.TRANSLATION_Y, resultTranslationY),
                     ObjectAnimator.ofFloat(mFormulaText, View.TRANSLATION_Y,
                                            formulaTranslationY));
@@ -697,7 +688,6 @@ public class Calculator extends Activity
         } else /* No animation desired; get there fast, e.g. when restarting */ {
             mResult.setScaleX(resultScale);
             mResult.setScaleY(resultScale);
-            mResult.setTranslationX(resultTranslationX);
             mResult.setTranslationY(resultTranslationY);
             mFormulaText.setTranslationY(formulaTranslationY);
             setState(CalculatorState.RESULT);
