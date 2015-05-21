@@ -53,7 +53,7 @@
 
     <!--
       We lay the result out to full width, but are careful to use only
-      2/3 of the space, so that we have room when we expand.
+      4/5 of the space, so that we have room when we expand.
       -->
     <com.android.calculator2.CalculatorResult
         android:id="@+id/result"

@@ -425,8 +425,8 @@ class Evaluator {
             // checking for change.
             int init_prec = result.mInitDisplayPrec;
             int msd = getMsdPos(mCache);
-            int new_init_prec = getPreferredPrec(mCache, msd,
-                                BoundedRational.digitsRequired(mRatVal));
+            int leastDigPos = BoundedRational.digitsRequired(mRatVal);
+            int new_init_prec = getPreferredPrec(mCache, msd, leastDigPos);
             if (new_init_prec < init_prec) {
                 init_prec = new_init_prec;
             } else {
@@ -434,7 +434,7 @@ class Evaluator {
                 // happen if they're not. e.g. because
                 // CalculatorResult.MAX_WIDTH was too small.
             }
-            mCalculator.onEvaluate(init_prec,truncatedWholePart);
+            mCalculator.onEvaluate(init_prec, leastDigPos, truncatedWholePart);
         }
         @Override
         protected void onCancelled(InitialResult result) {
@@ -712,7 +712,8 @@ class Evaluator {
             // Notify immediately, reusing existing result.
             int dotPos = mCache.indexOf('.');
             String truncatedWholePart = mCache.substring(0, dotPos);
-            mCalculator.onEvaluate(mLastDigs,truncatedWholePart);
+            int leastDigPos = BoundedRational.digitsRequired(mRatVal);
+            mCalculator.onEvaluate(mLastDigs, leastDigPos, truncatedWholePart);
         }
     }
 
