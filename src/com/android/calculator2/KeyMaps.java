@@ -164,12 +164,12 @@ public class KeyMaps {
         }
     }
 
-    private static char mDecimalPt =
-            DecimalFormatSymbols.getInstance().getDecimalSeparator();
+    // The following two are only used for recognizing additional
+    // input characters from a physical keyboard.  They are not used
+    // for output internationalization.
+    private static char mDecimalPt;
 
     private static char mPiChar;
-
-    private static char mFactChar;
 
     /**
      * Character used as a placeholder for digits that are currently unknown
@@ -205,7 +205,7 @@ public class KeyMaps {
     }
 
     // Return the button id corresponding to the supplied character
-    // or NO_ID
+    // or return NO_ID.
     // Called only by UI thread.
     public static int keyForChar(char c) {
         validateMaps();
@@ -215,6 +215,7 @@ public class KeyMaps {
         }
         switch (c) {
         case '.':
+        case ',':
             return R.id.dec_point;
         case '-':
             return R.id.op_sub;
@@ -297,17 +298,16 @@ public class KeyMaps {
             // Set locale-dependent character "constants"
             mDecimalPt =
                 DecimalFormatSymbols.getInstance().getDecimalSeparator();
+                // We recognize this in keyboard input, even if we use
+                // a different character.
             Resources res = mActivity.getResources();
-            mPiChar = mFactChar = 0;
+            mPiChar = 0;
             String piString = res.getString(R.string.const_pi);
             if (piString.length() == 1) mPiChar = piString.charAt(0);
-            String factString = res.getString(R.string.op_fact);
-            if (factString.length() == 1) mFactChar = factString.charAt(0);
 
             sOutputForResultChar = new HashMap<Character, String>();
             sOutputForResultChar.put('e', "E");
             sOutputForResultChar.put('E', "E");
-            sOutputForResultChar.put('.', String.valueOf(mDecimalPt));
             sOutputForResultChar.put(' ', String.valueOf(CHAR_DIGIT_UNKNOWN));
             sOutputForResultChar.put(ELLIPSIS.charAt(0), ELLIPSIS);
             sOutputForResultChar.put('/', "/");
@@ -315,6 +315,7 @@ public class KeyMaps {
                         // the separating slash, which appears to be
                         // universal.
             addButtonToOutputMap('-', R.id.op_sub);
+            addButtonToOutputMap('.', R.id.dec_point);
             for (int i = 0; i <= 9; ++i) {
                 addButtonToOutputMap((char)('0' + i), keyForDigVal(i));
             }
