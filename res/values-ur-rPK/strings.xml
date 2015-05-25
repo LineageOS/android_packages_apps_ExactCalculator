@@ -23,7 +23,7 @@
     <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
     <string name="clr" msgid="6730945431543327337">"clr"</string>
     <string name="del" msgid="5878069000864178910">"del"</string>
-    <string name="desc_const_e" msgid="1889187337970539507">"Euler کا نمبر"</string>
+    <string name="desc_const_e" msgid="1889187337970539507">"‏Euler کا نمبر"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"pi"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"پوائنٹ"</string>
     <string name="desc_lparen" msgid="8688758170211924916">"بایاں قوسین"</string>
@@ -33,16 +33,16 @@
     <string name="desc_fun_log" msgid="4202230639814060062">"لاگرتھم"</string>
     <string name="desc_fun_sin" msgid="7425661271929838876">"sine"</string>
     <string name="desc_fun_tan" msgid="3545496562069310036">"tangent"</string>
-    <string name="desc_fun_arccos" msgid="7583077865497939123">"انورس cosine"</string>
-    <string name="desc_fun_arcsin" msgid="8592309261123302915">"انورس sine"</string>
-    <string name="desc_fun_arctan" msgid="6891388393360447455">"انورس tangent"</string>
+    <string name="desc_fun_arccos" msgid="7583077865497939123">"‏انورس cosine"</string>
+    <string name="desc_fun_arcsin" msgid="8592309261123302915">"‏انورس sine"</string>
+    <string name="desc_fun_arctan" msgid="6891388393360447455">"‏انورس tangent"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"جمع"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"تقسیم"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"فیکٹوریل"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"گُنا"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"پاور"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"جذر مربع"</string>
-    <string name="desc_mode_rad" msgid="5522614457355475195">"radians پر سوئچ کریں"</string>
+    <string name="desc_mode_rad" msgid="5522614457355475195">"‏radians پر سوئچ کریں"</string>
     <string name="desc_mode_deg" msgid="5560289378379011831">"ڈگریز پر سوئچ کریں"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"تفریق"</string>
     <string name="desc_clr" msgid="737502124268890797">"صاف کریں"</string>
@@ -59,7 +59,7 @@
     <string name="timeout" msgid="786323140644284782">"وہ بہت مشکل ہے! غیر متعینہ یا لا محدود قدر؟"</string>
     <string name="ok_remove_timeout" msgid="4252381882975743581">"ٹھیک ہے، لیکن براہ کرم ٹائم آؤٹس بڑھائیں!"</string>
     <string name="exact" msgid="2597237880041789948">"(عین مطابق)"</string>
-    <string name="approximate" msgid="7117143366610670836">"(آخری ہندسہ میں ‎±1)"</string>
+    <string name="approximate" msgid="7117143366610670836">"‏(آخری ہندسہ میں ‎±1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"شروعاتی ہندسوں سے جواب دیں"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"بطور فریکشن جواب دیں"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"اوپن سورس لائسنسز"</string>
