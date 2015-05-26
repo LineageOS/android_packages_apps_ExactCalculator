@@ -27,77 +27,106 @@ import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Locale;
 
-// This is a collection of various mapping functions between key ids,
-// characters, internationalized and noninternationalized characters, etc.
-//
-// KeyMap instances are not meaningful; everything here is static.
-// All functions are either pure, or are assumed to be called only from
-// a single UI thread.
-
+/**
+ * Collection of mapping functions between key ids, characters, internationalized
+ * and noninternationalized characters, etc.
+ * <p>
+ * KeyMap instances are not meaningful; everything here is static.
+ * All functions are either pure, or are assumed to be called only from a single UI thread.
+ */
 public class KeyMaps {
-    // Map key id to corresponding (internationalized) display string.
-    // Pure function.
+    /**
+     * Map key id to corresponding (internationalized) display string.
+     * Pure function.
+     */
     public static String toString(int id, Context context) {
         Resources res = context.getResources();
         switch(id) {
-        case R.id.const_pi:         return res.getString(R.string.const_pi);
-        case R.id.const_e:          return res.getString(R.string.const_e);
-        case R.id.op_sqrt:    	    return res.getString(R.string.op_sqrt);
-        case R.id.op_fact:          return res.getString(R.string.op_fact);
-        case R.id.fun_sin:          return res.getString(R.string.fun_sin)
-                                            + res.getString(R.string.lparen);
-        case R.id.fun_cos:          return res.getString(R.string.fun_cos)
-                                            + res.getString(R.string.lparen);
-        case R.id.fun_tan:          return res.getString(R.string.fun_tan)
-                                            + res.getString(R.string.lparen);
-        case R.id.fun_arcsin:       return res.getString(R.string.fun_arcsin)
-                                            + res.getString(R.string.lparen);
-        case R.id.fun_arccos:       return res.getString(R.string.fun_arccos)
-                                            + res.getString(R.string.lparen);
-        case R.id.fun_arctan:       return res.getString(R.string.fun_arctan)
-                                            + res.getString(R.string.lparen);
-        case R.id.fun_ln:           return res.getString(R.string.fun_ln)
-                                            + res.getString(R.string.lparen);
-        case R.id.fun_log:          return res.getString(R.string.fun_log)
-                                            + res.getString(R.string.lparen);
-        case R.id.lparen:           return res.getString(R.string.lparen);
-        case R.id.rparen:           return res.getString(R.string.rparen);
-        case R.id.op_pow:           return res.getString(R.string.op_pow);
-        case R.id.op_mul:           return res.getString(R.string.op_mul);
-        case R.id.op_div:           return res.getString(R.string.op_div);
-        case R.id.op_add:	    return res.getString(R.string.op_add);
-        case R.id.op_sub:           return res.getString(R.string.op_sub);
-        case R.id.dec_point:        return res.getString(R.string.dec_point);
-        case R.id.digit_0:          return res.getString(R.string.digit_0);
-        case R.id.digit_1:          return res.getString(R.string.digit_1);
-        case R.id.digit_2:          return res.getString(R.string.digit_2);
-        case R.id.digit_3:          return res.getString(R.string.digit_3);
-        case R.id.digit_4:          return res.getString(R.string.digit_4);
-        case R.id.digit_5:          return res.getString(R.string.digit_5);
-        case R.id.digit_6:          return res.getString(R.string.digit_6);
-        case R.id.digit_7:          return res.getString(R.string.digit_7);
-        case R.id.digit_8:          return res.getString(R.string.digit_8);
-        case R.id.digit_9:          return res.getString(R.string.digit_9);
-        default:                    return "?oops?";
+            case R.id.const_pi:
+                return res.getString(R.string.const_pi);
+            case R.id.const_e:
+                return res.getString(R.string.const_e);
+            case R.id.op_sqrt:
+                return res.getString(R.string.op_sqrt);
+            case R.id.op_fact:
+                return res.getString(R.string.op_fact);
+            case R.id.fun_sin:
+                return res.getString(R.string.fun_sin) + res.getString(R.string.lparen);
+            case R.id.fun_cos:
+                return res.getString(R.string.fun_cos) + res.getString(R.string.lparen);
+            case R.id.fun_tan:
+                return res.getString(R.string.fun_tan) + res.getString(R.string.lparen);
+            case R.id.fun_arcsin:
+                return res.getString(R.string.fun_arcsin) + res.getString(R.string.lparen);
+            case R.id.fun_arccos:
+                return res.getString(R.string.fun_arccos) + res.getString(R.string.lparen);
+            case R.id.fun_arctan:
+                return res.getString(R.string.fun_arctan) + res.getString(R.string.lparen);
+            case R.id.fun_ln:
+                return res.getString(R.string.fun_ln) + res.getString(R.string.lparen);
+            case R.id.fun_log:
+                return res.getString(R.string.fun_log) + res.getString(R.string.lparen);
+            case R.id.lparen:
+                return res.getString(R.string.lparen);
+            case R.id.rparen:
+                return res.getString(R.string.rparen);
+            case R.id.op_pow:
+                return res.getString(R.string.op_pow);
+            case R.id.op_mul:
+                return res.getString(R.string.op_mul);
+            case R.id.op_div:
+                return res.getString(R.string.op_div);
+            case R.id.op_add:
+                return res.getString(R.string.op_add);
+            case R.id.op_sub:
+                return res.getString(R.string.op_sub);
+            case R.id.dec_point:
+                return res.getString(R.string.dec_point);
+            case R.id.digit_0:
+                return res.getString(R.string.digit_0);
+            case R.id.digit_1:
+                return res.getString(R.string.digit_1);
+            case R.id.digit_2:
+                return res.getString(R.string.digit_2);
+            case R.id.digit_3:
+                return res.getString(R.string.digit_3);
+            case R.id.digit_4:
+                return res.getString(R.string.digit_4);
+            case R.id.digit_5:
+                return res.getString(R.string.digit_5);
+            case R.id.digit_6:
+                return res.getString(R.string.digit_6);
+            case R.id.digit_7:
+                return res.getString(R.string.digit_7);
+            case R.id.digit_8:
+                return res.getString(R.string.digit_8);
+            case R.id.digit_9:
+                return res.getString(R.string.digit_9);
+            default:
+                return "?oops?";
         }
     }
 
-    // Does a button id correspond to a binary operator?
-    // Pure function.
+    /**
+     * Does a button id correspond to a binary operator?
+     * Pure function.
+     */
     public static boolean isBinary(int id) {
         switch(id) {
-        case R.id.op_pow:
-        case R.id.op_mul:
-        case R.id.op_div:
-        case R.id.op_add:
-        case R.id.op_sub:
-            return true;
-        default:
-            return false;
+            case R.id.op_pow:
+            case R.id.op_mul:
+            case R.id.op_div:
+            case R.id.op_add:
+            case R.id.op_sub:
+                return true;
+            default:
+                return false;
         }
     }
 
-    // Does a button id correspond to a suffix operator?
+    /**
+     * Does a button id correspond to a suffix operator?
+     */
     public static boolean isSuffix(int id) {
         return id == R.id.op_fact;
     }
@@ -106,8 +135,10 @@ public class KeyMaps {
 
     public static final String ELLIPSIS = "\u2026";
 
-    // Map key id to digit or NOT_DIGIT
-    // Pure function.
+    /**
+     * Map key id to digit or NOT_DIGIT
+     * Pure function.
+     */
     public static int digVal(int id) {
         switch (id) {
         case R.id.digit_0:
@@ -135,8 +166,10 @@ public class KeyMaps {
         }
     }
 
-    // Map digit to corresponding key.  Inverse of above.
-    // Pure function.
+    /**
+     * Map digit to corresponding key.  Inverse of above.
+     * Pure function.
+     */
     public static int keyForDigVal(int v) {
         switch(v) {
         case 0:
@@ -172,41 +205,50 @@ public class KeyMaps {
     private static char mPiChar;
 
     /**
-     * Character used as a placeholder for digits that are currently unknown
-     * in a result that is being computed.  We initially generate blanks, and
-     * then use this as a replacement during final translation.
+     * Character used as a placeholder for digits that are currently unknown in a result that
+     * is being computed.  We initially generate blanks, and then use this as a replacement
+     * during final translation.
      * <p/>
      * Note: the character must correspond closely to the width of a digit,
      * otherwise the UI will visibly shift once the computation is finished.
      */
     private static final char CHAR_DIGIT_UNKNOWN = '\u2007';
 
+    /**
+     * Map typed function name strings to corresponding button ids.
+     * We (now redundantly?) include both localized and English names.
+     */
     private static HashMap<String, Integer> sKeyValForFun;
-        // Key value corresponding to given function name.
-        // We include both localized and English names.
 
+    /**
+     * Result string corresponding to a character in the calculator result.
+     * The string values in the map are expected to be one character long.
+     */
     private static HashMap<Character, String> sOutputForResultChar;
-        // Result string corresponding to a character in the
-        // calculator result.
-        // The string values in the map are expected to be one character
-        // long.
 
+    /**
+     * Locale string corresponding to preceding map and character constants.
+     * We recompute the map if this is not the current locale.
+     */
     private static String sLocaleForMaps = "none";
-        // Locale string corresponding to preceding map and character
-        // constants.
-        // We recompute the map if this is not the current locale.
 
-    private static Activity mActivity;  // Activity to use for looking up
-                                        // buttons.
+    /**
+     * Activity to use for looking up buttons.
+     */
+    private static Activity mActivity;
 
-    // Called only by UI thread.
+    /**
+     * Set acttivity used for looking up button labels.
+     * Call only from UI thread.
+     */
     public static void setActivity(Activity a) {
         mActivity = a;
     }
 
-    // Return the button id corresponding to the supplied character
-    // or return NO_ID.
-    // Called only by UI thread.
+    /**
+     * Return the button id corresponding to the supplied character or return NO_ID.
+     * Called only by UI thread.
+     */
     public static int keyForChar(char c) {
         validateMaps();
         if (Character.isDigit(c)) {
@@ -214,52 +256,54 @@ public class KeyMaps {
             return KeyMaps.keyForDigVal(i);
         }
         switch (c) {
-        case '.':
-        case ',':
-            return R.id.dec_point;
-        case '-':
-            return R.id.op_sub;
-        case '+':
-            return R.id.op_add;
-        case '*':
-            return R.id.op_mul;
-        case '/':
-            return R.id.op_div;
-        // TODO: We have an issue if any of the localized function
-        // names start with 'e' or 'p'.  That doesn't currently appear
-        // to be the case.  In fact the first letters of the Latin
-        // allphabet ones seem rather predictable.
-        case 'e':
-        case 'E':
-            return R.id.const_e;
-        case 'p':
-        case 'P':
-            return R.id.const_pi;
-        case '^':
-            return R.id.op_pow;
-        case '!':
-            return R.id.op_fact;
-        case '(':
-            return R.id.lparen;
-        case ')':
-            return R.id.rparen;
-        default:
-            if (c == mDecimalPt) return R.id.dec_point;
-            if (c == mPiChar) return R.id.const_pi;
-                // pi is not translated, but it might be typable on
-                // a Greek keyboard, so we check ...
-            return View.NO_ID;
+            case '.':
+            case ',':
+                return R.id.dec_point;
+            case '-':
+                return R.id.op_sub;
+            case '+':
+                return R.id.op_add;
+            case '*':
+                return R.id.op_mul;
+            case '/':
+                return R.id.op_div;
+            // We no longer localize function names, so they can't start with an 'e' or 'p'.
+            case 'e':
+            case 'E':
+                return R.id.const_e;
+            case 'p':
+            case 'P':
+                return R.id.const_pi;
+            case '^':
+                return R.id.op_pow;
+            case '!':
+                return R.id.op_fact;
+            case '(':
+                return R.id.lparen;
+            case ')':
+                return R.id.rparen;
+            default:
+                if (c == mDecimalPt) return R.id.dec_point;
+                if (c == mPiChar) return R.id.const_pi;
+                    // pi is not translated, but it might be typable on a Greek keyboard,
+                    // so we check ...
+                return View.NO_ID;
         }
     }
 
-    // Add information corresponding to the given button id to
-    // sKeyValForFun.
+    /**
+     * Add information corresponding to the given button id to sKeyValForFun, to be used
+     * when mapping keyboard input to button ids.
+     */
     static void addButtonToFunMap(int button_id) {
         Button button = (Button)mActivity.findViewById(button_id);
         sKeyValForFun.put(button.getText().toString(), button_id);
     }
 
-    // Ditto, but for sOutputForResultChar.
+    /**
+     * Add information corresponding to the given button to sOutputForResultChar, to be used
+     * when translating numbers on output.
+     */
     static void addButtonToOutputMap(char c, int button_id) {
         Button button = (Button)mActivity.findViewById(button_id);
         sOutputForResultChar.put(c, button.getText().toString());
@@ -303,7 +347,9 @@ public class KeyMaps {
             Resources res = mActivity.getResources();
             mPiChar = 0;
             String piString = res.getString(R.string.const_pi);
-            if (piString.length() == 1) mPiChar = piString.charAt(0);
+            if (piString.length() == 1) {
+                mPiChar = piString.charAt(0);
+            }
 
             sOutputForResultChar = new HashMap<Character, String>();
             sOutputForResultChar.put('e', "E");
@@ -325,12 +371,13 @@ public class KeyMaps {
         }
     }
 
-    // Return function button id for the substring of s starting
-    // at pos and ending with the next "(".
-    // Return NO_ID if there is none.
-    // We check for both standard English names and localized
-    // button labels, though those don't seem to differ much.
-    // Called only by a single thread, namely the UI thread.
+    /**
+     * Return function button id for the substring of s starting at pos and ending with
+     * the next "(".  Return NO_ID if there is none.
+     * We currently check for both (possibly localized) button labels, and standard
+     * English names.  (They should currently be the same, and hence this is currently redundant.)
+     * Callable only from UI thread.
+     */
     public static int funForString(String s, int pos) {
         validateMaps();
         int parenPos = s.indexOf('(', pos);
@@ -343,7 +390,10 @@ public class KeyMaps {
         return View.NO_ID;
     }
 
-    // Called only by UI thread.
+    /**
+     * Return the localization of the string s representing a numeric answer.
+     * Callable only from UI thread.
+     */
     public static String translateResult(String s) {
         StringBuilder result = new StringBuilder();
         int len = s.length();
@@ -352,7 +402,7 @@ public class KeyMaps {
             char c = s.charAt(i);
             String translation = sOutputForResultChar.get(c);
             if (translation == null) {
-                // Should not get here.
+                // Should not get here.  Report if we do.
                 Log.v("Calculator", "Bad character:" + c);
                 result.append(String.valueOf(c));
             } else {
