@@ -143,9 +143,16 @@ class Evaluator {
                 // We do use these extra digits to display while we are
                 // computing the correct answer.  Thus they may be
                 // temporarily visible.
-   private static final int PRECOMPUTE_DIGITS = 20;
-                                // Extra digits computed to minimize
-                                // reevaluations during scrolling.
+   private static final int EXTRA_DIVISOR = 5;
+                // We add the length of the previous result divided by
+                // EXTRA_DIVISOR to try to recover recompute latency when
+                // scrolling through a long result.
+   private static final int PRECOMPUTE_DIGITS = 30;
+   private static final int PRECOMPUTE_DIVISOR = 5;
+                // When we have to reevaluate, we compute an extra
+                // PRECOMPUTE_DIGITS
+                // + <current_result_length>/PRECOMPUTE_DIVISOR digits.
+                // The last term is dropped if prec < 0.
 
     // We cache the result as a string to accelerate scrolling.
     // The cache is filled in by the UI thread, but this may
@@ -460,6 +467,9 @@ class Evaluator {
         }
         mCurrentReevaluator = new AsyncReevaluator();
         mCacheDigsReq = prec + PRECOMPUTE_DIGITS;
+        if (mCache != null) {
+            mCacheDigsReq += mCacheDigsReq / PRECOMPUTE_DIVISOR;
+        }
         mCurrentReevaluator.execute(mCacheDigsReq);
     }
 
@@ -620,12 +630,15 @@ class Evaluator {
         int digs = prec[0];
         mLastDigs = digs;
         // Make sure we eventually get a complete answer
-            ensureCachePrec(digs + EXTRA_DIGITS);
             if (mCache == null) {
-                // Nothing to do now; seems to happen on rare occasion
+                ensureCachePrec(digs + EXTRA_DIGITS);
+                // Nothing else to do now; seems to happen on rare occasion
                 // with weird user input timing;
                 // Will repair itself in a jiffy.
                 return getPadding(1);
+            } else {
+                ensureCachePrec(digs + EXTRA_DIGITS
+                        + mCache.length() / EXTRA_DIVISOR);
             }
         // Compute an appropriate substring of mCache.
         // We avoid returning a huge string to minimize string
