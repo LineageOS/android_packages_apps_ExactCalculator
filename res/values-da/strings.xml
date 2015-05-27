@@ -52,10 +52,10 @@
     <string name="error_syntax" msgid="4786987111228645602">"Ugyldigt udtryk"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Afbrudt"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Uendeligt?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"Division med 0"</string>
+    <string name="error_zero_divide" msgid="7085069126090779874">"Divideret med 0"</string>
     <string name="text_copied_toast" msgid="8845645964273481105">"Teksten er kopieret."</string>
     <string name="cancelled" msgid="615180456915976640">"Beregningen blev annulleret!"</string>
-    <string name="dismiss" msgid="7872443888515066216">"Annuller"</string>
+    <string name="dismiss" msgid="7872443888515066216">"Luk"</string>
     <string name="timeout" msgid="786323140644284782">"Det er for svært! Har du brugt en udefineret eller uendelig værdi?"</string>
     <string name="ok_remove_timeout" msgid="4252381882975743581">"OK, men kan vi ikke få længere timeouts?"</string>
     <string name="exact" msgid="2597237880041789948">"(eksakt)"</string>
