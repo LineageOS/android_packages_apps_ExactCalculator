@@ -15,122 +15,159 @@
   limitations under the License.
   -->
 
-<com.android.calculator2.CalculatorPadLayout
+<GridLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pad_advanced"
     style="@style/PadLayoutStyle.Advanced"
+    android:rowCount="5"
+    android:columnCount="3"
     android:background="@color/pad_advanced_background_color">
+
+    <Button
+        android:id="@+id/toggle_inv"
+        style="@style/PadButtonStyle.Advanced.Text"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:contentDescription="@string/desc_inv_off"
+        android:text="@string/inv" />
+
+    <Button
+        android:id="@+id/toggle_mode"
+        style="@style/PadButtonStyle.Advanced.Text"
+        android:layout_row="0"
+        android:layout_column="1"
+        android:contentDescription="@string/desc_switch_deg"
+        android:text="@string/mode_deg" />
+
+    <Button
+        android:id="@+id/op_pct"
+        style="@style/PadButtonStyle.Advanced"
+        android:layout_row="0"
+        android:layout_column="2"
+        android:contentDescription="@string/desc_op_pct"
+        android:text="@string/op_pct" />
 
     <Button
         android:id="@+id/fun_sin"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="1"
+        android:layout_column="0"
         android:contentDescription="@string/desc_fun_sin"
-        android:onClick="onButtonClick"
         android:text="@string/fun_sin" />
-
-    <Button
-        android:id="@+id/fun_cos"
-        style="@style/PadButtonStyle.Advanced"
-        android:contentDescription="@string/desc_fun_cos"
-        android:onClick="onButtonClick"
-        android:text="@string/fun_cos" />
-
-    <Button
-        android:id="@+id/fun_tan"
-        style="@style/PadButtonStyle.Advanced"
-        android:contentDescription="@string/desc_fun_tan"
-        android:onClick="onButtonClick"
-        android:text="@string/fun_tan" />
 
     <Button
         android:id="@+id/fun_arcsin"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="1"
+        android:layout_column="0"
         android:contentDescription="@string/desc_fun_arcsin"
-        android:onClick="onButtonClick"
-        android:text="@string/fun_arcsin" />
+        android:text="@string/fun_arcsin"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/fun_cos"
+        style="@style/PadButtonStyle.Advanced"
+        android:layout_row="1"
+        android:layout_column="1"
+        android:contentDescription="@string/desc_fun_cos"
+        android:text="@string/fun_cos" />
 
     <Button
         android:id="@+id/fun_arccos"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="1"
+        android:layout_column="1"
         android:contentDescription="@string/desc_fun_arccos"
-        android:onClick="onButtonClick"
-        android:text="@string/fun_arccos" />
+        android:text="@string/fun_arccos"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/fun_tan"
+        style="@style/PadButtonStyle.Advanced"
+        android:layout_row="1"
+        android:layout_column="2"
+        android:contentDescription="@string/desc_fun_tan"
+        android:text="@string/fun_tan" />
 
     <Button
         android:id="@+id/fun_arctan"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="1"
+        android:layout_column="2"
         android:contentDescription="@string/desc_fun_arctan"
-        android:onClick="onButtonClick"
-        android:text="@string/fun_arctan" />
+        android:text="@string/fun_arctan"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/fun_ln"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="2"
+        android:layout_column="0"
         android:contentDescription="@string/desc_fun_ln"
-        android:onClick="onButtonClick"
         android:text="@string/fun_ln" />
 
     <Button
         android:id="@+id/fun_log"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="2"
+        android:layout_column="1"
         android:contentDescription="@string/desc_fun_log"
-        android:onClick="onButtonClick"
         android:text="@string/fun_log" />
 
     <Button
         android:id="@+id/op_fact"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="2"
+        android:layout_column="2"
         android:contentDescription="@string/desc_op_fact"
-        android:onClick="onButtonClick"
         android:text="@string/op_fact" />
 
     <Button
         android:id="@+id/const_pi"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="3"
+        android:layout_column="0"
         android:contentDescription="@string/desc_const_pi"
-        android:onClick="onButtonClick"
         android:text="@string/const_pi" />
 
     <Button
         android:id="@+id/const_e"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="3"
+        android:layout_column="1"
         android:contentDescription="@string/desc_const_e"
-        android:onClick="onButtonClick"
         android:text="@string/const_e" />
 
     <Button
         android:id="@+id/op_pow"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="3"
+        android:layout_column="2"
         android:contentDescription="@string/desc_op_pow"
-        android:onClick="onButtonClick"
         android:text="@string/op_pow" />
 
     <Button
         android:id="@+id/lparen"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="4"
+        android:layout_column="0"
         android:contentDescription="@string/desc_lparen"
-        android:onClick="onButtonClick"
         android:text="@string/lparen" />
 
     <Button
         android:id="@+id/rparen"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="4"
+        android:layout_column="1"
         android:contentDescription="@string/desc_rparen"
-        android:onClick="onButtonClick"
         android:text="@string/rparen" />
 
     <Button
         android:id="@+id/op_sqrt"
         style="@style/PadButtonStyle.Advanced"
+        android:layout_row="4"
+        android:layout_column="2"
         android:contentDescription="@string/desc_op_sqrt"
-        android:onClick="onButtonClick"
         android:text="@string/op_sqrt" />
 
-    <Button
-        android:id="@+id/mode_deg_rad"
-        style="@style/PadButtonStyle.Advanced"
-        android:contentDescription="@string/desc_mode_rad"
-        android:onClick="onButtonClick"
-        android:textAllCaps="true" />
-
-</com.android.calculator2.CalculatorPadLayout>
+</GridLayout>
