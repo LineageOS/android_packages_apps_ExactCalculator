@@ -29,7 +29,7 @@
         android:layout_height="?android:attr/actionBarSize">
 
        <TextView
-            android:id="@+id/deg_rad"
+            android:id="@+id/mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"

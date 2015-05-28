@@ -69,6 +69,8 @@
     <string name="op_fact" translatable="false">!</string>
     <!-- Multiply operator (e.g. "1 × 2"). [CHAR_LIMIT=1] -->
     <string name="op_mul" translatable="false">×</string>
+    <!-- Percent operator (e.g. "25%"). [CHAR_LIMIT=1] -->
+    <string name="op_pct" translatable="false">%</string>
     <!-- Power operator (e.g. "1 ^ 2"). [CHAR_LIMIT=1] -->
     <string name="op_pow" translatable="false">^</string>
     <!-- Square root operator (e.g. "√1"). [CHAR_LIMIT=1] -->
@@ -104,7 +106,8 @@
     <string name="clr">clr</string>
     <!-- Delete button to remove last entered token. [CHAR_LIMIT=4] -->
     <string name="del">del</string>
-
+    <!-- Toggle button to show/hide inverse functions. [CHAR_LIMIT=4] -->
+    <string name="inv" translatable="false">inv</string>
 
     <!-- Content description for 'e' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_const_e">Euler\'s number</string>
@@ -144,23 +147,35 @@
     <string name="desc_op_fact">factorial</string>
     <!-- Content description for '×' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_mul">times</string>
+    <!-- Content description for '%' button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_op_pct">percent</string>
     <!-- Content description for '^' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_pow">power</string>
     <!-- Content description for '√' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_sqrt">square root</string>
-    <!-- Content description for sitch to radian button. [CHAR_LIMIT=NONE] -->
-    <string name="desc_mode_rad">switch to radians</string>
-    <!-- Content description for switch to degree button. [CHAR_LIMIT=NONE] -->
-    <string name="desc_mode_deg">switch to degrees</string>
     <!-- Content description for '-' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_sub">minus</string>
 
+    <!-- Content description for degree mode. [CHAR_LIMIT=NONE] -->
+    <string name="desc_mode_deg">degree mode</string>
+    <!-- Content description for radian mode. [CHAR_LIMIT=NONE] -->
+    <string name="desc_mode_rad">radian mode</string>
+
+    <!-- Content description for switch to degree button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_switch_deg">switch to degrees</string>
+    <!-- Content description for switch to radian button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_switch_rad">switch to radians</string>
+
+    <!-- Content description for '=' button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_eq">equals</string>
     <!-- Content description for "clr" button. [CHAR_LIMIT=NONE] -->
     <string name="desc_clr">clear</string>
     <!-- Content description for "del" button. [CHAR_LIMIT=NONE] -->
     <string name="desc_del">delete</string>
-    <!-- Content description for '=' button. [CHAR_LIMIT=NONE] -->
-    <string name="desc_eq">equals</string>
+    <!-- Content description for "inv" button to show inverse functions. [CHAR_LIMIT=NONE] -->
+    <string name="desc_inv_off">show inverse functions</string>
+    <!-- Content description for "inv" button to hide inverse functions. [CHAR_LIMIT=NONE] -->
+    <string name="desc_inv_on">hide inverse functions</string>
 
     <!-- Error displayed when expression evaluates to an undefined result. [CHAR_LIMIT=16] -->
     <string name="error_nan">Not a number</string>

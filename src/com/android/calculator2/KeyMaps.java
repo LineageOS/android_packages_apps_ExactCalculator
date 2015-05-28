@@ -29,7 +29,7 @@ import java.util.Locale;
 
 /**
  * Collection of mapping functions between key ids, characters, internationalized
- * and noninternationalized characters, etc.
+ * and non-internationalized characters, etc.
  * <p>
  * KeyMap instances are not meaningful; everything here is static.
  * All functions are either pure, or are assumed to be called only from a single UI thread.
@@ -39,71 +39,72 @@ public class KeyMaps {
      * Map key id to corresponding (internationalized) display string.
      * Pure function.
      */
-    public static String toString(int id, Context context) {
-        Resources res = context.getResources();
+    public static String toString(Context context, int id) {
         switch(id) {
             case R.id.const_pi:
-                return res.getString(R.string.const_pi);
+                return context.getString(R.string.const_pi);
             case R.id.const_e:
-                return res.getString(R.string.const_e);
+                return context.getString(R.string.const_e);
             case R.id.op_sqrt:
-                return res.getString(R.string.op_sqrt);
+                return context.getString(R.string.op_sqrt);
             case R.id.op_fact:
-                return res.getString(R.string.op_fact);
+                return context.getString(R.string.op_fact);
+            case R.id.op_pct:
+                return context.getString(R.string.op_pct);
             case R.id.fun_sin:
-                return res.getString(R.string.fun_sin) + res.getString(R.string.lparen);
+                return context.getString(R.string.fun_sin) + context.getString(R.string.lparen);
             case R.id.fun_cos:
-                return res.getString(R.string.fun_cos) + res.getString(R.string.lparen);
+                return context.getString(R.string.fun_cos) + context.getString(R.string.lparen);
             case R.id.fun_tan:
-                return res.getString(R.string.fun_tan) + res.getString(R.string.lparen);
+                return context.getString(R.string.fun_tan) + context.getString(R.string.lparen);
             case R.id.fun_arcsin:
-                return res.getString(R.string.fun_arcsin) + res.getString(R.string.lparen);
+                return context.getString(R.string.fun_arcsin) + context.getString(R.string.lparen);
             case R.id.fun_arccos:
-                return res.getString(R.string.fun_arccos) + res.getString(R.string.lparen);
+                return context.getString(R.string.fun_arccos) + context.getString(R.string.lparen);
             case R.id.fun_arctan:
-                return res.getString(R.string.fun_arctan) + res.getString(R.string.lparen);
+                return context.getString(R.string.fun_arctan) + context.getString(R.string.lparen);
             case R.id.fun_ln:
-                return res.getString(R.string.fun_ln) + res.getString(R.string.lparen);
+                return context.getString(R.string.fun_ln) + context.getString(R.string.lparen);
             case R.id.fun_log:
-                return res.getString(R.string.fun_log) + res.getString(R.string.lparen);
+                return context.getString(R.string.fun_log) + context.getString(R.string.lparen);
             case R.id.lparen:
-                return res.getString(R.string.lparen);
+                return context.getString(R.string.lparen);
             case R.id.rparen:
-                return res.getString(R.string.rparen);
+                return context.getString(R.string.rparen);
             case R.id.op_pow:
-                return res.getString(R.string.op_pow);
+                return context.getString(R.string.op_pow);
             case R.id.op_mul:
-                return res.getString(R.string.op_mul);
+                return context.getString(R.string.op_mul);
             case R.id.op_div:
-                return res.getString(R.string.op_div);
+                return context.getString(R.string.op_div);
             case R.id.op_add:
-                return res.getString(R.string.op_add);
+                return context.getString(R.string.op_add);
             case R.id.op_sub:
-                return res.getString(R.string.op_sub);
+                return context.getString(R.string.op_sub);
             case R.id.dec_point:
-                return res.getString(R.string.dec_point);
+                return context.getString(R.string.dec_point);
             case R.id.digit_0:
-                return res.getString(R.string.digit_0);
+                return context.getString(R.string.digit_0);
             case R.id.digit_1:
-                return res.getString(R.string.digit_1);
+                return context.getString(R.string.digit_1);
             case R.id.digit_2:
-                return res.getString(R.string.digit_2);
+                return context.getString(R.string.digit_2);
             case R.id.digit_3:
-                return res.getString(R.string.digit_3);
+                return context.getString(R.string.digit_3);
             case R.id.digit_4:
-                return res.getString(R.string.digit_4);
+                return context.getString(R.string.digit_4);
             case R.id.digit_5:
-                return res.getString(R.string.digit_5);
+                return context.getString(R.string.digit_5);
             case R.id.digit_6:
-                return res.getString(R.string.digit_6);
+                return context.getString(R.string.digit_6);
             case R.id.digit_7:
-                return res.getString(R.string.digit_7);
+                return context.getString(R.string.digit_7);
             case R.id.digit_8:
-                return res.getString(R.string.digit_8);
+                return context.getString(R.string.digit_8);
             case R.id.digit_9:
-                return res.getString(R.string.digit_9);
+                return context.getString(R.string.digit_9);
             default:
-                return "?oops?";
+                return "";
         }
     }
 
@@ -128,7 +129,13 @@ public class KeyMaps {
      * Does a button id correspond to a suffix operator?
      */
     public static boolean isSuffix(int id) {
-        return id == R.id.op_fact;
+        switch (id) {
+            case R.id.op_fact:
+            case R.id.op_pct:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public static final int NOT_DIGIT = 10;
@@ -278,6 +285,8 @@ public class KeyMaps {
                 return R.id.op_pow;
             case '!':
                 return R.id.op_fact;
+            case '%':
+                return R.id.op_pct;
             case '(':
                 return R.id.lparen;
             case ')':
