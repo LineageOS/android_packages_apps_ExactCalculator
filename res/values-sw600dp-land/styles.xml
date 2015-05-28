@@ -41,6 +41,11 @@
         <item name="android:textSize">27sp</item>
     </style>
 
+    <style name="PadButtonStyle.Advanced.Text">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <style name="PadButtonStyle.Numeric">
         <item name="android:layout_margin">6dip</item>
         <item name="android:textSize">36sp</item>
@@ -67,8 +72,6 @@
         <item name="android:paddingBottom">10dip</item>
         <item name="android:paddingStart">18dip</item>
         <item name="android:paddingEnd">22dip</item>
-        <item name="android:columnCount">3</item>
-        <item name="android:rowCount">5</item>
     </style>
 
     <style name="PadLayoutStyle.Numeric">

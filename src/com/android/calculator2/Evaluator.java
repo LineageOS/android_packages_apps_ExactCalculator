@@ -80,33 +80,23 @@ package com.android.calculator2;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Context;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.widget.EditText;
 
+import com.hp.creals.AbortedError;
 import com.hp.creals.CR;
 import com.hp.creals.PrecisionOverflowError;
-import com.hp.creals.AbortedError;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
 import java.util.TimeZone;
 
 class Evaluator {
