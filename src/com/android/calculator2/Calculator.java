@@ -174,7 +174,12 @@ public class Calculator extends Activity
     private View mDeleteButton;
     private View mClearButton;
     private View mEqualButton;
-    private TextView mModeButton;
+
+    private TextView mInverseToggle;
+    private TextView mModeToggle;
+
+    private View[] mInvertableButtons;
+    private View[] mInverseButtons;
 
     private View mCurrentButton;
     private Animator mCurrentAnimator;
@@ -193,7 +198,7 @@ public class Calculator extends Activity
         getActionBar().setDisplayOptions(0);
 
         mDisplayView = findViewById(R.id.display);
-        mModeView = (TextView) findViewById(R.id.deg_rad);
+        mModeView = (TextView) findViewById(R.id.mode);
         mFormulaText = (CalculatorText) findViewById(R.id.formula);
         mResult = (CalculatorResult) findViewById(R.id.result);
 
@@ -204,7 +209,20 @@ public class Calculator extends Activity
         if (mEqualButton == null || mEqualButton.getVisibility() != View.VISIBLE) {
             mEqualButton = findViewById(R.id.pad_operator).findViewById(R.id.eq);
         }
-        mModeButton = (TextView) findViewById(R.id.mode_deg_rad);
+
+        mInverseToggle = (TextView) findViewById(R.id.toggle_inv);
+        mModeToggle = (TextView) findViewById(R.id.toggle_mode);
+
+        mInvertableButtons = new View[] {
+            findViewById(R.id.fun_sin),
+            findViewById(R.id.fun_cos),
+            findViewById(R.id.fun_tan)
+        };
+        mInverseButtons = new View[] {
+                findViewById(R.id.fun_arcsin),
+                findViewById(R.id.fun_arccos),
+                findViewById(R.id.fun_arctan)
+        };
 
         mEvaluator = new Evaluator(this, mResult);
         mResult.setEvaluator(mEvaluator);
@@ -232,11 +250,15 @@ public class Calculator extends Activity
             mCurrentState = CalculatorState.INPUT;
             mEvaluator.clear();
         }
+
         mFormulaText.setOnKeyListener(mFormulaOnKeyListener);
         mFormulaText.setOnTextSizeChangeListener(this);
         mFormulaText.setPasteListener(this);
         mDeleteButton.setOnLongClickListener(this);
-        updateDegreeMode(mEvaluator.getDegreeMode());
+
+        onInverseToggled(mInverseToggle.isSelected());
+        onModeChanged(mEvaluator.getDegreeMode());
+
         if (mCurrentState != CalculatorState.INPUT) {
             // Just reevaluate.
             redisplayFormula();
@@ -344,18 +366,49 @@ public class Calculator extends Activity
         }
     }
 
-    // Update the top corner degree/radian display and mode button
-    // to reflect the indicated current degree mode (true = degrees)
-    // TODO: Hide the top corner display until the advanced panel is exposed.
-    private void updateDegreeMode(boolean dm) {
-        if (dm) {
+    /**
+     * Invoked whenever the inverse button is toggled to update the UI.
+     *
+     * @param showInverse {@code true} if inverse functions should be shown
+     */
+    private void onInverseToggled(boolean showInverse) {
+        if (showInverse) {
+            mInverseToggle.setContentDescription(getString(R.string.desc_inv_on));
+            for (View invertableButton : mInvertableButtons) {
+                invertableButton.setVisibility(View.GONE);
+            }
+            for (View inverseButton : mInverseButtons) {
+                inverseButton.setVisibility(View.VISIBLE);
+            }
+        } else {
+            mInverseToggle.setContentDescription(getString(R.string.desc_inv_off));
+            for (View invertableButton : mInvertableButtons) {
+                invertableButton.setVisibility(View.VISIBLE);
+            }
+            for (View inverseButton : mInverseButtons) {
+                inverseButton.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    /**
+     * Invoked whenever the deg/rad mode may have changed to update the UI.
+     *
+     * @param degreeMode {@code true} if in degree mode
+     */
+    private void onModeChanged(boolean degreeMode) {
+        if (degreeMode) {
             mModeView.setText(R.string.mode_deg);
-            mModeButton.setText(R.string.mode_rad);
-            mModeButton.setContentDescription(getString(R.string.desc_mode_rad));
+            mModeView.setContentDescription(getString(R.string.desc_mode_deg));
+
+            mModeToggle.setText(R.string.mode_rad);
+            mModeToggle.setContentDescription(getString(R.string.desc_switch_rad));
         } else {
             mModeView.setText(R.string.mode_rad);
-            mModeButton.setText(R.string.mode_deg);
-            mModeButton.setContentDescription(getString(R.string.desc_mode_deg));
+            mModeView.setContentDescription(getString(R.string.desc_mode_rad));
+
+            mModeToggle.setText(R.string.mode_deg);
+            mModeToggle.setContentDescription(getString(R.string.desc_switch_deg));
         }
     }
 
@@ -413,15 +466,21 @@ public class Calculator extends Activity
             case R.id.clr:
                 onClear();
                 break;
-            case R.id.mode_deg_rad:
-                boolean mode = !mEvaluator.getDegreeMode();
-                updateDegreeMode(mode);
+            case R.id.toggle_inv:
+                final boolean selected = !mInverseToggle.isSelected();
+                mInverseToggle.setSelected(selected);
+                onInverseToggled(selected);
+                break;
+            case R.id.toggle_mode:
+                final boolean mode = !mEvaluator.getDegreeMode();
                 if (mCurrentState == CalculatorState.RESULT) {
                     mEvaluator.collapse();  // Capture result evaluated in old mode
                     redisplayFormula();
                 }
                 // In input mode, we reinterpret already entered trig functions.
                 mEvaluator.setDegreeMode(mode);
+                onModeChanged(mode);
+
                 setState(CalculatorState.INPUT);
                 mResult.clear();
                 if (mEvaluator.getExpr().hasInterestingOps()) {

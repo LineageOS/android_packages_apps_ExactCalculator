@@ -19,8 +19,6 @@ package com.android.calculator2;
 
 import com.hp.creals.CR;
 import com.hp.creals.UnaryCRFunction;
-import com.hp.creals.PrecisionOverflowError;
-import com.hp.creals.AbortedError;
 
 import android.content.Context;
 import android.util.Log;
@@ -29,7 +27,6 @@ import java.math.BigInteger;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -72,7 +69,7 @@ class CalculatorExpr {
         }
         @Override
         public String toString(Context context) {
-            return KeyMaps.toString(mId, context);
+            return KeyMaps.toString(context, mId);
         }
         @Override
         TokenKind kind() { return TokenKind.OPERATOR; }
