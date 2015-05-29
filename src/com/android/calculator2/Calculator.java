@@ -67,12 +67,12 @@ import android.widget.Toolbar;
 import com.android.calculator2.CalculatorText.OnTextSizeChangeListener;
 
 import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 
 public class Calculator extends Activity
         implements OnTextSizeChangeListener, OnLongClickListener, CalculatorText.PasteListener {
@@ -178,7 +178,7 @@ public class Calculator extends Activity
     private TextView mInverseToggle;
     private TextView mModeToggle;
 
-    private View[] mInvertableButtons;
+    private View[] mInvertibleButtons;
     private View[] mInverseButtons;
 
     private View mCurrentButton;
@@ -213,10 +213,10 @@ public class Calculator extends Activity
         mInverseToggle = (TextView) findViewById(R.id.toggle_inv);
         mModeToggle = (TextView) findViewById(R.id.toggle_mode);
 
-        mInvertableButtons = new View[] {
-            findViewById(R.id.fun_sin),
-            findViewById(R.id.fun_cos),
-            findViewById(R.id.fun_tan)
+        mInvertibleButtons = new View[] {
+                findViewById(R.id.fun_sin),
+                findViewById(R.id.fun_cos),
+                findViewById(R.id.fun_tan)
         };
         mInverseButtons = new View[] {
                 findViewById(R.id.fun_arcsin),
@@ -374,16 +374,16 @@ public class Calculator extends Activity
     private void onInverseToggled(boolean showInverse) {
         if (showInverse) {
             mInverseToggle.setContentDescription(getString(R.string.desc_inv_on));
-            for (View invertableButton : mInvertableButtons) {
-                invertableButton.setVisibility(View.GONE);
+            for (View invertibleButton : mInvertibleButtons) {
+                invertibleButton.setVisibility(View.GONE);
             }
             for (View inverseButton : mInverseButtons) {
                 inverseButton.setVisibility(View.VISIBLE);
             }
         } else {
             mInverseToggle.setContentDescription(getString(R.string.desc_inv_off));
-            for (View invertableButton : mInvertableButtons) {
-                invertableButton.setVisibility(View.VISIBLE);
+            for (View invertibleButton : mInvertibleButtons) {
+                invertibleButton.setVisibility(View.VISIBLE);
             }
             for (View inverseButton : mInverseButtons) {
                 inverseButton.setVisibility(View.GONE);
