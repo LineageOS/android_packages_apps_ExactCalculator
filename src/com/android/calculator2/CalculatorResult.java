@@ -16,23 +16,16 @@
 
 package com.android.calculator2;
 
-import android.content.ClipboardManager;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.Context;
-import android.graphics.Typeface;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.Color;
-import android.net.Uri;
-import android.widget.TextView;
-import android.widget.OverScroller;
-import android.text.Editable;
+import android.text.Layout;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -40,14 +33,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.OverScroller;
 import android.widget.Toast;
-
-import android.support.v4.view.ViewCompat;
-
 
 // A text widget that is "infinitely" scrollable to the right,
 // and obtains the text to display via a callback to Logic.
-public class CalculatorResult extends TextView {
+public class CalculatorResult extends AlignedTextView {
     static final int MAX_RIGHT_SCROLL = 10000000;
     static final int INVALID = MAX_RIGHT_SCROLL + 10000;
         // A larger value is unlikely to avoid running out of space
@@ -56,8 +47,7 @@ public class CalculatorResult extends TextView {
     class MyTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            boolean res = mGestureDetector.onTouchEvent(event);
-            return res;
+            return mGestureDetector.onTouchEvent(event);
         }
     }
     final MyTouchListener mTouchListener = new MyTouchListener();
@@ -75,11 +65,11 @@ public class CalculatorResult extends TextView {
     private int mMinPos;    // Minimum position before all digits disappear off the right. Pixels.
     private int mMaxPos;    // Maximum position before we start displaying the infinite
                             // sequence of trailing zeroes on the right. Pixels.
-    private Object mWidthLock = new Object();
+    private final Object mWidthLock = new Object();
                             // Protects the next two fields.
     private int mWidthConstraint = -1;
                             // Our total width in pixels.
-    private int mCharWidth = 1;
+    private float mCharWidth = 1;
                             // Maximum character width. For now we pretend that all characters
                             // have this width.
                             // TODO: We're not really using a fixed width font.  But it appears
@@ -112,7 +102,7 @@ public class CalculatorResult extends TextView {
                     if (!mScrollable) return true;
                     mScroller.fling(mCurrentPos, 0, - (int) velocityX, 0  /* horizontal only */,
                                     mMinPos, mMaxPos, 0, 0);
-                    ViewCompat.postInvalidateOnAnimation(CalculatorResult.this);
+                    postInvalidateOnAnimation();
                     return true;
                 }
                 @Override
@@ -134,7 +124,7 @@ public class CalculatorResult extends TextView {
                     int duration = (int)(e2.getEventTime() - e1.getEventTime());
                     if (duration < 1 || duration > 100) duration = 10;
                     mScroller.startScroll(mCurrentPos, 0, distance, 0, (int)duration);
-                    ViewCompat.postInvalidateOnAnimation(CalculatorResult.this);
+                    postInvalidateOnAnimation();
                     return true;
                 }
                 @Override
@@ -163,21 +153,11 @@ public class CalculatorResult extends TextView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        char testChar = KeyMaps.translateResult("5").charAt(0);
-        // TODO: Redo on Locale change?  Doesn't seem to matter?
-        // We try to determine the maximal size of a digit plus corresponding inter-character
-        // space. We assume that "5" has maximal width.  Since any string includes one fewer
-        // inter-character space than characters, me measure one that's longer than any real
-        // display string, and then divide by the number of characters.  This should bound
-        // the per-character space we need for any real string.
-        StringBuilder sb = new StringBuilder(MAX_WIDTH);
-        for (int i = 0; i < MAX_WIDTH; ++i) {
-            sb.append(testChar);
-        }
-        final int newWidthConstraint =
-                MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
-        final int newCharWidth =
-                (int)Math.ceil(getPaint().measureText(sb.toString()) / MAX_WIDTH);
+        final TextPaint paint = getPaint();
+        final int newWidthConstraint = MeasureSpec.getSize(widthMeasureSpec)
+                - (getPaddingLeft() + getPaddingRight())
+                - (int) Math.ceil(Layout.getDesiredWidth(KeyMaps.ELLIPSIS, paint));
+        final float newCharWidth = Layout.getDesiredWidth("\u2007", paint);
         synchronized(mWidthLock) {
             mWidthConstraint = newWidthConstraint;
             mCharWidth = newCharWidth;
@@ -208,15 +188,16 @@ public class CalculatorResult extends TextView {
     void displayResult(int initPrec, int leastDigPos, String truncatedWholePart) {
         mLastPos = INVALID;
         synchronized(mWidthLock) {
-            mCurrentPos = initPrec * mCharWidth;
+            mCurrentPos = (int) Math.ceil(initPrec * mCharWidth);
         }
         // Should logically be
         // mMinPos = - (int) Math.ceil(getPaint().measureText(truncatedWholePart)), but
         // we eventually transalate to a character position by dividing by mCharWidth.
         // To avoid rounding issues, we use the analogous computation here.
-        mMinPos = - truncatedWholePart.length() * mCharWidth;
+        mMinPos = - (int) Math.ceil(truncatedWholePart.length() * mCharWidth);
         if (leastDigPos < MAX_RIGHT_SCROLL) {
-            mMaxPos = Math.min(addExpSpace(leastDigPos) * mCharWidth, MAX_RIGHT_SCROLL);
+            mMaxPos = Math.min((int) Math.ceil(addExpSpace(leastDigPos) * mCharWidth),
+                    MAX_RIGHT_SCROLL);
         } else {
             mMaxPos = MAX_RIGHT_SCROLL;
         }
@@ -350,11 +331,9 @@ public class CalculatorResult extends TextView {
      * May be called asynchronously from non-UI thread.
      */
     int getMaxChars() {
-        // We only use 4/5 of the available space, since at least the left 4/5 of the result
-        // is not visible when it is shown in large size.
         int result;
         synchronized(mWidthLock) {
-            result = 4 * mWidthConstraint / (5 * mCharWidth);
+            result = (int) Math.floor(mWidthConstraint / mCharWidth);
             // We can apparently finish evaluating before onMeasure in CalculatorText has been
             // called, in which case we get 0 or -1 as the width constraint.
         }
@@ -362,26 +341,22 @@ public class CalculatorResult extends TextView {
             // Return something conservatively big, to force sufficient evaluation.
             return MAX_WIDTH;
         } else {
-            return result;
+            // Always allow for the ellipsis character which already accounted for in the width
+            // constraint.
+            return result + 1;
         }
     }
 
     /**
-     * Return the fraction of the available character space occupied by the
-     * current result.
-     * Should be called only with a valid result displayed.
+     * @return {@code true} if the currently displayed result is scrollable
      */
-    float getOccupancy() {
-        if (mScrollable) {
-            return 1.0f;
-        } else {
-            return (float)getText().length() / getMaxChars();
-        }
+    public boolean isScrollable() {
+        return mScrollable;
     }
 
     int getCurrentCharPos() {
         synchronized(mWidthLock) {
-            return mCurrentPos/mCharWidth;
+            return (int) Math.ceil(mCurrentPos / mCharWidth);
         }
     }
 
@@ -419,7 +394,7 @@ public class CalculatorResult extends TextView {
                 redisplay();
             }
             if (!mScroller.isFinished()) {
-                ViewCompat.postInvalidateOnAnimation(this);
+                postInvalidateOnAnimation();
             }
         }
     }
