@@ -19,7 +19,7 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"Rechner"</string>
     <string name="dec_point" msgid="8920102493070918054">","</string>
-    <string name="mode_deg" msgid="1146123354434332479">"deg"</string>
+    <string name="mode_deg" msgid="1146123354434332479">"Grad"</string>
     <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
     <string name="clr" msgid="6730945431543327337">"clr"</string>
     <string name="del" msgid="5878069000864178910">"del"</string>
@@ -40,14 +40,26 @@
     <string name="desc_op_div" msgid="3032399266115257498">"Dividieren"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"Fakultät"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"Mal"</string>
+    <!-- no translation found for desc_op_pct (2466179646911499434) -->
+    <skip />
     <string name="desc_op_pow" msgid="6010144442344099030">"Potenz"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"Quadratwurzel"</string>
-    <string name="desc_mode_rad" msgid="5522614457355475195">"Zu Radiant wechseln"</string>
-    <string name="desc_mode_deg" msgid="5560289378379011831">"Zu Grad wechseln"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"Minus"</string>
+    <!-- no translation found for desc_mode_deg (4129831241246511710) -->
+    <skip />
+    <!-- no translation found for desc_mode_rad (730135521908627673) -->
+    <skip />
+    <!-- no translation found for desc_switch_deg (6675211986921592374) -->
+    <skip />
+    <!-- no translation found for desc_switch_rad (2845875847488919914) -->
+    <skip />
+    <string name="desc_eq" msgid="3349320880874699285">"ist gleich"</string>
     <string name="desc_clr" msgid="737502124268890797">"Löschen"</string>
     <string name="desc_del" msgid="7879515781929311432">"Löschen"</string>
-    <string name="desc_eq" msgid="3349320880874699285">"ist gleich"</string>
+    <!-- no translation found for desc_inv_off (3672218250519616068) -->
+    <skip />
+    <!-- no translation found for desc_inv_on (2515675590767677178) -->
+    <skip />
     <string name="error_nan" msgid="5674077944929888710">"Keine Zahl"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Ausdrucksfehler"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Abgebrochen"</string>
@@ -58,7 +70,7 @@
     <string name="dismiss" msgid="7872443888515066216">"Schließen"</string>
     <string name="timeout" msgid="786323140644284782">"Das ist zu schwierig! Unbestimmter oder unendlicher Wert?"</string>
     <string name="ok_remove_timeout" msgid="4252381882975743581">"Längere Zeitlimits erforderlich"</string>
-    <string name="exact" msgid="2597237880041789948">"(Exakt)"</string>
+    <string name="exact" msgid="2597237880041789948">"(exakt)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 für die letzte Zahl)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Ergebnis mit führenden Ziffern"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"Ergebnis als Bruch"</string>

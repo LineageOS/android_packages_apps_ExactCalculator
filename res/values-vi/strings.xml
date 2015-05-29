@@ -40,14 +40,26 @@
     <string name="desc_op_div" msgid="3032399266115257498">"chia"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"giai thừa"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"nhân"</string>
+    <!-- no translation found for desc_op_pct (2466179646911499434) -->
+    <skip />
     <string name="desc_op_pow" msgid="6010144442344099030">"lũy thừa"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"dấu khai căn"</string>
-    <string name="desc_mode_rad" msgid="5522614457355475195">"chuyển sang radian"</string>
-    <string name="desc_mode_deg" msgid="5560289378379011831">"chuyển sang độ"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"trừ"</string>
+    <!-- no translation found for desc_mode_deg (4129831241246511710) -->
+    <skip />
+    <!-- no translation found for desc_mode_rad (730135521908627673) -->
+    <skip />
+    <!-- no translation found for desc_switch_deg (6675211986921592374) -->
+    <skip />
+    <!-- no translation found for desc_switch_rad (2845875847488919914) -->
+    <skip />
+    <string name="desc_eq" msgid="3349320880874699285">"bằng"</string>
     <string name="desc_clr" msgid="737502124268890797">"xóa"</string>
     <string name="desc_del" msgid="7879515781929311432">"xóa"</string>
-    <string name="desc_eq" msgid="3349320880874699285">"bằng"</string>
+    <!-- no translation found for desc_inv_off (3672218250519616068) -->
+    <skip />
+    <!-- no translation found for desc_inv_on (2515675590767677178) -->
+    <skip />
     <string name="error_nan" msgid="5674077944929888710">"Không phải số"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Biểu thức không hợp lệ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Đã hủy bỏ"</string>
