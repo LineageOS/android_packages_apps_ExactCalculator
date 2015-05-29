@@ -51,10 +51,6 @@
         android:textColor="@color/display_formula_text_color"
         android:textIsSelectable="false" />
 
-    <!--
-      We lay the result out to full width, but are careful to use only
-      4/5 of the space, so that we have room when we expand.
-      -->
     <com.android.calculator2.CalculatorResult
         android:id="@+id/result"
         style="@style/DisplayTextStyle.Result"
