@@ -40,14 +40,19 @@
     <string name="desc_op_div" msgid="3032399266115257498">"divide"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"factorial"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"times"</string>
+    <string name="desc_op_pct" msgid="2466179646911499434">"percent"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"power"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"square root"</string>
-    <string name="desc_mode_rad" msgid="5522614457355475195">"switch to radians"</string>
-    <string name="desc_mode_deg" msgid="5560289378379011831">"switch to degrees"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"minus"</string>
+    <string name="desc_mode_deg" msgid="4129831241246511710">"degree mode"</string>
+    <string name="desc_mode_rad" msgid="730135521908627673">"radian mode"</string>
+    <string name="desc_switch_deg" msgid="6675211986921592374">"switch to degrees"</string>
+    <string name="desc_switch_rad" msgid="2845875847488919914">"switch to radians"</string>
+    <string name="desc_eq" msgid="3349320880874699285">"equals"</string>
     <string name="desc_clr" msgid="737502124268890797">"clear"</string>
     <string name="desc_del" msgid="7879515781929311432">"Delete"</string>
-    <string name="desc_eq" msgid="3349320880874699285">"equals"</string>
+    <string name="desc_inv_off" msgid="3672218250519616068">"show inverse functions"</string>
+    <string name="desc_inv_on" msgid="2515675590767677178">"hide inverse functions"</string>
     <string name="error_nan" msgid="5674077944929888710">"Not a number"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Bad expression"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Aborted"</string>

@@ -40,14 +40,19 @@
     <string name="desc_op_div" msgid="3032399266115257498">"ವಿಭಾಗಿಸು"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"ಅಪವರ್ತನೀಯ"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"ಬಾರಿ"</string>
+    <string name="desc_op_pct" msgid="2466179646911499434">"ಪ್ರತಿಶತ"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"ಪವರ್‌"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"ವರ್ಗಮೂಲ"</string>
-    <string name="desc_mode_rad" msgid="5522614457355475195">"ರೇಡಿಯನ್‌ಗಳಿಗೆ ಬದಲಾಯಿಸು"</string>
-    <string name="desc_mode_deg" msgid="5560289378379011831">"ಡಿಗ್ರಿಗಳಿಗೆ ಬದಲಾಯಿಸು"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"ವ್ಯವಕಲನ"</string>
+    <string name="desc_mode_deg" msgid="4129831241246511710">"ಡಿಗ್ರಿ ಮೋಡ್"</string>
+    <string name="desc_mode_rad" msgid="730135521908627673">"ರೇಡಿಯನ್ ಮೋಡ್"</string>
+    <string name="desc_switch_deg" msgid="6675211986921592374">"ಡಿಗ್ರಿಗಳಿಗೆ ಬದಲಾಯಿಸು"</string>
+    <string name="desc_switch_rad" msgid="2845875847488919914">"ರೇಡಿಯನ್‌ಗಳಿಗೆ ಬದಲಾಯಿಸು"</string>
+    <string name="desc_eq" msgid="3349320880874699285">"ಸಮ ಚಿಹ್ನೆ"</string>
     <string name="desc_clr" msgid="737502124268890797">"ತೆರವುಗೊಳಿಸು"</string>
     <string name="desc_del" msgid="7879515781929311432">"ಅಳಿಸು"</string>
-    <string name="desc_eq" msgid="3349320880874699285">"ಸಮ ಚಿಹ್ನೆ"</string>
+    <string name="desc_inv_off" msgid="3672218250519616068">"ವಿಲೋಮ ಫಂಕ್ಷನ್‌ಗಳನ್ನು ತೋರಿಸು"</string>
+    <string name="desc_inv_on" msgid="2515675590767677178">"ವಿಲೋಮ ಫಂಕ್ಷನ್‌ಗಳನ್ನು ಮರೆಮಾಡು"</string>
     <string name="error_nan" msgid="5674077944929888710">"ಸಂಖ್ಯೆಯಲ್ಲ"</string>
     <string name="error_syntax" msgid="4786987111228645602">"ಕಳಪೆ ವ್ಯಕ್ತತೆ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"ರದ್ದು ಮಾಡಲಾಗಿದೆ"</string>
