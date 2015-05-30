@@ -55,10 +55,10 @@
 // When we are in danger of not having digits to display in response
 // to further scrolling, we initiate a background computation to higher
 // precision.  If we actually do fall behind, we display placeholder
-// characters, e.g. '?', and schedule a display update when the computation
+// characters, e.g. blanks, and schedule a display update when the computation
 // completes.
 // The code is designed to ensure that the error in the displayed
-// result (excluding any '?' characters) is always strictly less than 1 in
+// result (excluding any placeholder characters) is always strictly less than 1 in
 // the last displayed digit.  Typically we actually display a prefix
 // of a result that has this property and additionally is computed to
 // a significantly higher precision.  Thus we almost always round correctly
@@ -373,9 +373,8 @@ class Evaluator {
                     initCache = res.mVal.toString(prec);
                     msd = getMsdPos(initCache);
                 }
-                int initDisplayPrec =
-                        getPreferredPrec(initCache, msd,
-                             BoundedRational.digitsRequired(res.mRatVal));
+                int lsd = getLsd(res.mRatVal, initCache, initCache.indexOf('.'));
+                int initDisplayPrec = getPreferredPrec(initCache, msd, lsd);
                 int newPrec = initDisplayPrec + EXTRA_DIGITS;
                 if (newPrec > prec) {
                     prec = newPrec;
@@ -422,7 +421,7 @@ class Evaluator {
             // checking for change.
             int init_prec = result.mInitDisplayPrec;
             int msd = getMsdPos(mCache);
-            int leastDigPos = BoundedRational.digitsRequired(mRatVal);
+            int leastDigPos = getLsd(mRatVal, mCache, dotPos);
             int new_init_prec = getPreferredPrec(mCache, msd, leastDigPos);
             if (new_init_prec < init_prec) {
                 init_prec = new_init_prec;
@@ -431,7 +430,7 @@ class Evaluator {
                 // happen if they're not. e.g. because
                 // CalculatorResult.MAX_WIDTH was too small.
             }
-            mCalculator.onEvaluate(init_prec, leastDigPos, truncatedWholePart);
+            mCalculator.onEvaluate(init_prec, msd, leastDigPos, truncatedWholePart);
         }
         @Override
         protected void onCancelled(InitialResult result) {
@@ -463,38 +462,66 @@ class Evaluator {
         mCurrentReevaluator.execute(mCacheDigsReq);
     }
 
-    // Retrieve the preferred precision for the currently
-    // displayed result, given the number of characters we
-    // have room for and the current string approximation for
-    // the result.
-    // lastDigit is the position of the last digit on the right
-    // if there is such a thing, or Integer.MAX_VALUE.
-    // May be called in non-UI thread.
+    /**
+     * Return the rightmost nonzero digit position, if any.
+     * @param ratVal Rational value of result or null.
+     * @param cache Current cached decimal string representation of result.
+     * @param decPos Index of decimal point in cache.
+     * @result Position of rightmost nonzero digit relative to decimal point.
+     *         Integer.MIN_VALUE if ratVal is zero.  Integer.MAX_VALUE if there is no lsd,
+     *         or we cannot determine it.
+     */
+    int getLsd(BoundedRational ratVal, String cache, int decPos) {
+        if (ratVal != null && ratVal.signum() == 0) return Integer.MIN_VALUE;
+        int result = BoundedRational.digitsRequired(ratVal);
+        if (result == 0) {
+            int i;
+            for (i = -1; decPos + i > 0 && cache.charAt(decPos + i) == '0'; --i) { }
+            result = i;
+        }
+        return result;
+    }
+
+    /**
+     * Retrieve the preferred precision for the currently displayed result.
+     * May be called from non-UI thread.
+     * @param cache Current approximation as string.
+     * @param msd Position of most significant digit in result.  Index in cache.
+     *            Can be INVALID_MSD if we haven't found it yet.
+     * @param lastDigit Position of least significant digit (1 = tenths digit)
+     *                  or Integer.MAX_VALUE.
+     */
     int getPreferredPrec(String cache, int msd, int lastDigit) {
         int lineLength = mResult.getMaxChars();
         int wholeSize = cache.indexOf('.');
+        int negative = cache.charAt(0) == '-' ? 1 : 0;
         // Don't display decimal point if result is an integer.
         if (lastDigit == 0) lastDigit = -1;
-        if (lastDigit != Integer.MAX_VALUE
-                && ((wholeSize <= lineLength && lastDigit == 0)
-                    || wholeSize + lastDigit + 1 /* d.p. */ <= lineLength)) {
-            // Prefer to display as integer, without decimal point
-            if (lastDigit == 0) return -1;
-            return lastDigit;
+        if (lastDigit != Integer.MAX_VALUE) {
+            if (wholeSize <= lineLength && lastDigit <= 0) {
+                // Exact integer.  Prefer to display as integer, without decimal point.
+                return -1;
+            }
+            if (lastDigit >= 0 && wholeSize + lastDigit + 1 /* dec.pt. */ <= lineLength) {
+                // Display full exact number wo scientific notation.
+                return lastDigit;
+            }
         }
         if (msd > wholeSize && msd <= wholeSize + 4) {
-            // Display number without scientific notation.
-            // Treat leading zero as msd.
+            // Display number without scientific notation.  Treat leading zero as msd.
             msd = wholeSize - 1;
         }
         if (msd > wholeSize + MAX_MSD_PREC) {
-            // Display a probably but uncertain 0 as "0.000000000",
+            // Display a probable but uncertain 0 as "0.000000000",
             // without exponent.  That's a judgment call, but less likely
             // to confuse naive users.  A more informative and confusing
             // option would be to use a large negative exponent.
             return lineLength - 2;
         }
-        return msd - wholeSize + lineLength - 2;
+        // Return position corresponding to having msd at left, effectively
+        // presuming scientific notation that preserves the left part of the
+        // result.
+        return msd - wholeSize + lineLength - negative - 1;
     }
 
     // Get a short representation of the value represented by
@@ -543,7 +570,6 @@ class Evaluator {
             // Unknown, or could change on reevaluation
             return INVALID_MSD;
         }
-
     }
 
     // Return most significant digit position in the cache, if determined,
@@ -614,8 +640,9 @@ class Evaluator {
     // getRational() can be used to determine whether the result
     // is exact, or whether we dropped trailing digits.
     // If the requested prec[0] value is out of range, we update
-    // it in place and use the updated value.
-    public String getString(int[] prec, int maxDigs,
+    // it in place and use the updated value.  But we do not make it
+    // greater than maxPrec.
+    public String getString(int[] prec, int maxPrec, int maxDigs,
                             boolean[] truncated, boolean[] negative) {
         int digs = prec[0];
         mLastDigs = digs;
@@ -643,7 +670,7 @@ class Evaluator {
                                 // includes 1 for dec. pt
                 if (myNegative) --integralDigits;
                 int minDigs = Math.min(-integralDigits + MIN_DIGS, -1);
-                digs = Math.max(digs, minDigs);
+                digs = Math.min(Math.max(digs, minDigs), maxPrec);
                 prec[0] = digs;
             int offset = mCacheDigs - digs; // trailing digits to drop
             int deficit = 0;  // The number of digits we're short
@@ -715,8 +742,8 @@ class Evaluator {
             // Notify immediately, reusing existing result.
             int dotPos = mCache.indexOf('.');
             String truncatedWholePart = mCache.substring(0, dotPos);
-            int leastDigPos = BoundedRational.digitsRequired(mRatVal);
-            mCalculator.onEvaluate(mLastDigs, leastDigPos, truncatedWholePart);
+            int leastDigPos = getLsd(mRatVal, mCache, dotPos);
+            mCalculator.onEvaluate(mLastDigs, getMsd(), leastDigPos, truncatedWholePart);
         }
     }
 
