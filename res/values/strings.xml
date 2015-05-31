@@ -78,22 +78,36 @@
     <!-- Subtraction operator (e.g. "1 - 2"). [CHAR_LIMIT=1] -->
     <string name="op_sub" translatable="false">−</string>
 
-    <!-- Abbrev. name of cosine function (e.g. "cos(π)". [CHAR_LIMIT=4] -->
+    <!-- Abbrev. name of cosine function (e.g. "cos(π)"). [CHAR_LIMIT=4] -->
     <string name="fun_cos" translatable="false">cos</string>
     <!-- Natural logarithm function (e.g. "ln(2)"). [CHAR_LIMIT=4] -->
     <string name="fun_ln" translatable="false">ln</string>
     <!-- Logarithm function (e.g. "log(10)"). [CHAR_LIMIT=4] -->
     <string name="fun_log" translatable="false">log</string>
-    <!-- Abbrev. name of sine function (e.g. "sin(π)". [CHAR_LIMIT=4] -->
+    <!-- Abbrev. name of sine function (e.g. "sin(π)"). [CHAR_LIMIT=4] -->
     <string name="fun_sin" translatable="false">sin</string>
-    <!-- Abbrev. name of tangent function (e.g. "tan(π)". [CHAR_LIMIT=4] -->
+    <!-- Abbrev. name of tangent function (e.g. "tan(π)"). [CHAR_LIMIT=4] -->
     <string name="fun_tan" translatable="false">tan</string>
-    <!-- Abbrev. name of cosine function (e.g. "arccos(π)". [CHAR_LIMIT=5] -->
+    <!-- Abbrev. name of cosine function (e.g. "arccos(π)"). [CHAR_LIMIT=5] -->
     <string name="fun_arccos" translatable="false">cos\u207B\u00B9</string>
-    <!-- Abbrev. name of sine function (e.g. "arcsin(π)". [CHAR_LIMIT=5] -->
+    <!-- Abbrev. name of sine function (e.g. "arcsin(π)"). [CHAR_LIMIT=5] -->
     <string name="fun_arcsin" translatable="false">sin\u207B\u00B9</string>
-    <!-- Abbrev. name of tangent function (e.g. "arctan(π)". [CHAR_LIMIT=5] -->
+    <!-- Abbrev. name of tangent function (e.g. "arctan(π)"). [CHAR_LIMIT=5] -->
     <string name="fun_arctan" translatable="false">tan\u207B\u00B9</string>
+
+    <!-- Abbrev. name of base 10 exponential function (e.g. "10^6"). [CHAR_LIMIT=5] -->
+    <string name="fun_10pow" translatable="false">10\u02E3</string>
+    <!-- Abbrev. name of exponential function (e.g. "e^6"). [CHAR_LIMIT=5] -->
+    <string name="fun_exp" translatable="false">e\u02E3</string>
+    <!-- Abbrev. name of suffix square function on key (e.g. "17^2"). [CHAR_LIMIT=5] -->
+    <string name="op_sqr" translatable="false">x\u00B2</string>
+    <!--
+      Abbrev. name of suffix square function in formula.
+      "^2" does not work, since it blends into a later constant.
+      -->
+    <string name="squared" translatable="false">²</string>
+    <!-- Abbrev. name of exponential function in formula.  -->
+    <string name="exponential" translatable = "false">exp</string>
 
     <!-- Abbrev. name of degree mode [CHAR_LIMIT=4] -->
     <string name="mode_deg">deg</string>
@@ -138,6 +152,13 @@
     <string name="desc_fun_arcsin">inverse sine</string>
     <!-- Content description for 'arctan' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_fun_arctan">inverse tangent</string>
+
+    <!-- Content description for 10^ button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_fun_10pow">ten to the power of</string>
+    <!-- Content description for e^ button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_fun_exp">exponential function</string>
+    <!-- Content description for ^2 button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_op_sqr">squared</string>
 
     <!-- Content description for '+' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_add">plus</string>

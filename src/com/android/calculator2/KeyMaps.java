@@ -67,6 +67,9 @@ public class KeyMaps {
                 return context.getString(R.string.fun_ln) + context.getString(R.string.lparen);
             case R.id.fun_log:
                 return context.getString(R.string.fun_log) + context.getString(R.string.lparen);
+            case R.id.fun_exp:
+                // Button label doesn't work.
+                return context.getString(R.string.exponential) + context.getString(R.string.lparen);
             case R.id.lparen:
                 return context.getString(R.string.lparen);
             case R.id.rparen:
@@ -79,6 +82,9 @@ public class KeyMaps {
                 return context.getString(R.string.op_div);
             case R.id.op_add:
                 return context.getString(R.string.op_add);
+            case R.id.op_sqr:
+                // Button label doesn't work.
+                return context.getString(R.string.squared);
             case R.id.op_sub:
                 return context.getString(R.string.op_sub);
             case R.id.dec_point:
@@ -132,6 +138,7 @@ public class KeyMaps {
         switch (id) {
             case R.id.op_fact:
             case R.id.op_pct:
+            case R.id.op_sqr:
                 return true;
             default:
                 return false;

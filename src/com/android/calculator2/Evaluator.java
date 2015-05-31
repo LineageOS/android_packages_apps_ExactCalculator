@@ -776,10 +776,15 @@ class Evaluator {
     // syntax issues, and the expression is unchanged.
     // Return true otherwise.
     boolean append(int id) {
-        mChangedValue = (KeyMaps.digVal(id) != KeyMaps.NOT_DIGIT
-                        || KeyMaps.isSuffix(id)
-                        || id == R.id.const_pi || id == R.id.const_e);
-        return mExpr.add(id);
+        if (id == R.id.fun_10pow) {
+            add10pow();  // Handled as macro expansion.
+            return true;
+        } else {
+            mChangedValue = (KeyMaps.digVal(id) != KeyMaps.NOT_DIGIT
+                    || KeyMaps.isSuffix(id)
+                    || id == R.id.const_pi || id == R.id.const_e);
+            return mExpr.add(id);
+        }
     }
 
     void delete() {
@@ -863,6 +868,17 @@ class Evaluator {
     void addSaved() {
         mChangedValue = true;
         mExpr.append(mSaved);
+    }
+
+    // Add the power of 10 operator to the expression.  This is treated
+    // essentially as a macro expansion.
+    private void add10pow() {
+        CalculatorExpr ten = new CalculatorExpr();
+        ten.add(R.id.digit_1);
+        ten.add(R.id.digit_0);
+        mChangedValue = true;  // For consistency.  Reevaluation is probably not useful.
+        mExpr.append(ten);
+        mExpr.add(R.id.op_pow);
     }
 
     // Retrieve the main expression being edited.
