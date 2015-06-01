@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 The Android Open Source Project
+ * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +16,31 @@
 
 package com.android.calculator2;
 
-import android.content.ClipboardManager;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
-import android.graphics.Paint.FontMetricsInt;
-import android.graphics.Rect;
 import android.net.Uri;
-import android.os.Parcelable;
-import android.text.method.ScrollingMovementMethod;
 import android.text.TextPaint;
+import android.text.method.ScrollingMovementMethod;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.ActionMode;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
 /**
  * TextView adapted for Calculator display.
  */
-
-public class CalculatorText extends TextView implements View.OnLongClickListener{
+public class CalculatorText extends AlignedTextView implements View.OnLongClickListener {
 
     private ActionMode mActionMode;
 
-    private final ActionMode.Callback mPasteActionModeCallback =
-            new ActionMode.Callback() {
+    private final ActionMode.Callback mPasteActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
@@ -109,9 +101,8 @@ public class CalculatorText extends TextView implements View.OnLongClickListener
     private final float mMinimumTextSize;
     private final float mStepTextSize;
 
-    // Temporary objects for use in layout methods.
+    // Temporary paint for use in layout methods.
     private final Paint mTempPaint = new TextPaint();
-    private final Rect mTempRect = new Rect();
 
     private int mWidthConstraint = -1;
     private OnTextSizeChangeListener mOnTextSizeChangeListener;
@@ -146,7 +137,6 @@ public class CalculatorText extends TextView implements View.OnLongClickListener
         setMovementMethod(ScrollingMovementMethod.getInstance());
 
         setTextSize(TypedValue.COMPLEX_UNIT_PX, mMaximumTextSize);
-        setMinHeight(getLineHeight() + getCompoundPaddingBottom() + getCompoundPaddingTop());
     }
 
     @Override
@@ -159,8 +149,13 @@ public class CalculatorText extends TextView implements View.OnLongClickListener
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        mWidthConstraint =
-                MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
+        // Prevent shrinking/resizing with our variable textSize.
+        if (!isLaidOut()) {
+            setMinHeight(getLineHeight() + getCompoundPaddingBottom() + getCompoundPaddingTop());
+        }
+
+        mWidthConstraint = MeasureSpec.getSize(widthMeasureSpec)
+                - getPaddingLeft() - getPaddingRight();
         setTextSize(TypedValue.COMPLEX_UNIT_PX, getVariableTextSize(getText().toString()));
     }
 
@@ -170,7 +165,6 @@ public class CalculatorText extends TextView implements View.OnLongClickListener
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
 
-        final int textLength = text.length();
         setTextSize(TypedValue.COMPLEX_UNIT_PX, getVariableTextSize(text.toString()));
     }
 
@@ -186,6 +180,14 @@ public class CalculatorText extends TextView implements View.OnLongClickListener
 
     public void setOnTextSizeChangeListener(OnTextSizeChangeListener listener) {
         mOnTextSizeChangeListener = listener;
+    }
+
+    public float getMinimumTextSize() {
+        return mMinimumTextSize;
+    }
+
+    public float getMaximumTextSize() {
+        return mMaximumTextSize;
     }
 
     public float getVariableTextSize(String text) {
@@ -210,25 +212,6 @@ public class CalculatorText extends TextView implements View.OnLongClickListener
         }
 
         return lastFitTextSize;
-    }
-
-    @Override
-    public int getCompoundPaddingTop() {
-        // Measure the top padding from the capital letter height of the text instead of the top,
-        // but don't remove more than the available top padding otherwise clipping may occur.
-        getPaint().getTextBounds("H", 0, 1, mTempRect);
-
-        final FontMetricsInt fontMetrics = getPaint().getFontMetricsInt();
-        final int paddingOffset = -(fontMetrics.ascent + mTempRect.height());
-        return super.getCompoundPaddingTop() - Math.min(getPaddingTop(), paddingOffset);
-    }
-
-    @Override
-    public int getCompoundPaddingBottom() {
-        // Measure the bottom padding from the baseline of the text instead of the bottom, but don't
-        // remove more than the available bottom padding otherwise clipping may occur.
-        final FontMetricsInt fontMetrics = getPaint().getFontMetricsInt();
-        return super.getCompoundPaddingBottom() - Math.min(getPaddingBottom(), fontMetrics.descent);
     }
 
     public boolean stopActionMode() {
