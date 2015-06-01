@@ -796,6 +796,14 @@ class Evaluator {
         return mDegreeMode;
     }
 
+    /**
+     * @return the {@link CalculatorExpr} representation of the current result
+     */
+    CalculatorExpr getResultExpr() {
+        final BigInteger intVal = BoundedRational.asBigInteger(mRatVal);
+        return mExpr.abbreviate(mVal, mRatVal, mDegreeMode, getShortString(mCache, intVal));
+    }
+
     // Abbreviate the current expression to a pre-evaluated
     // expression node, which will display as a short number.
     // This should not be called unless the expression was
@@ -805,11 +813,8 @@ class Evaluator {
     // diverges.  Subsequent re-evaluation will also not diverge,
     // though it may generate errors of various kinds.
     // E.g. sqrt(-10^-1000)
-    void collapse () {
-        BigInteger intVal = BoundedRational.asBigInteger(mRatVal);
-        CalculatorExpr abbrvExpr = mExpr.abbreviate(
-                                      mVal, mRatVal, mDegreeMode,
-                                      getShortString(mCache, intVal));
+    void collapse() {
+        final CalculatorExpr abbrvExpr = getResultExpr();
         clear();
         mExpr.append(abbrvExpr);
     }
@@ -817,11 +822,11 @@ class Evaluator {
     // Same as above, but put result in mSaved, leaving mExpr alone.
     // Return false if result is unavailable.
     boolean collapseToSaved() {
-        if (mCache == null) return false;
-        BigInteger intVal = BoundedRational.asBigInteger(mRatVal);
-        CalculatorExpr abbrvExpr = mExpr.abbreviate(
-                                      mVal, mRatVal, mDegreeMode,
-                                      getShortString(mCache, intVal));
+        if (mCache == null) {
+            return false;
+        }
+
+        final CalculatorExpr abbrvExpr = getResultExpr();
         mSaved.clear();
         mSaved.append(abbrvExpr);
         return true;
