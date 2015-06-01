@@ -19,8 +19,8 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"計算機"</string>
     <string name="dec_point" msgid="8920102493070918054">"."</string>
-    <string name="mode_deg" msgid="1146123354434332479">"角度"</string>
-    <string name="mode_rad" msgid="1434228830085760996">"弧度"</string>
+    <string name="mode_deg" msgid="1146123354434332479">"deg"</string>
+    <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
     <string name="clr" msgid="6730945431543327337">"clr"</string>
     <string name="del" msgid="5878069000864178910">"del"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"尤拉數"</string>
@@ -40,26 +40,19 @@
     <string name="desc_op_div" msgid="3032399266115257498">"除號"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"階乘"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"乘號"</string>
-    <!-- no translation found for desc_op_pct (2466179646911499434) -->
-    <skip />
+    <string name="desc_op_pct" msgid="2466179646911499434">"百分比符號"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"指數"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"平方根號"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"減號"</string>
-    <!-- no translation found for desc_mode_deg (4129831241246511710) -->
-    <skip />
-    <!-- no translation found for desc_mode_rad (730135521908627673) -->
-    <skip />
-    <!-- no translation found for desc_switch_deg (6675211986921592374) -->
-    <skip />
-    <!-- no translation found for desc_switch_rad (2845875847488919914) -->
-    <skip />
+    <string name="desc_mode_deg" msgid="4129831241246511710">"角度模式"</string>
+    <string name="desc_mode_rad" msgid="730135521908627673">"弧度模式"</string>
+    <string name="desc_switch_deg" msgid="6675211986921592374">"切換成角度"</string>
+    <string name="desc_switch_rad" msgid="2845875847488919914">"切換成弧度"</string>
     <string name="desc_eq" msgid="3349320880874699285">"等於"</string>
     <string name="desc_clr" msgid="737502124268890797">"清除"</string>
     <string name="desc_del" msgid="7879515781929311432">"刪除"</string>
-    <!-- no translation found for desc_inv_off (3672218250519616068) -->
-    <skip />
-    <!-- no translation found for desc_inv_on (2515675590767677178) -->
-    <skip />
+    <string name="desc_inv_off" msgid="3672218250519616068">"顯示反函數"</string>
+    <string name="desc_inv_on" msgid="2515675590767677178">"隱藏反函數"</string>
     <string name="error_nan" msgid="5674077944929888710">"非數字"</string>
     <string name="error_syntax" msgid="4786987111228645602">"運算式無效"</string>
     <string name="error_aborted" msgid="3402238176316342537">"已中止"</string>
