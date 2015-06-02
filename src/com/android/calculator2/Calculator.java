@@ -227,12 +227,18 @@ public class Calculator extends Activity
         mInvertibleButtons = new View[] {
                 findViewById(R.id.fun_sin),
                 findViewById(R.id.fun_cos),
-                findViewById(R.id.fun_tan)
+                findViewById(R.id.fun_tan),
+                findViewById(R.id.fun_ln),
+                findViewById(R.id.fun_log),
+                findViewById(R.id.op_sqrt)
         };
         mInverseButtons = new View[] {
                 findViewById(R.id.fun_arcsin),
                 findViewById(R.id.fun_arccos),
-                findViewById(R.id.fun_arctan)
+                findViewById(R.id.fun_arctan),
+                findViewById(R.id.fun_exp),
+                findViewById(R.id.fun_10pow),
+                findViewById(R.id.op_sqr)
         };
 
         mEvaluator = new Evaluator(this, mResultText);

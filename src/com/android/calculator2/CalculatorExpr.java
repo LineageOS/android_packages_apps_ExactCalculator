@@ -582,7 +582,7 @@ class CalculatorExpr {
         case R.id.const_pi:
             return new EvalRet(i+1, CR.PI, null);
         case R.id.const_e:
-            return new EvalRet(i+1, CR.valueOf(1).exp(), null);
+            return new EvalRet(i+1, REAL_E, null);
         case R.id.op_sqrt:
             // Seems to have highest precedence.
             // Does not add implicit paren.
@@ -635,6 +635,12 @@ class CalculatorExpr {
             ratVal = BoundedRational.ln(argVal.mRatVal);
             if (ratVal != null) break;
             return new EvalRet(argVal.mPos, argVal.mVal.ln(), null);
+        case R.id.fun_exp:
+            argVal = evalExpr(i+1, ec);
+            if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
+            ratVal = BoundedRational.exp(argVal.mRatVal);
+            if (ratVal != null) break;
+            return new EvalRet(argVal.mPos, argVal.mVal.exp(), null);
         case R.id.fun_log:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.mPos, R.id.rparen, ec)) argVal.mPos++;
@@ -702,35 +708,59 @@ class CalculatorExpr {
                      // Test for integer-ness to 100 bits past binary point.
     private static final BigInteger MASK =
             BigInteger.ONE.shiftLeft(-TEST_PREC).subtract(BigInteger.ONE);
+    private static final CR REAL_E = CR.valueOf(1).exp();
+    private static final CR REAL_ONE_HUNDREDTH = CR.valueOf(100).inverse();
+    private static final BoundedRational RATIONAL_ONE_HUNDREDTH =
+            new BoundedRational(1,100);
     private static boolean isApprInt(CR x) {
         BigInteger appr = x.get_appr(TEST_PREC);
         return appr.and(MASK).signum() == 0;
     }
 
-    private EvalRet evalFactorial(int i, EvalContext ec) throws SyntaxException {
+    private EvalRet evalSuffix(int i, EvalContext ec) throws SyntaxException {
         EvalRet tmp = evalUnary(i, ec);
         int cpos = tmp.mPos;
         CR cval = tmp.mVal;
         BoundedRational ratVal = tmp.mRatVal;
-        while (isOperator(cpos, R.id.op_fact, ec)) {
-            if (ratVal == null) {
-                // Assume it was an integer, but we
-                // didn't figure it out.
-                // KitKat may have used the Gamma function.
-                if (!isApprInt(cval)) {
-                    throw new ArithmeticException("factorial(non-integer)");
+        boolean isFact;
+        boolean isSquared = false;
+        while ((isFact = isOperator(cpos, R.id.op_fact, ec)) ||
+                (isSquared = isOperator(cpos, R.id.op_sqr, ec)) ||
+                isOperator(cpos, R.id.op_pct, ec)) {
+            if (isFact) {
+                if (ratVal == null) {
+                    // Assume it was an integer, but we
+                    // didn't figure it out.
+                    // KitKat may have used the Gamma function.
+                    if (!isApprInt(cval)) {
+                        throw new ArithmeticException("factorial(non-integer)");
+                    }
+                    ratVal = new BoundedRational(cval.BigIntegerValue());
                 }
-                ratVal = new BoundedRational(cval.BigIntegerValue());
+                ratVal = BoundedRational.fact(ratVal);
+                cval = ratVal.CRValue();
+            } else if (isSquared) {
+                ratVal = BoundedRational.multiply(ratVal, ratVal);
+                if (ratVal == null) {
+                    cval = cval.multiply(cval);
+                } else {
+                    cval = ratVal.CRValue();
+                }
+            } else /* percent */ {
+                ratVal = BoundedRational.multiply(ratVal, RATIONAL_ONE_HUNDREDTH);
+                if (ratVal == null) {
+                    cval = cval.multiply(REAL_ONE_HUNDREDTH);
+                } else {
+                    cval = ratVal.CRValue();
+                }
             }
-            ratVal = BoundedRational.fact(ratVal);
             ++cpos;
         }
-        if (ratVal != null) cval = ratVal.CRValue();
         return new EvalRet(cpos, cval, ratVal);
     }
 
     private EvalRet evalFactor(int i, EvalContext ec) throws SyntaxException {
-        final EvalRet result1 = evalFactorial(i, ec);
+        final EvalRet result1 = evalSuffix(i, ec);
         int cpos = result1.mPos;  // current position
         CR cval = result1.mVal;   // value so far
         BoundedRational ratVal = result1.mRatVal;  // int value so far

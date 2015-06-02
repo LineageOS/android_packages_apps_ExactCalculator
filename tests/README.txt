@@ -2,7 +2,7 @@ Run on Android with
 
 1) Build the tests.
 2) Install the calculator with
-adb install <tree root>/out/target/product/generic/data/app/ExactCalculatorTests/ExactCalculator.apk
+adb install <tree root>/out/target/product/generic/data/app/ExactCalculator/ExactCalculator.apk
 3) adb install <tree root>/out/target/product/generic/data/app/ExactCalculatorTests/ExactCalculatorTests.apk
 4) adb shell am instrument -w com.android.exactcalculator.tests/android.test.InstrumentationTestRunner
 
