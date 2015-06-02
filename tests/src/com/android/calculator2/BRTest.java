@@ -92,6 +92,13 @@ public class BRTest extends TestCase {
         } catch (ArithmeticException ignored) {
             check((long_x - 90) % 180 == 0, "exception on defined tan: " + x);
         }
+        if (x.compareTo(BoundedRational.THIRTY) <= 0
+                && x.compareTo(BoundedRational.MINUS_THIRTY) >= 0) {
+            checkWeakEq(BoundedRational.exp(x), xAsCR.exp(), "exp:" + x);
+            checkWeakEq(BoundedRational.pow(BR_15, x),
+                    CR.valueOf(15).ln().multiply(xAsCR).exp(),
+                    "pow(15,x):" + x);
+        }
         if (x.compareTo(BoundedRational.ONE) <= 0
                 && x.compareTo(BoundedRational.MINUS_ONE) >= 0) {
             checkWeakEq(BoundedRational.asin(x), ASIN.execute(xAsCR),

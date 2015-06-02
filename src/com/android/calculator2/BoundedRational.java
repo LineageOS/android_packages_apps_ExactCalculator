@@ -229,6 +229,14 @@ public class BoundedRational {
         return null;
     }
 
+    private static BoundedRational map0to1(BoundedRational r) {
+        if (r == null) return null;
+        if (r.mNum.equals(BigInteger.ZERO)) {
+            return ONE;
+        }
+        return null;
+    }
+
     private static BoundedRational map1to0(BoundedRational r) {
         if (r == null) return null;
         if (r.mNum.equals(r.mDen)) {
@@ -345,12 +353,7 @@ public class BoundedRational {
     }
 
     public static BoundedRational cos(BoundedRational r) {
-        // Maps 0 to 1, null otherwise
-        if (r == null) return null;
-        if (r.mNum.equals(BigInteger.ZERO)) {
-            return ONE;
-        }
-        return null;
+        return map0to1(r);
     }
 
     public static BoundedRational degreeCos(BoundedRational r) {
@@ -401,6 +404,10 @@ public class BoundedRational {
             throw new ArithmeticException("log(non-positive)");
         }
         return map1to0(r);
+    }
+
+    public static BoundedRational exp(BoundedRational r) {
+        return map0to1(r);
     }
 
     // Return the base 10 log of n, if n is a power of 10, -1 otherwise.
