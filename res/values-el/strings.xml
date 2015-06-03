@@ -19,7 +19,7 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"Αριθμομηχανή"</string>
     <string name="dec_point" msgid="8920102493070918054">"."</string>
-    <string name="mode_deg" msgid="1146123354434332479">"deg"</string>
+    <string name="mode_deg" msgid="1146123354434332479">"°"</string>
     <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
     <string name="clr" msgid="6730945431543327337">"clr"</string>
     <string name="del" msgid="5878069000864178910">"del"</string>
@@ -36,6 +36,9 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"αντίστροφο συνημίτονο"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"αντίστροφο ημίτονο"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"αντίστροφη εφαπτομένη"</string>
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"δέκα στη δύναμη του"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"εκθετική συνάρτηση"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"στο τετράγωνο"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"συν"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"διαίρεση"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"παραγοντικό"</string>
@@ -54,7 +57,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"εμφάνιση αντίστροφων λειτουργιών"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"απόκρυψη αντίστροφων λειτουργιών"</string>
     <string name="error_nan" msgid="5674077944929888710">"Όχι αριθμός"</string>
-    <string name="error_syntax" msgid="4786987111228645602">"Κακή έκφραση"</string>
+    <string name="error_syntax" msgid="4786987111228645602">"Λάθος έκφραση"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Ακυρώθηκε"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Άπειρο;"</string>
     <string name="error_zero_divide" msgid="7085069126090779874">"Διαίρεση με το μηδέν"</string>

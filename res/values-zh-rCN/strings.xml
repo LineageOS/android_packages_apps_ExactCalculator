@@ -19,10 +19,10 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"计算器"</string>
     <string name="dec_point" msgid="8920102493070918054">"."</string>
-    <string name="mode_deg" msgid="1146123354434332479">"角度"</string>
-    <string name="mode_rad" msgid="1434228830085760996">"弧度"</string>
+    <string name="mode_deg" msgid="1146123354434332479">"deg"</string>
+    <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
     <string name="clr" msgid="6730945431543327337">"清除"</string>
-    <string name="del" msgid="5878069000864178910">"删除"</string>
+    <string name="del" msgid="5878069000864178910">"del"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"欧拉数"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"圆周率"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"小数点"</string>
@@ -36,30 +36,29 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"反余弦"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"反正弦"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"反正切"</string>
+    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
+    <skip />
+    <!-- no translation found for desc_fun_exp (657106837530588390) -->
+    <skip />
+    <!-- no translation found for desc_op_sqr (693577095029219627) -->
+    <skip />
     <string name="desc_op_add" msgid="5539599782598050813">"加"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"除"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"阶乘"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"乘"</string>
-    <!-- no translation found for desc_op_pct (2466179646911499434) -->
-    <skip />
+    <string name="desc_op_pct" msgid="2466179646911499434">"百分比符号"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"幂数"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"平方根"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"减"</string>
-    <!-- no translation found for desc_mode_deg (4129831241246511710) -->
-    <skip />
-    <!-- no translation found for desc_mode_rad (730135521908627673) -->
-    <skip />
-    <!-- no translation found for desc_switch_deg (6675211986921592374) -->
-    <skip />
-    <!-- no translation found for desc_switch_rad (2845875847488919914) -->
-    <skip />
+    <string name="desc_mode_deg" msgid="4129831241246511710">"角度模式"</string>
+    <string name="desc_mode_rad" msgid="730135521908627673">"弧度模式"</string>
+    <string name="desc_switch_deg" msgid="6675211986921592374">"切换成角度"</string>
+    <string name="desc_switch_rad" msgid="2845875847488919914">"切换成弧度"</string>
     <string name="desc_eq" msgid="3349320880874699285">"等于"</string>
     <string name="desc_clr" msgid="737502124268890797">"清除"</string>
     <string name="desc_del" msgid="7879515781929311432">"删除"</string>
-    <!-- no translation found for desc_inv_off (3672218250519616068) -->
-    <skip />
-    <!-- no translation found for desc_inv_on (2515675590767677178) -->
-    <skip />
+    <string name="desc_inv_off" msgid="3672218250519616068">"显示反函数"</string>
+    <string name="desc_inv_on" msgid="2515675590767677178">"隐藏反函数"</string>
     <string name="error_nan" msgid="5674077944929888710">"不是数字"</string>
     <string name="error_syntax" msgid="4786987111228645602">"表达式错误"</string>
     <string name="error_aborted" msgid="3402238176316342537">"已中止"</string>

@@ -36,6 +36,12 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"โคไซน์ผกผัน"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"ไซน์ผกผัน"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"แทนเจนต์ผกผัน"</string>
+    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
+    <skip />
+    <!-- no translation found for desc_fun_exp (657106837530588390) -->
+    <skip />
+    <!-- no translation found for desc_op_sqr (693577095029219627) -->
+    <skip />
     <string name="desc_op_add" msgid="5539599782598050813">"บวก"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"หาร"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"แฟกทอเรียล"</string>
@@ -65,7 +71,7 @@
     <string name="ok_remove_timeout" msgid="4252381882975743581">"ตกลง แต่ขอเวลาอีกหน่อยนะ!"</string>
     <string name="exact" msgid="2597237880041789948">"(ลงตัว)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 ในหลักสุดท้าย)"</string>
-    <string name="menu_leading" msgid="2338520833272667740">"คำตอบที่มีเลขหน้า"</string>
+    <string name="menu_leading" msgid="2338520833272667740">"คำตอบที่มีเลขนำหน้า"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"ตอบเป็นเศษส่วน"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"ใบอนุญาตโอเพนซอร์ส"</string>
 </resources>

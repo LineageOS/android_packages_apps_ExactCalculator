@@ -19,8 +19,8 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"Kalkulačka"</string>
     <string name="dec_point" msgid="8920102493070918054">","</string>
-    <string name="mode_deg" msgid="1146123354434332479">"stup."</string>
-    <string name="mode_rad" msgid="1434228830085760996">"rad."</string>
+    <string name="mode_deg" msgid="1146123354434332479">"deg"</string>
+    <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
     <string name="clr" msgid="6730945431543327337">"clr"</string>
     <string name="del" msgid="5878069000864178910">"←"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"Eulerovo číslo"</string>
@@ -36,6 +36,12 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"inverzný kosínus"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"inverzný sínus"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"inverzný tangens"</string>
+    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
+    <skip />
+    <!-- no translation found for desc_fun_exp (657106837530588390) -->
+    <skip />
+    <!-- no translation found for desc_op_sqr (693577095029219627) -->
+    <skip />
     <string name="desc_op_add" msgid="5539599782598050813">"plus"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"deleno"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"faktoriál"</string>
@@ -63,8 +69,8 @@
     <string name="dismiss" msgid="7872443888515066216">"Zatvoriť"</string>
     <string name="timeout" msgid="786323140644284782">"To je príliš zložité! Nedefinovaná alebo nekonečná hodnota?"</string>
     <string name="ok_remove_timeout" msgid="4252381882975743581">"OK, ale chcem predĺžiť časové limity"</string>
-    <string name="exact" msgid="2597237880041789948">"(presný)"</string>
-    <string name="approximate" msgid="7117143366610670836">"(±1 v poslednej číslici)"</string>
+    <string name="exact" msgid="2597237880041789948">"(presne)"</string>
+    <string name="approximate" msgid="7117143366610670836">"(±1 na poslednom mieste)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Výsledok vrátane prvých číslic"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"Výsledok v tvare zlomku"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"Licencie open source"</string>

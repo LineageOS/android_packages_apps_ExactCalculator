@@ -36,6 +36,12 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"កូស៊ីនុសច្រាស"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"ស៊ីនុសច្រាស"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"តង់សង់ច្រាស"</string>
+    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
+    <skip />
+    <!-- no translation found for desc_fun_exp (657106837530588390) -->
+    <skip />
+    <!-- no translation found for desc_op_sqr (693577095029219627) -->
+    <skip />
     <string name="desc_op_add" msgid="5539599782598050813">"បូក"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"ចែក"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"ហ្វាក់តូរីយ្យែល"</string>

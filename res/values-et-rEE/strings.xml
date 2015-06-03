@@ -36,6 +36,12 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"arkuskoosinus"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"arkussiinus"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"arkustangens"</string>
+    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
+    <skip />
+    <!-- no translation found for desc_fun_exp (657106837530588390) -->
+    <skip />
+    <!-- no translation found for desc_op_sqr (693577095029219627) -->
+    <skip />
     <string name="desc_op_add" msgid="5539599782598050813">"pluss"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"jagamine"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"faktoriaal"</string>
@@ -44,8 +50,8 @@
     <string name="desc_op_pow" msgid="6010144442344099030">"toide"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"ruutjuur"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"miinus"</string>
-    <string name="desc_mode_deg" msgid="4129831241246511710">"kraadi režiim"</string>
-    <string name="desc_mode_rad" msgid="730135521908627673">"radiaani režiim"</string>
+    <string name="desc_mode_deg" msgid="4129831241246511710">"kraadirežiim"</string>
+    <string name="desc_mode_rad" msgid="730135521908627673">"radiaanirežiim"</string>
     <string name="desc_switch_deg" msgid="6675211986921592374">"kraadidele lülitumine"</string>
     <string name="desc_switch_rad" msgid="2845875847488919914">"radiaanidele lülitumine"</string>
     <string name="desc_eq" msgid="3349320880874699285">"võrdub"</string>
