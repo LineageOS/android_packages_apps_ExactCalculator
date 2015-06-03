@@ -36,6 +36,9 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"coseno inverso"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"seno inverso"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"tanxente inversa"</string>
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"dez elevado a"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"función exponencial"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"ao cadrado"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"máis"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"dividido entre"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"factorial"</string>

@@ -36,6 +36,12 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"വിപരീത cosine"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"വിപരീത sine"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"വിപരീത tangent"</string>
+    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
+    <skip />
+    <!-- no translation found for desc_fun_exp (657106837530588390) -->
+    <skip />
+    <!-- no translation found for desc_op_sqr (693577095029219627) -->
+    <skip />
     <string name="desc_op_add" msgid="5539599782598050813">"അധികചിഹ്‌നം"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"ഹരണചിഹ്‌നം"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"ഫാക്‌ടോറിയൽ"</string>
@@ -67,5 +73,5 @@
     <string name="approximate" msgid="7117143366610670836">"(അവസാനത്തെ അക്കത്തിനൊപ്പം ±1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"അടുത്തുവരുന്ന അക്കങ്ങൾ ഉപയോഗിച്ച് ഉത്തരം നൽകുക"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"ഒരു ഭിന്നസംഖ്യയായി ഉത്തരം നൽകുക"</string>
-    <string name="menu_licenses" msgid="1890541368064108592">"ഓപ്പൺ സോഴ്‌സ് ലൈസൻസുകൾ"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"ഓപ്പൺ സോഴ്‌സ് ലൈസൻസ്"</string>
 </resources>

@@ -36,6 +36,9 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"арккосинус"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"арксинус"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"арктангенс"</string>
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"десять в степени"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"экспонента"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"в квадрате"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"сложить"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"разделить"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"факториал"</string>

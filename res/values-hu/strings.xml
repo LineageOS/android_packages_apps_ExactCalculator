@@ -36,6 +36,9 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"arkusz koszinusz"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"arkusz szinusz"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"arkusz tangens"</string>
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"10 a következő hatványra emelve:"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"exponenciális függvény"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"négyzetre emelés"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"összeadás"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"osztás"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"faktoriális"</string>
@@ -51,8 +54,8 @@
     <string name="desc_eq" msgid="3349320880874699285">"egyenlő"</string>
     <string name="desc_clr" msgid="737502124268890797">"törlés"</string>
     <string name="desc_del" msgid="7879515781929311432">"törlés"</string>
-    <string name="desc_inv_off" msgid="3672218250519616068">"inverz grafikonok megjelenítése"</string>
-    <string name="desc_inv_on" msgid="2515675590767677178">"inverz grafikonok elrejtése"</string>
+    <string name="desc_inv_off" msgid="3672218250519616068">"inverz függvények megjelenítése"</string>
+    <string name="desc_inv_on" msgid="2515675590767677178">"inverz függvények elrejtése"</string>
     <string name="error_nan" msgid="5674077944929888710">"Nem egy szám"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Hibás kifejezés"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Megszakítva"</string>

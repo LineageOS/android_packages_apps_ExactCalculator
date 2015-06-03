@@ -36,18 +36,21 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"反餘弦"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"反正弦"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"反正切"</string>
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"十的次方"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"指數函數"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"平方"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"加"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"除"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"階乘"</string>
     <string name="desc_op_mul" msgid="1199902761534518529">"乘"</string>
-    <string name="desc_op_pct" msgid="2466179646911499434">"百分比符號"</string>
+    <string name="desc_op_pct" msgid="2466179646911499434">"百分比"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"次方"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"平方根"</string>
     <string name="desc_op_sub" msgid="2744940875059679129">"減"</string>
     <string name="desc_mode_deg" msgid="4129831241246511710">"角度模式"</string>
     <string name="desc_mode_rad" msgid="730135521908627673">"弧度模式"</string>
-    <string name="desc_switch_deg" msgid="6675211986921592374">"切換成角度"</string>
-    <string name="desc_switch_rad" msgid="2845875847488919914">"切換成弧度"</string>
+    <string name="desc_switch_deg" msgid="6675211986921592374">"切換至角度"</string>
+    <string name="desc_switch_rad" msgid="2845875847488919914">"切換至弧度"</string>
     <string name="desc_eq" msgid="3349320880874699285">"等號"</string>
     <string name="desc_clr" msgid="737502124268890797">"清除"</string>
     <string name="desc_del" msgid="7879515781929311432">"刪除"</string>
