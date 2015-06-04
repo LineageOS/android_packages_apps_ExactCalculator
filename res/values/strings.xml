@@ -167,7 +167,7 @@
     <!-- Content description for '!' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_fact">factorial</string>
     <!-- Content description for '×' button. [CHAR_LIMIT=NONE] -->
-    <string name="desc_op_mul">times</string>
+    <string name="desc_op_mul">multiply</string>
     <!-- Content description for '%' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_pct">percent</string>
     <!-- Content description for '^' button. [CHAR_LIMIT=NONE] -->
