@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 The Android Open Source Project
+ * Copyright (C) 2015 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 package com.android.calculator2;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -32,7 +34,7 @@ public class CalculatorPadViewPager extends ViewPager {
         }
 
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public View instantiateItem(ViewGroup container, int position) {
             return getChildAt(position);
         }
 
@@ -53,24 +55,12 @@ public class CalculatorPadViewPager extends ViewPager {
     };
 
     private final OnPageChangeListener mOnPageChangeListener = new SimpleOnPageChangeListener() {
-        private void recursivelySetEnabled(View view, boolean enabled) {
-            if (view instanceof ViewGroup) {
-                final ViewGroup viewGroup = (ViewGroup) view;
-                for (int childIndex = 0; childIndex < viewGroup.getChildCount(); ++childIndex) {
-                    recursivelySetEnabled(viewGroup.getChildAt(childIndex), enabled);
-                }
-            } else {
-                view.setEnabled(enabled);
-            }
-        }
-
         @Override
         public void onPageSelected(int position) {
-            if (getAdapter() == mStaticPagerAdapter) {
-                for (int childIndex = 0; childIndex < getChildCount(); ++childIndex) {
-                    // Only enable subviews of the current page.
-                    recursivelySetEnabled(getChildAt(childIndex), childIndex == position);
-                }
+            for (int i = getChildCount() - 1; i >= 0; --i) {
+                getChildAt(i).setImportantForAccessibility(i == position
+                        ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                        : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)  ;
             }
         }
     };
@@ -91,17 +81,17 @@ public class CalculatorPadViewPager extends ViewPager {
     };
 
     public CalculatorPadViewPager(Context context) {
-        this(context, null);
+        this(context, null /* attrs */);
     }
 
     public CalculatorPadViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         setAdapter(mStaticPagerAdapter);
-        setBackgroundColor(getResources().getColor(android.R.color.black));
-        setOnPageChangeListener(mOnPageChangeListener);
+        setBackgroundColor(Color.BLACK);
         setPageMargin(getResources().getDimensionPixelSize(R.dimen.pad_page_margin));
         setPageTransformer(false, mPageTransformer);
+        addOnPageChangeListener(mOnPageChangeListener);
     }
 
     @Override
@@ -109,8 +99,34 @@ public class CalculatorPadViewPager extends ViewPager {
         super.onFinishInflate();
 
         // Invalidate the adapter's data set since children may have been added during inflation.
-        if (getAdapter() == mStaticPagerAdapter) {
-            mStaticPagerAdapter.notifyDataSetChanged();
+        getAdapter().notifyDataSetChanged();
+
+        // Let page change listener know about our initial position.
+        mOnPageChangeListener.onPageSelected(getCurrentItem());
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        boolean shouldIntercept = super.onInterceptTouchEvent(ev);
+
+        // Only allow the current item to receive touch events.
+        if (!shouldIntercept && ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            final int x = (int) ev.getX() + getScrollX();
+            final int y = (int) ev.getY() + getScrollY();
+
+            final int childCount = getChildCount();
+            for (int i = childCount - 1; i >= 0; --i) {
+                final int childIndex = getChildDrawingOrder(childCount, i);
+                final View child = getChildAt(childIndex);
+                if (child.getVisibility() == View.VISIBLE
+                        && x >= child.getLeft() && x < child.getRight()
+                        && y >= child.getTop() && y < child.getBottom()) {
+                    shouldIntercept = (childIndex != getCurrentItem());
+                    break;
+                }
+            }
         }
+
+        return shouldIntercept;
     }
 }
