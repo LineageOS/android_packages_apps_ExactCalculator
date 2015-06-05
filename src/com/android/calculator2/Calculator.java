@@ -128,8 +128,20 @@ public class Calculator extends Activity
     private final OnKeyListener mFormulaOnKeyListener = new OnKeyListener() {
         @Override
         public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-            if (keyEvent.getAction() != KeyEvent.ACTION_UP) return true;
             stopActionMode();
+
+            // Never consume DPAD key events.
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_DPAD_UP:
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                    return false;
+            }
+
+            if (keyEvent.getAction() != KeyEvent.ACTION_UP) {
+                return true;
+            }
             switch (keyCode) {
                 case KeyEvent.KEYCODE_NUMPAD_ENTER:
                 case KeyEvent.KEYCODE_ENTER:
