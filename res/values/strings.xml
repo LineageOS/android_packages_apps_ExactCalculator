@@ -198,28 +198,28 @@
     <!-- Content description for "inv" button to hide inverse functions. [CHAR_LIMIT=NONE] -->
     <string name="desc_inv_on">hide inverse functions</string>
 
-    <!-- Error displayed when expression evaluates to an undefined result. [CHAR_LIMIT=16] -->
+    <!-- Error displayed when expression evaluates to an undefined result. [CHAR_LIMIT=20] -->
     <string name="error_nan">Not a number</string>
-    <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=16] -->
+    <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=20] -->
     <string name="error_syntax">Bad expression</string>
-    <!-- Error displayed when evaluation is manually aborted. [CHAR_LIMIT=16] -->
+    <!-- Error displayed when evaluation is manually aborted. [CHAR_LIMIT=20] -->
     <string name="error_aborted">Aborted</string>
-    <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=16] -->
+    <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=20] -->
     <string name="error_overflow">Infinite?</string>
-    <!-- Error displayed when we diagnose a division by zero.  [CHAR_LIMIT=16] -->
-    <string name="error_zero_divide">Division by 0</string>
+    <!-- Error displayed when division by zero is detected. [CHAR_LIMIT=20] -->
+    <string name="error_zero_divide">Can\'t divide by 0</string>
 
     <!-- Toast shown when text is copied to the clipboard. [CHAR_LIMIT=40] -->
-    <string name="text_copied_toast">Text copied.</string>
+    <string name="text_copied_toast">Text copied</string>
 
     <!-- Dialog message when a computation is cancelled by the user. [CHAR_LIMIT=NONE] -->
-    <string name="cancelled">Computation cancelled!</string>
-    <!-- Button label to dismiss informative text message. [CHAR_LIMIT=12] -->
-    <string name="dismiss">Dismiss</string>
+    <string name="cancelled">Computation cancelled</string>
     <!-- Dialog message when a computation times out. [CHAR_LIMIT=NONE] -->
-    <string name="timeout">That\'s too hard! Undefined or infinite value?</string>
-    <!-- (Button label for "remove timeout" button. [CHAR_LIMIT=40] -->
-    <string name="ok_remove_timeout">OK, but longer timeouts, please!</string>
+    <string name="timeout">Timed out. Value may be infinite or undefined.</string>
+    <!-- Button label to retry a computation with a longer timeout. [CHAR_LIMIT=40] -->
+    <string name="ok_remove_timeout">Use longer timeouts</string>
+    <!-- Button label to dismiss informative text message. [CHAR_LIMIT=40] -->
+    <string name="dismiss">Dismiss</string>
     <!-- Appended indicator (for "leading" display) that result is exact. [CHAR_LIMIT=NONE] -->
     <string name="exact">(exact)</string>
     <!-- Indicator (for "leading" display) that result is inexact. [CHAR_LIMIT=NONE] -->

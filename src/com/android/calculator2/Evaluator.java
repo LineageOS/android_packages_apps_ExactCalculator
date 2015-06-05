@@ -275,7 +275,7 @@ class Evaluator {
     private void displayCancelledMessage() {
         new AlertDialog.Builder(mCalculator)
             .setMessage(R.string.cancelled)
-            .setPositiveButton(android.R.string.ok,
+            .setPositiveButton(R.string.dismiss,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface d, int which) { }
                 })
@@ -302,21 +302,18 @@ class Evaluator {
                                    // implementation.
 
     private void displayTimeoutMessage() {
-        AlertDialog.Builder b = new AlertDialog.Builder(mCalculator);
-        b.setMessage(R.string.timeout)
-         .setNegativeButton(android.R.string.ok,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface d, int which) { }
-                    });
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mCalculator)
+                .setMessage(R.string.timeout)
+                .setNegativeButton(R.string.dismiss, null /* listener */);
         if (mTimeout != MAX_TIMEOUT) {
-            b.setPositiveButton(R.string.ok_remove_timeout,
-                   new DialogInterface.OnClickListener() {
-                       public void onClick(DialogInterface d, int which) {
-                           mTimeout = MAX_TIMEOUT;
-                       }
-                   });
+            builder.setPositiveButton(R.string.ok_remove_timeout,
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface d, int which) {
+                            mTimeout = MAX_TIMEOUT;
+                        }
+                    });
         }
-        b.create().show();
+        builder.show();
     }
 
     // Compute initial cache contents and result when we're good and ready.
