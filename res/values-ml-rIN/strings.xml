@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"വിപരീത cosine"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"വിപരീത sine"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"വിപരീത tangent"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"പത്തിന്റെ ഇരട്ടി"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"എക്‌സ്‌പൊണൻഷ്യൽ ഫംഗ്‌ഷൻ"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"വർഗ്ഗം"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"അധികചിഹ്‌നം"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"ഹരണചിഹ്‌നം"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"ഫാക്‌ടോറിയൽ"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"തവണ"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"ഗുണനചിഹ്നം"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"ശതമാനം"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"പവർ"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"വർഗ്ഗമൂലം"</string>
@@ -63,12 +60,17 @@
     <string name="error_syntax" msgid="4786987111228645602">"മോശം എക്‌സ്‌പ്രഷൻ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"പരാജയപ്പെട്ടു"</string>
     <string name="error_overflow" msgid="7800547394563434764">"അനന്തസംഖ്യയാണോ?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"പൂജ്യം കൊണ്ടുള്ള ഹരണം"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"ടെക്‌സ്‌റ്റ് പകർത്തി."</string>
-    <string name="cancelled" msgid="615180456915976640">"കമ്പ്യൂട്ടേഷൻ റദ്ദാക്കി!"</string>
+    <!-- no translation found for error_zero_divide (458040988686661801) -->
+    <skip />
+    <!-- no translation found for text_copied_toast (2104264466812485425) -->
+    <skip />
+    <!-- no translation found for cancelled (1618889609742874632) -->
+    <skip />
+    <!-- no translation found for timeout (802690170415591535) -->
+    <skip />
+    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
+    <skip />
     <string name="dismiss" msgid="7872443888515066216">"നിരസിക്കുക"</string>
-    <string name="timeout" msgid="786323140644284782">"അത് വളരെ പ്രയാസമുള്ളതാണ്! നിർവ്വചിക്കാനാകാത്തതോ അനന്തമോ ആയ മൂല്യമാണോ?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"ശരി, കാലഹരണപ്പെടൽ ദീർഘനേരത്തേക്കാക്കുക!"</string>
     <string name="exact" msgid="2597237880041789948">"(കൃത്യമായ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(അവസാനത്തെ അക്കത്തിനൊപ്പം ±1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"അടുത്തുവരുന്ന അക്കങ്ങൾ ഉപയോഗിച്ച് ഉത്തരം നൽകുക"</string>

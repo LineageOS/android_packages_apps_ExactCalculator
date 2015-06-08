@@ -36,13 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"反餘弦"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"反正弦"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"反正切"</string>
-    <string name="desc_fun_10pow" msgid="3972646467174520812">"十的次方"</string>
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"十的次方數"</string>
     <string name="desc_fun_exp" msgid="657106837530588390">"指數函數"</string>
     <string name="desc_op_sqr" msgid="693577095029219627">"平方"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"加"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"除"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"階乘"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"乘"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"乘"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"百分比"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"次方"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"平方根"</string>
@@ -60,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"算式錯誤"</string>
     <string name="error_aborted" msgid="3402238176316342537">"已中止"</string>
     <string name="error_overflow" msgid="7800547394563434764">"無限大？"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"除 0"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"已複製文字。"</string>
-    <string name="cancelled" msgid="615180456915976640">"運算已取消！"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"不可除零"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"已複製文字"</string>
+    <string name="cancelled" msgid="1618889609742874632">"運算已取消"</string>
+    <string name="timeout" msgid="802690170415591535">"操作逾時，數值可能為無限或未定義。"</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"延長逾時時間"</string>
     <string name="dismiss" msgid="7872443888515066216">"關閉"</string>
-    <string name="timeout" msgid="786323140644284782">"太難了！未定義或無限值？"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"可以，但請延長逾時時間！"</string>
     <string name="exact" msgid="2597237880041789948">"(準確)"</string>
     <string name="approximate" msgid="7117143366610670836">"(最後一個數字 ±1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"作答時使用前置數字"</string>

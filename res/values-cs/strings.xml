@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"arkus kosinus"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"arkus sinus"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"arkus tangens"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"mocnina o základu 10"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"exponenciální funkce"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"druhá mocnina"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"plus"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"děleno"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"faktoriál"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"krát"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"násobení"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"procento"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"mocnina"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"druhá odmocnina"</string>
@@ -63,12 +60,17 @@
     <string name="error_syntax" msgid="4786987111228645602">"Chybný výraz"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Zrušeno"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Nekonečno?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"Dělení nulou"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Text byl zkopírován."</string>
-    <string name="cancelled" msgid="615180456915976640">"Výpočet byl zrušen."</string>
+    <!-- no translation found for error_zero_divide (458040988686661801) -->
+    <skip />
+    <!-- no translation found for text_copied_toast (2104264466812485425) -->
+    <skip />
+    <!-- no translation found for cancelled (1618889609742874632) -->
+    <skip />
+    <!-- no translation found for timeout (802690170415591535) -->
+    <skip />
+    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
+    <skip />
     <string name="dismiss" msgid="7872443888515066216">"Zavřít"</string>
-    <string name="timeout" msgid="786323140644284782">"Výpočet je příliš náročný. Je možné, že výsledek není definován nebo je nekonečno."</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"OK, ale prodlužte časové limity!"</string>
     <string name="exact" msgid="2597237880041789948">"(přesně)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 na posledním místě)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Výsledek včetně úvodních číslic"</string>

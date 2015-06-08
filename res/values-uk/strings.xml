@@ -19,10 +19,10 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"Калькулятор"</string>
     <string name="dec_point" msgid="8920102493070918054">","</string>
-    <string name="mode_deg" msgid="1146123354434332479">"град."</string>
-    <string name="mode_rad" msgid="1434228830085760996">"рад"</string>
+    <string name="mode_deg" msgid="1146123354434332479">"deg"</string>
+    <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
     <string name="clr" msgid="6730945431543327337">"очс"</string>
-    <string name="del" msgid="5878069000864178910">"вид"</string>
+    <string name="del" msgid="5878069000864178910">"del"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"число Ейлера"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"пі"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"кома"</string>
@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"арккосинус"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"арксинус"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"арктангенс"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"десять у степені"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"експоненціальна функція"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"у квадраті"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"додати"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"поділити"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"факторіал"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"помножити"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"помножити"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"відсоток"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"степінь"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"квадратний корінь"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"Невірний вираз"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Скасовано"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Безкінечність?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"Ділення на 0"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Текст скопійовано."</string>
-    <string name="cancelled" msgid="615180456915976640">"Обчислення скасовано"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"Не можна ділити на 0"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"Текст скопійовано"</string>
+    <string name="cancelled" msgid="1618889609742874632">"Обчислення скасовано"</string>
+    <string name="timeout" msgid="802690170415591535">"Час очікування минув. Значення може бути невизначеним або нескінченним."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"Збільшити час очікування"</string>
     <string name="dismiss" msgid="7872443888515066216">"Закрити"</string>
-    <string name="timeout" msgid="786323140644284782">"Не вдалося обчислити. Невизначене або нескінченне значення?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"Установити довший час очікування"</string>
     <string name="exact" msgid="2597237880041789948">"(точно)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 в останній цифрі)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Показати перші цифри"</string>

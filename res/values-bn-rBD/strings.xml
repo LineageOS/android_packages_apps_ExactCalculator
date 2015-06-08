@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"বিপরীত কোসাইন"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"বিপরীত সাইন"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"বিপরীত ট্যানজেন্ট"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"দশ গুণ শক্তি"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"ব্যাখ্যামূলক ক্রিয়াকলাপ"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"ছক"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"যোগ চিহ্ন"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"ভাগ চিহ্ন"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"গৌণিক"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"গুণ"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"গুণ"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"শতাংশ"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"পাওয়ার"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"বর্গমূল"</string>
@@ -63,12 +60,17 @@
     <string name="error_syntax" msgid="4786987111228645602">"খারাপ এক্সপ্রেশন"</string>
     <string name="error_aborted" msgid="3402238176316342537">"বাতিল করা হয়েছে"</string>
     <string name="error_overflow" msgid="7800547394563434764">"অসীম?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"০ দ্বারা বিভাজন"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"পাঠ্য অনুলিপি হয়েছে৷"</string>
-    <string name="cancelled" msgid="615180456915976640">"গুনতি বাতিল করা হয়েছে!"</string>
+    <!-- no translation found for error_zero_divide (458040988686661801) -->
+    <skip />
+    <!-- no translation found for text_copied_toast (2104264466812485425) -->
+    <skip />
+    <!-- no translation found for cancelled (1618889609742874632) -->
+    <skip />
+    <!-- no translation found for timeout (802690170415591535) -->
+    <skip />
+    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
+    <skip />
     <string name="dismiss" msgid="7872443888515066216">"খারিজ করুন"</string>
-    <string name="timeout" msgid="786323140644284782">"এটি খুব কঠিন! অবর্ণিত বা অসীম মান?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"ওকে, দীর্ঘক্ষণ সময়সীমা দিন!"</string>
     <string name="exact" msgid="2597237880041789948">"(যথাযথ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±১ শেষের ডিজিটের মধ্যে)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"লিডিং সংখ্যায় উত্তর"</string>

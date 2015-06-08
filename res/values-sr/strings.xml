@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"аркус косинус"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"аркус синус"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"аркус тангенс"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"десет на степен"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"експоненцијална функција"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"на квадрат"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"плус"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"дељење"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"факторијел"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"множење"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"помножи"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"проценат"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"степен"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"квадратни корен"</string>
@@ -63,15 +60,20 @@
     <string name="error_syntax" msgid="4786987111228645602">"Неисправан израз"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Отказано је"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Бесконачно?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"Дељење нулом"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Текст је копиран."</string>
-    <string name="cancelled" msgid="615180456915976640">"Израчунавање је отказано!"</string>
+    <!-- no translation found for error_zero_divide (458040988686661801) -->
+    <skip />
+    <!-- no translation found for text_copied_toast (2104264466812485425) -->
+    <skip />
+    <!-- no translation found for cancelled (1618889609742874632) -->
+    <skip />
+    <!-- no translation found for timeout (802690170415591535) -->
+    <skip />
+    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
+    <skip />
     <string name="dismiss" msgid="7872443888515066216">"Одбаци"</string>
-    <string name="timeout" msgid="786323140644284782">"Ово је претешко! Да ли је вредност недефинисана или бесконачна?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"У реду, али тражим дужа временска ограничења!"</string>
     <string name="exact" msgid="2597237880041789948">"(тачно)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 за последњу цифру)"</string>
-    <string name="menu_leading" msgid="2338520833272667740">"Резул. са број. на почетку"</string>
-    <string name="menu_fraction" msgid="1247477377840252234">"Резул. као одл."</string>
+    <string name="menu_leading" msgid="2338520833272667740">"Резултат са бројевима на почетку"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Резултат као разломак"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"Лиценце отвор. кода"</string>
 </resources>

@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"反餘弦函數"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"反正弦函數"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"反正切函數"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"10 的次方"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"指數函數"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"平方"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"加號"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"除號"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"階乘"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"乘號"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"乘號"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"百分比符號"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"指數"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"平方根號"</string>
@@ -63,12 +60,17 @@
     <string name="error_syntax" msgid="4786987111228645602">"運算式無效"</string>
     <string name="error_aborted" msgid="3402238176316342537">"已中止"</string>
     <string name="error_overflow" msgid="7800547394563434764">"無限值？"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"除以 0"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"已複製文字。"</string>
-    <string name="cancelled" msgid="615180456915976640">"已取消計算！"</string>
+    <!-- no translation found for error_zero_divide (458040988686661801) -->
+    <skip />
+    <!-- no translation found for text_copied_toast (2104264466812485425) -->
+    <skip />
+    <!-- no translation found for cancelled (1618889609742874632) -->
+    <skip />
+    <!-- no translation found for timeout (802690170415591535) -->
+    <skip />
+    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
+    <skip />
     <string name="dismiss" msgid="7872443888515066216">"關閉"</string>
-    <string name="timeout" msgid="786323140644284782">"這太難了！這是未定義的值或無限值嗎？"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"沒問題，但請延後逾時期限！"</string>
     <string name="exact" msgid="2597237880041789948">"(精確)"</string>
     <string name="approximate" msgid="7117143366610670836">"(最後一位數字 ±1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"在結果中顯示前導數"</string>

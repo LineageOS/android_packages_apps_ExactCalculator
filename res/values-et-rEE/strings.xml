@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"arkuskoosinus"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"arkussiinus"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"arkustangens"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"kümme astmes"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"eksponentfunktsioon"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"ruudus"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"pluss"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"jagamine"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"faktoriaal"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"korda"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"korrutamine"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"protsent"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"toide"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"ruutjuur"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"Vale avaldis"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Katkestatud"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Lõpmatu?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"Jagamine 0-ga"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Tekst on kopeeritud."</string>
-    <string name="cancelled" msgid="615180456915976640">"Arvutamine tühistati."</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0-ga ei saa jagada"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"Tekst on kopeeritud"</string>
+    <string name="cancelled" msgid="1618889609742874632">"Arvutamine tühistati"</string>
+    <string name="timeout" msgid="802690170415591535">"Ajalõpp. Väärtus võib olla lõpmatu või määramata."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"Kasuta pikemaid ajalõppe"</string>
     <string name="dismiss" msgid="7872443888515066216">"Loobu"</string>
-    <string name="timeout" msgid="786323140644284782">"See on liiga raske! Kas määramata või lõpmatu väärtus?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"OK, aga palun pikemate ajalõppudega!"</string>
     <string name="exact" msgid="2597237880041789948">"(täpne)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 viimases arvus)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Vasta esimeste numbritega"</string>
