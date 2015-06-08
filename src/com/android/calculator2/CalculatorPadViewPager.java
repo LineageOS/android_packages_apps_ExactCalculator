@@ -58,9 +58,13 @@ public class CalculatorPadViewPager extends ViewPager {
         @Override
         public void onPageSelected(int position) {
             for (int i = getChildCount() - 1; i >= 0; --i) {
-                getChildAt(i).setImportantForAccessibility(i == position
+                final View child = getChildAt(i);
+                // Prevent clicks and accessibility focus from going through to descendants of
+                // other pages which are covered by the current page.
+                child.setClickable(i == position);
+                child.setImportantForAccessibility(i == position
                         ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
-                        : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)  ;
+                        : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
             }
         }
     };
