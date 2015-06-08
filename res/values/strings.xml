@@ -223,7 +223,15 @@
     <string name="cancelled">Computation cancelled</string>
     <!-- Dialog message when a computation times out. [CHAR_LIMIT=NONE] -->
     <string name="timeout">Timed out. Value may be infinite or undefined.</string>
-    <!-- Button label to retry a computation with a longer timeout. [CHAR_LIMIT=40] -->
+    <!--
+      Button label to allow future computations with a longer timeout.
+
+      When evaluating a result takes too long, we show a "timed out" dialog. This button allows
+      the user to increase the maximum amount of time we attempt to evaluate the expression before
+      "timing out".
+
+      [CHAR_LIMIT=40]
+    -->
     <string name="ok_remove_timeout">Use longer timeouts</string>
     <!-- Button label to dismiss informative text message. [CHAR_LIMIT=40] -->
     <string name="dismiss">Dismiss</string>
