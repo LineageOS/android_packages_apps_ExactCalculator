@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"ප්‍රතිලෝම කෝසයින"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"ප්‍රතිලෝම සයින්"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"ප්‍රතිලෝම සීකන"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"දහයෙහි බලය"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"දර්ශක ශ්‍රිතය"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"වර්ග කළ"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"ධන"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"බෙදීම"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"ක්‍රමාරෝපිත"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"වාර"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"ගුණිතය"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"ප්‍රතිශතය"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"බලය"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"වර්ග මූලය"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"වැරදි ප්‍රකාශනය"</string>
     <string name="error_aborted" msgid="3402238176316342537">"නතර කෙරිණි"</string>
     <string name="error_overflow" msgid="7800547394563434764">"අපිරිමිත?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"0 මඟින් බෙදීම"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"පෙළ පිටපත් කරන ලදි."</string>
-    <string name="cancelled" msgid="615180456915976640">"ගණනය අවලංගු කරන ලදි!"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0 න් බෙදිය නොහැකිය"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"පෙළ පිටපත් කරන ලදී"</string>
+    <string name="cancelled" msgid="1618889609742874632">"ගණනය අවලංගු කරන ලදි"</string>
+    <string name="timeout" msgid="802690170415591535">"කාලය නිමා විය. අගය අපරිමිත හෝ අර්ථ දක්වා නොමැති විය හැකිය."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"දිගු කාල නිමාවන් භාවිත කරන්න"</string>
     <string name="dismiss" msgid="7872443888515066216">"ඉවත ලන්න"</string>
-    <string name="timeout" msgid="786323140644284782">"එය ඉතා අමාරුයි! අර්ථ නොදැක්වූ හෝ අපිරිමිත අගය?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"හරි, නමුත් කරුණාකර වැඩි කල් ඉකුත්වීම්!"</string>
     <string name="exact" msgid="2597237880041789948">"(නිශ්චිත)"</string>
     <string name="approximate" msgid="7117143366610670836">"(අවසන් ඉලක්කමේදී ± 1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"පළමු පූර්ණ සංඛාව සමගින් පිළිතුරු දෙන්න"</string>

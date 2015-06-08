@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"հակադարձ կոսինուս"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"հակադարձ սինուս"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"հակադարձ տանգենս"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"հետևյալ աստիճանի տասը՝"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"աստիճանային ֆունկցիա"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"քառակուսի"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"գումարում"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"բաժանում"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"ֆակտորիալ"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"անգամ"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"բազմապատկում"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"տոկոս"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"սնուցում"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"քառակուսի արմատ"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"Սխալ է"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Ընդհատված"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Իռացիոնա՞լ է:"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"Բաժանում 0-ի"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Տեսքտը պատճենվեց:"</string>
-    <string name="cancelled" msgid="615180456915976640">"Հաշվարկը չեղարկվել է:"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"Հնարավոր չէ բաժանել 0-ի"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"Տեսքտը պատճենվեց"</string>
+    <string name="cancelled" msgid="1618889609742874632">"Հաշվարկը չեղարկվել է"</string>
+    <string name="timeout" msgid="802690170415591535">"Ժամանակի սպառում: Հնարավոր է արժեքը անսահման է կամ սահմանված չէ:"</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"Երկարատև ժամանակի սպառումով"</string>
     <string name="dismiss" msgid="7872443888515066216">"Բաց թողնել"</string>
-    <string name="timeout" msgid="786323140644284782">"Անորոշ կամ իռացիոնալ թի՞վ է:"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"Լավ, բայց երկարատև ժամասպառում:"</string>
     <string name="exact" msgid="2597237880041789948">"(ճշգրիտ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 վերջին նիշում)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Առաջին թվերով"</string>

@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"ವಿಲೋಮ ಕೊಸೈನ್"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"ವಿಲೋಮ ಸೈನ್"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"ವಿಲೋಮ ಸ್ಪರ್ಶರೇಖೆ"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"ಹತ್ತರ ಘಾತ"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"ಘಾತ ಕ್ರಿಯೆ"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"ವರ್ಗ"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"ಸಂಕಲನ"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"ವಿಭಾಗಿಸು"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"ಅಪವರ್ತನೀಯ"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"ಬಾರಿ"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"ಗುಣಿಸು"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"ಪ್ರತಿಶತ"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"ಪವರ್‌"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"ವರ್ಗಮೂಲ"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"ಕಳಪೆ ವ್ಯಕ್ತತೆ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"ರದ್ದು ಮಾಡಲಾಗಿದೆ"</string>
     <string name="error_overflow" msgid="7800547394563434764">"ಅಪರಿಮಿತ?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"0 ಮೂಲಕ ವಿಭಾಗ"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"ಪಠ್ಯವನ್ನು ನಕಲಿಸಲಾಗಿದೆ."</string>
-    <string name="cancelled" msgid="615180456915976640">"ಕಂಪ್ಯುಟೇಷನ್ ರದ್ದು ಮಾಡಲಾಗಿದೆ!"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0 ಭಾಗಿಸಲಾಗುವುದಿಲ್ಲ"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"ಪಠ್ಯವನ್ನು ನಕಲಿಸಲಾಗಿದೆ"</string>
+    <string name="cancelled" msgid="1618889609742874632">"ಎಣಿಕೆ ರದ್ದು ಮಾಡಲಾಗಿದೆ"</string>
+    <string name="timeout" msgid="802690170415591535">"ಸಮಯ ಮೀರಿದೆ. ಮೌಲ್ಯವು ಅಪರಿಮಿತ ಅಥವಾ ಬಣ್ಣಿಸಲು ಸಾಧ್ಯವಾಗದೆ ಇರಬಹುದು."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"ದೀರ್ಘ ಅವಧಿ ಮೀರುವಿಕೆಗಳನ್ನು ಬಳಸಿ"</string>
     <string name="dismiss" msgid="7872443888515066216">"ವಜಾಗೊಳಿಸು"</string>
-    <string name="timeout" msgid="786323140644284782">"ಅದು ತುಂಬಾ ಕಷ್ಟ! ಸ್ಪಷ್ಟೀಕರಿಸದ ಅಥವಾ ಅಪರಿಮಿತ ಮೌಲ್ಯವೇ?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"ಸರಿ, ಆದರೆ ದೀರ್ಘ ಅವಧಿ ಮೀರುವಿಕೆಗಳು!"</string>
     <string name="exact" msgid="2597237880041789948">"(ನಿಖರ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 ಕೊನೆಯ ಅಂಕಿಯಲ್ಲಿ)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"ಪ್ರಮುಖ ಅಂಕೆಗಳೊಂದಿಗೆ ಉತ್ತರಿಸಿ"</string>

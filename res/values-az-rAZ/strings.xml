@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"tərs kosinus"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"tərs sinus"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"tərs tangens"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"on üstü"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"əmsal funksiyası"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"kvadrat"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"plus"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"böl"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"faktorial"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"dəfə"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"çoxaltma"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"faiz"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"güc"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"kvadrat kök"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"Pis ifadə"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Ləğv edilib"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Sonsuzluq?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"0-a bölmə"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Mətn kopyalandı."</string>
-    <string name="cancelled" msgid="615180456915976640">"Hesablama ləğv edildi!"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0 bölmək bilməz"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"Mətn kopyalandı"</string>
+    <string name="cancelled" msgid="1618889609742874632">"Hesablama ləğv edildi!"</string>
+    <string name="timeout" msgid="802690170415591535">"Başa çatmışdır. Value sonsuz və ya müəyyən ola bilər."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"artıq zaman aşımları istifadə"</string>
     <string name="dismiss" msgid="7872443888515066216">"Rədd edin"</string>
-    <string name="timeout" msgid="786323140644284782">"Bu çox çətindir! Qeyri-müəyyən və ya sonsuz dəyər?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"OK, amma uzun zaman aşımı, lütfən!"</string>
     <string name="exact" msgid="2597237880041789948">"(dəqiq)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 son rəqəmdə)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Aparıcı rəqəmlər ilə cavablandırın"</string>

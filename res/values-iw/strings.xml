@@ -42,7 +42,7 @@
     <string name="desc_op_add" msgid="5539599782598050813">"פלוס"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"חילוק"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"עצרת"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"כפול"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"כפל"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"אחוז"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"חזקה"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"שורש ריבועי"</string>
@@ -60,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"ביטוי שגוי"</string>
     <string name="error_aborted" msgid="3402238176316342537">"בוטל"</string>
     <string name="error_overflow" msgid="7800547394563434764">"אינסופי?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"חלוקה ב-0"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"הטקסט הועתק."</string>
-    <string name="cancelled" msgid="615180456915976640">"החישוב בוטל."</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"אי אפשר לחלק ב-0"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"הטקסט הועתק"</string>
+    <string name="cancelled" msgid="1618889609742874632">"החישוב בוטל"</string>
+    <string name="timeout" msgid="802690170415591535">"פג הזמן הקצוב. הערך עשוי להיות אינסופי או לא מוגדר."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"הארך את הזמן הקצוב לתפוגה"</string>
     <string name="dismiss" msgid="7872443888515066216">"סגור"</string>
-    <string name="timeout" msgid="786323140644284782">"החישוב הזה קשה מדי. האם זהו ערך לא מוגדר או אינסופי?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"אוקיי, אבל הארך את הזמן הקצוב לתפוגה."</string>
     <string name="exact" msgid="2597237880041789948">"(מדויק)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 בספרה האחרונה)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"תשובה עם ספרות מובילות"</string>

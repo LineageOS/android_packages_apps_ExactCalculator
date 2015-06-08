@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"प्रतिलोम कोज्या"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"प्रतिलोम ज्या"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"प्रतिलोम स्पर्शज्या"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"दस की घात"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"घातांक फ़ंक्‍शन"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"वर्ग"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"धन"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"विभाजन"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"क्रमगुणन"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"गुणा"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"गुणा"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"प्रतिशत"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"घात"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"वर्गमूल"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"खराब व्यंजक"</string>
     <string name="error_aborted" msgid="3402238176316342537">"निरस्त किया गया"</string>
     <string name="error_overflow" msgid="7800547394563434764">"असीमित?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"0 द्वारा विभाजन"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"लेख की कॉपी बनाई गई."</string>
-    <string name="cancelled" msgid="615180456915976640">"गणना रोक दी गई!"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0 से विभाजित नहीं कर सकते"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"लेख की प्रति बनाई गई"</string>
+    <string name="cancelled" msgid="1618889609742874632">"गणना रोक दी गई"</string>
+    <string name="timeout" msgid="802690170415591535">"समयबाह्य हो गया. मूल्‍य अनंत या अपरिभाषित हो सकता है."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"अधिक बड़े समयबाह्य का उपयोग करें"</string>
     <string name="dismiss" msgid="7872443888515066216">"ख़ारिज करें"</string>
-    <string name="timeout" msgid="786323140644284782">"वह बहुत कठिन है! अनिर्धारित या असीमित मान?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"ठीक है, लेकिन कृपया लंबी समयबाह्य अवधि!"</string>
     <string name="exact" msgid="2597237880041789948">"(सटीक)"</string>
     <string name="approximate" msgid="7117143366610670836">"(अंतिम अंक में ±1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"आगे वाले अंक से उत्तर दें"</string>

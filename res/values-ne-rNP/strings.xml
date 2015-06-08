@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"व्युत्क्रम कोसाइन"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"व्युत्क्रम साइन"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"व्युत्क्रम ट्यान्जेन्ट"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"दशको पावर"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"एक्सपोनेन्सियल प्रकार्य"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"वर्ग"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"जोड"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"भाग गर्नुहोस्"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"फ्याक्टोरियल"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"पटक"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"गुणन"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"प्रतिशत"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"पावर"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"वर्गमूल"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"खराब अभिव्यक्ति"</string>
     <string name="error_aborted" msgid="3402238176316342537">"रद्द गरियो"</string>
     <string name="error_overflow" msgid="7800547394563434764">"अनन्त?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"० द्वारा भाग"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"पाठ प्रतिलिपि गरियो।"</string>
-    <string name="cancelled" msgid="615180456915976640">"कम्प्युटेसन रद्द भयो!"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"० ले भाग गर्न मिल्दैन"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"पाठ प्रतिलिपि गरियो"</string>
+    <string name="cancelled" msgid="1618889609742874632">"कम्प्युटेसन रद्द भयो"</string>
+    <string name="timeout" msgid="802690170415591535">"समय समाप्त। मूल्य अनन्त वा अपरिभाषित हुन सक्छ।"</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"लामो टाइमआउट प्रयोग गर्नुहोस्"</string>
     <string name="dismiss" msgid="7872443888515066216">"खारेज गर्नुहोस्"</string>
-    <string name="timeout" msgid="786323140644284782">"त्यो निकै कठिन छ! अपरिभाषित वा अनन्त मान?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"ठीक छ, तर कृपया लामो टाइमआउट!"</string>
     <string name="exact" msgid="2597237880041789948">"(सही)"</string>
     <string name="approximate" msgid="7117143366610670836">"(अन्तिम अंकमा ±१)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"अग्र अंकमा उत्तर"</string>

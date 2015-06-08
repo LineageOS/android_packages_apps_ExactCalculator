@@ -36,16 +36,14 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"арккосинус"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"арксинус"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"арктангенс"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"онду даражага көтөрүү"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"Экспоненциалдык функция"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"квадратка көтөрүү"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"плюс"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"бөлүү"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"факториал"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"көбөйтүү"</string>
+    <!-- no translation found for desc_op_mul (6882122010553947015) -->
+    <skip />
     <string name="desc_op_pct" msgid="2466179646911499434">"пайыз"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"кубат"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"квадраттык тамыр"</string>
@@ -63,12 +61,17 @@
     <string name="error_syntax" msgid="4786987111228645602">"Начар туюнтма"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Үзгүлтккө учурды"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Чексизби?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"0\'го бөлүнүү"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Текст көчүрүлдү."</string>
-    <string name="cancelled" msgid="615180456915976640">"Эсептөө жокко чыгарылды"</string>
+    <!-- no translation found for error_zero_divide (458040988686661801) -->
+    <skip />
+    <!-- no translation found for text_copied_toast (2104264466812485425) -->
+    <skip />
+    <!-- no translation found for cancelled (1618889609742874632) -->
+    <skip />
+    <!-- no translation found for timeout (802690170415591535) -->
+    <skip />
+    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
+    <skip />
     <string name="dismiss" msgid="7872443888515066216">"Этибарга албоо"</string>
-    <string name="timeout" msgid="786323140644284782">"Бул өтө татаал экен! Белгисизби же чексиз мааниби?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"ЖАРАЙТ, бирок узунураак танапис сураныч!"</string>
     <string name="exact" msgid="2597237880041789948">"(дал өзү)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 акыркы цифрада)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Баш сандуу жооп"</string>

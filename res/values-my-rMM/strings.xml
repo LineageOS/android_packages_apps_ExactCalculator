@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"ကိုဆိုင်း ပြောင်းပြန်"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"ဆိုင်း ပြောင်းပြန်"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"တန်းဂျင့် ပြောင်းပြန်"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"ဆယ်ထပ်ကိန်း"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"အဆ function"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"နှစ်ထပ်"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"အပေါင်း လက္ခဏာ"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"စားရန်"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"မြှောက်ကိန်း"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"အကြိမ်"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"ဆတိုး"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"ရာခိုင်နှုန်း"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"ထပ်ကိန်း"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"နှစ်ထပ်ကိန်းရင်း"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"မကောင်းတဲ့ ဖော်ပြချက်"</string>
     <string name="error_aborted" msgid="3402238176316342537">"ဖျက်လိုက်ပြီ"</string>
     <string name="error_overflow" msgid="7800547394563434764">"အဆုံးမရှိ ပါသလား?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"၀ ဖြင့်စားခြင်း"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"စာသားကူးယူပြီး"</string>
-    <string name="cancelled" msgid="615180456915976640">"တွက်ချက်ခြင်း ပယ်ဖျက်လိုက်ပါပြီ!"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0 ဖြင့်စား၍မရပါ"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"စာသားကူးယူပြီး"</string>
+    <string name="cancelled" msgid="1618889609742874632">"တွက်ချက်ခြင်း ပယ်ဖျက်လိုက်ပါပြီ"</string>
+    <string name="timeout" msgid="802690170415591535">"အချိန်ကုန်သွားပါပြီ။ တန်ဖိုးသည် အဆုံးမရှိ သို့မဟုတ် မသတ်မှတ်ခြင်း ဖြစ်နိုင်ပါသည်။"</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"အချိန်ကုန်ခြင်း ပိုမိုကြာမြင့်သည်ကို အသုံးပြုရန်"</string>
     <string name="dismiss" msgid="7872443888515066216">"ပယ်ရန်"</string>
-    <string name="timeout" msgid="786323140644284782">"၎င်းကအလွန်ခက်တယ်! မသတ်မှတ်ထားသော သို့မဟုတ် အဆုံးမဲ့တန်ဖိုးလား?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"အိုကေ၊ ဒါပေမယ့် ကျေးဇူးပြု၍ ကုန်ဆုံးချိန်ကြာပါစေ!"</string>
     <string name="exact" msgid="2597237880041789948">"(အတိအကျ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(နောက်ဆုံးဂဏန်းတွင် ± 1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"ဦးဆောင်ဂဏန်းနှင့်ဖြေ"</string>

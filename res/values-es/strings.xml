@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"coseno inverso"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"seno inverso"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"tangente inversa"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"diez elevado a"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"función exponencial"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"elevado al cuadrado"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"más"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"dividir"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"factorial"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"multiplicar"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"multiplicar"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"porcentaje"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"potencia"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"raíz cuadrada"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"Expresión incorrecta"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Cancelado"</string>
     <string name="error_overflow" msgid="7800547394563434764">"¿Infinito?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"División por 0"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Texto copiado"</string>
-    <string name="cancelled" msgid="615180456915976640">"Cálculo cancelado"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"Error dividir por 0"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"Texto copiado"</string>
+    <string name="cancelled" msgid="1618889609742874632">"Cálculo cancelado"</string>
+    <string name="timeout" msgid="802690170415591535">"Tiempo de espera agotado. Es posible que el valor sea infinito o no esté definido."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"Utilizar tiempos de espera más largos"</string>
     <string name="dismiss" msgid="7872443888515066216">"Aceptar"</string>
-    <string name="timeout" msgid="786323140644284782">"¡Es demasiado difícil! ¿Has usado algún valor infinito o sin definir?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"De acuerdo, pero dame más tiempo."</string>
     <string name="exact" msgid="2597237880041789948">"(exacto)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 en el último dígito)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Dígitos iniciales"</string>

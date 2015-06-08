@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"kosinus i kundërt"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"sinus i kundërt"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"tangjente e kundërt"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"dhjetë në fuqi të"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"funksioni eksponencial"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"në katror"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"plus"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"pjesëto"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"faktoriali"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"herë"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"shumëzo"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"përqindje"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"në fuqi"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"rrënja katrore"</string>
@@ -63,12 +60,17 @@
     <string name="error_syntax" msgid="4786987111228645602">"shprehje e pasaktë"</string>
     <string name="error_aborted" msgid="3402238176316342537">"U ndërpre"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Infinit?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"pjesëtim për 0"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Teksti u kopjua."</string>
-    <string name="cancelled" msgid="615180456915976640">"Llogaritja u anulua!"</string>
+    <!-- no translation found for error_zero_divide (458040988686661801) -->
+    <skip />
+    <!-- no translation found for text_copied_toast (2104264466812485425) -->
+    <skip />
+    <!-- no translation found for cancelled (1618889609742874632) -->
+    <skip />
+    <!-- no translation found for timeout (802690170415591535) -->
+    <skip />
+    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
+    <skip />
     <string name="dismiss" msgid="7872443888515066216">"Hiq dorë"</string>
-    <string name="timeout" msgid="786323140644284782">"Kjo është shumë e vështirë! Vlerë e papërcaktuar apo infinit?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"Në rregull, por me kohë më të gjatë përfundimi."</string>
     <string name="exact" msgid="2597237880041789948">"(ekzakt)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 në shifrën e fundit)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Rezultati me numra të plotë"</string>

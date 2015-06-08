@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"cosinus inverse"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"sinus inverse"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"tangente inverse"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"dix à la puissance"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"fonction exponentielle"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"au carré"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"plus"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"divisé"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"factoriel"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"fois"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"multiplier"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"pourcent"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"puissance"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"racine carrée"</string>
@@ -63,12 +60,17 @@
     <string name="error_syntax" msgid="4786987111228645602">"Express. incorr."</string>
     <string name="error_aborted" msgid="3402238176316342537">"Annulée"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Infini ?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"Division par 0"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Texte copié."</string>
-    <string name="cancelled" msgid="615180456915976640">"Calcul annulé."</string>
+    <!-- no translation found for error_zero_divide (458040988686661801) -->
+    <skip />
+    <!-- no translation found for text_copied_toast (2104264466812485425) -->
+    <skip />
+    <!-- no translation found for cancelled (1618889609742874632) -->
+    <skip />
+    <!-- no translation found for timeout (802690170415591535) -->
+    <skip />
+    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
+    <skip />
     <string name="dismiss" msgid="7872443888515066216">"Fermer"</string>
-    <string name="timeout" msgid="786323140644284782">"C\'est trop compliqué ! S\'agit-il d\'une valeur indéfinie ou infinie ?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"OK, mais avec des délais d\'attente plus longs"</string>
     <string name="exact" msgid="2597237880041789948">"(exact)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 au dernier chiffre)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Réponse avec prem. chiffres"</string>

@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"invers cosinus"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"invers sinus"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"invers tangens"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"10 i n\'te potens"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"eksponentiel funktion"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"i anden"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"plustegn"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"divider"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"faktor"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"gange"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"gange"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"procent"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"potens"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"kvadratrod"</string>
@@ -63,12 +60,17 @@
     <string name="error_syntax" msgid="4786987111228645602">"Ugyldigt udtryk"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Afbrudt"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Uendeligt?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"Divideret med 0"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Teksten er kopieret."</string>
-    <string name="cancelled" msgid="615180456915976640">"Beregningen blev annulleret!"</string>
+    <!-- no translation found for error_zero_divide (458040988686661801) -->
+    <skip />
+    <!-- no translation found for text_copied_toast (2104264466812485425) -->
+    <skip />
+    <!-- no translation found for cancelled (1618889609742874632) -->
+    <skip />
+    <!-- no translation found for timeout (802690170415591535) -->
+    <skip />
+    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
+    <skip />
     <string name="dismiss" msgid="7872443888515066216">"Luk"</string>
-    <string name="timeout" msgid="786323140644284782">"Det er for svært! Har du brugt en udefineret eller uendelig værdi?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"OK, men kan vi ikke få længere timeouts?"</string>
     <string name="exact" msgid="2597237880041789948">"(eksakt)"</string>
     <string name="approximate" msgid="7117143366610670836">"(± 1 i sidste ciffer)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Svar med indledende cifre"</string>

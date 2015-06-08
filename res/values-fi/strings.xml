@@ -36,16 +36,13 @@
     <string name="desc_fun_arccos" msgid="7583077865497939123">"arkuskosini"</string>
     <string name="desc_fun_arcsin" msgid="8592309261123302915">"arkussini"</string>
     <string name="desc_fun_arctan" msgid="6891388393360447455">"arkustangentti"</string>
-    <!-- no translation found for desc_fun_10pow (3972646467174520812) -->
-    <skip />
-    <!-- no translation found for desc_fun_exp (657106837530588390) -->
-    <skip />
-    <!-- no translation found for desc_op_sqr (693577095029219627) -->
-    <skip />
+    <string name="desc_fun_10pow" msgid="3972646467174520812">"kymmenen potenssiin"</string>
+    <string name="desc_fun_exp" msgid="657106837530588390">"eksponenttifunktio"</string>
+    <string name="desc_op_sqr" msgid="693577095029219627">"potenssiin kaksi"</string>
     <string name="desc_op_add" msgid="5539599782598050813">"plus"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"jaa"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"kertoma"</string>
-    <string name="desc_op_mul" msgid="1199902761534518529">"kerro"</string>
+    <string name="desc_op_mul" msgid="6882122010553947015">"kerto"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"prosentti"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"virta"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"neliöjuuri"</string>
@@ -63,12 +60,12 @@
     <string name="error_syntax" msgid="4786987111228645602">"Ilmaisuvirhe"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Keskeytettiin."</string>
     <string name="error_overflow" msgid="7800547394563434764">"Päättymätön?"</string>
-    <string name="error_zero_divide" msgid="7085069126090779874">"Jako nollalla"</string>
-    <string name="text_copied_toast" msgid="8845645964273481105">"Teksti kopioitiin."</string>
-    <string name="cancelled" msgid="615180456915976640">"Laskenta peruutettiin."</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0:lla ei voi jakaa."</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"Teksti kopioitiin."</string>
+    <string name="cancelled" msgid="1618889609742874632">"Laskenta peruutettiin."</string>
+    <string name="timeout" msgid="802690170415591535">"Aikakatkaistiin. Arvo voi olla ääretön tai määrittämätön."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"Käytä pidempää aikakatkaisua"</string>
     <string name="dismiss" msgid="7872443888515066216">"Hylkää"</string>
-    <string name="timeout" msgid="786323140644284782">"Tämä on liian vaikea! Onko arvo määrittelemätön tai päättymätön?"</string>
-    <string name="ok_remove_timeout" msgid="4252381882975743581">"Ok, mutta pidennä aikakatkaisun rajaa."</string>
     <string name="exact" msgid="2597237880041789948">"(tarkka)"</string>
     <string name="approximate" msgid="7117143366610670836">"(viimeinen numero ±1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Näytä 1. numero"</string>
