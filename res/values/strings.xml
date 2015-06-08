@@ -206,7 +206,14 @@
     <string name="error_aborted">Aborted</string>
     <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=20] -->
     <string name="error_overflow">Infinite?</string>
-    <!-- Error displayed when division by zero is detected. [CHAR_LIMIT=20] -->
+    <!--
+      Error displayed when division by zero is detected.
+
+      If the translation does not fit within the given limit, then a shortened version must
+      be used, e.g. "Division by 0". Exceeding the limit will result in a truncated string.
+
+      [CHAR_LIMIT=20]
+    -->
     <string name="error_zero_divide">Can\'t divide by 0</string>
 
     <!-- Toast shown when text is copied to the clipboard. [CHAR_LIMIT=40] -->
