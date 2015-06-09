@@ -547,11 +547,12 @@ public class Calculator extends Activity
     }
 
     // Initial evaluation completed successfully.  Initiate display.
-    public void onEvaluate(int initDisplayPrec, int leastDigPos, String truncatedWholeNumber) {
+    public void onEvaluate(int initDisplayPrec, int msd, int leastDigPos,
+            String truncatedWholeNumber) {
         // Invalidate any options that may depend on the current result.
         invalidateOptionsMenu();
 
-        mResultText.displayResult(initDisplayPrec, leastDigPos, truncatedWholeNumber);
+        mResultText.displayResult(initDisplayPrec, msd, leastDigPos, truncatedWholeNumber);
         if (mCurrentState != CalculatorState.INPUT) { // in EVALUATE or INIT state
             onResult(mCurrentState != CalculatorState.INIT);
         }
