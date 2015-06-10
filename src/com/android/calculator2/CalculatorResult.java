@@ -20,10 +20,13 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Rect;
 import android.text.Layout;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.ActionMode;
@@ -522,11 +525,26 @@ public class CalculatorResult extends AlignedTextView {
 
     // Copy support:
 
-    private ActionMode.Callback mCopyActionModeCallback = new ActionMode.Callback() {
+    private ActionMode.Callback2 mCopyActionModeCallback = new ActionMode.Callback2() {
+
+        private BackgroundColorSpan mHighlightSpan;
+
+        private void highlightResult() {
+            final Spannable text = (Spannable) getText();
+            mHighlightSpan = new BackgroundColorSpan(getHighlightColor());
+            text.setSpan(mHighlightSpan, 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        private void unhighlightResult() {
+            final Spannable text = (Spannable) getText();
+            text.removeSpan(mHighlightSpan);
+        }
+
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.copy, menu);
+            highlightResult();
             return true;
         }
 
@@ -549,7 +567,21 @@ public class CalculatorResult extends AlignedTextView {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            unhighlightResult();
             mActionMode = null;
+        }
+
+        @Override
+        public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
+            super.onGetContentRect(mode, view, outRect);
+            outRect.left += getPaddingLeft();
+            outRect.top += getPaddingTop();
+            outRect.right -= getPaddingRight();
+            outRect.bottom -= getPaddingBottom();
+            final int width = (int) Layout.getDesiredWidth(getText(), getPaint());
+            if (width < outRect.width()) {
+                outRect.left = outRect.right - width;
+            }
         }
     };
 
