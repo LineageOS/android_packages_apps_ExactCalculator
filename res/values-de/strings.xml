@@ -60,16 +60,11 @@
     <string name="error_syntax" msgid="4786987111228645602">"Ausdrucksfehler"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Abgebrochen"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Unendlich?"</string>
-    <!-- no translation found for error_zero_divide (458040988686661801) -->
-    <skip />
-    <!-- no translation found for text_copied_toast (2104264466812485425) -->
-    <skip />
-    <!-- no translation found for cancelled (1618889609742874632) -->
-    <skip />
-    <!-- no translation found for timeout (802690170415591535) -->
-    <skip />
-    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
-    <skip />
+    <string name="error_zero_divide" msgid="458040988686661801">"Teilen durch 0 nicht möglich"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"Text kopiert"</string>
+    <string name="cancelled" msgid="1618889609742874632">"Die Berechnung wurde abgebrochen."</string>
+    <string name="timeout" msgid="802690170415591535">"Zeitüberschreitung. Wert ist möglicherweise unendlich oder nicht definiert."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"Längere Zeitlimits verwenden"</string>
     <string name="dismiss" msgid="7872443888515066216">"Schließen"</string>
     <string name="exact" msgid="2597237880041789948">"(exakt)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 für die letzte Zahl)"</string>

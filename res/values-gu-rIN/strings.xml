@@ -60,16 +60,11 @@
     <string name="error_syntax" msgid="4786987111228645602">"ખોટી પદાવલિ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"રદ કરેલ"</string>
     <string name="error_overflow" msgid="7800547394563434764">"અનંત?"</string>
-    <!-- no translation found for error_zero_divide (458040988686661801) -->
-    <skip />
-    <!-- no translation found for text_copied_toast (2104264466812485425) -->
-    <skip />
-    <!-- no translation found for cancelled (1618889609742874632) -->
-    <skip />
-    <!-- no translation found for timeout (802690170415591535) -->
-    <skip />
-    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
-    <skip />
+    <string name="error_zero_divide" msgid="458040988686661801">"0 દ્વારા ભાગાકાર કરી શકતાં નથી"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"ટેક્સ્ટ કૉપિ કરી"</string>
+    <string name="cancelled" msgid="1618889609742874632">"ગણતરી રદ કરી"</string>
+    <string name="timeout" msgid="802690170415591535">"સમય સમાપ્તિ. મૂલ્ય અનિશ્ચિત અથવા અવ્યાખ્યાયિત હોઈ શકે છે."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"લાંબી સમયસમાપ્તિનો ઉપયોગ કરો"</string>
     <string name="dismiss" msgid="7872443888515066216">"છોડી દો"</string>
     <string name="exact" msgid="2597237880041789948">"(ચોક્કસ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(છેલ્લા અંકમાં ±1)"</string>

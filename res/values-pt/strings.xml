@@ -60,16 +60,11 @@
     <string name="error_syntax" msgid="4786987111228645602">"Expressão ruim"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Cancelada"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Infinito?"</string>
-    <!-- no translation found for error_zero_divide (458040988686661801) -->
-    <skip />
-    <!-- no translation found for text_copied_toast (2104264466812485425) -->
-    <skip />
-    <!-- no translation found for cancelled (1618889609742874632) -->
-    <skip />
-    <!-- no translation found for timeout (802690170415591535) -->
-    <skip />
-    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
-    <skip />
+    <string name="error_zero_divide" msgid="458040988686661801">"Impos. dividir por 0"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"Texto copiado"</string>
+    <string name="cancelled" msgid="1618889609742874632">"Cálculo cancelado"</string>
+    <string name="timeout" msgid="802690170415591535">"Tempo limite atingido. O valor pode ser infinito ou indefinido."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"Usar tempos limite mais longos"</string>
     <string name="dismiss" msgid="7872443888515066216">"Dispensar"</string>
     <string name="exact" msgid="2597237880041789948">"(exato)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 no último dígito)"</string>
