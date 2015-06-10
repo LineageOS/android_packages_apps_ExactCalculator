@@ -80,10 +80,10 @@ public class CalculatorResult extends AlignedTextView {
                             // is not noticeable.
     private static final int MAX_WIDTH = 100;
                             // Maximum number of digits displayed
-    private static final int MAX_LEADING_ZEROES = 6;
+    public static final int MAX_LEADING_ZEROES = 6;
                             // Maximum number of leading zeroes after decimal point before we
                             // switch to scientific notation with negative exponent.
-    private static final int MAX_TRAILING_ZEROES = 6;
+    public static final int MAX_TRAILING_ZEROES = 6;
                             // Maximum number of trailing zeroes before the decimal point before
                             // we switch to scientific notation with positive exponent.
     private static final int SCI_NOTATION_EXTRA = 1;

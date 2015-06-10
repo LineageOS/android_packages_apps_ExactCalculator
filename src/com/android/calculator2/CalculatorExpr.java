@@ -233,7 +233,7 @@ class CalculatorExpr {
         final BoundedRational mRatValue;
         private final CalculatorExpr mExpr;
         private final EvalContext mContext;
-        private final String mShortRep;
+        private final String mShortRep;  // Not internationalized.
         PreEval(CR val, BoundedRational ratVal, CalculatorExpr expr,
                 EvalContext ec, String shortRep) {
             mValue = val;
@@ -302,7 +302,7 @@ class CalculatorExpr {
         }
         @Override
         String toString(Context context) {
-            return mShortRep;
+            return KeyMaps.translateResult(mShortRep);
         }
         @Override
         TokenKind kind() { return TokenKind.PRE_EVAL; }
