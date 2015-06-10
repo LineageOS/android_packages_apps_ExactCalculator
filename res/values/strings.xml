@@ -153,11 +153,19 @@
     <!-- Content description for 'arctan' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_fun_arctan">inverse tangent</string>
 
-    <!-- Content description for 10^ button. [CHAR_LIMIT=NONE] -->
+    <!--
+      Content description for 10^ button. This button is used to raise 10 to the subsequently
+      entered power. E.g. <10^>3 would yield 1000.
+      [CHAR_LIMIT=NONE]
+      -->
     <string name="desc_fun_10pow">ten to the power of</string>
-    <!-- Content description for e^ button. [CHAR_LIMIT=NONE] -->
+    <!-- Content description for e^ (exponential function) button. [CHAR_LIMIT=NONE] -->
     <string name="desc_fun_exp">exponential function</string>
-    <!-- Content description for ^2 button. [CHAR_LIMIT=NONE] -->
+    <!--
+      Content description for ^2 button. This button is used to square the previously entered
+      number. E.g. 3<^2> would yield 9.
+      [CHAR_LIMIT=NONE]
+      -->
     <string name="desc_op_sqr">squared</string>
 
     <!-- Content description for '+' button. [CHAR_LIMIT=NONE] -->
