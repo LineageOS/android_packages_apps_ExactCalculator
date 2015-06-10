@@ -305,7 +305,12 @@ class CalculatorExpr {
             return KeyMaps.translateResult(mShortRep);
         }
         @Override
-        TokenKind kind() { return TokenKind.PRE_EVAL; }
+        TokenKind kind() {
+            return TokenKind.PRE_EVAL;
+        }
+        boolean hasEllipsis() {
+            return mShortRep.lastIndexOf(KeyMaps.ELLIPSIS) != -1;
+        }
     }
 
     static Token newToken(DataInput in) throws IOException {
@@ -916,10 +921,10 @@ class CalculatorExpr {
         }
         for (int i = first; i < last; ++i) {
             Token t1 = mExpr.get(i);
-            if (!(t1 instanceof Constant)) return true;
-            // We consider preevaluated expressions "interesting",
-            // since the evaluation will usually result in more precision
-            // than the "short representation".
+            if (t1 instanceof Operator
+                    || t1 instanceof PreEval && ((PreEval)t1).hasEllipsis()) {
+                return true;
+            }
         }
         return false;
     }

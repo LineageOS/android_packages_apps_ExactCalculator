@@ -188,9 +188,8 @@ class Evaluator {
         // Currently running expression evaluator, if any.
 
     private boolean mChangedValue;
-        // Last insertion or deletion may have changed the display value
-        // of the expression.
-        // We handle deletions very conservatively.
+        // The expression may have changed since the last evaluation in ways that would
+        // affect its value.
 
     Evaluator(Calculator calculator,
               CalculatorResult resultDisplay) {
@@ -791,6 +790,7 @@ class Evaluator {
         clearCache();
         mEvaluator = new AsyncDisplayResult(mDegreeMode, false);
         mEvaluator.execute();
+        mChangedValue = false;
     }
 
     // Ensure that we either display a result or complain.
@@ -835,6 +835,7 @@ class Evaluator {
             // Approximation of constructive reals should be thread-safe,
             // so we can let that continue until it notices the cancellation.
             mEvaluator = null;
+            mChangedValue = true;    // Didn't do the expected evaluation.
             return true;
         }
         return false;
@@ -874,9 +875,8 @@ class Evaluator {
             add10pow();  // Handled as macro expansion.
             return true;
         } else {
-            mChangedValue = (KeyMaps.digVal(id) != KeyMaps.NOT_DIGIT
-                    || KeyMaps.isSuffix(id)
-                    || id == R.id.const_pi || id == R.id.const_e);
+            mChangedValue = mChangedValue || (KeyMaps.digVal(id) != KeyMaps.NOT_DIGIT
+                    || KeyMaps.isSuffix(id) || id == R.id.const_pi || id == R.id.const_e);
             return mExpr.add(id);
         }
     }
@@ -918,6 +918,7 @@ class Evaluator {
         final CalculatorExpr abbrvExpr = getResultExpr();
         clear();
         mExpr.append(abbrvExpr);
+        mChangedValue = true;
     }
 
     // Same as above, but put result in mSaved, leaving mExpr alone.
