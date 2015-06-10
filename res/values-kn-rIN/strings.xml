@@ -60,7 +60,7 @@
     <string name="error_syntax" msgid="4786987111228645602">"ಕಳಪೆ ವ್ಯಕ್ತತೆ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"ರದ್ದು ಮಾಡಲಾಗಿದೆ"</string>
     <string name="error_overflow" msgid="7800547394563434764">"ಅಪರಿಮಿತ?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"0 ಭಾಗಿಸಲಾಗುವುದಿಲ್ಲ"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0 ನಿಂದ ಭಾಗಿಸಲಸಾಧ್ಯ"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"ಪಠ್ಯವನ್ನು ನಕಲಿಸಲಾಗಿದೆ"</string>
     <string name="cancelled" msgid="1618889609742874632">"ಎಣಿಕೆ ರದ್ದು ಮಾಡಲಾಗಿದೆ"</string>
     <string name="timeout" msgid="802690170415591535">"ಸಮಯ ಮೀರಿದೆ. ಮೌಲ್ಯವು ಅಪರಿಮಿತ ಅಥವಾ ಬಣ್ಣಿಸಲು ಸಾಧ್ಯವಾಗದೆ ಇರಬಹುದು."</string>

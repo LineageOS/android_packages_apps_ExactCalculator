@@ -42,8 +42,7 @@
     <string name="desc_op_add" msgid="5539599782598050813">"加"</string>
     <string name="desc_op_div" msgid="3032399266115257498">"除"</string>
     <string name="desc_op_fact" msgid="6142780103294179702">"阶乘"</string>
-    <!-- no translation found for desc_op_mul (6882122010553947015) -->
-    <skip />
+    <string name="desc_op_mul" msgid="6882122010553947015">"乘"</string>
     <string name="desc_op_pct" msgid="2466179646911499434">"百分比符号"</string>
     <string name="desc_op_pow" msgid="6010144442344099030">"幂数"</string>
     <string name="desc_op_sqrt" msgid="6882241473601721767">"平方根"</string>
@@ -61,16 +60,11 @@
     <string name="error_syntax" msgid="4786987111228645602">"表达式错误"</string>
     <string name="error_aborted" msgid="3402238176316342537">"已中止"</string>
     <string name="error_overflow" msgid="7800547394563434764">"无限值？"</string>
-    <!-- no translation found for error_zero_divide (458040988686661801) -->
-    <skip />
-    <!-- no translation found for text_copied_toast (2104264466812485425) -->
-    <skip />
-    <!-- no translation found for cancelled (1618889609742874632) -->
-    <skip />
-    <!-- no translation found for timeout (802690170415591535) -->
-    <skip />
-    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
-    <skip />
+    <string name="error_zero_divide" msgid="458040988686661801">"不能除以 0"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"文本已复制"</string>
+    <string name="cancelled" msgid="1618889609742874632">"计算已取消"</string>
+    <string name="timeout" msgid="802690170415591535">"已超时。可能是无限值或未定义的值。"</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"延长超时时间"</string>
     <string name="dismiss" msgid="7872443888515066216">"关闭"</string>
     <string name="exact" msgid="2597237880041789948">"（精确）"</string>
     <string name="approximate" msgid="7117143366610670836">"（最后一位数字 ±1）"</string>

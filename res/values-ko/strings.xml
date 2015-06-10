@@ -60,16 +60,11 @@
     <string name="error_syntax" msgid="4786987111228645602">"잘못된 표현"</string>
     <string name="error_aborted" msgid="3402238176316342537">"중단됨"</string>
     <string name="error_overflow" msgid="7800547394563434764">"무한?"</string>
-    <!-- no translation found for error_zero_divide (458040988686661801) -->
-    <skip />
-    <!-- no translation found for text_copied_toast (2104264466812485425) -->
-    <skip />
-    <!-- no translation found for cancelled (1618889609742874632) -->
-    <skip />
-    <!-- no translation found for timeout (802690170415591535) -->
-    <skip />
-    <!-- no translation found for ok_remove_timeout (8344529153919268011) -->
-    <skip />
+    <string name="error_zero_divide" msgid="458040988686661801">"0으로 나눌 수 없습니다."</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"텍스트를 복사했습니다."</string>
+    <string name="cancelled" msgid="1618889609742874632">"계산이 취소되었습니다."</string>
+    <string name="timeout" msgid="802690170415591535">"시간 초과. 값이 무한하거나 정의되지 않았을 수 있습니다."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"제한시간 연장 사용"</string>
     <string name="dismiss" msgid="7872443888515066216">"취소"</string>
     <string name="exact" msgid="2597237880041789948">"(완전일치)"</string>
     <string name="approximate" msgid="7117143366610670836">"(마지막 자리 ±1)"</string>
