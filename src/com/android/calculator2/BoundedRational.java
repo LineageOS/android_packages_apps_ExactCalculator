@@ -33,7 +33,7 @@ import com.hp.creals.AbortedError;
 
 public class BoundedRational {
     // TODO: Maybe eventually make this extend Number?
-    private static final int MAX_SIZE = 400; // total, in bits
+    private static final int MAX_SIZE = 800; // total, in bits
 
     private final BigInteger mNum;
     private final BigInteger mDen;
