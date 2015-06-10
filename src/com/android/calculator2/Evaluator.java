@@ -161,11 +161,24 @@ class Evaluator {
                                      // in current cached result, if determined.
                                      // This is just the index in mCache
                                      // holding the msd.
-    private static final int MAX_MSD_PREC = 100;
+    private static final int INIT_PREC = 50;
+                             // Initial evaluation precision.  Enough to guarantee
+                             // that we can compute the short representation, and that
+                             // we rarely have to evaluate nonzero results to
+                             // MAX_MSD_PREC.  It also helps if this is at least
+                             // EXTRA_DIGITS + display width, so that we don't
+                             // immediately need a second evaluation.
+    private static final int MAX_MSD_PREC = 320;
                              // The largest number of digits to the right
                              // of the decimal point to which we will
                              // evaluate to compute proper scientific
                              // notation for values close to zero.
+                             // Chosen to ensure that we always to better than
+                             // IEEE double precision at identifying nonzeros.
+    private static final int EXP_COST = 3;
+                             // If we can replace an exponent by this many leading zeroes,
+                             // we do so.  Also used in estimating exponent size for
+                             // truncating short representation.
 
     private AsyncReevaluator mCurrentReevaluator;
         // The one and only un-cancelled and currently running reevaluator.
@@ -361,7 +374,7 @@ class Evaluator {
         protected InitialResult doInBackground(Void... nothing) {
             try {
                 CalculatorExpr.EvalResult res = mExpr.eval(mDm, mRequired);
-                int prec = 3;  // Enough for short representation
+                int prec = INIT_PREC;
                 String initCache = res.mVal.toString(prec);
                 int msd = getMsdPos(initCache);
                 if (BoundedRational.asBigInteger(res.mRatVal) == null
@@ -504,7 +517,7 @@ class Evaluator {
                 return lastDigit;
             }
         }
-        if (msd > wholeSize && msd <= wholeSize + 4) {
+        if (msd > wholeSize && msd <= wholeSize + EXP_COST + 1) {
             // Display number without scientific notation.  Treat leading zero as msd.
             msd = wholeSize - 1;
         }
@@ -521,31 +534,88 @@ class Evaluator {
         return msd - wholeSize + lineLength - negative - 1;
     }
 
-    // Get a short representation of the value represented by
-    // the string cache (presumed to contain at least 5 characters)
-    // and possibly the exact integer i.
-    private String getShortString(String cache, BigInteger i) {
-        // The result is internationalized; we only display it.
-        String res;
-        boolean need_ellipsis = false;
+    private static final int SHORT_TARGET_LENGTH  = 8;
+    private static final String SHORT_UNCERTAIN_ZERO = "0.00000" + KeyMaps.ELLIPSIS;
 
-        if (i != null && i.abs().compareTo(BIG_MILLION) < 0) {
-            res = i.toString();
-        } else {
-            res = cache.substring(0,5);
-            // Avoid a trailing period; doesn't work with ellipsis
-            if (res.charAt(3) != '.') {
-                res = res.substring(0,4);
+    /**
+     * Get a short representation of the value represented by the string cache.
+     * We try to match the CalculatorResult code when the result is finite
+     * and small enough to suit our needs.
+     * The result is not internationalized.
+     * @param cache String approximation of value.  Assumed to be long enough
+     *              that if it doesn't contain enough significant digits, we can
+     *              reasonably abbreviate as SHORT_UNCERTAIN_ZERO.
+     * @param msdIndex Index of most significant digit in cache, or INVALID_MSD.
+     * @param lsd Position of least significant digit in finite representation,
+     *            relative to decimal point, or MAX_VALUE.
+     */
+    private String getShortString(String cache, int msdIndex, int lsd) {
+        // This somewhat mirrors the display formatting code, but
+        // - The constants are different, since we don't want to use the whole display.
+        // - This is an easier problem, since we don't support scrolling and the length
+        //   is a bit flexible.
+        // TODO: Think about refactoring this to remove partial redundancy with CalculatorResult.
+        final int dotIndex = cache.indexOf('.');
+        final int negative = cache.charAt(0) == '-' ? 1 : 0;
+        final String negativeSign = negative == 1 ? "-" : "";
+
+        // Ensure we don't have to worry about running off the end of cache.
+        if (msdIndex >= cache.length() - SHORT_TARGET_LENGTH) {
+            msdIndex = INVALID_MSD;
+        }
+        if (msdIndex == INVALID_MSD) {
+            if (lsd < INIT_PREC) {
+                return "0";
+            } else {
+                return SHORT_UNCERTAIN_ZERO;
             }
-            // TODO: Don't do this in the unlikely case this is the
-            // full representation.
-            need_ellipsis = true;
         }
-        res = KeyMaps.translateResult(res);
-        if (need_ellipsis) {
-            res += KeyMaps.ELLIPSIS;
+        // Avoid scientific notation for small numbers of zeros.
+        // Instead stretch significant digits to include decimal point.
+        if (lsd < -1 && dotIndex - msdIndex + negative <= SHORT_TARGET_LENGTH
+            && lsd >= -CalculatorResult.MAX_TRAILING_ZEROES - 1) {
+            // Whole number that fits in allotted space.
+            // CalculatorResult would not use scientific notation either.
+            lsd = -1;
         }
-        return res;
+        if (msdIndex > dotIndex) {
+            if (msdIndex <= dotIndex + EXP_COST + 1) {
+                // Preferred display format inthis cases is with leading zeroes, even if
+                // it doesn't fit entirely.  Replicate that here.
+                msdIndex = dotIndex - 1;
+            } else if (lsd <= SHORT_TARGET_LENGTH - negative - 2
+                    && lsd <= CalculatorResult.MAX_LEADING_ZEROES + 1) {
+                // Fraction that fits entirely in allotted space.
+                // CalculatorResult would not use scientific notation either.
+                msdIndex = dotIndex -1;
+            }
+        }
+        int exponent = dotIndex - msdIndex;
+        if (exponent > 0) {
+            // Adjust for the fact that the decimal point itself takes space.
+            exponent--;
+        }
+        if (lsd != Integer.MAX_VALUE) {
+            int lsdIndex = dotIndex + lsd;
+            int totalDigits = lsdIndex - msdIndex + negative + 1;
+            if (totalDigits <= SHORT_TARGET_LENGTH && dotIndex > msdIndex && lsd >= -1) {
+                // Fits, no exponent needed.
+                return negativeSign + cache.substring(msdIndex, lsdIndex + 1);
+            }
+            if (totalDigits <= SHORT_TARGET_LENGTH - 3) {
+                return negativeSign + cache.charAt(msdIndex) + "."
+                        + cache.substring(msdIndex + 1, lsdIndex + 1) + "e" + exponent;
+            }
+        }
+        // We need to abbreviate.
+        if (dotIndex > msdIndex && dotIndex < msdIndex + SHORT_TARGET_LENGTH - negative - 1) {
+            return negativeSign + cache.substring(msdIndex,
+                    msdIndex + SHORT_TARGET_LENGTH - negative - 1) + KeyMaps.ELLIPSIS;
+        }
+        // Need abbreviation + exponent
+        return negativeSign + cache.charAt(msdIndex) + "."
+                + cache.substring(msdIndex + 1, msdIndex + SHORT_TARGET_LENGTH - negative - 4)
+                + KeyMaps.ELLIPSIS + "e" + exponent;
     }
 
     // Return the most significant digit position in the given string
@@ -829,8 +899,10 @@ class Evaluator {
      * @return the {@link CalculatorExpr} representation of the current result
      */
     CalculatorExpr getResultExpr() {
-        final BigInteger intVal = BoundedRational.asBigInteger(mRatVal);
-        return mExpr.abbreviate(mVal, mRatVal, mDegreeMode, getShortString(mCache, intVal));
+        final int dotPos = mCache.indexOf('.');
+        final int leastDigPos = getLsd(mRatVal, mCache, dotPos);
+        return mExpr.abbreviate(mVal, mRatVal, mDegreeMode,
+               getShortString(mCache, getMsdPos(mCache), leastDigPos));
     }
 
     // Abbreviate the current expression to a pre-evaluated
