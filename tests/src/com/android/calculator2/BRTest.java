@@ -139,6 +139,12 @@ public class BRTest extends TestCase {
         check(BR_0.signum() == 0, "signum(0)");
         check(BR_M1.signum() == -1, "signum(-1)");
         check(BR_2.signum() == 1, "signum(2)");
+        check(BoundedRational.digitsRequired(BoundedRational.ZERO) == 0, "digitsRequired(0)");
+        check(BoundedRational.digitsRequired(BoundedRational.HALF) == 1, "digitsRequired(1/2)");
+        check(BoundedRational.digitsRequired(BoundedRational.MINUS_HALF) == 1,
+                "digitsRequired(-1/2)");
+        check(BoundedRational.digitsRequired(new BoundedRational(1,-2)) == 1,
+                "digitsRequired(1/-2)");
         // We check values that include all interesting degree values.
         BoundedRational r = BR_M390;
         while (!r.equals(BR_390)) {
