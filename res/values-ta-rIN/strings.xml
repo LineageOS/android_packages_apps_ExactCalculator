@@ -62,7 +62,7 @@
     <string name="error_overflow" msgid="7800547394563434764">"முடிவிலியா?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0 ஆல் வகுக்க முடியாது"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"உரை நகலெடுக்கப்பட்டது"</string>
-    <string name="cancelled" msgid="1618889609742874632">"கணிப்பு ரத்துசெய்யப்பட்டது"</string>
+    <string name="cancelled" msgid="1618889609742874632">"கணக்கீடு ரத்துசெய்யப்பட்டது"</string>
     <string name="timeout" msgid="802690170415591535">"நேரம் முடிந்தது. மதிப்பு முடிவிலியாக அல்லது வரையறுக்கப்படாததாக இருக்கலாம்."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"நீண்ட, நேர முடிவுகளைப் பயன்படுத்து"</string>
     <string name="dismiss" msgid="7872443888515066216">"விலக்கு"</string>

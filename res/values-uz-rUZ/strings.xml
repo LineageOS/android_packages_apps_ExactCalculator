@@ -63,7 +63,7 @@
     <string name="error_zero_divide" msgid="458040988686661801">"0 ga bo‘lib bo‘lmaydi"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Matn nusxalandi"</string>
     <string name="cancelled" msgid="1618889609742874632">"Hisoblash bekor qilindi"</string>
-    <string name="timeout" msgid="802690170415591535">"Kutish vaqti tugadi. Qiymat cheksiz yoki haqiqiy emas bo‘lishi mumkin."</string>
+    <string name="timeout" msgid="802690170415591535">"Kutish vaqti tugadi. Qiymat cheksiz yoki noaniq bo‘lishi mumkin."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Kutish vaqtini uzaytirish"</string>
     <string name="dismiss" msgid="7872443888515066216">"Yopish"</string>
     <string name="exact" msgid="2597237880041789948">"(aniq)"</string>

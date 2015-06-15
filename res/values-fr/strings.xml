@@ -60,11 +60,11 @@
     <string name="error_syntax" msgid="4786987111228645602">"Express. incorr."</string>
     <string name="error_aborted" msgid="3402238176316342537">"Annulée"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Infini ?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"Impos. diviser par 0."</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"Div par 0 impossible"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Le texte a bien été copié."</string>
     <string name="cancelled" msgid="1618889609742874632">"Calcul annulé."</string>
     <string name="timeout" msgid="802690170415591535">"Le délai a expiré. Il est possible que la valeur soit infinie ou non définie."</string>
-    <string name="ok_remove_timeout" msgid="8344529153919268011">"Utiliser délais avant expir. plus longs"</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"Utiliser délais plus longs"</string>
     <string name="dismiss" msgid="7872443888515066216">"Fermer"</string>
     <string name="exact" msgid="2597237880041789948">"(exact)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 au dernier chiffre)"</string>

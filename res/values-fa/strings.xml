@@ -61,7 +61,7 @@
     <string name="error_aborted" msgid="3402238176316342537">"لغو شد"</string>
     <string name="error_overflow" msgid="7800547394563434764">"بی‌نهایت؟"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"تقسیم بر ۰ ممکن نیست"</string>
-    <string name="text_copied_toast" msgid="2104264466812485425">"پیامک کپی شد"</string>
+    <string name="text_copied_toast" msgid="2104264466812485425">"نوشتار کپی شد"</string>
     <string name="cancelled" msgid="1618889609742874632">"محاسبه لغو شد"</string>
     <string name="timeout" msgid="802690170415591535">"وقت تمام شد. ممکن است مقدار نامحدود یا تعیین نشده باشد."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"استفاده از مهلت‌های زمانی طولانی‌تر"</string>
