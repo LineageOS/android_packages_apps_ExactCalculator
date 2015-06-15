@@ -60,11 +60,11 @@
     <string name="error_syntax" msgid="4786987111228645602">"Pis ifadə"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Ləğv edilib"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Sonsuzluq?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"0 bölmək bilməz"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0-a bölmək olmaz"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Mətn kopyalandı"</string>
-    <string name="cancelled" msgid="1618889609742874632">"Hesablama ləğv edildi!"</string>
-    <string name="timeout" msgid="802690170415591535">"Başa çatmışdır. Value sonsuz və ya müəyyən ola bilər."</string>
-    <string name="ok_remove_timeout" msgid="8344529153919268011">"artıq zaman aşımları istifadə"</string>
+    <string name="cancelled" msgid="1618889609742874632">"Hesablama ləğv edildi"</string>
+    <string name="timeout" msgid="802690170415591535">"Vaxt keçdi. Dəyər sonzu və ya bəlirlənməmiş ola bilər."</string>
+    <string name="ok_remove_timeout" msgid="8344529153919268011">"Daha uzun taymaut istifadə edin"</string>
     <string name="dismiss" msgid="7872443888515066216">"Rədd edin"</string>
     <string name="exact" msgid="2597237880041789948">"(dəqiq)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 son rəqəmdə)"</string>
