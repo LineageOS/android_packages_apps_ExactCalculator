@@ -485,6 +485,7 @@ public class BoundedRational {
     }
 
     private static final BigInteger BIG_FIVE = BigInteger.valueOf(5);
+    private static final BigInteger BIG_MINUS_ONE = BigInteger.valueOf(-1);
 
     // Return the number of decimal digits to the right of the
     // decimal point required to represent the argument exactly,
@@ -514,7 +515,9 @@ public class BoundedRational {
         // (Recall the fraction was in lowest terms to start with.)
         // Otherwise the powers of 10 we need to cancel the denominator
         // is the larger of powers_of_two and powers_of_five.
-        if (!den.equals(BigInteger.ONE)) return Integer.MAX_VALUE;
+        if (!den.equals(BigInteger.ONE) && !den.equals(BIG_MINUS_ONE)) {
+            return Integer.MAX_VALUE;
+        }
         return Math.max(powers_of_two, powers_of_five);
     }
 }
