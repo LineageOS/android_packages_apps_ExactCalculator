@@ -38,7 +38,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -75,7 +75,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
 public class Calculator extends Activity
-        implements OnTextSizeChangeListener, OnLongClickListener, CalculatorText.PasteListener {
+        implements OnTextSizeChangeListener, OnLongClickListener, CalculatorText.OnPasteListener {
 
     /**
      * Constant for an invalid resource id.
@@ -282,7 +282,7 @@ public class Calculator extends Activity
 
         mFormulaText.setOnKeyListener(mFormulaOnKeyListener);
         mFormulaText.setOnTextSizeChangeListener(this);
-        mFormulaText.setPasteListener(this);
+        mFormulaText.setOnPasteListener(this);
         mDeleteButton.setOnLongClickListener(this);
 
         onInverseToggled(mInverseToggle.isSelected());
@@ -899,27 +899,29 @@ public class Calculator extends Activity
         }
         mUnprocessedChars = null;
         redisplayAfterFormulaChange();
-        return;
     }
 
     @Override
-    public boolean paste(Uri uri) {
-        if (mEvaluator.isLastSaved(uri)) {
+    public boolean onPaste(ClipData clip) {
+        final ClipData.Item item = clip.getItemCount() == 0 ? null : clip.getItemAt(0);
+        if (item == null) {
+            // nothing to paste, bail early...
+            return false;
+        }
+
+        // Check if the item is a previously copied result, otherwise paste as raw text.
+        final Uri uri = item.getUri();
+        if (uri != null && mEvaluator.isLastSaved(uri)) {
             if (mCurrentState == CalculatorState.ERROR
-                || mCurrentState == CalculatorState.RESULT) {
+                    || mCurrentState == CalculatorState.RESULT) {
                 setState(CalculatorState.INPUT);
                 mEvaluator.clear();
             }
             mEvaluator.addSaved();
             redisplayAfterFormulaChange();
-            return true;
+        } else {
+            addChars(item.coerceToText(this).toString());
         }
-        return false;
+        return true;
     }
-
-    @Override
-    public void paste(String s) {
-        addChars(s);
-    }
-
 }

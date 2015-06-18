@@ -20,8 +20,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Paint;
-import android.net.Uri;
+import android.text.Layout;
 import android.text.TextPaint;
 import android.text.method.ScrollingMovementMethod;
 import android.util.AttributeSet;
@@ -38,26 +37,21 @@ import android.widget.TextView;
  */
 public class CalculatorText extends AlignedTextView implements View.OnLongClickListener {
 
-    private ActionMode mActionMode;
-
     private final ActionMode.Callback mPasteActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-            case R.id.menu_paste:
-                pasteContent();
+            if (item.getItemId() == R.id.menu_paste) {
+                paste();
                 mode.finish();
                 return true;
-            default:
-                return false;
             }
+            return false;
         }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            ClipboardManager clipboard =
-                (ClipboardManager) getContext().getSystemService(
-                        Context.CLIPBOARD_SERVICE);
+            final ClipboardManager clipboard = (ClipboardManager) getContext()
+                    .getSystemService(Context.CLIPBOARD_SERVICE);
             if (clipboard.hasPrimaryClip()) {
                 MenuInflater inflater = mode.getMenuInflater();
                 inflater.inflate(R.menu.paste, menu);
@@ -68,75 +62,59 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
         }
 
         @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = null;
-        }
-
-        @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             return false;
         }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+        }
     };
 
-    private PasteListener mPasteListener;
-
-    public void setPasteListener(PasteListener pasteListener) {
-        mPasteListener = pasteListener;
-    }
-
-    private void pasteContent() {
-        ClipboardManager clipboard =
-                (ClipboardManager) getContext().getSystemService(
-                        Context.CLIPBOARD_SERVICE);
-        ClipData cd = clipboard.getPrimaryClip();
-        ClipData.Item item = cd.getItemAt(0);
-        // TODO: Should we handle multiple selections?
-        Uri uri = item.getUri();
-        if (uri == null || !mPasteListener.paste(uri)) {
-            mPasteListener.paste(item.coerceToText(getContext()).toString());
-        }
-    }
+    // Temporary paint for use in layout methods.
+    private final TextPaint mTempPaint = new TextPaint();
 
     private final float mMaximumTextSize;
     private final float mMinimumTextSize;
     private final float mStepTextSize;
 
-    // Temporary paint for use in layout methods.
-    private final Paint mTempPaint = new TextPaint();
-
     private int mWidthConstraint = -1;
+
+    private ActionMode mActionMode;
+
+    private OnPasteListener mOnPasteListener;
     private OnTextSizeChangeListener mOnTextSizeChangeListener;
 
     public CalculatorText(Context context) {
-        this(context, null);
+        this(context, null /* attrs */);
     }
 
     public CalculatorText(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs, 0 /* defStyleAttr */);
     }
 
-    public CalculatorText(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public CalculatorText(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
 
         final TypedArray a = context.obtainStyledAttributes(
-                attrs, R.styleable.CalculatorText, defStyle, 0);
+                attrs, R.styleable.CalculatorText, defStyleAttr, 0);
         mMaximumTextSize = a.getDimension(
                 R.styleable.CalculatorText_maxTextSize, getTextSize());
         mMinimumTextSize = a.getDimension(
                 R.styleable.CalculatorText_minTextSize, getTextSize());
         mStepTextSize = a.getDimension(R.styleable.CalculatorText_stepTextSize,
                 (mMaximumTextSize - mMinimumTextSize) / 3);
-
         a.recycle();
 
-        // Paste ActionMode is triggered explicitly, not through
-        // setCustomSelectionActionModeCallback.
-        setOnLongClickListener(this);
-
-        // Enable scrolling
+        // Allow scrolling by default.
         setMovementMethod(ScrollingMovementMethod.getInstance());
 
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, mMaximumTextSize);
+        // Reset the clickable flag, which is added when specifying a movement method.
+        setClickable(false);
+
+        // Add a long click to start the ActionMode manually.
+        setOnLongClickListener(this);
     }
 
     @Override
@@ -147,16 +125,21 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
         // Prevent shrinking/resizing with our variable textSize.
         if (!isLaidOut()) {
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, mMaximumTextSize);
             setMinHeight(getLineHeight() + getCompoundPaddingBottom() + getCompoundPaddingTop());
         }
 
-        mWidthConstraint = MeasureSpec.getSize(widthMeasureSpec)
+        // Re-calculate our textSize based on new width.
+        final int width = MeasureSpec.getSize(widthMeasureSpec)
                 - getPaddingLeft() - getPaddingRight();
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, getVariableTextSize(getText().toString()));
+        if (mWidthConstraint != width) {
+            mWidthConstraint = width;
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, getVariableTextSize(getText()));
+        }
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     public int getWidthConstraint() { return mWidthConstraint; }
@@ -178,10 +161,6 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
         }
     }
 
-    public void setOnTextSizeChangeListener(OnTextSizeChangeListener listener) {
-        mOnTextSizeChangeListener = listener;
-    }
-
     public float getMinimumTextSize() {
         return mMinimumTextSize;
     }
@@ -190,7 +169,7 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
         return mMaximumTextSize;
     }
 
-    public float getVariableTextSize(String text) {
+    public float getVariableTextSize(CharSequence text) {
         if (mWidthConstraint < 0 || mMaximumTextSize <= mMinimumTextSize) {
             // Not measured, bail early.
             return getTextSize();
@@ -202,13 +181,11 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
         // Step through increasing text sizes until the text would no longer fit.
         float lastFitTextSize = mMinimumTextSize;
         while (lastFitTextSize < mMaximumTextSize) {
-            final float nextSize = Math.min(lastFitTextSize + mStepTextSize, mMaximumTextSize);
-            mTempPaint.setTextSize(nextSize);
-            if (mTempPaint.measureText(text) > mWidthConstraint) {
+            mTempPaint.setTextSize(Math.min(lastFitTextSize + mStepTextSize, mMaximumTextSize));
+            if (Layout.getDesiredWidth(text, mTempPaint) > mWidthConstraint) {
                 break;
-            } else {
-                lastFitTextSize = nextSize;
             }
+            lastFitTextSize = mTempPaint.getTextSize();
         }
 
         return lastFitTextSize;
@@ -222,12 +199,28 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
         return false;
     }
 
+    public void setOnTextSizeChangeListener(OnTextSizeChangeListener listener) {
+        mOnTextSizeChangeListener = listener;
+    }
+
+    public void setOnPasteListener(OnPasteListener listener) {
+        mOnPasteListener = listener;
+    }
+
+    private void paste() {
+        final ClipboardManager clipboard = (ClipboardManager) getContext()
+                .getSystemService(Context.CLIPBOARD_SERVICE);
+        final ClipData primaryClip = clipboard.getPrimaryClip();
+        if (primaryClip != null && mOnPasteListener != null) {
+            mOnPasteListener.onPaste(primaryClip);
+        }
+    }
+
     public interface OnTextSizeChangeListener {
         void onTextSizeChanged(TextView textView, float oldSize);
     }
 
-    public interface PasteListener {
-        void paste(String s);
-        boolean paste(Uri u);
+    public interface OnPasteListener {
+        boolean onPaste(ClipData clip);
     }
 }
