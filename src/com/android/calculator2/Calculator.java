@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// FIXME: Menu handling, particularly for cut/paste, is very ugly
-//        and not the way it was intended.
-//        Other menus are not handled brilliantly either.
 // TODO: Better indication of when the result is known to be exact.
 // TODO: Check and possibly fix accessability issues.
 // TODO: Copy & more general paste in formula?  Note that this requires
@@ -170,7 +167,7 @@ public class Calculator extends Activity
                         mCurrentButton = mEqualButton;
                         onEquals();
                     } else {
-                        addChars(String.valueOf(c));
+                        addChars(String.valueOf(c), true);
                         redisplayAfterFormulaChange();
                     }
             }
@@ -441,6 +438,7 @@ public class Calculator extends Activity
     // Add the given button id to input expression.
     // If appropriate, clear the expression before doing so.
     private void addKeyToExpr(int id) {
+        // FIXME: Other states?
         if (mCurrentState == CalculatorState.ERROR) {
             setState(CalculatorState.INPUT);
         } else if (mCurrentState == CalculatorState.RESULT) {
@@ -454,6 +452,18 @@ public class Calculator extends Activity
         if (!mEvaluator.append(id)) {
             // TODO: Some user visible feedback?
         }
+    }
+
+    /**
+     * Add the given button id to input expression, assuming it was explicitly
+     * typed/touched.
+     * We perform slightly more aggressive correction than in pasted expressions.
+     */
+    private void addExplicitKeyToExpr(int id) {
+        if (mCurrentState == CalculatorState.INPUT && id == R.id.op_sub) {
+            mEvaluator.getExpr().removeTrailingAdditiveOperators();
+        }
+        addKeyToExpr(id);
     }
 
     private void redisplayAfterFormulaChange() {
@@ -514,7 +524,7 @@ public class Calculator extends Activity
                 }
                 break;
             default:
-                addKeyToExpr(id);
+                addExplicitKeyToExpr(id);
                 redisplayAfterFormulaChange();
                 break;
         }
@@ -858,11 +868,15 @@ public class Calculator extends Activity
         displayMessage(msg);
     }
 
-    // Add input characters to the end of the expression by mapping them to
-    // the appropriate button pushes when possible.  Leftover characters
-    // are added to mUnprocessedChars, which is presumed to immediately
-    // precede the newly added characters.
-    private void addChars(String moreChars) {
+    /**
+     * Add input characters to the end of the expression.
+     * Map them to the appropriate button pushes when possible.  Leftover characters
+     * are added to mUnprocessedChars, which is presumed to immediately precede the newly
+     * added characters.
+     * @param moreChars Characters to be added.
+     * @param explicit These characters were explicitly typed by the user.
+     */
+    private void addChars(String moreChars, boolean explicit) {
         if (mUnprocessedChars != null) {
             moreChars = mUnprocessedChars + moreChars;
         }
@@ -873,7 +887,11 @@ public class Calculator extends Activity
             int k = KeyMaps.keyForChar(c);
             if (k != View.NO_ID) {
                 mCurrentButton = findViewById(k);
-                addKeyToExpr(k);
+                if (explicit) {
+                    addExplicitKeyToExpr(k);
+                } else {
+                    addKeyToExpr(k);
+                }
                 if (Character.isSurrogate(c)) {
                     current += 2;
                 } else {
@@ -884,7 +902,11 @@ public class Calculator extends Activity
             int f = KeyMaps.funForString(moreChars, current);
             if (f != View.NO_ID) {
                 mCurrentButton = findViewById(f);
-                addKeyToExpr(f);
+                if (explicit) {
+                    addExplicitKeyToExpr(f);
+                } else {
+                    addKeyToExpr(f);
+                }
                 if (f == R.id.op_sqrt) {
                     // Square root entered as function; don't lose the parenthesis.
                     addKeyToExpr(R.id.lparen);
@@ -920,7 +942,7 @@ public class Calculator extends Activity
             mEvaluator.addSaved();
             redisplayAfterFormulaChange();
         } else {
-            addChars(item.coerceToText(this).toString());
+            addChars(item.coerceToText(this).toString(), false);
         }
         return true;
     }
