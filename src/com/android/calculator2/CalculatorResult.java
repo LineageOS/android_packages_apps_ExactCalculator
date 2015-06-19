@@ -68,6 +68,8 @@ public class CalculatorResult extends AlignedTextView {
     private int mMaxCharPos;  // The same, but in characters.
     private int mLsd;       // Position of least-significant digit in result
                             // (1 = tenths, -1 = tens), or Integer.MAX_VALUE.
+    private int mLastDisplayedDigit;  // Position of last digit actually displayed after adding
+                                      // exponent.
     private final Object mWidthLock = new Object();
                             // Protects the next two fields.
     private int mWidthConstraint = -1;
@@ -324,6 +326,10 @@ public class CalculatorResult extends AlignedTextView {
     // getString and thus identifies the significance of the rightmost digit.
     // A value of 1 means the rightmost digits corresponds to tenths.
     // maxDigs is the maximum number of characters in the result.
+    // We set lastDisplayedDigit[0] to the position of the last digit actually appearing in
+    // the display.
+    // If forcePrecision is true, we make sure that the last displayed digit corresponds to
+    // prec, and allow maxDigs to be exceeded in assing the exponent.
     // We add two distinct kinds of exponents:
     // 1) If the final result contains the leading digit we use standard scientific notation.
     // 2) If not, we add an exponent corresponding to an interpretation of the final result as
@@ -333,9 +339,8 @@ public class CalculatorResult extends AlignedTextView {
     // would have been in had we not done so.
     // This minimizes jumps as a result of scrolling.  Result is NOT internationalized,
     // uses "e" for exponent.
-    public String formatResult(String res, int prec,
-                               int maxDigs, boolean truncated,
-                               boolean negative) {
+    public String formatResult(String res, int prec, int maxDigs, boolean truncated,
+            boolean negative, int lastDisplayedDigit[], boolean forcePrecision) {
         int msd;  // Position of most significant digit in res or indication its outside res.
         int minusSpace = negative ? 1 : 0;
         if (truncated) {
@@ -346,6 +351,7 @@ public class CalculatorResult extends AlignedTextView {
         }
         int decIndex = res.indexOf('.');
         int resLen = res.length();
+        lastDisplayedDigit[0] = prec;
         if ((decIndex == -1 || msd != Evaluator.INVALID_MSD
                 && msd - decIndex > MAX_LEADING_ZEROES + 1) &&  prec != -1) {
             // No decimal point displayed, and it's not just to the right of the last digit,
@@ -365,7 +371,7 @@ public class CalculatorResult extends AlignedTextView {
                 // with one digit to the left of the decimal point. Insert decimal point and
                 // delete leading zeroes.
                 // We try to keep leading digits roughly in position, and never
-                // lengthen the result by more than SCI_NOT_EXTRA.
+                // lengthen the result by more than SCI_NOTATION_EXTRA.
                 String fraction = res.substring(msd + 1, resLen);
                 res = (negative ? "-" : "") + res.substring(msd, msd + 1) + "." + fraction;
                 exp += resLen - msd - 1;
@@ -378,53 +384,65 @@ public class CalculatorResult extends AlignedTextView {
                 // Actually add the exponent of either type:
                 String expAsString = Integer.toString(exp);
                 int expDigits = expAsString.length();
-                int dropDigits = expDigits + 1;
-                    // Drop digits even if there is room. Otherwise the scrolling gets jumpy.
-                if (dropDigits >= resLen - 1) {
-                    dropDigits = Math.max(resLen - 2, 0);
-                    // Jumpy is better than no mantissa.  Probably impossible anyway.
-                }
-                if (!hasPoint) {
-                    // Special handling for TYPE(2) EXPONENT:
-                    exp += dropDigits;
-                    expAsString = Integer.toString(exp);
-                    // Adjust for digits we are about to drop to drop to make room for exponent.
-                    // This can affect the room we have for the mantissa. We adjust only for
-                    // positive exponents, when it could otherwise result in a truncated
-                    // displayed result.
-                    if (exp > 0 && expAsString.length() > expDigits) {
-                        // ++expDigits; (dead code)
-                        ++dropDigits;
-                        ++exp;
-                        expAsString = Integer.toString(exp);
-                        // This cannot increase the length a second time.
+                if (!forcePrecision) {
+                    int dropDigits = expDigits + 1;
+                        // Drop digits even if there is room. Otherwise the scrolling gets jumpy.
+                    if (dropDigits >= resLen - 1) {
+                        dropDigits = Math.max(resLen - 2, 0);
+                        // Jumpy is better than no mantissa.  Probably impossible anyway.
                     }
-                    if (prec - dropDigits > mLsd) {
-                        // This can happen if e.g. result = 10^40 + 10^10
-                        // It turns out we would otherwise display ...10e9 because
-                        // it takes the same amount of space as ...1e10 but shows one more digit.
-                        // But we don't want to display a trailing zero, even if it's free.
-                        ++dropDigits;
-                        ++exp;
+                    if (!hasPoint) {
+                        // Special handling for TYPE(2) EXPONENT:
+                        exp += dropDigits;
                         expAsString = Integer.toString(exp);
+                        // Adjust for digits we are about to drop to drop to make room for exponent.
+                        // This can affect the room we have for the mantissa. We adjust only for
+                        // positive exponents, when it could otherwise result in a truncated
+                        // displayed result.
+                        if (exp > 0 && expAsString.length() > expDigits) {
+                            // ++expDigits; (dead code)
+                            ++dropDigits;
+                            ++exp;
+                            expAsString = Integer.toString(exp);
+                            // This cannot increase the length a second time.
+                        }
+                        if (prec - dropDigits > mLsd) {
+                            // This can happen if e.g. result = 10^40 + 10^10
+                            // It turns out we would otherwise display ...10e9 because it takes
+                            // the same amount of space as ...1e10 but shows one more digit.
+                            // But we don't want to display a trailing zero, even if it's free.
+                            ++dropDigits;
+                            ++exp;
+                            expAsString = Integer.toString(exp);
+                        }
                     }
+                    res = res.substring(0, resLen - dropDigits);
+                    lastDisplayedDigit[0] -= dropDigits;
                 }
-                res = res.substring(0, resLen - dropDigits);
                 res = res + "e" + expAsString;
             } // else don't add zero exponent
         }
         return res;
     }
 
-    // Get formatted, but not internationalized, result from
-    // mEvaluator.
-    private String getFormattedResult(int pos, int maxSize) {
+    /**
+     * Get formatted, but not internationalized, result from mEvaluator.
+     * @param pos requested position (1 = tenths) of last included digit.
+     * @param maxSize Maximum number of characters (more or less) in result.
+     * @param lastDisplayedPrec Zeroth entry is set to actual position of last included digit,
+     *                          after adjusting for exponent, etc.
+     * @param forcePrecision Ensure that last included digit is at pos, at the expense
+     *                       of treating maxSize as a soft limit.
+     */
+    private String getFormattedResult(int pos, int maxSize, int lastDisplayedDigit[],
+            boolean forcePrecision) {
         final boolean truncated[] = new boolean[1];
         final boolean negative[] = new boolean[1];
         final int requested_prec[] = {pos};
         final String raw_res = mEvaluator.getString(requested_prec, mMaxCharPos,
                 maxSize, truncated, negative);
-        return formatResult(raw_res, requested_prec[0], maxSize, truncated[0], negative[0]);
+        return formatResult(raw_res, requested_prec[0], maxSize, truncated[0], negative[0],
+                lastDisplayedDigit, forcePrecision);
    }
 
     // Return entire result (within reason) up to current displayed precision.
@@ -432,19 +450,14 @@ public class CalculatorResult extends AlignedTextView {
         if (!mValid) return "";
         if (!mScrollable) return getText().toString();
         int currentCharPos = getCurrentCharPos();
-        return KeyMaps.translateResult(getFormattedResult(currentCharPos, MAX_COPY_SIZE));
+        int unused[] = new int[1];
+        return KeyMaps.translateResult(getFormattedResult(mLastDisplayedDigit, MAX_COPY_SIZE,
+                unused, true));
     }
 
     public boolean fullTextIsExact() {
-        BoundedRational rat = mEvaluator.getRational();
-        int currentCharPos = getCurrentCharPos();
-        if (currentCharPos == -1) {
-            // Suppressing decimal point; still showing all integral digits.
-            currentCharPos = 0;
-        }
-        // TODO: Could handle scientific notation cases better;
-        // We currently treat those conservatively as approximate.
-        return (currentCharPos >= BoundedRational.digitsRequired(rat));
+        return !mScrollable
+                || mMaxCharPos == getCurrentCharPos() && mMaxCharPos != MAX_RIGHT_SCROLL;
     }
 
     /**
@@ -490,7 +503,8 @@ public class CalculatorResult extends AlignedTextView {
     void redisplay() {
         int currentCharPos = getCurrentCharPos();
         int maxChars = getMaxChars();
-        String result = getFormattedResult(currentCharPos, maxChars);
+        int lastDisplayedDigit[] = new int[1];
+        String result = getFormattedResult(currentCharPos, maxChars, lastDisplayedDigit, false);
         int epos = result.indexOf('e');
         result = KeyMaps.translateResult(result);
         if (epos > 0 && result.indexOf('.') == -1) {
@@ -502,6 +516,7 @@ public class CalculatorResult extends AlignedTextView {
         } else {
             setText(result);
         }
+        mLastDisplayedDigit = lastDisplayedDigit[0];
         mValid = true;
     }
 
