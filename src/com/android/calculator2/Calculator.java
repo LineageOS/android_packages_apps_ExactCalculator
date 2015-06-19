@@ -83,6 +83,7 @@ public class Calculator extends Activity
         INPUT,          // Result and formula both visible, no evaluation requested,
                         // Though result may be visible on bottom line.
         EVALUATE,       // Both visible, evaluation requested, evaluation/animation incomplete.
+                        // Not used for instant result evaluation.
         INIT,           // Very temporary state used as alternative to EVALUATE
                         // during reinitialization.  Do not animate on completion.
         ANIMATE,        // Result computed, animation to enlarge result window in progress.
@@ -126,7 +127,6 @@ public class Calculator extends Activity
         @Override
         public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
             stopActionMode();
-
             // Never consume DPAD key events.
             switch (keyCode) {
                 case KeyEvent.KEYCODE_DPAD_UP:
@@ -135,7 +135,13 @@ public class Calculator extends Activity
                 case KeyEvent.KEYCODE_DPAD_RIGHT:
                     return false;
             }
-
+            // Always cancel unrequested in-progress evaluation, so that we don't have
+            // to worry about subsequent asynchronous completion.
+            // Requested in-progress evaluations are handled below.
+            if (mCurrentState != CalculatorState.EVALUATE) {
+                mEvaluator.cancelAll(true);
+            }
+            // In other cases we go ahead and process the input normally after cancelling:
             if (keyEvent.getAction() != KeyEvent.ACTION_UP) {
                 return true;
             }
@@ -151,6 +157,7 @@ public class Calculator extends Activity
                     onDelete();
                     return true;
                 default:
+                    cancelIfEvaluating(false);
                     final int raw = keyEvent.getKeyCharacterMap()
                             .get(keyCode, keyEvent.getMetaState());
                     if ((raw & KeyCharacterMap.COMBINING_ACCENT) != 0) {
@@ -382,10 +389,10 @@ public class Calculator extends Activity
     public void onUserInteraction() {
         super.onUserInteraction();
 
-        // If there's an animation in progress, cancel it so the user interaction can be handled
-        // immediately.
+        // If there's an animation in progress, end it immediately, so the user interaction can
+        // be handled.
         if (mCurrentAnimator != null) {
-            mCurrentAnimator.cancel();
+            mCurrentAnimator.end();
         }
     }
 
@@ -478,19 +485,14 @@ public class Calculator extends Activity
     }
 
     public void onButtonClick(View view) {
+        // Any animation is ended before we get here.
         mCurrentButton = view;
         stopActionMode();
-
-        // Always cancel in-progress evaluation.
-        // If we were waiting for the result, do nothing else.
-        mEvaluator.cancelAll();
-
-        if (mCurrentState == CalculatorState.EVALUATE
-                || mCurrentState == CalculatorState.ANIMATE) {
-            onCancelled();
-            return;
+        // See onKey above for the rationale behind some of the behavior below:
+        if (mCurrentState != CalculatorState.EVALUATE) {
+            // Cancel evaluations that were not specifically requested.
+            mEvaluator.cancelAll(true);
         }
-
         final int id = view.getId();
         switch (id) {
             case R.id.eq:
@@ -506,8 +508,12 @@ public class Calculator extends Activity
                 final boolean selected = !mInverseToggle.isSelected();
                 mInverseToggle.setSelected(selected);
                 onInverseToggled(selected);
+                if (mCurrentState == CalculatorState.RESULT) {
+                    mResultText.redisplay();   // In case we cancelled reevaluation.
+                }
                 break;
             case R.id.toggle_mode:
+                cancelIfEvaluating(false);
                 final boolean mode = !mEvaluator.getDegreeMode();
                 if (mCurrentState == CalculatorState.RESULT) {
                     mEvaluator.collapse();  // Capture result evaluated in old mode
@@ -516,7 +522,6 @@ public class Calculator extends Activity
                 // In input mode, we reinterpret already entered trig functions.
                 mEvaluator.setDegreeMode(mode);
                 onModeChanged(mode);
-
                 setState(CalculatorState.INPUT);
                 mResultText.clear();
                 if (mEvaluator.getExpr().hasInterestingOps()) {
@@ -524,6 +529,7 @@ public class Calculator extends Activity
                 }
                 break;
             default:
+                cancelIfEvaluating(false);
                 addExplicitKeyToExpr(id);
                 redisplayAfterFormulaChange();
                 break;
@@ -568,9 +574,9 @@ public class Calculator extends Activity
         }
     }
 
+    // Reset state to reflect evaluator cancellation.  Invoked by evaluator.
     public void onCancelled() {
         // We should be in EVALUATE state.
-        // Display is still in input state.
         setState(CalculatorState.INPUT);
         mResultText.clear();
     }
@@ -607,7 +613,23 @@ public class Calculator extends Activity
         animatorSet.start();
     }
 
+    /**
+     * Cancel any in-progress explicitly requested evaluations.
+     * @param quiet suppress pop-up message.  Explicit evaluation can change the expression
+                    value, and certainly changes the display, so it seems reasonable to warn.
+     * @return      true if there was such an evaluation
+     */
+    private boolean cancelIfEvaluating(boolean quiet) {
+        if (mCurrentState == CalculatorState.EVALUATE) {
+            mEvaluator.cancelAll(quiet);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private void onEquals() {
+        // In non-INPUT state assume this was redundant and ignore it.
         if (mCurrentState == CalculatorState.INPUT && !mEvaluator.getExpr().isEmpty()) {
             setState(CalculatorState.EVALUATE);
             mEvaluator.requireResult();
@@ -619,8 +641,9 @@ public class Calculator extends Activity
         // Note that we handle keyboard delete exactly like the delete button.  For
         // example the delete button can be used to delete a character from an incomplete
         // function name typed on a physical keyboard.
-        mEvaluator.cancelAll();
         // This should be impossible in RESULT state.
+        // If there is an in-progress explicit evaluation, just cancel it and return.
+        if (cancelIfEvaluating(false)) return;
         setState(CalculatorState.INPUT);
         if (mUnprocessedChars != null) {
             int len = mUnprocessedChars.length();
@@ -693,6 +716,7 @@ public class Calculator extends Activity
         if (mEvaluator.getExpr().isEmpty()) {
             return;
         }
+        cancelIfEvaluating(true);
         reveal(mCurrentButton, R.color.calculator_accent_color, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -760,6 +784,7 @@ public class Calculator extends Activity
         final int formulaTextColor = mFormulaText.getCurrentTextColor();
 
         if (animate) {
+            setState(CalculatorState.ANIMATE);
             final AnimatorSet animatorSet = new AnimatorSet();
             animatorSet.playTogether(
                     ObjectAnimator.ofPropertyValuesHolder(mResultText,

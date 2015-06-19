@@ -345,11 +345,12 @@ class Evaluator {
     class AsyncDisplayResult extends AsyncTask<Void, Void, InitialResult> {
         private boolean mDm;  // degrees
         private boolean mRequired; // Result was requested by user.
-        private boolean mTimedOut = false;
+        private boolean mQuiet;  // Suppress cancellation message.
         private Runnable mTimeoutRunnable = null;
         AsyncDisplayResult(boolean dm, boolean required) {
             mDm = dm;
             mRequired = required;
+            mQuiet = !required;
         }
         private void handleTimeOut() {
             boolean running = (getStatus() != AsyncTask.Status.FINISHED);
@@ -358,11 +359,14 @@ class Evaluator {
                 // Replace mExpr with clone to avoid races if task
                 // still runs for a while.
                 mExpr = (CalculatorExpr)mExpr.clone();
-                mTimedOut = true;
                 if (mRequired) {
+                    suppressCancelMessage();
                     displayTimeoutMessage();
                 }
             }
+        }
+        private void suppressCancelMessage() {
+            mQuiet = true;
         }
         @Override
         protected void onPreExecute() {
@@ -375,7 +379,6 @@ class Evaluator {
                                         }
                                     };
                 mTimeoutHandler.postDelayed(mTimeoutRunnable, timeout);
-                mTimedOut = false;
             }
         }
         @Override
@@ -452,7 +455,7 @@ class Evaluator {
         }
         @Override
         protected void onCancelled(InitialResult result) {
-            if (mRequired && !mTimedOut) {
+            if (mRequired && !mQuiet) {
                 displayCancelledMessage();
             } // Otherwise timeout processing displayed message.
             mCalculator.onCancelled();
@@ -795,8 +798,10 @@ class Evaluator {
             // Already done or in progress.
             return;
         }
-        cancelAll();
         clearCache();
+        // In very odd cases, there can be significant latency to evaluate.
+        // Don't show obsolete result.
+        mResult.clear();
         mEvaluator = new AsyncDisplayResult(mDegreeMode, false);
         mEvaluator.execute();
         mChangedValue = false;
@@ -810,7 +815,7 @@ class Evaluator {
         if (mCache == null || mExpr.hasTrailingOperators()) {
             // Restart evaluator in requested mode, i.e. with
             // longer timeout, not ignoring trailing operators.
-            cancelAll();
+            cancelAll(true);
             clearCache();
             mEvaluator = new AsyncDisplayResult(mDegreeMode, true);
             mEvaluator.execute();
@@ -823,10 +828,12 @@ class Evaluator {
         }
     }
 
-    // Cancel all current background tasks.
-    // Return true if we cancelled an initial evaluation,
-    // leaving the expression displayed.
-    boolean cancelAll() {
+    /**
+     * Cancel all current background tasks.
+     * @param quiet suppress cancellation message
+     * @return      true if we cancelled an initial evaluation
+     */
+    boolean cancelAll(boolean quiet) {
         if (mCurrentReevaluator != null) {
             mCurrentReevaluator.cancel(true);
             mCacheDigsReq = mCacheDigs;
@@ -835,6 +842,9 @@ class Evaluator {
             mCurrentReevaluator = null;
         }
         if (mEvaluator != null) {
+            if (quiet) {
+                mEvaluator.suppressCancelMessage();
+            }
             mEvaluator.cancel(true);
             // There seems to be no good way to wait for cancellation
             // to complete, and the evaluation continues to look at
