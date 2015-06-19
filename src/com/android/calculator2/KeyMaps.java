@@ -132,6 +132,41 @@ public class KeyMaps {
     }
 
     /**
+     * Does a button id correspond to a function that introduces an implicit lparen?
+     * Pure function.
+     */
+    public static boolean isFunc(int id) {
+        switch(id) {
+            case R.id.fun_sin:
+            case R.id.fun_cos:
+            case R.id.fun_tan:
+            case R.id.fun_arcsin:
+            case R.id.fun_arccos:
+            case R.id.fun_arctan:
+            case R.id.fun_ln:
+            case R.id.fun_log:
+            case R.id.fun_exp:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Does a button id correspond to a prefix operator?
+     * Pure function.
+     */
+    public static boolean isPrefix(int id) {
+        switch(id) {
+            case R.id.op_sqrt:
+            case R.id.op_sub:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
      * Does a button id correspond to a suffix operator?
      */
     public static boolean isSuffix(int id) {
