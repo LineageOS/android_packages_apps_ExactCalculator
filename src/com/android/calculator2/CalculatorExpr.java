@@ -359,35 +359,44 @@ class CalculatorExpr {
         return (KeyMaps.isBinary(o.mId));
     }
 
-    // Append press of button with given id to expression.
-    // Returns false and does nothing if this would clearly
-    // result in a syntax error.
+    /**
+     * Append press of button with given id to expression.
+     * If the insertion would clearly result in a syntax error, either just return false
+     * and do nothing, or make an adjustment to avoid the problem.  We do the latter only
+     * for unambiguous consecutive binary operators, in which case we delete the first
+     * operator.
+     */
     boolean add(int id) {
         int s = mExpr.size();
         int d = KeyMaps.digVal(id);
         boolean binary = KeyMaps.isBinary(id);
-        if (s == 0 && binary && id != R.id.op_sub) return false;
-        if (binary && hasTrailingBinary()
-            && (id != R.id.op_sub || isOperatorUnchecked(s-1, R.id.op_sub))) {
-            return false;
+        Token lastTok = s == 0 ? null : mExpr.get(s-1);
+        int lastOp = lastTok instanceof Operator ? ((Operator) lastTok).mId : 0;
+        // Quietly replace a trailing binary operator with another one, unless the second
+        // operator is minus, in which case we just allow it as a unary minus.
+        if (binary && !KeyMaps.isPrefix(id)) {
+            if (s == 0 || lastOp == R.id.lparen || KeyMaps.isFunc(lastOp)
+                    || KeyMaps.isPrefix(lastOp) && lastOp != R.id.op_sub) {
+                return false;
+            }
+            while (hasTrailingBinary()) {
+                delete();
+            }
+            // s invalid and not used below.
         }
         boolean isConstPiece = (d != KeyMaps.NOT_DIGIT || id == R.id.dec_point);
         if (isConstPiece) {
+            // Since we treat juxtaposition as multiplication, a constant can appear anywhere.
             if (s == 0) {
                 mExpr.add(new Constant());
                 s++;
             } else {
                 Token last = mExpr.get(s-1);
                 if(!(last instanceof Constant)) {
-                    if (!(last instanceof Operator)) {
-                        return false;
-                    }
-                    int lastOp = ((Operator)last).mId;
-                    if (lastOp == R.id.const_e || lastOp == R.id.const_pi
-                        || lastOp == R.id.op_fact
-                        || lastOp == R.id.rparen) {
-                        // Constant cannot possibly follow; reject immediately
-                        return false;
+                    if (last instanceof PreEval) {
+                        // Add explicit multiplication to avoid confusing display.
+                        mExpr.add(new Operator(R.id.op_mul));
+                        s++;
                     }
                     mExpr.add(new Constant());
                     s++;
@@ -397,6 +406,21 @@ class CalculatorExpr {
         } else {
             mExpr.add(new Operator(id));
             return true;
+        }
+    }
+
+    /**
+     * Remove trailing op_add and op_sub operators.
+     */
+    void removeTrailingAdditiveOperators() {
+        while (true) {
+            int s = mExpr.size();
+            if (s == 0) break;
+            Token lastTok = mExpr.get(s-1);
+            if (!(lastTok instanceof Operator)) break;
+            int lastOp = ((Operator) lastTok).mId;
+            if (lastOp != R.id.op_add && lastOp != R.id.op_sub) break;
+            delete();
         }
     }
 
