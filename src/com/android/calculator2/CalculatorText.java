@@ -20,6 +20,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Rect;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.text.method.ScrollingMovementMethod;
@@ -37,7 +38,8 @@ import android.widget.TextView;
  */
 public class CalculatorText extends AlignedTextView implements View.OnLongClickListener {
 
-    private final ActionMode.Callback mPasteActionModeCallback = new ActionMode.Callback() {
+    private final ActionMode.Callback2 mPasteActionModeCallback = new ActionMode.Callback2() {
+
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             if (item.getItemId() == R.id.menu_paste) {
@@ -53,6 +55,7 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
             final ClipboardManager clipboard = (ClipboardManager) getContext()
                     .getSystemService(Context.CLIPBOARD_SERVICE);
             if (clipboard.hasPrimaryClip()) {
+                bringPointIntoView(length());
                 MenuInflater inflater = mode.getMenuInflater();
                 inflater.inflate(R.menu.paste, menu);
                 return true;
@@ -69,6 +72,16 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             mActionMode = null;
+        }
+
+        @Override
+        public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
+            super.onGetContentRect(mode, view, outRect);
+            outRect.top += getTotalPaddingTop();
+            outRect.right -= getTotalPaddingRight();
+            outRect.bottom -= getTotalPaddingBottom();
+            // Encourage menu positioning towards the right, possibly over formula.
+            outRect.left = outRect.right;
         }
     };
 
