@@ -60,6 +60,8 @@ public class CalculatorResult extends AlignedTextView {
     private boolean mValid = false;
                             // The result holds something valid; either a a number or an error
                             // message.
+    // A suffix of "Pos" denotes a pixel offset.  Zero represents a scroll position
+    // in which the decimal point is just barely visible on the right of the display.
     private int mCurrentPos;// Position of right of display relative to decimal point, in pixels.
                             // Large positive values mean the decimal point is scrolled off the
                             // left of the display.  Zero means decimal point is barely displayed
@@ -68,10 +70,17 @@ public class CalculatorResult extends AlignedTextView {
     private int mMinPos;    // Minimum position before all digits disappear off the right. Pixels.
     private int mMaxPos;    // Maximum position before we start displaying the infinite
                             // sequence of trailing zeroes on the right. Pixels.
-    private int mMaxCharPos;  // The same, but in characters.
-    private int mLsd;       // Position of least-significant digit in result
-                            // (1 = tenths, -1 = tens), or Integer.MAX_VALUE.
-    private int mLastDisplayedDigit;  // Position of last digit actually displayed after adding
+    // In the following, we use a suffix of Offset to denote a character position in a numeric
+    // string relative to the decimal point.  Positive is to the right and negative is to
+    // the left. 1 = tenths position, -1 = units.  Integer.MAX_VALUE is sometimes used
+    // for the offset of the last digit in an a nonterminating decimal expansion.
+    // We use the suffix "Index" to denote a zero-based index into a string representing a
+    // result.
+    // TODO: Apply the same convention to other classes.
+    private int mMaxCharOffset;  // Character offset from decimal point of rightmost digit
+                                 // that should be displayed.  Essentially the same as
+    private int mLsdOffset;      // Position of least-significant digit in result
+    private int mLastDisplayedOffset; // Offset of last digit actually displayed after adding
                                       // exponent.
     private final Object mWidthLock = new Object();
                             // Protects the next two fields.
@@ -185,7 +194,9 @@ public class CalculatorResult extends AlignedTextView {
     // characters.
     private final int expLen(int exp) {
         if (exp == 0) return 0;
-        return (int)Math.ceil(Math.log10(Math.abs((double)exp))) + (exp >= 0 ? 1 : 2);
+        final int abs_exp_digits = (int) Math.ceil(Math.log10(Math.abs((double)exp))
+                + 0.0000000001d /* Round whole numbers to next integer */);
+        return abs_exp_digits + (exp >= 0 ? 1 : 2);
     }
 
     /**
@@ -205,97 +216,95 @@ public class CalculatorResult extends AlignedTextView {
     }
 
     /**
-     * Set up scroll bounds and determine whether the result is scrollable, based on the
-     * supplied information about the result.
+     * Set up scroll bounds (mMinPos, mMaxPos, etc.) and determine whether the result is
+     * scrollable, based on the supplied information about the result.
      * This is unfortunately complicated because we need to predict whether trailing digits
      * will eventually be replaced by an exponent.
      * Just appending the exponent during formatting would be simpler, but would produce
      * jumpier results during transitions.
      */
-    private void initPositions(int initPrec, int msd, int leastDigPos, String truncatedWholePart) {
+    private void initPositions(int initPrecOffset, int msdIndex, int lsdOffset,
+            String truncatedWholePart) {
         float charWidth;
         int maxChars = getMaxChars();
         mLastPos = INVALID;
-        mLsd = leastDigPos;
+        mLsdOffset = lsdOffset;
         synchronized(mWidthLock) {
             charWidth = mCharWidth;
         }
-        mCurrentPos = mMinPos = (int) Math.round(initPrec * charWidth);
+        mCurrentPos = mMinPos = (int) Math.round(initPrecOffset * charWidth);
         // Prevent scrolling past initial position, which is calculated to show leading digits.
-        if (msd == Evaluator.INVALID_MSD) {
+        if (msdIndex == Evaluator.INVALID_MSD) {
             // Possible zero value
-            if (leastDigPos == Integer.MIN_VALUE) {
+            if (lsdOffset == Integer.MIN_VALUE) {
                 // Definite zero value.
                 mMaxPos = mMinPos;
-                mMaxCharPos = (int) Math.round(mMaxPos/charWidth);
+                mMaxCharOffset = (int) Math.round(mMaxPos/charWidth);
                 mScrollable = false;
             } else {
                 // May be very small nonzero value.  Allow user to find out.
-                mMaxPos = mMaxCharPos = MAX_RIGHT_SCROLL;
+                mMaxPos = mMaxCharOffset = MAX_RIGHT_SCROLL;
+                mMinPos -= charWidth;  // Allow for future minus sign.
                 mScrollable = true;
             }
             return;
         }
         int wholeLen =  truncatedWholePart.length();
         int negative = truncatedWholePart.charAt(0) == '-' ? 1 : 0;
-        boolean adjustedForExp = false;  // Adjusted for normal exponent.
-        if (msd > wholeLen && msd <= wholeLen + 3) {
-            // Avoid tiny negative exponent; pretend msd is just to the right of decimal point.
-            msd = wholeLen - 1;
+        if (msdIndex > wholeLen && msdIndex <= wholeLen + 3) {
+            // Avoid tiny negative exponent; pretend msdIndex is just to the right of decimal point.
+            msdIndex = wholeLen - 1;
         }
-        int minCharPos = msd - negative - wholeLen;
+        int minCharOffset = msdIndex - wholeLen;
                                 // Position of leftmost significant digit relative to dec. point.
                                 // Usually negative.
-        mMaxCharPos = MAX_RIGHT_SCROLL; // How far does it make sense to scroll right?
+        mMaxCharOffset = MAX_RIGHT_SCROLL; // How far does it make sense to scroll right?
         // If msd is left of decimal point should logically be
         // mMinPos = - (int) Math.ceil(getPaint().measureText(truncatedWholePart)), but
         // we eventually translate to a character position by dividing by mCharWidth.
         // To avoid rounding issues, we use the analogous computation here.
-        if (minCharPos > -1 && minCharPos < MAX_LEADING_ZEROES + 2) {
+        if (minCharOffset > -1 && minCharOffset < MAX_LEADING_ZEROES + 2) {
             // Small number of leading zeroes, avoid scientific notation.
-            minCharPos = -1;
+            minCharOffset = -1;
         }
-        if (leastDigPos < MAX_RIGHT_SCROLL) {
-            mMaxCharPos = leastDigPos;
-            if (mMaxCharPos < -1 && mMaxCharPos > -(MAX_TRAILING_ZEROES + 2)) {
-                mMaxCharPos = -1;
+        if (lsdOffset < MAX_RIGHT_SCROLL) {
+            mMaxCharOffset = lsdOffset;
+            if (mMaxCharOffset < -1 && mMaxCharOffset > -(MAX_TRAILING_ZEROES + 2)) {
+                mMaxCharOffset = -1;
             }
-            // leastDigPos is positive or negative, never 0.
-            if (mMaxCharPos < -1) {
-                // Number entirely to left of decimal point.
-                // We'll need a positive exponent or displayed zeros to display entire number.
-                mMaxCharPos = Math.min(-1, mMaxCharPos + expLen(-minCharPos - 1));
-                if (mMaxCharPos >= -1) {
-                    // Unlikely; huge exponent.
-                    mMaxCharPos = -1;
-                } else {
-                    adjustedForExp = true;
-                }
-            } else if (minCharPos > -1 || mMaxCharPos >= maxChars) {
+            // lsdOffset is positive or negative, never 0.
+            int currentExpLen = 0;  // Length of required standard scientific notation exponent.
+            if (mMaxCharOffset < -1) {
+                currentExpLen = expLen(-minCharOffset - 1);
+            } else if (minCharOffset > -1 || mMaxCharOffset >= maxChars) {
                 // Number either entirely to the right of decimal point, or decimal point not
                 // visible when scrolled to the right.
-                // We will need an exponent when looking at the rightmost digit.
-                // Allow additional scrolling to make room.
-                mMaxCharPos += expLen(-(minCharPos + 1));
-                adjustedForExp = true;
-                // Assumed an exponent for standard scientific notation for now.
-                // Adjusted below if necessary.
+                currentExpLen = expLen(-minCharOffset);
             }
-            mScrollable = (mMaxCharPos - minCharPos + negative >= maxChars);
-            if (mScrollable) {
-                if (adjustedForExp) {
-                    // We may need a slightly larger negative exponent while scrolling.
-                    mMaxCharPos += expLen(-leastDigPos) - expLen(-(minCharPos + 1));
+            mScrollable = (mMaxCharOffset + currentExpLen - minCharOffset + negative >= maxChars);
+            int newMaxCharOffset;
+            if (currentExpLen > 0) {
+                if (mScrollable) {
+                    // We'll use exponent corresponding to leastDigPos when scrolled to right.
+                    newMaxCharOffset = mMaxCharOffset + expLen(-lsdOffset);
+                } else {
+                    newMaxCharOffset = mMaxCharOffset + currentExpLen;
+                }
+                if (mMaxCharOffset <= -1 && newMaxCharOffset > -1) {
+                    // Very unlikely; just drop exponent.
+                    mMaxCharOffset = -1;
+                } else {
+                    mMaxCharOffset = newMaxCharOffset;
                 }
             }
-            mMaxPos = Math.min((int) Math.round(mMaxCharPos * charWidth), MAX_RIGHT_SCROLL);
+            mMaxPos = Math.min((int) Math.round(mMaxCharOffset * charWidth), MAX_RIGHT_SCROLL);
             if (!mScrollable) {
                 // Position the number consistently with our assumptions to make sure it
                 // actually fits.
                 mCurrentPos = mMaxPos;
             }
         } else {
-            mMaxPos = mMaxCharPos = MAX_RIGHT_SCROLL;
+            mMaxPos = mMaxCharOffset = MAX_RIGHT_SCROLL;
             mScrollable = true;
         }
     }
@@ -312,9 +321,8 @@ public class CalculatorResult extends AlignedTextView {
      * Return the most significant digit position in the given string or Evaluator.INVALID_MSD.
      * Unlike Evaluator.getMsdPos, we treat a final 1 as significant.
      */
-    public static int getNaiveMsdPos(String s) {
+    public static int getNaiveMsdIndex(String s) {
         int len = s.length();
-        int nonzeroPos = -1;
         for (int i = 0; i < len; ++i) {
             char c = s.charAt(i);
             if (c != '-' && c != '.' && c != '0') {
@@ -329,138 +337,126 @@ public class CalculatorResult extends AlignedTextView {
     // getString and thus identifies the significance of the rightmost digit.
     // A value of 1 means the rightmost digits corresponds to tenths.
     // maxDigs is the maximum number of characters in the result.
-    // We set lastDisplayedDigit[0] to the position of the last digit actually appearing in
+    // We set lastDisplayedOffset[0] to the offset of the last digit actually appearing in
     // the display.
     // If forcePrecision is true, we make sure that the last displayed digit corresponds to
     // prec, and allow maxDigs to be exceeded in assing the exponent.
     // We add two distinct kinds of exponents:
-    // 1) If the final result contains the leading digit we use standard scientific notation.
-    // 2) If not, we add an exponent corresponding to an interpretation of the final result as
-    //    an integer.
+    // (1) If the final result contains the leading digit we use standard scientific notation.
+    // (2) If not, we add an exponent corresponding to an interpretation of the final result as
+    //     an integer.
     // We add an ellipsis on the left if the result was truncated.
     // We add ellipses and exponents in a way that leaves most digits in the position they
     // would have been in had we not done so.
     // This minimizes jumps as a result of scrolling.  Result is NOT internationalized,
     // uses "e" for exponent.
-    public String formatResult(String res, int prec, int maxDigs, boolean truncated,
-            boolean negative, int lastDisplayedDigit[], boolean forcePrecision) {
-        int msd;  // Position of most significant digit in res or indication its outside res.
-        int minusSpace = negative ? 1 : 0;
-        if (truncated) {
-            res = KeyMaps.ELLIPSIS + res.substring(1, res.length());
-            msd = -1;
-        } else {
-            msd = getNaiveMsdPos(res);  // INVALID_MSD is OK and is treated as large.
-        }
-        int decIndex = res.indexOf('.');
-        int resLen = res.length();
-        lastDisplayedDigit[0] = prec;
-        if ((decIndex == -1 || msd != Evaluator.INVALID_MSD
-                && msd - decIndex > MAX_LEADING_ZEROES + 1) &&  prec != -1) {
+    public String formatResult(String in, int precOffset, int maxDigs, boolean truncated,
+            boolean negative, int lastDisplayedOffset[], boolean forcePrecision) {
+        final int minusSpace = negative ? 1 : 0;
+        final int msdIndex = truncated ? -1 : getNaiveMsdIndex(in);  // INVALID_MSD is OK.
+        final int decIndex = in.indexOf('.');
+        String result = in;
+        lastDisplayedOffset[0] = precOffset;
+        if ((decIndex == -1 || msdIndex != Evaluator.INVALID_MSD
+                && msdIndex - decIndex > MAX_LEADING_ZEROES + 1) &&  precOffset != -1) {
             // No decimal point displayed, and it's not just to the right of the last digit,
             // or we should suppress leading zeroes.
             // Add an exponent to let the user track which digits are currently displayed.
-            // This is a bit tricky, since the number of displayed digits affects the displayed
-            // exponent, which can affect the room we have for mantissa digits.  We occasionally
-            // display one digit too few. This is sometimes unavoidable, but we could
-            // avoid it in more cases.
-            int exp = prec > 0 ? -prec : -prec - 1;
-                    // Can be used as TYPE (2) EXPONENT. -1 accounts for decimal point.
+            // Start with type (2) exponent if we dropped no digits. -1 accounts for decimal point.
+            final int initExponent = precOffset > 0 ? -precOffset : -precOffset - 1;
+            int exponent = initExponent;
             boolean hasPoint = false;
-            if (msd < maxDigs - 1 && msd >= 0 &&
-                resLen - msd + 1 /* dec. pt. */ + minusSpace <= maxDigs + SCI_NOTATION_EXTRA) {
-                // TYPE (1) EXPONENT computation and transformation:
+            if (!truncated && msdIndex < maxDigs - 1
+                    && result.length() - msdIndex + 1 + minusSpace
+                    <= maxDigs + SCI_NOTATION_EXTRA) {
+                // Type (1) exponent computation and transformation:
                 // Leading digit is in display window. Use standard calculator scientific notation
                 // with one digit to the left of the decimal point. Insert decimal point and
                 // delete leading zeroes.
                 // We try to keep leading digits roughly in position, and never
                 // lengthen the result by more than SCI_NOTATION_EXTRA.
-                String fraction = res.substring(msd + 1, resLen);
-                res = (negative ? "-" : "") + res.substring(msd, msd + 1) + "." + fraction;
-                exp += resLen - msd - 1;
+                final int resLen = result.length();
+                String fraction = result.substring(msdIndex + 1, resLen);
+                result = (negative ? "-" : "") + result.substring(msdIndex, msdIndex + 1)
+                        + "." + fraction;
                 // Original exp was correct for decimal point at right of fraction.
                 // Adjust by length of fraction.
-                resLen = res.length();
+                exponent = initExponent + resLen - msdIndex - 1;
                 hasPoint = true;
             }
-            if (exp != 0 || truncated) {
+            if (exponent != 0 || truncated) {
                 // Actually add the exponent of either type:
-                String expAsString = Integer.toString(exp);
-                int expDigits = expAsString.length();
                 if (!forcePrecision) {
-                    int dropDigits = expDigits + 1;
+                    int dropDigits;  // Digits to drop to make room for exponent.
+                    if (hasPoint) {
+                        // Type (1) exponent.
                         // Drop digits even if there is room. Otherwise the scrolling gets jumpy.
-                    if (dropDigits >= resLen - 1) {
-                        dropDigits = Math.max(resLen - 2, 0);
-                        // Jumpy is better than no mantissa.  Probably impossible anyway.
-                    }
-                    if (!hasPoint) {
-                        // Special handling for TYPE(2) EXPONENT:
-                        exp += dropDigits;
-                        expAsString = Integer.toString(exp);
-                        // Adjust for digits we are about to drop to drop to make room for exponent.
-                        // This can affect the room we have for the mantissa. We adjust only for
-                        // positive exponents, when it could otherwise result in a truncated
-                        // displayed result.
-                        if (exp > 0 && expAsString.length() > expDigits) {
-                            // ++expDigits; (dead code)
-                            ++dropDigits;
-                            ++exp;
-                            expAsString = Integer.toString(exp);
-                            // This cannot increase the length a second time.
+                        dropDigits = expLen(exponent);
+                        if (dropDigits >= result.length() - 1) {
+                            // Jumpy is better than no mantissa.  Probably impossible anyway.
+                            dropDigits = Math.max(result.length() - 2, 0);
                         }
-                        if (prec - dropDigits > mLsd) {
+                    } else {
+                        // Type (2) exponent.
+                        // Exponent depends on the number of digits we drop, which depends on
+                        // exponent ...
+                        for (dropDigits = 2; expLen(initExponent + dropDigits) > dropDigits;
+                                ++dropDigits) {}
+                        exponent = initExponent + dropDigits;
+                        if (precOffset - dropDigits > mLsdOffset) {
                             // This can happen if e.g. result = 10^40 + 10^10
                             // It turns out we would otherwise display ...10e9 because it takes
                             // the same amount of space as ...1e10 but shows one more digit.
                             // But we don't want to display a trailing zero, even if it's free.
                             ++dropDigits;
-                            ++exp;
-                            expAsString = Integer.toString(exp);
+                            ++exponent;
                         }
                     }
-                    res = res.substring(0, resLen - dropDigits);
-                    lastDisplayedDigit[0] -= dropDigits;
+                    result = result.substring(0, result.length() - dropDigits);
+                    lastDisplayedOffset[0] -= dropDigits;
                 }
-                res = res + "e" + expAsString;
+                result = result + "e" + Integer.toString(exponent);
             } // else don't add zero exponent
         }
-        return res;
+        if (truncated || negative && result.charAt(0) != '-') {
+            result = KeyMaps.ELLIPSIS + result.substring(1, result.length());
+        }
+        return result;
     }
 
     /**
      * Get formatted, but not internationalized, result from mEvaluator.
-     * @param pos requested position (1 = tenths) of last included digit.
+     * @param precOffset requested position (1 = tenths) of last included digit.
      * @param maxSize Maximum number of characters (more or less) in result.
-     * @param lastDisplayedPrec Zeroth entry is set to actual position of last included digit,
-     *                          after adjusting for exponent, etc.
+     * @param lastDisplayedOffset Zeroth entry is set to actual offset of last included digit,
+     *                            after adjusting for exponent, etc.
      * @param forcePrecision Ensure that last included digit is at pos, at the expense
      *                       of treating maxSize as a soft limit.
      */
-    private String getFormattedResult(int pos, int maxSize, int lastDisplayedDigit[],
+    private String getFormattedResult(int precOffset, int maxSize, int lastDisplayedOffset[],
             boolean forcePrecision) {
         final boolean truncated[] = new boolean[1];
         final boolean negative[] = new boolean[1];
-        final int requested_prec[] = {pos};
-        final String raw_res = mEvaluator.getString(requested_prec, mMaxCharPos,
+        final int requestedPrecOffset[] = {precOffset};
+        final String rawResult = mEvaluator.getString(requestedPrecOffset, mMaxCharOffset,
                 maxSize, truncated, negative);
-        return formatResult(raw_res, requested_prec[0], maxSize, truncated[0], negative[0],
-                lastDisplayedDigit, forcePrecision);
+        return formatResult(rawResult, requestedPrecOffset[0], maxSize, truncated[0], negative[0],
+                lastDisplayedOffset, forcePrecision);
    }
 
     // Return entire result (within reason) up to current displayed precision.
     public String getFullText() {
         if (!mValid) return "";
         if (!mScrollable) return getText().toString();
-        int currentCharPos = getCurrentCharPos();
+        int currentCharOffset = getCurrentCharOffset();
         int unused[] = new int[1];
-        return KeyMaps.translateResult(getFormattedResult(mLastDisplayedDigit, MAX_COPY_SIZE,
+        return KeyMaps.translateResult(getFormattedResult(mLastDisplayedOffset, MAX_COPY_SIZE,
                 unused, true));
     }
 
     public boolean fullTextIsExact() {
         return !mScrollable
-                || mMaxCharPos == getCurrentCharPos() && mMaxCharPos != MAX_RIGHT_SCROLL;
+                || mMaxCharOffset == getCurrentCharOffset() && mMaxCharOffset != MAX_RIGHT_SCROLL;
     }
 
     /**
@@ -491,7 +487,7 @@ public class CalculatorResult extends AlignedTextView {
         return mScrollable;
     }
 
-    int getCurrentCharPos() {
+    int getCurrentCharOffset() {
         synchronized(mWidthLock) {
             return (int) Math.round(mCurrentPos / mCharWidth);
         }
@@ -504,22 +500,22 @@ public class CalculatorResult extends AlignedTextView {
     }
 
     void redisplay() {
-        int currentCharPos = getCurrentCharPos();
+        int currentCharOffset = getCurrentCharOffset();
         int maxChars = getMaxChars();
-        int lastDisplayedDigit[] = new int[1];
-        String result = getFormattedResult(currentCharPos, maxChars, lastDisplayedDigit, false);
-        int epos = result.indexOf('e');
+        int lastDisplayedOffset[] = new int[1];
+        String result = getFormattedResult(currentCharOffset, maxChars, lastDisplayedOffset, false);
+        int expIndex = result.indexOf('e');
         result = KeyMaps.translateResult(result);
-        if (epos > 0 && result.indexOf('.') == -1) {
+        if (expIndex > 0 && result.indexOf('.') == -1) {
           // Gray out exponent if used as position indicator
             SpannableString formattedResult = new SpannableString(result);
-            formattedResult.setSpan(mExponentColorSpan, epos, result.length(),
+            formattedResult.setSpan(mExponentColorSpan, expIndex, result.length(),
                                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             setText(formattedResult);
         } else {
             setText(result);
         }
-        mLastDisplayedDigit = lastDisplayedDigit[0];
+        mLastDisplayedOffset = lastDisplayedOffset[0];
         mValid = true;
     }
 
