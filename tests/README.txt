@@ -19,3 +19,25 @@ is used by the calculator mostly to identify exact results, i.e.
 terminating decimal expansions.  But it's also used to optimize CR
 computations, and bugs in BoundedRational could result in incorrect
 outputs.)
+
+We currently have no automatic tests for display formatting corner cases.
+The following numbers have exhibited problems in the past and would be good
+to test.  Some of them are difficult to test automatically, because they
+require scrolling to both ends of the result.  For those with finite
+decimal expansions, it also worth confirming that the "display with leading
+digits" display shows an exact value when scrolled all the way to the right.
+
+Some interesting test cases:
+
+10^10 + 10^30
+10^30 + 10^-10
+-10^30 + 20
+10^30 + 10^-30
+-10^30 - 10^10
+-1.2x10^-9
+-1.2x10^-8
+1 - 10^-98
+1 - 10^-100
+1 - 10^-300
+1/-56x10^18 (on a Nexus 7 sized portrait display)
+-10^-500 (scroll to see the 1, then scroll back & verify minus sign appears)
