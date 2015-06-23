@@ -79,10 +79,13 @@
 package com.android.calculator2;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.hp.creals.AbortedError;
@@ -100,6 +103,8 @@ import java.util.Random;
 import java.util.TimeZone;
 
 class Evaluator {
+
+    private static final String KEY_PREF_DEGREE_MODE = "degree_mode";
 
     private final Calculator mCalculator;
     private final CalculatorResult mResult;  // The result display View
@@ -191,6 +196,8 @@ class Evaluator {
         // The expression may have changed since the last evaluation in ways that would
         // affect its value.
 
+    private SharedPreferences mSharedPrefs;
+
     Evaluator(Calculator calculator,
               CalculatorResult resultDisplay) {
         mCalculator = calculator;
@@ -199,7 +206,9 @@ class Evaluator {
         mSaved = new CalculatorExpr();
         mSavedName = "none";
         mTimeoutHandler = new Handler();
-        mDegreeMode = false;  // Remain compatible with previous versions.
+
+        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(calculator);
+        mDegreeMode = mSharedPrefs.getBoolean(KEY_PREF_DEGREE_MODE, false);
     }
 
     // Result of asynchronous reevaluation
@@ -886,9 +895,13 @@ class Evaluator {
         mExpr.delete();
     }
 
-    void setDegreeMode(boolean degrees) {
+    void setDegreeMode(boolean degreeMode) {
         mChangedValue = true;
-        mDegreeMode = degrees;
+        mDegreeMode = degreeMode;
+
+        mSharedPrefs.edit()
+                .putBoolean(KEY_PREF_DEGREE_MODE, degreeMode)
+                .apply();
     }
 
     boolean getDegreeMode() {
