@@ -385,6 +385,9 @@ public class BoundedRational {
             return ONE;
         }
         BoundedRational tmp = pow(exp.shiftRight(1));
+        if (Thread.interrupted()) {
+            throw new AbortedError();
+        }
         return multiply(tmp, tmp);
     }
 
