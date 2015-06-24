@@ -29,7 +29,6 @@ package com.android.calculator2;
 
 import java.math.BigInteger;
 import com.hp.creals.CR;
-import com.hp.creals.AbortedError;
 
 public class BoundedRational {
     // TODO: Maybe eventually make this extend Number?
@@ -386,7 +385,7 @@ public class BoundedRational {
         }
         BoundedRational tmp = pow(exp.shiftRight(1));
         if (Thread.interrupted()) {
-            throw new AbortedError();
+            throw new CR.AbortedException();
         }
         return multiply(tmp, tmp);
     }
@@ -453,11 +452,11 @@ public class BoundedRational {
         if (n > 4 * step) {
             BigInteger prod1 = genFactorial(n, 2 * step);
             if (Thread.interrupted()) {
-                throw new AbortedError();
+                throw new CR.AbortedException();
             }
             BigInteger prod2 = genFactorial(n - step, 2 * step);
             if (Thread.interrupted()) {
-                throw new AbortedError();
+                throw new CR.AbortedException();
             }
             return prod1.multiply(prod2);
         } else {

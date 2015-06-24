@@ -88,9 +88,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.hp.creals.AbortedError;
 import com.hp.creals.CR;
-import com.hp.creals.PrecisionOverflowError;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -233,9 +231,9 @@ class Evaluator {
                 return new ReevalResult(mVal.toString(eval_prec), eval_prec);
             } catch(ArithmeticException e) {
                 return null;
-            } catch(PrecisionOverflowError e) {
+            } catch(CR.PrecisionOverflowException e) {
                 return null;
-            } catch(AbortedError e) {
+            } catch(CR.AbortedException e) {
                 // Should only happen if the task was cancelled,
                 // in which case we don't look at the result.
                 return null;
@@ -252,7 +250,7 @@ class Evaluator {
                 mCalculator.onError(R.string.error_nan);
             } else {
                 if (result.mNewCacheDigs < mCacheDigs) {
-                    throw new Error("Unexpected onPostExecute timing");
+                    throw new AssertionError("Unexpected onPostExecute timing");
                 }
                 mCache = result.mNewCache;
                 mCacheDigs = result.mNewCacheDigs;
@@ -411,11 +409,11 @@ class Evaluator {
                 return new InitialResult(R.string.error_zero_divide);
             } catch(ArithmeticException e) {
                 return new InitialResult(R.string.error_nan);
-            } catch(PrecisionOverflowError e) {
+            } catch(CR.PrecisionOverflowException e) {
                 // Extremely unlikely unless we're actually dividing by
                 // zero or the like.
                 return new InitialResult(R.string.error_overflow);
-            } catch(AbortedError e) {
+            } catch(CR.AbortedException e) {
                 return new InitialResult(R.string.error_aborted);
             }
         }
