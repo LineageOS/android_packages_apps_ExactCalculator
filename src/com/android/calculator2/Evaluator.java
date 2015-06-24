@@ -818,8 +818,11 @@ class Evaluator {
             // Notify immediately, reusing existing result.
             int dotPos = mCache.indexOf('.');
             String truncatedWholePart = mCache.substring(0, dotPos);
-            int leastDigPos = getLsd(mRatVal, mCache, dotPos);
-            mCalculator.onEvaluate(mLastDigs, getMsd(), leastDigPos, truncatedWholePart);
+            int leastDigOffset = getLsd(mRatVal, mCache, dotPos);
+            int msdIndex = getMsd();
+            int preferredPrecOffset = getPreferredPrec(mCache, msdIndex, leastDigOffset);
+            mCalculator.onEvaluate(preferredPrecOffset, msdIndex, leastDigOffset,
+                    truncatedWholePart);
         }
     }
 
