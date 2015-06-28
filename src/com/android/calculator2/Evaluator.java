@@ -382,7 +382,7 @@ class Evaluator {
         @Override
         protected InitialResult doInBackground(Void... nothing) {
             try {
-                CalculatorExpr.EvalResult res = mExpr.eval(mDm, mRequired);
+                CalculatorExpr.EvalResult res = mExpr.eval(mDm);
                 int prec = INIT_PREC;
                 String initCache = res.mVal.toString(prec);
                 int msd = getMsdPos(initCache);
@@ -810,9 +810,8 @@ class Evaluator {
     // We presume that any prior result was computed using the same
     // expression.
     void requireResult() {
-        if (mCache == null || mExpr.hasTrailingOperators()) {
-            // Restart evaluator in requested mode, i.e. with
-            // longer timeout, not ignoring trailing operators.
+        if (mCache == null) {
+            // Restart evaluator in requested mode, i.e. with longer timeout.
             cancelAll(true);
             clearCache();
             mEvaluator = new AsyncDisplayResult(mDegreeMode, true);
@@ -895,8 +894,7 @@ class Evaluator {
             add10pow();  // Handled as macro expansion.
             return true;
         } else {
-            mChangedValue = mChangedValue || (KeyMaps.digVal(id) != KeyMaps.NOT_DIGIT
-                    || KeyMaps.isSuffix(id) || id == R.id.const_pi || id == R.id.const_e);
+            mChangedValue = mChangedValue || !KeyMaps.isBinary(id);
             return mExpr.add(id);
         }
     }

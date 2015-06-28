@@ -914,30 +914,24 @@ class CalculatorExpr {
         final BoundedRational mRatVal;
     }
 
-    // Return the starting position of the sequence of trailing operators
-    // that cannot be meaningfully evaluated.
-    private int trailingOpsStart() {
+    /**
+     * Return the starting position of the sequence of trailing binary operators.
+     */
+    private int trailingBinaryOpsStart() {
         int result = mExpr.size();
         while (result > 0) {
             Token last = mExpr.get(result - 1);
             if (!(last instanceof Operator)) break;
             Operator o = (Operator)last;
-            if (KeyMaps.isSuffix(o.mId) || o.mId == R.id.const_pi
-                                        || o.mId == R.id.const_e) {
-                break;
-            }
+            if (!KeyMaps.isBinary(o.mId)) break;
             --result;
         }
         return result;
     }
 
-    public boolean hasTrailingOperators() {
-        return trailingOpsStart() != mExpr.size();
-    }
-
     // Is the current expression worth evaluating?
     public boolean hasInterestingOps() {
-        int last = trailingOpsStart();
+        int last = trailingBinaryOpsStart();
         int first = 0;
         if (last > first && isOperatorUnchecked(first, R.id.op_sub)) {
             // Leading minus is not by itself interesting.
@@ -953,16 +947,25 @@ class CalculatorExpr {
         return false;
     }
 
-    // Evaluate the entire expression, returning null in the event
-    // of an error.
-    // Not called from the UI thread, but should not be called
-    // concurrently with modifications to the expression.
-    EvalResult eval(boolean degreeMode, boolean required) throws SyntaxException
+    /**
+     * Evaluate the expression excluding trailing binary operators.
+     * Errors result in exceptions, most of which are unchecked.
+     * Should not be called concurrently with modification of the expression.
+     * May take a very long time; avoid calling from UI thread.
+     *
+     * @param degreeMode use degrees rather than radians
+     */
+    EvalResult eval(boolean degreeMode) throws SyntaxException
                         // And unchecked exceptions thrown by CR
                         // and BoundedRational.
     {
         try {
-            int prefixLen = required ? mExpr.size() : trailingOpsStart();
+            // We currently never include trailing binary operators, but include
+            // other trailing operators.
+            // Thus we usually, but not always, display results for prefixes
+            // of valid expressions, and don't generate an error where we previously
+            // displayed an instant result.  This reflects the Android L design.
+            int prefixLen = trailingBinaryOpsStart();
             EvalContext ec = new EvalContext(degreeMode, prefixLen);
             EvalRet res = evalExpr(0, ec);
             if (res.mPos != prefixLen) {
