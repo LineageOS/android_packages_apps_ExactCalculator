@@ -34,7 +34,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -870,10 +869,7 @@ public class Calculator extends Activity
     }
 
     private void displayMessage(String s) {
-        new AlertDialog.Builder(this)
-                .setMessage(s)
-                .setNegativeButton(R.string.dismiss, null /* listener */)
-                .show();
+        AlertDialogFragment.showMessageDialog(this, s);
     }
 
     private void displayFraction() {
