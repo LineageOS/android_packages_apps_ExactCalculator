@@ -56,11 +56,11 @@
     <string name="desc_del" msgid="7879515781929311432">"poista"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"näytä käänteisfunktiot"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"piilota käänteisfunktiot"</string>
-    <string name="error_nan" msgid="5674077944929888710">"Ei ole numero."</string>
-    <string name="error_syntax" msgid="4786987111228645602">"Ilmaisuvirhe"</string>
+    <string name="error_nan" msgid="5674077944929888710">"Ei numero"</string>
+    <string name="error_syntax" msgid="4786987111228645602">"Virhe ilmaisussa"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Keskeytettiin."</string>
     <string name="error_overflow" msgid="7800547394563434764">"Päättymätön?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"0:lla ei voi jakaa."</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"Ei jaollinen luvulla 0"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Teksti kopioitiin."</string>
     <string name="cancelled" msgid="1618889609742874632">"Laskenta peruutettiin."</string>
     <string name="timeout" msgid="802690170415591535">"Aikakatkaistiin. Arvo voi olla ääretön tai määrittämätön."</string>
@@ -68,7 +68,7 @@
     <string name="dismiss" msgid="7872443888515066216">"Hylkää"</string>
     <string name="exact" msgid="2597237880041789948">"(tarkka)"</string>
     <string name="approximate" msgid="7117143366610670836">"(viimeinen numero ±1)"</string>
-    <string name="menu_leading" msgid="2338520833272667740">"Näytä 1. numero"</string>
+    <string name="menu_leading" msgid="2338520833272667740">"Desimaalilukuna"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"Murtolukuna"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"Koodin oikeudet"</string>
 </resources>

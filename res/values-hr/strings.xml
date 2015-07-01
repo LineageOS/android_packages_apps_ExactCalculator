@@ -57,10 +57,10 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"prikazuje inverzne funkcije"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"sakriva inverzne funkcije"</string>
     <string name="error_nan" msgid="5674077944929888710">"Nije broj"</string>
-    <string name="error_syntax" msgid="4786987111228645602">"Loš izraz"</string>
+    <string name="error_syntax" msgid="4786987111228645602">"Neispravan izraz"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Prekinuto"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Beskonačno?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"Nije moguće dijeliti"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"Nije moguće dijeliti s 0"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Tekst kopiran"</string>
     <string name="cancelled" msgid="1618889609742874632">"Izračun je otkazan"</string>
     <string name="timeout" msgid="802690170415591535">"Vrijeme je isteklo. Vrijednost može biti beskonačna ili nedefinirana."</string>
