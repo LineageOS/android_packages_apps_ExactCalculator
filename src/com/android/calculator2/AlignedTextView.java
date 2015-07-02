@@ -19,12 +19,8 @@ package com.android.calculator2;
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.TextView;
-
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
 
 /**
  * Extended {@link TextView} that supports ascent/baseline alignment.
@@ -32,8 +28,6 @@ import java.nio.charset.CharsetEncoder;
 public class AlignedTextView extends TextView {
 
     private static final String LATIN_CAPITAL_LETTER = "H";
-    private static final CharsetEncoder LATIN_CHARSET_ENCODER =
-            Charset.forName("ISO-8859-1").newEncoder();
 
     // temporary rect for use during layout
     private final Rect mTempRect = new Rect();
@@ -58,18 +52,14 @@ public class AlignedTextView extends TextView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        CharSequence text = getText();
-        if (TextUtils.isEmpty(text) || LATIN_CHARSET_ENCODER.canEncode(text)) {
-            // For latin text align to the default capital letter height.
-            text = LATIN_CAPITAL_LETTER;
-        }
-        getPaint().getTextBounds(text.toString(), 0, text.length(), mTempRect);
+        final Paint paint = getPaint();
 
-        final Paint textPaint = getPaint();
+        // Always align text to the default capital letter height.
+        paint.getTextBounds(LATIN_CAPITAL_LETTER, 0, 1, mTempRect);
+
         mTopPaddingOffset = Math.min(getPaddingTop(),
-                (int) Math.floor(mTempRect.top - textPaint.ascent()));
-        mBottomPaddingOffset = Math.min(getPaddingBottom(),
-                (int) Math.floor(textPaint.descent()));
+                (int) Math.ceil(mTempRect.top - paint.ascent()));
+        mBottomPaddingOffset = Math.min(getPaddingBottom(), (int) Math.ceil(paint.descent()));
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
