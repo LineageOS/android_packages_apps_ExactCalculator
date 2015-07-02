@@ -23,15 +23,15 @@
         <item name="android:paddingBottom">16dip</item>
         <item name="android:paddingStart">44dip</item>
         <item name="android:paddingEnd">44dip</item>
-        <item name="android:textSize">48sp</item>
+        <item name="android:textSize">42sp</item>
     </style>
 
     <style name="DisplayTextStyle.Result">
-        <item name="android:paddingTop">16dip</item>
-        <item name="android:paddingBottom">32dip</item>
+        <item name="android:paddingTop">18dip</item>
+        <item name="android:paddingBottom">30dip</item>
         <item name="android:paddingStart">44dip</item>
         <item name="android:paddingEnd">44dip</item>
-        <item name="android:textSize">48sp</item>
+        <item name="android:textSize">42sp</item>
     </style>
 
     <style name="PadButtonStyle.Advanced">
