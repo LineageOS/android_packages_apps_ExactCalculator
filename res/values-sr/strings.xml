@@ -60,7 +60,7 @@
     <string name="error_syntax" msgid="4786987111228645602">"Неисправан израз"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Отказано је"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Бесконачно?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"Нема дељења са 0"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"Нема дељења нулом"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Текст је копиран"</string>
     <string name="cancelled" msgid="1618889609742874632">"Израчунавање је отказано"</string>
     <string name="timeout" msgid="802690170415591535">"Време чекања је истекло. Вредност је можда бесконачна или недефинисана."</string>

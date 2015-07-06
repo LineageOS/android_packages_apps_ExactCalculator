@@ -56,7 +56,7 @@
     <string name="desc_del" msgid="7879515781929311432">"o‘chirish"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"teskari funksiyalarni ko‘rsatish"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"teskari funksiyalarni berkitish"</string>
-    <string name="error_nan" msgid="5674077944929888710">"Son emas"</string>
+    <string name="error_nan" msgid="5674077944929888710">"Haqiqiy son emas"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Noto‘g‘ri ifoda"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Bekor qilindi"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Cheksizmi?"</string>
