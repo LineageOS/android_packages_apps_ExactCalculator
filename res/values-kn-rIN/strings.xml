@@ -19,8 +19,8 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"ಕ್ಯಾಲ್ಕುಲೇಟರ್"</string>
     <string name="dec_point" msgid="8920102493070918054">"."</string>
-    <string name="mode_deg" msgid="1146123354434332479">"ಡಿ"</string>
-    <string name="mode_rad" msgid="1434228830085760996">"ರೇ"</string>
+    <string name="mode_deg" msgid="1146123354434332479">"deg"</string>
+    <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
     <string name="clr" msgid="6730945431543327337">"ತೆರ"</string>
     <string name="del" msgid="5878069000864178910">"ಅಳಿ"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"ಯೂಲರ್‌ನ ಸಂಖ್ಯೆ"</string>
@@ -57,7 +57,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"ವಿಲೋಮ ಫಂಕ್ಷನ್‌ಗಳನ್ನು ತೋರಿಸು"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ವಿಲೋಮ ಫಂಕ್ಷನ್‌ಗಳನ್ನು ಮರೆಮಾಡು"</string>
     <string name="error_nan" msgid="5674077944929888710">"ಸಂಖ್ಯೆಯಲ್ಲ"</string>
-    <string name="error_syntax" msgid="4786987111228645602">"ಕಳಪೆ ವ್ಯಕ್ತತೆ"</string>
+    <string name="error_syntax" msgid="4786987111228645602">"ತಪ್ಪು ಪದ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"ರದ್ದು ಮಾಡಲಾಗಿದೆ"</string>
     <string name="error_overflow" msgid="7800547394563434764">"ಅಪರಿಮಿತ?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0 ನಿಂದ ಭಾಗಿಸಲಸಾಧ್ಯ"</string>
@@ -68,7 +68,7 @@
     <string name="dismiss" msgid="7872443888515066216">"ವಜಾಗೊಳಿಸು"</string>
     <string name="exact" msgid="2597237880041789948">"(ನಿಖರ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 ಕೊನೆಯ ಅಂಕಿಯಲ್ಲಿ)"</string>
-    <string name="menu_leading" msgid="2338520833272667740">"ಪ್ರಮುಖ ಅಂಕೆಗಳೊಂದಿಗೆ ಉತ್ತರಿಸಿ"</string>
-    <string name="menu_fraction" msgid="1247477377840252234">"ಭಾಗದಂತೆ ಉತ್ತರಿಸಿ"</string>
+    <string name="menu_leading" msgid="2338520833272667740">"ಮೊದಲ ಅಂಕೆ ಜೊತೆ ಉತ್ತರಿಸು"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"ಭಾಗದಂತೆ ಉತ್ತರಿಸು"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"ಮುಕ್ತ ಮೂಲ ಪರವಾನಗಿಗಳು"</string>
 </resources>
