@@ -204,6 +204,39 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
         return lastFitTextSize;
     }
 
+    private static boolean startsWith(CharSequence whole, CharSequence prefix) {
+        int wholeLen = whole.length();
+        int prefixLen = prefix.length();
+        if (prefixLen > wholeLen) {
+            return false;
+        }
+        for (int i = 0; i < prefixLen; ++i) {
+            if (prefix.charAt(i) != whole.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Functionally equivalent to setText(), but explicitly announce changes.
+     * If the new text is an extension of the old one, announce the addition.
+     * Otherwise, e.g. after deletion, announce the entire new text.
+     */
+    public void changeTextTo(CharSequence newText) {
+        CharSequence oldText = getText();
+        if (startsWith(newText, oldText)) {
+            int newLen = newText.length();
+            int oldLen = oldText.length();
+            if (oldLen != newLen) {
+                announceForAccessibility(newText.subSequence(oldLen, newLen));
+            }
+        } else {
+            announceForAccessibility(newText);
+        }
+        setText(newText);
+    }
+
     public boolean stopActionMode() {
         if (mActionMode != null) {
             mActionMode.finish();
