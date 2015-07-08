@@ -444,13 +444,13 @@ public class Calculator extends Activity
     // Add the given button id to input expression.
     // If appropriate, clear the expression before doing so.
     private void addKeyToExpr(int id) {
-        // FIXME: Other states?
         if (mCurrentState == CalculatorState.ERROR) {
             setState(CalculatorState.INPUT);
         } else if (mCurrentState == CalculatorState.RESULT) {
             if (KeyMaps.isBinary(id) || KeyMaps.isSuffix(id)) {
                 mEvaluator.collapse();
             } else {
+                announceClearForAccessibility();
                 mEvaluator.clear();
             }
             setState(CalculatorState.INPUT);
@@ -544,9 +544,9 @@ public class Calculator extends Activity
             formatted.setSpan(new ForegroundColorSpan(Color.RED),
                               formula.length(), formatted.length(),
                               Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            mFormulaText.setText(formatted);
+            mFormulaText.changeTextTo(formatted);
         } else {
-            mFormulaText.setText(formula);
+            mFormulaText.changeTextTo(formula);
         }
     }
 
@@ -711,11 +711,16 @@ public class Calculator extends Activity
         animatorSet.start();
     }
 
+    private void announceClearForAccessibility() {
+        mResultText.announceForAccessibility(getResources().getString(R.string.desc_clr));
+    }
+
     private void onClear() {
         if (mEvaluator.getExpr().isEmpty()) {
             return;
         }
         cancelIfEvaluating(true);
+        announceClearForAccessibility();
         reveal(mCurrentButton, R.color.calculator_accent_color, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -732,6 +737,7 @@ public class Calculator extends Activity
     void onError(final int errorResourceId) {
         if (mCurrentState == CalculatorState.EVALUATE) {
             setState(CalculatorState.ANIMATE);
+            mResultText.announceForAccessibility(getResources().getString(errorResourceId));
             reveal(mCurrentButton, R.color.calculator_error_color,
                     new AnimatorListenerAdapter() {
                         @Override
@@ -783,6 +789,8 @@ public class Calculator extends Activity
         final int formulaTextColor = mFormulaText.getCurrentTextColor();
 
         if (animate) {
+            mResultText.announceForAccessibility(getResources().getString(R.string.desc_eq));
+            mResultText.announceForAccessibility(mResultText.getText());
             setState(CalculatorState.ANIMATE);
             final AnimatorSet animatorSet = new AnimatorSet();
             animatorSet.playTogether(
