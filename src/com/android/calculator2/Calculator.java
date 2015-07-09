@@ -903,7 +903,7 @@ public class Calculator extends Activity
      * are added to mUnprocessedChars, which is presumed to immediately precede the newly
      * added characters.
      * @param moreChars Characters to be added.
-     * @param explicit These characters were explicitly typed by the user.
+     * @param explicit These characters were explicitly typed by the user, not pasted.
      */
     private void addChars(String moreChars, boolean explicit) {
         if (mUnprocessedChars != null) {
@@ -911,9 +911,33 @@ public class Calculator extends Activity
         }
         int current = 0;
         int len = moreChars.length();
+        boolean lastWasDigit = false;
         while (current < len) {
             char c = moreChars.charAt(current);
             int k = KeyMaps.keyForChar(c);
+            if (!explicit) {
+                int expEnd;
+                if (lastWasDigit && current !=
+                        (expEnd = Evaluator.exponentEnd(moreChars, current))) {
+                    // Process scientific notation with 'E' when pasting, in spite of ambiguity
+                    // with base of natural log.
+                    // Otherwise the 10^x key is the user's friend.
+                    mEvaluator.addExponent(moreChars, current, expEnd);
+                    current = expEnd;
+                    lastWasDigit = false;
+                    continue;
+                } else {
+                    boolean isDigit = KeyMaps.digVal(k) != KeyMaps.NOT_DIGIT;
+                    if (current == 0 && (isDigit || k == R.id.dec_point)
+                            && mEvaluator.getExpr().hasTrailingConstant()) {
+                        // Refuse to concatenate pasted content to trailing constant.
+                        // This makes pasting of calculator results more consistent, whether or
+                        // not the old calculator instance is still around.
+                        addKeyToExpr(R.id.op_mul);
+                    }
+                    lastWasDigit = (isDigit || lastWasDigit && k == R.id.dec_point);
+                }
+            }
             if (k != View.NO_ID) {
                 mCurrentButton = findViewById(k);
                 if (explicit) {
