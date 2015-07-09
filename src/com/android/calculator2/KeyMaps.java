@@ -184,6 +184,8 @@ public class KeyMaps {
 
     public static final String ELLIPSIS = "\u2026";
 
+    public static final char MINUS_SIGN = '\u2212';
+
     /**
      * Map key id to digit or NOT_DIGIT
      * Pure function.
@@ -309,12 +311,15 @@ public class KeyMaps {
             case ',':
                 return R.id.dec_point;
             case '-':
+            case MINUS_SIGN:
                 return R.id.op_sub;
             case '+':
                 return R.id.op_add;
             case '*':
+            case '\u00D7': // MULTIPLICATION SIGN
                 return R.id.op_mul;
             case '/':
+            case '\u00F7': // DIVISION SIGN
                 return R.id.op_div;
             // We no longer localize function names, so they can't start with an 'e' or 'p'.
             case 'e':
@@ -337,7 +342,7 @@ public class KeyMaps {
                 if (c == mDecimalPt) return R.id.dec_point;
                 if (c == mPiChar) return R.id.const_pi;
                     // pi is not translated, but it might be typable on a Greek keyboard,
-                    // so we check ...
+                    // or pasted in, so we check ...
                 return View.NO_ID;
         }
     }
