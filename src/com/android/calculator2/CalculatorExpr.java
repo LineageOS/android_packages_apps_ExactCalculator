@@ -79,19 +79,22 @@ class CalculatorExpr {
     // Supports addition and removal of trailing characters; hence mutable.
     private static class Constant extends Token implements Cloneable {
         private boolean mSawDecimal;
-        String mWhole;  // part before decimal point
-        private String mFraction; // part after decimal point
+        String mWhole;  // String preceding decimal point.
+        private String mFraction; // String after decimal point.
+        private int mExponent;  // Explicit exponent, only generated through addExponent.
 
         Constant() {
             mWhole = "";
             mFraction = "";
-	    mSawDecimal = false;
+            mSawDecimal = false;
+            mExponent = 0;
         };
 
         Constant(DataInput in) throws IOException {
             mWhole = in.readUTF();
             mSawDecimal = in.readBoolean();
             mFraction = in.readUTF();
+            mExponent = in.readInt();
         }
 
         @Override
@@ -100,19 +103,33 @@ class CalculatorExpr {
             out.writeUTF(mWhole);
             out.writeBoolean(mSawDecimal);
             out.writeUTF(mFraction);
+            out.writeInt(mExponent);
         }
 
         // Given a button press, append corresponding digit.
         // We assume id is a digit or decimal point.
         // Just return false if this was the second (or later) decimal point
         // in this constant.
+        // Assumes that this constant does not have an exponent.
         boolean add(int id) {
             if (id == R.id.dec_point) {
-                if (mSawDecimal) return false;
+                if (mSawDecimal || mExponent != 0) return false;
                 mSawDecimal = true;
                 return true;
             }
             int val = KeyMaps.digVal(id);
+            if (mExponent != 0) {
+                if (Math.abs(mExponent) <= 10000) {
+                    if (mExponent > 0) {
+                        mExponent = 10 * mExponent + val;
+                    } else {
+                        mExponent = 10 * mExponent - val;
+                    }
+                    return true;
+                } else {  // Too large; refuse
+                    return false;
+                }
+            }
             if (mSawDecimal) {
                 mFraction += val;
             } else {
@@ -121,10 +138,18 @@ class CalculatorExpr {
             return true;
         }
 
+        void addExponent(int exp) {
+            // Note that adding a 0 exponent is a no-op.  That's OK.
+            mExponent = exp;
+        }
+
         // Undo the last add.
         // Assumes the constant is nonempty.
         void delete() {
-            if (!mFraction.isEmpty()) {
+            if (mExponent != 0) {
+                mExponent /= 10;
+                // Once zero, it can only be added back with addExponent.
+            } else if (!mFraction.isEmpty()) {
                 mFraction = mFraction.substring(0, mFraction.length() - 1);
             } else if (mSawDecimal) {
                 mSawDecimal = false;
@@ -146,28 +171,24 @@ class CalculatorExpr {
                 result += '.';
                 result += mFraction;
             }
+            if (mExponent != 0) {
+                result += "E" + mExponent;
+            }
             return KeyMaps.translateResult(result);
         }
 
-        // Eliminates leading decimal, which some of our
-        // other packages don't like.
-        // Meant for machine consumption:
-        // Doesn't internationalize decimal point or digits.
-        public String toEasyString() {
-            String result = mWhole;
-            if (result.isEmpty()) result = "0";
-            if (mSawDecimal) {
-                result += '.';
-                result += mFraction;
-            }
-            return result;
-        }
-
+        // Return non-null BoundedRational representation.
         public BoundedRational toRational() {
             String whole = mWhole;
             if (whole.isEmpty()) whole = "0";
             BigInteger num = new BigInteger(whole + mFraction);
             BigInteger den = BigInteger.TEN.pow(mFraction.length());
+            if (mExponent > 0) {
+                num = num.multiply(BigInteger.TEN.pow(mExponent));
+            }
+            if (mExponent < 0) {
+                den = den.multiply(BigInteger.TEN.pow(-mExponent));
+            }
             return new BoundedRational(num, den);
         }
 
@@ -186,6 +207,7 @@ class CalculatorExpr {
             res.mWhole = mWhole;
             res.mFraction = mFraction;
             res.mSawDecimal = mSawDecimal;
+            res.mExponent = mExponent;
             return res;
         }
     }
@@ -350,6 +372,15 @@ class CalculatorExpr {
         }
     }
 
+    boolean hasTrailingConstant() {
+        int s = mExpr.size();
+        if (s == 0) {
+            return false;
+        }
+        Token t = mExpr.get(s-1);
+        return t instanceof Constant;
+    }
+
     private boolean hasTrailingBinary() {
         int s = mExpr.size();
         if (s == 0) return false;
@@ -407,6 +438,15 @@ class CalculatorExpr {
             mExpr.add(new Operator(id));
             return true;
         }
+    }
+
+    /**
+     * Add exponent to the constant at the end of the expression.
+     * Assumes there is a constant at the end of the expression.
+     */
+    void addExponent(int exp) {
+        Token lastTok = mExpr.get(mExpr.size() - 1);
+        ((Constant) lastTok).addExponent(exp);
     }
 
     /**
@@ -595,18 +635,19 @@ class CalculatorExpr {
     // that was not used as part of the evaluation.
     private EvalRet evalUnary(int i, EvalContext ec) throws SyntaxException {
         Token t = mExpr.get(i);
+        BoundedRational ratVal;
         CR value;
         if (t instanceof Constant) {
             Constant c = (Constant)t;
-            value = CR.valueOf(c.toEasyString(),10);
-            return new EvalRet(i+1, value, c.toRational());
+            ratVal = c.toRational();
+            value = ratVal.CRValue();
+            return new EvalRet(i+1, value, ratVal);
         }
         if (t instanceof PreEval) {
             PreEval p = (PreEval)t;
             return new EvalRet(i+1, p.mValue, p.mRatValue);
         }
         EvalRet argVal;
-        BoundedRational ratVal;
         switch(((Operator)(t)).mId) {
         case R.id.const_pi:
             return new EvalRet(i+1, CR.PI, null);

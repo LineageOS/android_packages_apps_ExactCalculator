@@ -613,7 +613,7 @@ class Evaluator {
             }
             if (totalDigits <= SHORT_TARGET_LENGTH - 3) {
                 return negativeSign + cache.charAt(msdIndex) + "."
-                        + cache.substring(msdIndex + 1, lsdIndex + 1) + "e" + exponent;
+                        + cache.substring(msdIndex + 1, lsdIndex + 1) + "E" + exponent;
             }
         }
         // We need to abbreviate.
@@ -624,7 +624,7 @@ class Evaluator {
         // Need abbreviation + exponent
         return negativeSign + cache.charAt(msdIndex) + "."
                 + cache.substring(msdIndex + 1, msdIndex + SHORT_TARGET_LENGTH - negative - 4)
-                + KeyMaps.ELLIPSIS + "e" + exponent;
+                + KeyMaps.ELLIPSIS + "E" + exponent;
     }
 
     // Return the most significant digit position in the given string
@@ -1008,4 +1008,55 @@ class Evaluator {
         return mExpr;
     }
 
+    private static final int MAX_EXP_CHARS = 8;
+
+    /**
+     * Return the index of the character after the exponent starting at s[offset].
+     * Return offset if there is no exponent at that position.
+     * Exponents have syntax E[-]digit* .
+     * "E2" and "E-2" are valid.  "E+2" and "e2" are not.
+     * We allow any Unicode digits, and either of the commonly used minus characters.
+     */
+    static int exponentEnd(String s, int offset) {
+        int i = offset;
+        int len = s.length();
+        if (i >= len - 1 || s.charAt(i) != 'E') {
+            return offset;
+        }
+        ++i;
+        if (KeyMaps.keyForChar(s.charAt(i)) == R.id.op_sub) {
+            ++i;
+        }
+        if (i == len || i > offset + MAX_EXP_CHARS || !Character.isDigit(s.charAt(i))) {
+            return offset;
+        }
+        ++i;
+        while (i < len && Character.isDigit(s.charAt(i))) {
+            ++i;
+        }
+        return i;
+    }
+
+    /**
+     * Add the exponent represented by s[begin..end) to the constant at the end of current
+     * expression.
+     * The end of the current expression must be a constant.
+     * Exponents have the same syntax as for exponentEnd().
+     */
+    void addExponent(String s, int begin, int end) {
+        int sign = 1;
+        int exp = 0;
+        int i = begin + 1;
+        // We do the decimal conversion ourselves to exactly match exponentEnd() conventions
+        // and handle various kinds of digits on input.  Also avoids allocation.
+        if (KeyMaps.keyForChar(s.charAt(i)) == R.id.op_sub) {
+            sign = -1;
+            ++i;
+        }
+        for (; i < end; ++i) {
+            exp = 10 * exp + Character.digit(s.charAt(i), 10);
+        }
+        mExpr.addExponent(sign * exp);
+        mChangedValue = true;
+    }
 }

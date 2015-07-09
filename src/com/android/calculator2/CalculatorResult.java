@@ -349,7 +349,7 @@ public class CalculatorResult extends AlignedTextView {
     // We add ellipses and exponents in a way that leaves most digits in the position they
     // would have been in had we not done so.
     // This minimizes jumps as a result of scrolling.  Result is NOT internationalized,
-    // uses "e" for exponent.
+    // uses "E" for exponent.
     public String formatResult(String in, int precOffset, int maxDigs, boolean truncated,
             boolean negative, int lastDisplayedOffset[], boolean forcePrecision) {
         final int minusSpace = negative ? 1 : 0;
@@ -415,7 +415,7 @@ public class CalculatorResult extends AlignedTextView {
                     result = result.substring(0, result.length() - dropDigits);
                     lastDisplayedOffset[0] -= dropDigits;
                 }
-                result = result + "e" + Integer.toString(exponent);
+                result = result + "E" + Integer.toString(exponent);
             } // else don't add zero exponent
         }
         if (truncated || negative && result.charAt(0) != '-') {
@@ -504,7 +504,7 @@ public class CalculatorResult extends AlignedTextView {
         int maxChars = getMaxChars();
         int lastDisplayedOffset[] = new int[1];
         String result = getFormattedResult(currentCharOffset, maxChars, lastDisplayedOffset, false);
-        int expIndex = result.indexOf('e');
+        int expIndex = result.indexOf('E');
         result = KeyMaps.translateResult(result);
         if (expIndex > 0 && result.indexOf('.') == -1) {
           // Gray out exponent if used as position indicator
