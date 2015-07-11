@@ -18,7 +18,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="1756503303878374382">"Makina llogaritëse"</string>
-    <string name="dec_point" msgid="8920102493070918054">"."</string>
+    <string name="dec_point" msgid="8920102493070918054">","</string>
     <string name="mode_deg" msgid="1146123354434332479">"grd"</string>
     <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
     <string name="clr" msgid="6730945431543327337">"pst"</string>
@@ -57,15 +57,15 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"shfaq funksionet e kundërta"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"fshih funksionet e kundërta"</string>
     <string name="error_nan" msgid="5674077944929888710">"S\'është numër"</string>
-    <string name="error_syntax" msgid="4786987111228645602">"shprehje e pasaktë"</string>
+    <string name="error_syntax" msgid="4786987111228645602">"Shprehje e pasaktë"</string>
     <string name="error_aborted" msgid="3402238176316342537">"U ndërpre"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Infinit?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"Nuk mund të ndahet me 0"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"S\'mund të pjesëtohet me 0"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Teksti u kopjua"</string>
     <string name="cancelled" msgid="1618889609742874632">"Llogaritja u anulua"</string>
     <string name="timeout" msgid="802690170415591535">"Koha e pritjes mbaroi. Vlera mund të jetë në infinit ose e papërcaktuar."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Përdor kohë më të gjata të pritjes"</string>
-    <string name="dismiss" msgid="7872443888515066216">"Hiq dorë"</string>
+    <string name="dismiss" msgid="7872443888515066216">"Injoro"</string>
     <string name="exact" msgid="2597237880041789948">"(ekzakt)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 në shifrën e fundit)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Rezultati me numra të plotë"</string>
