@@ -787,6 +787,18 @@ class Evaluator {
         clearCache();
     }
 
+    /**
+     * Start asynchronous result evaluation of formula.
+     * Will result in display on completion.
+     * @param required result was explicitly requested by user.
+     */
+    private void reevaluateResult(boolean required) {
+        clearCache();
+        mEvaluator = new AsyncDisplayResult(mDegreeMode, required);
+        mEvaluator.execute();
+        mChangedValue = false;
+    }
+
     // Begin evaluation of result and display when ready.
     // We assume this is called after each insertion and deletion.
     // Thus if we are called twice with the same effective end of
@@ -796,13 +808,10 @@ class Evaluator {
             // Already done or in progress.
             return;
         }
-        clearCache();
         // In very odd cases, there can be significant latency to evaluate.
         // Don't show obsolete result.
         mResult.clear();
-        mEvaluator = new AsyncDisplayResult(mDegreeMode, false);
-        mEvaluator.execute();
-        mChangedValue = false;
+        reevaluateResult(false);
     }
 
     // Ensure that we either display a result or complain.
@@ -810,12 +819,10 @@ class Evaluator {
     // We presume that any prior result was computed using the same
     // expression.
     void requireResult() {
-        if (mCache == null) {
+        if (mCache == null || mChangedValue) {
             // Restart evaluator in requested mode, i.e. with longer timeout.
             cancelAll(true);
-            clearCache();
-            mEvaluator = new AsyncDisplayResult(mDegreeMode, true);
-            mEvaluator.execute();
+            reevaluateResult(true);
         } else {
             // Notify immediately, reusing existing result.
             int dotPos = mCache.indexOf('.');
