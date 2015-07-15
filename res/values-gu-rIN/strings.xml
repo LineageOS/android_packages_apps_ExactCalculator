@@ -54,7 +54,7 @@
     <string name="desc_eq" msgid="3349320880874699285">"બરાબર"</string>
     <string name="desc_clr" msgid="737502124268890797">"સાફ કરો"</string>
     <string name="desc_del" msgid="7879515781929311432">"કાઢી નાખો"</string>
-    <string name="desc_inv_off" msgid="3672218250519616068">"વ્યુત્ક્રમ કાર્ય દર્શાવો"</string>
+    <string name="desc_inv_off" msgid="3672218250519616068">"વ્યુત્ક્રમ કાર્ય બતાવો"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"વ્યુત્ક્રમ કાર્ય છુપાવો"</string>
     <string name="error_nan" msgid="5674077944929888710">"કોઈ સંખ્યા નથી"</string>
     <string name="error_syntax" msgid="4786987111228645602">"ખોટી પદાવલિ"</string>
