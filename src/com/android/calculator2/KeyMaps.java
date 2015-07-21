@@ -115,6 +115,57 @@ public class KeyMaps {
     }
 
     /**
+     * Map key id to corresponding (internationalized) descriptive string that can be used
+     * to correctly read back a formula.
+     * Only used for operators and individual characters; not used inside constants.
+     * Returns null when we don't need a descriptive string.
+     * Pure function.
+     */
+    public static String toDescriptiveString(Context context, int id) {
+        switch(id) {
+            case R.id.op_fact:
+                return context.getString(R.string.desc_op_fact);
+            case R.id.fun_sin:
+                return context.getString(R.string.desc_fun_sin)
+                        + " " + context.getString(R.string.desc_lparen);
+            case R.id.fun_cos:
+                return context.getString(R.string.desc_fun_cos)
+                        + " " + context.getString(R.string.desc_lparen);
+            case R.id.fun_tan:
+                return context.getString(R.string.desc_fun_tan)
+                        + " " + context.getString(R.string.desc_lparen);
+            case R.id.fun_arcsin:
+                return context.getString(R.string.desc_fun_arcsin)
+                        + " " + context.getString(R.string.desc_lparen);
+            case R.id.fun_arccos:
+                return context.getString(R.string.desc_fun_arccos)
+                        + " " + context.getString(R.string.desc_lparen);
+            case R.id.fun_arctan:
+                return context.getString(R.string.desc_fun_arctan)
+                        + " " + context.getString(R.string.desc_lparen);
+            case R.id.fun_ln:
+                return context.getString(R.string.desc_fun_ln)
+                        + " " + context.getString(R.string.desc_lparen);
+            case R.id.fun_log:
+                return context.getString(R.string.desc_fun_log)
+                        + " " + context.getString(R.string.desc_lparen);
+            case R.id.fun_exp:
+                return context.getString(R.string.desc_fun_exp)
+                        + " " + context.getString(R.string.desc_lparen);
+            case R.id.lparen:
+                return context.getString(R.string.desc_lparen);
+            case R.id.rparen:
+                return context.getString(R.string.desc_rparen);
+            case R.id.op_pow:
+                return context.getString(R.string.desc_op_pow);
+            case R.id.dec_point:
+                return context.getString(R.string.desc_dec_point);
+            default:
+                return null;
+        }
+    }
+
+    /**
      * Does a button id correspond to a binary operator?
      * Pure function.
      */
