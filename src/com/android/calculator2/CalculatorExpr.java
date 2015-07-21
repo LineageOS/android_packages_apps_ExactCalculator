@@ -21,6 +21,11 @@ import com.hp.creals.CR;
 import com.hp.creals.UnaryCRFunction;
 
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.TtsSpan;
+import android.text.style.TtsSpan.TextBuilder;
 import android.util.Log;
 
 import java.math.BigInteger;
@@ -46,11 +51,19 @@ class CalculatorExpr {
 
     private static abstract class Token {
         abstract TokenKind kind();
+
+        /**
+         * Write kind as Byte followed by data needed by subclass constructor.
+         */
         abstract void write(DataOutput out) throws IOException;
-                // Implementation writes kind as Byte followed by
-                // data read by constructor.
-        abstract String toString(Context context);
-                // We need the context to convert button ids to strings.
+
+        /**
+         * Return a textual representation of the token.
+         * The result is suitable for either display as part od the formula or TalkBack use.
+         * It may be a SpannableString that includes added TalkBack information.
+         * @param context context used for converting button ids to strings
+         */
+        abstract CharSequence toCharSequence(Context context);
     }
 
     // An operator token
@@ -68,8 +81,16 @@ class CalculatorExpr {
             out.writeInt(mId);
         }
         @Override
-        public String toString(Context context) {
-            return KeyMaps.toString(context, mId);
+        public CharSequence toCharSequence(Context context) {
+            String desc = KeyMaps.toDescriptiveString(context, mId);
+            if (desc != null) {
+                SpannableString result = new SpannableString(KeyMaps.toString(context, mId));
+                Object descSpan = new TtsSpan.TextBuilder(desc).build();
+                result.setSpan(descSpan, 0, result.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                return result;
+            } else {
+                return KeyMaps.toString(context, mId);
+            }
         }
         @Override
         TokenKind kind() { return TokenKind.OPERATOR; }
@@ -193,7 +214,7 @@ class CalculatorExpr {
         }
 
         @Override
-        String toString(Context context) {
+        CharSequence toCharSequence(Context context) {
             return toString();
         }
 
@@ -323,7 +344,7 @@ class CalculatorExpr {
             }
         }
         @Override
-        String toString(Context context) {
+        CharSequence toCharSequence(Context context) {
             return KeyMaps.translateResult(mShortRep);
         }
         @Override
@@ -1019,11 +1040,11 @@ class CalculatorExpr {
     }
 
     // Produce a string representation of the expression itself
-    String toString(Context context) {
-        StringBuilder sb = new StringBuilder();
+    SpannableStringBuilder toSpannableStringBuilder(Context context) {
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
         for (Token t: mExpr) {
-            sb.append(t.toString(context));
+            ssb.append(t.toCharSequence(context));
         }
-        return sb.toString();
+        return ssb;
     }
 }
