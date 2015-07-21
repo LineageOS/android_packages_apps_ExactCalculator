@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-// TODO: Better indication of when the result is known to be exact.
-// TODO: Check and possibly fix accessability issues.
 // TODO: Copy & more general paste in formula?  Note that this requires
 //       great care: Currently the text version of a displayed formula
 //       is not directly useful for re-evaluating the formula later, since
@@ -44,8 +42,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.text.TextUtils;
 import android.util.Property;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -210,9 +210,13 @@ public class Calculator extends Activity
     private View mCurrentButton;
     private Animator mCurrentAnimator;
 
-    private String mUnprocessedChars = null;   // Characters that were recently entered
-                                               // at the end of the display that have not yet
-                                               // been added to the underlying expression.
+    // Characters that were recently entered at the end of the display that have not yet
+    // been added to the underlying expression.
+    private String mUnprocessedChars = null;
+
+    // Color to highlight unprocessed characters from physical keyboard.
+    // TODO: should probably match this to the error color?
+    private ForegroundColorSpan mUnprocessedColorSpan = new ForegroundColorSpan(Color.RED);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -536,18 +540,13 @@ public class Calculator extends Activity
     }
 
     void redisplayFormula() {
-        String formula = mEvaluator.getExpr().toString(this);
+        SpannableStringBuilder formula = mEvaluator.getExpr().toSpannableStringBuilder(this);
         if (mUnprocessedChars != null) {
             // Add and highlight characters we couldn't process.
-            SpannableString formatted = new SpannableString(formula + mUnprocessedChars);
-            // TODO: should probably match this to the error color.
-            formatted.setSpan(new ForegroundColorSpan(Color.RED),
-                              formula.length(), formatted.length(),
-                              Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            mFormulaText.changeTextTo(formatted);
-        } else {
-            mFormulaText.changeTextTo(formula);
+            formula.append(mUnprocessedChars, mUnprocessedColorSpan,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
+        mFormulaText.changeTextTo(formula);
     }
 
     @Override
