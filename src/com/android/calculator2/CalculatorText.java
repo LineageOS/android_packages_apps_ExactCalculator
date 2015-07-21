@@ -224,11 +224,22 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
      * Otherwise, e.g. after deletion, announce the entire new text.
      */
     public void changeTextTo(CharSequence newText) {
-        CharSequence oldText = getText();
+        final CharSequence oldText = getText();
         if (startsWith(newText, oldText)) {
-            int newLen = newText.length();
-            int oldLen = oldText.length();
-            if (oldLen != newLen) {
+            final int newLen = newText.length();
+            final int oldLen = oldText.length();
+            if (newLen == oldLen + 1) {
+                // The algorithm for pronouncing a single character doesn't seem
+                // to respect our hints.  Don't give it the choice.
+                final char c = newText.charAt(oldLen);
+                final int id = KeyMaps.keyForChar(c);
+                final String descr = KeyMaps.toDescriptiveString(getContext(), id);
+                if (descr != null) {
+                    announceForAccessibility(descr);
+                } else {
+                    announceForAccessibility(String.valueOf(c));
+                }
+            } else if (newLen > oldLen) {
                 announceForAccessibility(newText.subSequence(oldLen, newLen));
             }
         } else {
