@@ -87,6 +87,11 @@ public class BoundedRational {
         return CR.valueOf(mNum).divide(CR.valueOf(mDen));
     }
 
+    // Approximate number of bits to left of binary point.
+    public int wholeNumberBits() {
+        return mNum.bitLength() - mDen.bitLength();
+    }
+
     private boolean tooBig() {
         if (mDen.equals(BigInteger.ONE)) return false;
         return (mNum.bitLength() + mDen.bitLength() > MAX_SIZE);
@@ -418,6 +423,9 @@ public class BoundedRational {
         // This algorithm is very naive, but we doubt it matters.
         long count = 0;
         while (n.mod(BigInteger.TEN).equals(BigInteger.ZERO)) {
+            if (Thread.interrupted()) {
+                throw new CR.AbortedException();
+            }
             n = n.divide(BigInteger.TEN);
             ++count;
         }
@@ -502,6 +510,9 @@ public class BoundedRational {
         if (r.mDen.equals(BigInteger.ONE)) return 0;
         r = r.reduce();
         BigInteger den = r.mDen;
+        if (den.bitLength() > MAX_SIZE) {
+            return Integer.MAX_VALUE;
+        }
         while (!den.testBit(0)) {
             ++powers_of_two;
             den = den.shiftRight(1);
