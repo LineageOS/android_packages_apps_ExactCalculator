@@ -302,7 +302,7 @@ class Evaluator {
             .show();
     }
 
-    private final long MAX_TIMEOUT = 60000;
+    private final long MAX_TIMEOUT = 15000;
                                    // Milliseconds.
                                    // Longer is unlikely to help unless
                                    // we get more heap space.
@@ -314,11 +314,12 @@ class Evaluator {
                                    // calculator is restarted.
                                    // We'll call that a feature; others
                                    // might argue it's a bug.
-    private final long mQuickTimeout = 1500;
+    private final long QUICK_TIMEOUT = 1000;
                                    // Timeout for unrequested, speculative
                                    // evaluations, in milliseconds.
-                                   // Could be shorter with a faster asin()
-                                   // implementation.
+    private int mMaxResultBits = 120000;             // Don't try to display a larger result.
+    private final int MAX_MAX_RESULT_BITS = 350000;  // Long timeout version.
+    private final int QUICK_MAX_RESULT_BITS = 50000; // Instant result version.
 
     private void displayTimeoutMessage() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mCalculator)
@@ -329,6 +330,7 @@ class Evaluator {
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface d, int which) {
                             mTimeout = MAX_TIMEOUT;
+                            mMaxResultBits = MAX_MAX_RESULT_BITS;
                         }
                     });
         }
@@ -368,21 +370,31 @@ class Evaluator {
         }
         @Override
         protected void onPreExecute() {
-            long timeout = mRequired ? mTimeout : mQuickTimeout;
-            if (timeout != 0) {
-                mTimeoutRunnable = new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            handleTimeOut();
-                                        }
-                                    };
-                mTimeoutHandler.postDelayed(mTimeoutRunnable, timeout);
+            long timeout = mRequired ? mTimeout : QUICK_TIMEOUT;
+            mTimeoutRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    handleTimeOut();
+                }
+            };
+            mTimeoutHandler.postDelayed(mTimeoutRunnable, timeout);
+        }
+        private boolean isTooBig(CalculatorExpr.EvalResult res) {
+            int maxBits = mRequired ? mMaxResultBits : QUICK_MAX_RESULT_BITS;
+            if (res.mRatVal != null) {
+                return res.mRatVal.wholeNumberBits() > maxBits;
+            } else {
+                return res.mVal.get_appr(maxBits).bitLength() > 2;
             }
         }
         @Override
         protected InitialResult doInBackground(Void... nothing) {
             try {
                 CalculatorExpr.EvalResult res = mExpr.eval(mDm);
+                if (isTooBig(res)) {
+                    // Avoid starting a long uninterruptible decimal conversion.
+                    return new InitialResult(R.string.timeout);
+                }
                 int prec = INIT_PREC;
                 String initCache = res.mVal.toString(prec);
                 int msd = getMsdPos(initCache);
@@ -422,7 +434,14 @@ class Evaluator {
             mEvaluator = null;
             mTimeoutHandler.removeCallbacks(mTimeoutRunnable);
             if (result.isError()) {
-                mCalculator.onError(result.mErrorResourceId);
+                if (result.mErrorResourceId == R.string.timeout) {
+                    if (mRequired) {
+                        displayTimeoutMessage();
+                    }
+                    mCalculator.onCancelled();
+                } else {
+                    mCalculator.onError(result.mErrorResourceId);
+                }
                 return;
             }
             mVal = result.mVal;
@@ -453,6 +472,8 @@ class Evaluator {
         }
         @Override
         protected void onCancelled(InitialResult result) {
+            // Invoker resets mEvaluator.
+            mTimeoutHandler.removeCallbacks(mTimeoutRunnable);
             if (mRequired && !mQuiet) {
                 displayCancelledMessage();
             } // Otherwise timeout processing displayed message.
