@@ -68,7 +68,7 @@
     <string name="dismiss" msgid="7872443888515066216">"Dispensar"</string>
     <string name="exact" msgid="2597237880041789948">"(exato)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 no último dígito)"</string>
-    <string name="menu_leading" msgid="2338520833272667740">"C/ díg. iniciais"</string>
-    <string name="menu_fraction" msgid="1247477377840252234">"Resp. como fração"</string>
+    <string name="menu_leading" msgid="2338520833272667740">"Resposta c/ dígitos iniciais"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"Responder como fração"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"Lic. cód. aberto"</string>
 </resources>
