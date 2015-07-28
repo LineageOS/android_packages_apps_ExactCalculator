@@ -991,7 +991,7 @@ public class Calculator extends Activity
                 setState(CalculatorState.INPUT);
                 mEvaluator.clear();
             }
-            mEvaluator.addSaved();
+            mEvaluator.appendSaved();
             redisplayAfterFormulaChange();
         } else {
             addChars(item.coerceToText(this).toString(), false);
