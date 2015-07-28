@@ -335,9 +335,9 @@ public class CalculatorResult extends AlignedTextView {
 
     /*
      * Return the most significant digit position in the given string or Evaluator.INVALID_MSD.
-     * Unlike Evaluator.getMsdPos, we treat a final 1 as significant.
+     * Unlike Evaluator.getMsdIndexOf, we treat a final 1 as significant.
      */
-    public static int getNaiveMsdIndex(String s) {
+    public static int getNaiveMsdIndexOf(String s) {
         int len = s.length();
         for (int i = 0; i < len; ++i) {
             char c = s.charAt(i);
@@ -349,14 +349,14 @@ public class CalculatorResult extends AlignedTextView {
     }
 
     // Format a result returned by Evaluator.getString() into a single line containing ellipses
-    // (if appropriate) and an exponent (if appropriate).  prec is the value that was passed to
-    // getString and thus identifies the significance of the rightmost digit.
+    // (if appropriate) and an exponent (if appropriate).  precOffset is the value that was passed
+    // to getString and thus identifies the significance of the rightmost digit.
     // A value of 1 means the rightmost digits corresponds to tenths.
     // maxDigs is the maximum number of characters in the result.
     // We set lastDisplayedOffset[0] to the offset of the last digit actually appearing in
     // the display.
     // If forcePrecision is true, we make sure that the last displayed digit corresponds to
-    // prec, and allow maxDigs to be exceeded in assing the exponent.
+    // precOffset, and allow maxDigs to be exceeded in assing the exponent.
     // We add two distinct kinds of exponents:
     // (1) If the final result contains the leading digit we use standard scientific notation.
     // (2) If not, we add an exponent corresponding to an interpretation of the final result as
@@ -369,7 +369,7 @@ public class CalculatorResult extends AlignedTextView {
     public String formatResult(String in, int precOffset, int maxDigs, boolean truncated,
             boolean negative, int lastDisplayedOffset[], boolean forcePrecision) {
         final int minusSpace = negative ? 1 : 0;
-        final int msdIndex = truncated ? -1 : getNaiveMsdIndex(in);  // INVALID_MSD is OK.
+        final int msdIndex = truncated ? -1 : getNaiveMsdIndexOf(in);  // INVALID_MSD is OK.
         final int decIndex = in.indexOf('.');
         String result = in;
         lastDisplayedOffset[0] = precOffset;
