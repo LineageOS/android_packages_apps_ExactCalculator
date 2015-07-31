@@ -317,7 +317,7 @@ class CalculatorExpr {
         }
         // In writing out PreEvals, we are careful to avoid writing
         // out duplicates.  We assume that two expressions are
-        // duplicates if they have the same mVal.  This avoids a
+        // duplicates if they have the same CR value.  This avoids a
         // potential exponential blow up in certain off cases and
         // redundant evaluation after reading them back in.
         // The parameter hash map maps expressions we've seen
@@ -1029,6 +1029,58 @@ class CalculatorExpr {
         return new EvalRet(cpos, crVal, ratVal);
     }
 
+    /**
+     * Is the subexpression starting at pos a simple percent constant?
+     * This is used to recognize exppressions like 200+10%, which we handle specially.
+     * This is defined as a Constant or PreEval token, followed by a percent sign, and followed
+     * by either nothing or an additive operator.
+     * Note that we are intentionally far more restrictive in recognizing such expressions than
+     * e.g. http://blogs.msdn.com/b/oldnewthing/archive/2008/01/10/7047497.aspx .
+     * When in doubt, we fall back to the the naive interpretation of % as 1/100.
+     * Note that 100+(10)% yields 100.1 while 100+10% yields 110.  This may be controversial,
+     * but is consistent with Google web search.
+     */
+    private boolean isPercent(int pos) {
+        if (mExpr.size() < pos + 2 || !isOperatorUnchecked(pos + 1, R.id.op_pct)) {
+            return false;
+        }
+        Token number = mExpr.get(pos);
+        if (number instanceof Operator) {
+            return false;
+        }
+        if (mExpr.size() == pos + 2) {
+            return true;
+        }
+        if (!(mExpr.get(pos + 2) instanceof Operator)) {
+            return false;
+        }
+        Operator op = (Operator) mExpr.get(pos + 2);
+        return op.id == R.id.op_add || op.id == R.id.op_sub;
+    }
+
+    /**
+     * Compute the multiplicative factor corresponding to an N% addition or subtraction.
+     * @param pos position of Constant or PreEval expression token corresponding to N
+     * @param isSubtraction this is a subtraction, as opposed to addition
+     * @param ec usable evaluation contex; only length matters
+     * @return Rational and CR values; position is pos + 2, i.e. after percent sign
+     */
+    private EvalRet getPercentFactor(int pos, boolean isSubtraction, EvalContext ec)
+            throws SyntaxException {
+        EvalRet tmp = evalUnary(pos, ec);
+        BoundedRational ratVal = isSubtraction ? BoundedRational.negate(tmp.ratVal)
+                : tmp.ratVal;
+        CR crVal = isSubtraction ? tmp.val.negate() : tmp.val;
+        ratVal = BoundedRational.add(BoundedRational.ONE,
+                BoundedRational.multiply(ratVal, RATIONAL_ONE_HUNDREDTH));
+        if (ratVal == null) {
+            crVal = CR.ONE.add(crVal.multiply(REAL_ONE_HUNDREDTH));
+        } else {
+            crVal = ratVal.CRValue();
+        }
+        return new EvalRet(pos + 2 /* after percent sign */, crVal, ratVal);
+    }
+
     private EvalRet evalExpr(int i, EvalContext ec) throws SyntaxException {
         EvalRet tmp = evalTerm(i, ec);
         boolean is_plus;
@@ -1037,20 +1089,30 @@ class CalculatorExpr {
         BoundedRational ratVal = tmp.ratVal;
         while ((is_plus = isOperator(cpos, R.id.op_add, ec))
                || isOperator(cpos, R.id.op_sub, ec)) {
-            tmp = evalTerm(cpos+1, ec);
-            if (is_plus) {
-                ratVal = BoundedRational.add(ratVal, tmp.ratVal);
+            if (isPercent(cpos + 1)) {
+                tmp = getPercentFactor(cpos + 1, !is_plus, ec);
+                ratVal = BoundedRational.multiply(ratVal, tmp.ratVal);
                 if (ratVal == null) {
-                    crVal = crVal.add(tmp.val);
+                    crVal = crVal.multiply(tmp.val);
                 } else {
                     crVal = ratVal.CRValue();
                 }
             } else {
-                ratVal = BoundedRational.subtract(ratVal, tmp.ratVal);
-                if (ratVal == null) {
-                    crVal = crVal.subtract(tmp.val);
+                tmp = evalTerm(cpos + 1, ec);
+                if (is_plus) {
+                    ratVal = BoundedRational.add(ratVal, tmp.ratVal);
+                    if (ratVal == null) {
+                        crVal = crVal.add(tmp.val);
+                    } else {
+                        crVal = ratVal.CRValue();
+                    }
                 } else {
-                    crVal = ratVal.CRValue();
+                    ratVal = BoundedRational.subtract(ratVal, tmp.ratVal);
+                    if (ratVal == null) {
+                        crVal = crVal.subtract(tmp.val);
+                    } else {
+                        crVal = ratVal.CRValue();
+                    }
                 }
             }
             cpos = tmp.pos;
