@@ -102,7 +102,9 @@ public class CalculatorResult extends AlignedTextView {
                             // we switch to scientific notation with positive exponent.
     private static final int SCI_NOTATION_EXTRA = 1;
                             // Extra digits for standard scientific notation.  In this case we
-                            // have a deecimal point and no ellipsis.
+                            // have a decimal point and no ellipsis.
+                            // We assume that we do not drop digits to make room for the decimal
+                            // point in ordinary scientific notation. Thus >= 1.
     private ActionMode mActionMode;
     private final ForegroundColorSpan mExponentColorSpan;
 
@@ -180,10 +182,24 @@ public class CalculatorResult extends AlignedTextView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         final TextPaint paint = getPaint();
-        final int newWidthConstraint = MeasureSpec.getSize(widthMeasureSpec)
-                - (getPaddingLeft() + getPaddingRight())
-                - (int) Math.ceil(Layout.getDesiredWidth(KeyMaps.ELLIPSIS, paint));
+        final Context context = getContext();
         final float newCharWidth = Layout.getDesiredWidth("\u2007", paint);
+        // Digits are presumed to have no more than newCharWidth.
+        // We sometimes replace a character by an ellipsis or, due to SCI_NOTATION_EXTRA, add
+        // an extra decimal separator beyond the maximum number of characters we normally allow.
+        // Empirically, our minus sign is also slightly wider than a digit, so we have to
+        // account for that.  We never have both an ellipsis and two minus signs, and
+        // we assume an ellipsis is no narrower than a minus sign.
+        final float decimalSeparatorWidth = Layout.getDesiredWidth(
+                context.getString(R.string.dec_point), paint);
+        final float minusExtraWidth = Layout.getDesiredWidth(
+                context.getString(R.string.op_sub), paint) - newCharWidth;
+        final float ellipsisExtraWidth = Layout.getDesiredWidth(KeyMaps.ELLIPSIS, paint)
+                - newCharWidth;
+        final int extraWidth = (int) (Math.ceil(Math.max(decimalSeparatorWidth + minusExtraWidth,
+                ellipsisExtraWidth)) + Math.max(minusExtraWidth, 0.0f));
+        final int newWidthConstraint = MeasureSpec.getSize(widthMeasureSpec)
+                - (getPaddingLeft() + getPaddingRight()) - extraWidth;
         synchronized(mWidthLock) {
             mWidthConstraint = newWidthConstraint;
             mCharWidth = newCharWidth;
@@ -474,9 +490,7 @@ public class CalculatorResult extends AlignedTextView {
             // Return something conservatively big, to force sufficient evaluation.
             return MAX_WIDTH;
         } else {
-            // Always allow for the ellipsis character which already accounted for in the width
-            // constraint.
-            return result + 1;
+            return result;
         }
     }
 
