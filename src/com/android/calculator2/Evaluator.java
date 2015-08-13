@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.hp.creals.CR;
@@ -413,6 +414,38 @@ class Evaluator {
     }
 
     /**
+     * Check whether a new higher precision result flips previously computed trailing 9s
+     * to zeroes.  If so, flip them back.  Return the adjusted result.
+     * Assumes newPrecOffset >= oldPrecOffset > 0.
+     * Since our results are accurate to < 1 ulp, this can only happen if the true result
+     * is less than the new result with trailing zeroes, and thus appending 9s to the
+     * old result must also be correct.  Such flips are impossible if the newly computed
+     * digits consist of anything other than zeroes.
+     * It is unclear that there are real cases in which this is necessary,
+     * but we have failed to prove there aren't such cases.
+     */
+    @VisibleForTesting
+    static String unflipZeroes(String oldDigs, int oldPrecOffset, String newDigs,
+            int newPrecOffset) {
+        final int oldLen = oldDigs.length();
+        if (oldDigs.charAt(oldLen - 1) != '9') {
+            return newDigs;
+        }
+        final int newLen = newDigs.length();
+        final int precDiff = newPrecOffset - oldPrecOffset;
+        final int oldLastInNew = newLen - 1 - precDiff;
+        if (newDigs.charAt(oldLastInNew) != '0') {
+            return newDigs;
+        }
+        // Earlier digits could not have changed without a 0 to 9 or 9 to 0 flip at end.
+        // The former is OK.
+        if (!newDigs.substring(newLen - precDiff).equals(repeat('0', precDiff))) {
+            throw new AssertionError("New approximation invalidates old one!");
+        }
+        return oldDigs + repeat('9', precDiff);
+    }
+
+    /**
      * Result of asynchronous reevaluation.
      */
     private static class ReevalResult {
@@ -445,6 +478,7 @@ class Evaluator {
                 return null;
             }
         }
+
         @Override
         protected void onPostExecute(ReevalResult result) {
             if (result == null) {
@@ -456,23 +490,8 @@ class Evaluator {
                 if (result.newResultStringOffset < mResultStringOffset) {
                     throw new AssertionError("Unexpected onPostExecute timing");
                 }
-                // FIXME: We are assuming that the most significant digit never moves to the left,
-                // i.e. that 0.99999 doesn't ever change to 1.00000.  Informally that makes sense,
-                // in that we can only produce the former result after a computation showing that
-                // the true answer is < 1 (otherwise we would have violated our 1 ulp error
-                // bound), and higher precision evaluations should preserve that bound.  But I
-                // don't know how to prove that.  Indeed, it seems like this could be violated
-                // if one of the CR operations, before rounding, produced an error that was
-                // almost exactly at it's error bound of 1/2ulp.  (Since we calculate ahead
-                // so far, we really mean "almost exactly", which makes it very difficult to
-                // generate a test case.)
-                // Instead, we should just check whether (a) all added digits are zeroes, and (b)
-                // any trailing 9's have been replaced.  In that case, we just use the original
-                // result with 9's appended.  This must be correct, since our 1 ulp error bound
-                // implies that the correct answer is between the two.  This has the unfortunate
-                // consequence that we are introducing code that is extremely unlikely to ever be
-                // exercised, and thus very difficult to test.
-                mResultString = result.newResultString;
+                mResultString = unflipZeroes(mResultString, mResultStringOffset,
+                        result.newResultString, result.newResultStringOffset);
                 mResultStringOffset = result.newResultStringOffset;
                 mCalculator.onReevaluate();
             }
@@ -521,8 +540,12 @@ class Evaluator {
         return result;
     }
 
+    // TODO: We may want to consistently specify the position of the current result
+    // window using the left-most visible digit index instead of the offset for the rightmost one.
+    // It seems likely that would simplify the logic.
+
     /**
-     * Retrieve the preferred precision for the currently displayed result.
+     * Retrieve the preferred precision "offset" for the currently displayed result.
      * May be called from non-UI thread.
      * @param cache Current approximation as string.
      * @param msd Position of most significant digit in result.  Index in cache.
@@ -676,13 +699,16 @@ class Evaluator {
      * Return most significant digit index in the currently computed result.
      * Returns an index in the result character array.  Return INVALID_MSD if the current result
      * is too close to zero to determine the result.
+     * Result is almost consistent through reevaluations: It may increase by one, once.
      */
     private int getMsdIndex() {
-        // FIXME: We currently never adjust msd once computed, even if the result changes
-        // from 0.100000...  to 0.0999999...  (We know it can't change in the other direction.)
-        // It would be cheap to increment it if the current "most significant digit" is zero.
-        // And it would make it easier to reason about the code.  We should do that.
-        if (mMsdIndex != INVALID_MSD) return mMsdIndex;
+        if (mMsdIndex != INVALID_MSD) {
+            // 0.100000... can change to 0.0999999...  We may have to correct once by one digit.
+            if (mResultString.charAt(mMsdIndex) == '0') {
+                mMsdIndex++;
+            }
+            return mMsdIndex;
+        }
         if (mRatVal != null && mRatVal.signum() == 0) {
             return INVALID_MSD;  // None exists
         }
@@ -690,39 +716,18 @@ class Evaluator {
         if (mResultString != null) {
             result = getMsdIndexOf(mResultString);
         }
-        // FIXME: I think the following conditional is no longer needed.  The initial
-        // background evaluation already ensures that either the msd is know, or we've
-        // evaluated to MAX_MSD_PREC_OFFSET.
-        if (result == INVALID_MSD && mEvaluator == null
-            && mCurrentReevaluator == null && mResultStringOffset < MAX_MSD_PREC_OFFSET) {
-            // We assert that mResultString is not null, since there is no
-            // evaluator running.
-            ensureCachePrec(MAX_MSD_PREC_OFFSET);
-            // Could reevaluate more incrementally, but we suspect that if
-            // we have to reevaluate at all, the result is probably zero.
-        }
         return result;
     }
 
     /**
-     * Return a string with n placeholder characters.
+     * Return a string with n copies of c.
      */
-    private String getPadding(int n) {
-        StringBuilder padding = new StringBuilder();
+    private static String repeat(char c, int n) {
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < n; ++i) {
-            padding.append(' ');   // To be replaced during final translation.
+            result.append(c);
         }
-        return padding.toString();
-    }
-
-    /**
-     * Return the number of zero characters at the beginning of s.
-     */
-    private int leadingZeroes(String s) {
-        int result = 0;
-        final int len = s.length();
-        for (result = 0; result < len && s.charAt(result) == '0'; ++result) {}
-        return result;
+        return result.toString();
     }
 
     // Refuse to scroll past the point at which this many digits from the whole number
@@ -746,7 +751,7 @@ class Evaluator {
      *
      * @param precOffset Zeroth element indicates desired and actual precision
      * @param maxPrecOffset Maximum adjusted precOffset[0]
-     * @param maxDigs Maximum length of result 
+     * @param maxDigs Maximum length of result
      * @param truncated Zeroth element is set if leading nonzero digits were dropped
      * @param negative Zeroth element is set of the result is negative.
      */
@@ -758,7 +763,7 @@ class Evaluator {
             ensureCachePrec(currentPrecOffset + EXTRA_DIGITS);
             // Nothing else to do now; seems to happen on rare occasion with weird user input
             // timing; Will repair itself in a jiffy.
-            return getPadding(1);
+            return " ";
         } else {
             ensureCachePrec(currentPrecOffset + EXTRA_DIGITS + mResultString.length()
                     / EXTRA_DIVISOR);
@@ -792,7 +797,8 @@ class Evaluator {
         truncated[0] = (startIndex > getMsdIndex());
         String result = mResultString.substring(startIndex, endIndex);
         if (deficit > 0) {
-            result += getPadding(deficit);
+            result += repeat(' ', deficit);
+            // Blank character is replaced during translation.
             // Since we always compute past the decimal point, this never fills in the spot
             // where the decimal point should go, and we can otherwise treat placeholders
             // as though they were digits.
@@ -851,7 +857,7 @@ class Evaluator {
      * Start required evaluation of result and display when ready.
      * Will eventually call back mCalculator to display result or error, or display
      * a timeout message.  Uses longer timeouts than optional evaluation.
-     */ 
+     */
     public void requireResult() {
         if (mResultString == null || mChangedValue) {
             // Restart evaluator in requested mode, i.e. with longer timeout.
@@ -909,7 +915,6 @@ class Evaluator {
         mChangedValue = true;
         try {
             CalculatorExpr.initExprInput();
-            // FIXME: Do we still need to restore DegreeMode here?
             mDegreeMode = in.readBoolean();
             mExpr = new CalculatorExpr(in);
             mSavedName = in.readUTF();
@@ -1087,12 +1092,15 @@ class Evaluator {
         if (KeyMaps.keyForChar(s.charAt(i)) == R.id.op_sub) {
             ++i;
         }
-        if (i == len || i > offset + MAX_EXP_CHARS || !Character.isDigit(s.charAt(i))) {
+        if (i == len || !Character.isDigit(s.charAt(i))) {
             return offset;
         }
         ++i;
         while (i < len && Character.isDigit(s.charAt(i))) {
             ++i;
+            if (i > offset + MAX_EXP_CHARS) {
+                return offset;
+            }
         }
         return i;
     }
