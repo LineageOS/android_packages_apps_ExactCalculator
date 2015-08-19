@@ -454,7 +454,7 @@ public class Calculator extends Activity
             if (KeyMaps.isBinary(id) || KeyMaps.isSuffix(id)) {
                 mEvaluator.collapse();
             } else {
-                announceClearForAccessibility();
+                announceClearedForAccessibility();
                 mEvaluator.clear();
             }
             setState(CalculatorState.INPUT);
@@ -653,6 +653,11 @@ public class Calculator extends Activity
         } else {
             mEvaluator.delete();
         }
+        if (mEvaluator.getExpr().isEmpty()
+                && (mUnprocessedChars == null || mUnprocessedChars.isEmpty())) {
+            // Resulting formula won't be announced, since it's empty.
+            announceClearedForAccessibility();
+        }
         redisplayAfterFormulaChange();
     }
 
@@ -710,8 +715,8 @@ public class Calculator extends Activity
         animatorSet.start();
     }
 
-    private void announceClearForAccessibility() {
-        mResultText.announceForAccessibility(getResources().getString(R.string.desc_clr));
+    private void announceClearedForAccessibility() {
+        mResultText.announceForAccessibility(getResources().getString(R.string.cleared));
     }
 
     private void onClear() {
@@ -719,7 +724,7 @@ public class Calculator extends Activity
             return;
         }
         cancelIfEvaluating(true);
-        announceClearForAccessibility();
+        announceClearedForAccessibility();
         reveal(mCurrentButton, R.color.calculator_accent_color, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
