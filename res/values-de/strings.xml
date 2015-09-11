@@ -53,7 +53,7 @@
     <string name="desc_switch_deg" msgid="6675211986921592374">"Zu Grad wechseln"</string>
     <string name="desc_switch_rad" msgid="2845875847488919914">"Zu Radiant wechseln"</string>
     <string name="desc_eq" msgid="3349320880874699285">"ist gleich"</string>
-    <string name="desc_clr" msgid="737502124268890797">"Löschen"</string>
+    <string name="desc_clr" msgid="737502124268890797">"Entfernen"</string>
     <string name="desc_del" msgid="7879515781929311432">"Löschen"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"Umkehrfunktionen anzeigen"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"Umkehrfunktionen ausblenden"</string>
