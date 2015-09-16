@@ -445,19 +445,27 @@ public class Calculator extends Activity
         }
     }
 
+    /**
+     * Switch to INPUT from RESULT state in response to input of the specified button_id.
+     * View.NO_ID is treated as an incomplete function id.
+     */
+    private void switchToInput(int button_id) {
+        if (KeyMaps.isBinary(button_id) || KeyMaps.isSuffix(button_id)) {
+            mEvaluator.collapse();
+        } else {
+            announceClearedForAccessibility();
+            mEvaluator.clear();
+        }
+        setState(CalculatorState.INPUT);
+    }
+
     // Add the given button id to input expression.
     // If appropriate, clear the expression before doing so.
     private void addKeyToExpr(int id) {
         if (mCurrentState == CalculatorState.ERROR) {
             setState(CalculatorState.INPUT);
         } else if (mCurrentState == CalculatorState.RESULT) {
-            if (KeyMaps.isBinary(id) || KeyMaps.isSuffix(id)) {
-                mEvaluator.collapse();
-            } else {
-                announceClearedForAccessibility();
-                mEvaluator.clear();
-            }
-            setState(CalculatorState.INPUT);
+            switchToInput(id);
         }
         if (!mEvaluator.append(id)) {
             // TODO: Some user visible feedback?
@@ -916,6 +924,10 @@ public class Calculator extends Activity
         int current = 0;
         int len = moreChars.length();
         boolean lastWasDigit = false;
+        if (mCurrentState == CalculatorState.RESULT && len != 0) {
+            // Clear display immediately for incomplete function name.
+            switchToInput(KeyMaps.keyForChar(moreChars.charAt(current)));
+        }
         while (current < len) {
             char c = moreChars.charAt(current);
             int k = KeyMaps.keyForChar(c);
