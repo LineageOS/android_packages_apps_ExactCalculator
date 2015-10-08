@@ -4,7 +4,7 @@ Run on Android with
 2) Install the calculator with
 adb install <tree root>/out/target/product/generic/data/app/ExactCalculator/ExactCalculator.apk
 3) adb install <tree root>/out/target/product/generic/data/app/ExactCalculatorTests/ExactCalculatorTests.apk
-4) adb shell am instrument -w com.android.exactcalculator.tests/android.test.InstrumentationTestRunner
+4) adb shell am instrument -w com.android.calculator2.tests/android.test.InstrumentationTestRunner
 
 There are three kinds of tests:
 

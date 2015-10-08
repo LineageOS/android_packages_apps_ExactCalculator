@@ -555,6 +555,9 @@ public class BoundedRational {
             }
             return prod1.multiply(prod2);
         } else {
+            if (n == 0) {
+                return BigInteger.ONE;
+            }
             BigInteger res = BigInteger.valueOf(n);
             for (long i = n - step; i > 1; i -= step) {
                 res = res.multiply(BigInteger.valueOf(i));
