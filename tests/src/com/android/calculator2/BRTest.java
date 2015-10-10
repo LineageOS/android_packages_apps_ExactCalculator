@@ -139,6 +139,12 @@ public class BRTest extends TestCase {
         check(BR_0.signum() == 0, "signum(0)");
         check(BR_M1.signum() == -1, "signum(-1)");
         check(BR_2.signum() == 1, "signum(2)");
+        check(BoundedRational.asBigInteger(BR_390).intValue() == 390, "390.asBigInteger()");
+        check(BoundedRational.asBigInteger(BoundedRational.HALF) == null, "1/2.asBigInteger()");
+        check(BoundedRational.asBigInteger(BoundedRational.MINUS_HALF) == null,
+                "-1/2.asBigInteger()");
+        check(BoundedRational.asBigInteger(new BoundedRational(15, -5)).intValue() == -3,
+                "-15/5.asBigInteger()");
         check(BoundedRational.digitsRequired(BoundedRational.ZERO) == 0, "digitsRequired(0)");
         check(BoundedRational.digitsRequired(BoundedRational.HALF) == 1, "digitsRequired(1/2)");
         check(BoundedRational.digitsRequired(BoundedRational.MINUS_HALF) == 1,
