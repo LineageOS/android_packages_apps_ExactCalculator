@@ -234,43 +234,65 @@ class Evaluator {
             .show();
     }
 
-    // Maximum timeout for background computations.  Exceeding a few tens of seconds
-    // increases the risk of running out of memory and impacting the rest of the system.
-    private final long MAX_TIMEOUT = 15000;
+    // Timeout handling.
+    // Expressions are evaluated with a sort timeout or a long timeout.
+    // Each implies different maxima on both computation time and bit length.
+    // We recheck bit length separetly to avoid wasting time on decimal conversions that are
+    // destined to fail.
 
-    // Timeout for requested evaluations, in milliseconds.  This is currently not saved and
-    // restored with the state; we reset the timeout when the calculator is restarted.  We'll call
-    // that a feature; others might argue it's a bug.
-    private long mTimeout = 2000;
+    /**
+     * Is a long timeout in effect for the main expression?
+     */
+    private boolean mLongTimeout = false;
 
-    // Timeout for unrequested, speculative evaluations, in milliseconds.
-    private final long QUICK_TIMEOUT = 1000;
+    /**
+     * Is a long timeout in effect for the saved expression?
+     */
+    private boolean mLongSavedTimeout = false;
 
-    private int mMaxResultBits = 120000;             // Don't try to display a larger result.
-    private final int MAX_MAX_RESULT_BITS = 350000;  // Long timeout version.
-    private final int QUICK_MAX_RESULT_BITS = 50000; // Instant result version.
-
-    private void displayTimeoutMessage() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(mCalculator)
-                .setMessage(R.string.timeout)
-                .setNegativeButton(R.string.dismiss, null /* listener */);
-        if (mTimeout != MAX_TIMEOUT) {
-            builder.setPositiveButton(R.string.ok_remove_timeout,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface d, int which) {
-                            mTimeout = MAX_TIMEOUT;
-                            mMaxResultBits = MAX_MAX_RESULT_BITS;
-                        }
-                    });
-        }
-        builder.show();
+    /**
+     * Return the timeout in milliseconds.
+     * @param longTimeout a long timeout is in effect
+     */
+    private long getTimeout(boolean longTimeout) {
+        return longTimeout ? 15000 : 2000;
+        // Exceeding a few tens of seconds increases the risk of running out of memory
+        // and impacting the rest of the system.
     }
 
-    // Compute initial cache contents and result when we're good and ready.
-    // We leave the expression display up, with scrolling
-    // disabled, until this computation completes.
-    // Can result in an error display if something goes wrong.
-    // By default we set a timeout to catch runaway computations.
+    /**
+     * Return the maximum number of bits in the result.  Longer results are assumed to time out.
+     * @param longTimeout a long timeout is in effect
+     */
+    private int getMaxResultBits(boolean longTimeout) {
+        return longTimeout ? 350000 : 120000;
+    }
+
+    /**
+     * Timeout for unrequested, speculative evaluations, in milliseconds.
+     */
+    private final long QUICK_TIMEOUT = 1000;
+
+    /**
+     * Maximum result bit length for unrequested, speculative evaluations.
+     */
+    private final int QUICK_MAX_RESULT_BITS = 50000;
+
+    private void displayTimeoutMessage() {
+        AlertDialogFragment.showMessageDialog(mCalculator, mCalculator.getString(R.string.timeout),
+                (mLongTimeout ? null : mCalculator.getString(R.string.ok_remove_timeout)));
+    }
+
+    public void setLongTimeOut() {
+        mLongTimeout = true;
+    }
+
+    /**
+     * Compute initial cache contents and result when we're good and ready.
+     * We leave the expression display up, with scrolling disabled, until this computation
+     * completes.  Can result in an error display if something goes wrong.  By default we set a
+     * timeout to catch runaway computations.
+     */
     class AsyncEvaluator extends AsyncTask<Void, Void, InitialResult> {
         private boolean mDm;  // degrees
         private boolean mRequired; // Result was requested by user.
@@ -299,7 +321,7 @@ class Evaluator {
         }
         @Override
         protected void onPreExecute() {
-            long timeout = mRequired ? mTimeout : QUICK_TIMEOUT;
+            long timeout = mRequired ? getTimeout(mLongTimeout) : QUICK_TIMEOUT;
             mTimeoutRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -312,7 +334,7 @@ class Evaluator {
          * Is a computed result too big for decimal conversion?
          */
         private boolean isTooBig(CalculatorExpr.EvalResult res) {
-            int maxBits = mRequired ? mMaxResultBits : QUICK_MAX_RESULT_BITS;
+            int maxBits = mRequired ? getMaxResultBits(mLongTimeout) : QUICK_MAX_RESULT_BITS;
             if (res.ratVal != null) {
                 return res.ratVal.wholeNumberBits() > maxBits;
             } else {
@@ -821,9 +843,15 @@ class Evaluator {
         mMsdIndex = INVALID_MSD;
     }
 
-    public void clear() {
+
+    private void clearPreservingTimeout() {
         mExpr.clear();
         clearCache();
+    }
+
+    public void clear() {
+        clearPreservingTimeout();
+        mLongTimeout = false;
     }
 
     /**
@@ -916,6 +944,8 @@ class Evaluator {
         try {
             CalculatorExpr.initExprInput();
             mDegreeMode = in.readBoolean();
+            mLongTimeout = in.readBoolean();
+            mLongSavedTimeout = in.readBoolean();
             mExpr = new CalculatorExpr(in);
             mSavedName = in.readUTF();
             mSaved = new CalculatorExpr(in);
@@ -931,6 +961,8 @@ class Evaluator {
         try {
             CalculatorExpr.initExprOutput();
             out.writeBoolean(mDegreeMode);
+            out.writeBoolean(mLongTimeout);
+            out.writeBoolean(mLongSavedTimeout);
             mExpr.write(out);
             out.writeUTF(mSavedName);
             mSaved.write(out);
@@ -959,6 +991,9 @@ class Evaluator {
     public void delete() {
         mChangedValue = true;
         mExpr.delete();
+        if (mExpr.isEmpty()) {
+            mLongTimeout = false;
+        }
     }
 
     void setDegreeMode(boolean degreeMode) {
@@ -993,7 +1028,7 @@ class Evaluator {
      */
     public void collapse() {
         final CalculatorExpr abbrvExpr = getResultExpr();
-        clear();
+        clearPreservingTimeout();
         mExpr.append(abbrvExpr);
         mChangedValue = true;
     }
@@ -1009,6 +1044,7 @@ class Evaluator {
         final CalculatorExpr abbrvExpr = getResultExpr();
         mSaved.clear();
         mSaved.append(abbrvExpr);
+        mLongSavedTimeout = mLongTimeout;
         return true;
     }
 
@@ -1042,6 +1078,7 @@ class Evaluator {
 
     public void appendSaved() {
         mChangedValue = true;
+        mLongTimeout |= mLongSavedTimeout;
         mExpr.append(mSaved);
     }
 
