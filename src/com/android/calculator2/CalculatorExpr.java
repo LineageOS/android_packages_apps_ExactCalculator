@@ -217,12 +217,19 @@ class CalculatorExpr {
         }
 
         /**
-         * Return BoundedRational representation of constant.
-         * Never null.
+         * Return BoundedRational representation of constant, if well-formed.
+         * Result is never null.
          */
-        public BoundedRational toRational() {
+        public BoundedRational toRational() throws SyntaxException {
             String whole = mWhole;
-            if (whole.isEmpty()) whole = "0";
+            if (whole.isEmpty()) {
+                if (mFraction.isEmpty()) {
+                    // Decimal point without digits.
+                    throw new SyntaxException();
+                } else {
+                    whole = "0";
+                }
+            }
             BigInteger num = new BigInteger(whole + mFraction);
             BigInteger den = BigInteger.TEN.pow(mFraction.length());
             if (mExponent > 0) {
