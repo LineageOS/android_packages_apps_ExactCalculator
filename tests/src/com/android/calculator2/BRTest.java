@@ -151,6 +151,10 @@ public class BRTest extends TestCase {
                 "digitsRequired(-1/2)");
         check(BoundedRational.digitsRequired(new BoundedRational(1,-2)) == 1,
                 "digitsRequired(1/-2)");
+        check(BoundedRational.fact(BoundedRational.ZERO).equals(BoundedRational.ONE), "0!");
+        check(BoundedRational.fact(BoundedRational.ONE).equals(BoundedRational.ONE), "1!");
+        check(BoundedRational.fact(BoundedRational.TWO).equals(BoundedRational.TWO), "2!");
+        check(BoundedRational.fact(BR_15).equals(new BoundedRational(1307674368000L)), "15!");
         // We check values that include all interesting degree values.
         BoundedRational r = BR_M390;
         while (!r.equals(BR_390)) {
