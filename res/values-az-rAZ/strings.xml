@@ -52,7 +52,7 @@
     <string name="desc_switch_deg" msgid="6675211986921592374">"dərəcəyə keçid"</string>
     <string name="desc_switch_rad" msgid="2845875847488919914">"radiana keçid"</string>
     <string name="desc_eq" msgid="3349320880874699285">"bərabərlik"</string>
-    <string name="desc_clr" msgid="737502124268890797">"silin"</string>
+    <string name="desc_clr" msgid="737502124268890797">"təmizləyin"</string>
     <string name="desc_del" msgid="7879515781929311432">"silin"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"əks funksiyaları göstərin"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"əks funksiyaları gizlədin"</string>

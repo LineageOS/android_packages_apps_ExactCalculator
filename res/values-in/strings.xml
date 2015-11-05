@@ -52,7 +52,7 @@
     <string name="desc_switch_deg" msgid="6675211986921592374">"beralih ke derajat"</string>
     <string name="desc_switch_rad" msgid="2845875847488919914">"beralih ke radian"</string>
     <string name="desc_eq" msgid="3349320880874699285">"sama dengan"</string>
-    <string name="desc_clr" msgid="737502124268890797">"hapus"</string>
+    <string name="desc_clr" msgid="737502124268890797">"kosongkan"</string>
     <string name="desc_del" msgid="7879515781929311432">"hapus"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"tampilkan fungsi balikan"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"semunyikan fungsi balikan"</string>
