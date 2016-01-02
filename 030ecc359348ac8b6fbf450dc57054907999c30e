@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3fce034c_e1f88c7d",
+        "filename": "src/com/android/calculator2/CalculatorPadViewPager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 9199
+      },
+      "writtenOn": "2016-01-02T04:41:32Z",
+      "side": 1,
+      "message": "You don\u0027t need to use the Resources class, you can use Context.getColor() instead.",
+      "revId": "030ecc359348ac8b6fbf450dc57054907999c30e",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3fce034c_4104007c",
+        "filename": "src/com/android/calculator2/CalculatorPadViewPager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 9199
+      },
+      "writtenOn": "2016-01-02T04:41:32Z",
+      "side": 1,
+      "message": "not needed, you can get the color using the Context object passed in.",
+      "range": {
+        "startLine": 93,
+        "startChar": 8,
+        "endLine": 93,
+        "endChar": 51
+      },
+      "revId": "030ecc359348ac8b6fbf450dc57054907999c30e",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3fce034c_21ff7468",
+        "filename": "src/com/android/calculator2/CalculatorPadViewPager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 9199
+      },
+      "writtenOn": "2016-01-02T04:41:32Z",
+      "side": 1,
+      "message": "use context instead",
+      "range": {
+        "startLine": 97,
+        "startChar": 27,
+        "endLine": 97,
+        "endChar": 30
+      },
+      "revId": "030ecc359348ac8b6fbf450dc57054907999c30e",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
