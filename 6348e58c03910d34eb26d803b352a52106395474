@@ -22,6 +22,30 @@
       "revId": "6348e58c03910d34eb26d803b352a52106395474",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3fce034c_1365d2b5",
+        "filename": "src/com/android/calculator2/CalculatorPadViewPager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 8961
+      },
+      "writtenOn": "2016-01-11T05:44:29Z",
+      "side": 1,
+      "message": "Why, the Context object is named context, so it seems right.",
+      "parentUuid": "3fce034c_b3cb9ea3",
+      "range": {
+        "startLine": 95,
+        "startChar": 27,
+        "endLine": 95,
+        "endChar": 34
+      },
+      "revId": "6348e58c03910d34eb26d803b352a52106395474",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
     }
   ]
 }
