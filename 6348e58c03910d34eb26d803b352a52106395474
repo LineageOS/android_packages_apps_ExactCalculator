@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3fce034c_b3cb9ea3",
+        "filename": "src/com/android/calculator2/CalculatorPadViewPager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 5959
+      },
+      "writtenOn": "2016-01-11T04:51:23Z",
+      "side": 1,
+      "message": "I think this needs mContext?",
+      "range": {
+        "startLine": 95,
+        "startChar": 27,
+        "endLine": 95,
+        "endChar": 34
+      },
+      "revId": "6348e58c03910d34eb26d803b352a52106395474",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
