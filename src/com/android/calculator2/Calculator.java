@@ -314,6 +314,7 @@ public class Calculator extends Activity
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        mEvaluator.cancelAll(true);
         // If there's an animation in progress, cancel it first to ensure our state is up-to-date.
         if (mCurrentAnimator != null) {
             mCurrentAnimator.cancel();
