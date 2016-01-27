@@ -153,11 +153,11 @@ public class Calculator extends Activity
                 case KeyEvent.KEYCODE_DPAD_CENTER:
                     mCurrentButton = mEqualButton;
                     onEquals();
-                    return true;
+                    break;
                 case KeyEvent.KEYCODE_DEL:
                     mCurrentButton = mDeleteButton;
                     onDelete();
-                    return true;
+                    break;
                 default:
                     cancelIfEvaluating(false);
                     final int raw = keyEvent.getKeyCharacterMap()
@@ -180,7 +180,7 @@ public class Calculator extends Activity
                         redisplayAfterFormulaChange();
                     }
             }
-            return false;
+            return true;
         }
     };
 
@@ -492,10 +492,16 @@ public class Calculator extends Activity
         // TODO: Could do this more incrementally.
         redisplayFormula();
         setState(CalculatorState.INPUT);
-        if (mEvaluator.getExpr().hasInterestingOps()) {
-            mEvaluator.evaluateAndShowResult();
-        } else {
+        if (haveUnprocessed()) {
             mResultText.clear();
+            // Force reevaluation when text is deleted, even if expression is unchanged.
+            mEvaluator.touch();
+        } else {
+            if (mEvaluator.getExpr().hasInterestingOps()) {
+                mEvaluator.evaluateAndShowResult();
+            } else {
+                mResultText.clear();
+            }
         }
     }
 
@@ -539,14 +545,20 @@ public class Calculator extends Activity
                 onModeChanged(mode);
                 setState(CalculatorState.INPUT);
                 mResultText.clear();
-                if (mEvaluator.getExpr().hasInterestingOps()) {
+                if (!haveUnprocessed() && mEvaluator.getExpr().hasInterestingOps()) {
                     mEvaluator.evaluateAndShowResult();
                 }
                 break;
             default:
                 cancelIfEvaluating(false);
-                addExplicitKeyToExpr(id);
-                redisplayAfterFormulaChange();
+                if (haveUnprocessed()) {
+                    // For consistency, append as uninterpreted characters.
+                    // This may actually be useful for a left parenthesis.
+                    addChars(KeyMaps.toString(this, id), true);
+                } else {
+                    addExplicitKeyToExpr(id);
+                    redisplayAfterFormulaChange();
+                }
                 break;
         }
     }
@@ -638,11 +650,19 @@ public class Calculator extends Activity
         }
     }
 
+    private boolean haveUnprocessed() {
+        return mUnprocessedChars != null && !mUnprocessedChars.isEmpty();
+    }
+
     private void onEquals() {
         // In non-INPUT state assume this was redundant and ignore it.
         if (mCurrentState == CalculatorState.INPUT && !mEvaluator.getExpr().isEmpty()) {
             setState(CalculatorState.EVALUATE);
-            mEvaluator.requireResult();
+            if (haveUnprocessed()) {
+                onError(R.string.error_syntax);
+            } else {
+                mEvaluator.requireResult();
+            }
         }
     }
 
@@ -655,18 +675,12 @@ public class Calculator extends Activity
         // If there is an in-progress explicit evaluation, just cancel it and return.
         if (cancelIfEvaluating(false)) return;
         setState(CalculatorState.INPUT);
-        if (mUnprocessedChars != null) {
-            int len = mUnprocessedChars.length();
-            if (len > 0) {
-                mUnprocessedChars = mUnprocessedChars.substring(0, len-1);
-            } else {
-                mEvaluator.delete();
-            }
+        if (haveUnprocessed()) {
+            mUnprocessedChars = mUnprocessedChars.substring(0, mUnprocessedChars.length() - 1);
         } else {
             mEvaluator.delete();
         }
-        if (mEvaluator.getExpr().isEmpty()
-                && (mUnprocessedChars == null || mUnprocessedChars.isEmpty())) {
+        if (mEvaluator.getExpr().isEmpty() && !haveUnprocessed()) {
             // Resulting formula won't be announced, since it's empty.
             announceClearedForAccessibility();
         }
@@ -685,7 +699,7 @@ public class Calculator extends Activity
         revealView.setBottom(displayRect.bottom);
         revealView.setLeft(displayRect.left);
         revealView.setRight(displayRect.right);
-        revealView.setBackgroundColor(getResources().getColor(colorRes));
+        revealView.setBackgroundColor(getColor(colorRes));
         groupOverlay.add(revealView);
 
         final int[] clearLocation = new int[2];
@@ -769,7 +783,6 @@ public class Calculator extends Activity
             mResultText.clear();
         }
     }
-
 
     // Animate movement of result into the top formula slot.
     // Result window now remains translated in the top slot while the result is displayed.
