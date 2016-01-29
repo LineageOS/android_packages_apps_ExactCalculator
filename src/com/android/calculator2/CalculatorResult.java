@@ -599,14 +599,27 @@ public class CalculatorResult extends AlignedTextView {
         @Override
         public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
             super.onGetContentRect(mode, view, outRect);
-            outRect.left += getPaddingLeft();
-            outRect.top += getPaddingTop();
-            outRect.right -= getPaddingRight();
-            outRect.bottom -= getPaddingBottom();
+
+            outRect.left += view.getPaddingLeft();
+            outRect.top += view.getPaddingTop();
+            outRect.right -= view.getPaddingRight();
+            outRect.bottom -= view.getPaddingBottom();
             final int width = (int) Layout.getDesiredWidth(getText(), getPaint());
             if (width < outRect.width()) {
                 outRect.left = outRect.right - width;
             }
+
+            // The CAB *currently* only takes the translation of a view into account, so if a scale
+            // is applied to the view then the offset outRect will end up being positioned
+            // incorrectly. We workaround that limitation by manually applying the scale to the
+            // outRect, which the CAB will then offset to the correct position.
+            final float scaleX = view.getScaleX();
+            final float scaleY = view.getScaleY();
+            outRect.left *= scaleX;
+            outRect.right *= scaleX;
+            outRect.top *= scaleY;
+            outRect.bottom *= scaleY;
+
         }
     };
 
