@@ -128,7 +128,10 @@ public class BRTest extends TestCase {
     public void testBR() {
         BoundedRational b = new BoundedRational(4,-6);
         check(b.toString().equals("4/-6"), "toString(4/-6)");
-        check(b.toNiceString().equals("-2/3"),"toNiceString(4/-6)");
+        check(b.toNiceString().equals("-2/3"), "toNiceString(4/-6)");
+        check(b.toString(1).equals("-0.6"), "(4/-6).toString(1)");
+        check(BR_15.toString(0).equals("15."), "15.toString(1)");
+        check(BR_0.toString(2).equals("0.00"), "0.toString(2)");
         checkEq(BR_0, CR.valueOf(0), "0");
         checkEq(BR_390, CR.valueOf(390), "390");
         checkEq(BR_15, CR.valueOf(15), "15");

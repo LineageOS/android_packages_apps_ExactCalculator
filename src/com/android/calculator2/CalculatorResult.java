@@ -67,16 +67,16 @@ public class CalculatorResult extends AlignedTextView {
                             // left of the display.  Zero means decimal point is barely displayed
                             // on the right.
     private int mLastPos;   // Position already reflected in display. Pixels.
-    private int mMinPos;    // Minimum position before all digits disappear off the right. Pixels.
+    private int mMinPos;    // Minimum position to avoid unnecessary blanks on the left. Pixels.
     private int mMaxPos;    // Maximum position before we start displaying the infinite
                             // sequence of trailing zeroes on the right. Pixels.
+    private int mWholeLen;  // Length of the whole part of current result.
     // In the following, we use a suffix of Offset to denote a character position in a numeric
     // string relative to the decimal point.  Positive is to the right and negative is to
     // the left. 1 = tenths position, -1 = units.  Integer.MAX_VALUE is sometimes used
     // for the offset of the last digit in an a nonterminating decimal expansion.
     // We use the suffix "Index" to denote a zero-based index into a string representing a
     // result.
-    // TODO: Apply the same convention to other classes.
     private int mMaxCharOffset;  // Character offset from decimal point of rightmost digit
                                  // that should be displayed.  Essentially the same as
     private int mLsdOffset;      // Position of least-significant digit in result
@@ -105,6 +105,14 @@ public class CalculatorResult extends AlignedTextView {
                             // have a decimal point and no ellipsis.
                             // We assume that we do not drop digits to make room for the decimal
                             // point in ordinary scientific notation. Thus >= 1.
+    private static final int MAX_COPY_EXTRA = 100;
+                            // The number of extra digits we are willing to compute to copy
+                            // a result as an exact number.
+    private static final int MAX_RECOMPUTE_DIGITS = 2000;
+                            // The maximum number of digits we're willing to recompute in the UI
+                            // thread.  We only do this for known rational results, where we
+                            // can bound the computation cost.
+
     private ActionMode mActionMode;
     private final ForegroundColorSpan mExponentColorSpan;
 
@@ -265,13 +273,13 @@ public class CalculatorResult extends AlignedTextView {
             }
             return;
         }
-        int wholeLen =  truncatedWholePart.length();
+        mWholeLen = truncatedWholePart.length();
         int negative = truncatedWholePart.charAt(0) == '-' ? 1 : 0;
-        if (msdIndex > wholeLen && msdIndex <= wholeLen + 3) {
+        if (msdIndex > mWholeLen && msdIndex <= mWholeLen + 3) {
             // Avoid tiny negative exponent; pretend msdIndex is just to the right of decimal point.
-            msdIndex = wholeLen - 1;
+            msdIndex = mWholeLen - 1;
         }
-        int minCharOffset = msdIndex - wholeLen;
+        int minCharOffset = msdIndex - mWholeLen;
                                 // Position of leftmost significant digit relative to dec. point.
                                 // Usually negative.
         mMaxCharOffset = MAX_RIGHT_SCROLL; // How far does it make sense to scroll right?
@@ -338,7 +346,7 @@ public class CalculatorResult extends AlignedTextView {
      * Unlike Evaluator.getMsdIndexOf, we treat a final 1 as significant.
      */
     public static int getNaiveMsdIndexOf(String s) {
-        int len = s.length();
+        final int len = s.length();
         for (int i = 0; i < len; ++i) {
             char c = s.charAt(i);
             if (c != '-' && c != '.' && c != '0') {
@@ -353,10 +361,10 @@ public class CalculatorResult extends AlignedTextView {
     // to getString and thus identifies the significance of the rightmost digit.
     // A value of 1 means the rightmost digits corresponds to tenths.
     // maxDigs is the maximum number of characters in the result.
-    // We set lastDisplayedOffset[0] to the offset of the last digit actually appearing in
-    // the display.
+    // If lastDisplayedOffset is not null, we set lastDisplayedOffset[0] to the offset of
+    // the last digit actually appearing in the display.
     // If forcePrecision is true, we make sure that the last displayed digit corresponds to
-    // precOffset, and allow maxDigs to be exceeded in assing the exponent.
+    // precOffset, and allow maxDigs to be exceeded in adding the exponent.
     // We add two distinct kinds of exponents:
     // (1) If the final result contains the leading digit we use standard scientific notation.
     // (2) If not, we add an exponent corresponding to an interpretation of the final result as
@@ -376,7 +384,9 @@ public class CalculatorResult extends AlignedTextView {
             // Ellipsis may be removed again in the type(1) scientific notation case.
         }
         final int decIndex = result.indexOf('.');
-        lastDisplayedOffset[0] = precOffset;
+        if (lastDisplayedOffset != null) {
+            lastDisplayedOffset[0] = precOffset;
+        }
         if ((decIndex == -1 || msdIndex != Evaluator.INVALID_MSD
                 && msdIndex - decIndex > MAX_LEADING_ZEROES + 1) &&  precOffset != -1) {
             // No decimal point displayed, and it's not just to the right of the last digit,
@@ -433,7 +443,9 @@ public class CalculatorResult extends AlignedTextView {
                     }
                 }
                 result = result.substring(0, result.length() - dropDigits);
-                lastDisplayedOffset[0] -= dropDigits;
+                if (lastDisplayedOffset != null) {
+                    lastDisplayedOffset[0] -= dropDigits;
+                }
             }
             result = result + "E" + Integer.toString(exponent);
         }
@@ -445,7 +457,7 @@ public class CalculatorResult extends AlignedTextView {
      * @param precOffset requested position (1 = tenths) of last included digit.
      * @param maxSize Maximum number of characters (more or less) in result.
      * @param lastDisplayedOffset Zeroth entry is set to actual offset of last included digit,
-     *                            after adjusting for exponent, etc.
+     *                            after adjusting for exponent, etc.  May be null.
      * @param forcePrecision Ensure that last included digit is at pos, at the expense
      *                       of treating maxSize as a soft limit.
      */
@@ -460,19 +472,40 @@ public class CalculatorResult extends AlignedTextView {
                 lastDisplayedOffset, forcePrecision);
    }
 
-    // Return entire result (within reason) up to current displayed precision.
+    /**
+     * Return entire result (within reason) up to current displayed precision.
+     */
     public String getFullText() {
         if (!mValid) return "";
         if (!mScrollable) return getText().toString();
-        int currentCharOffset = getCurrentCharOffset();
-        int unused[] = new int[1];
         return KeyMaps.translateResult(getFormattedResult(mLastDisplayedOffset, MAX_COPY_SIZE,
-                unused, true));
+                null, true));
     }
 
     public boolean fullTextIsExact() {
         return !mScrollable
                 || mMaxCharOffset == getCurrentCharOffset() && mMaxCharOffset != MAX_RIGHT_SCROLL;
+    }
+
+    /**
+     * Get entire result up to current displayed precision, or up to MAX_COPY_EXTRA additional
+     * digits, if it will lead to an exact result.
+     */
+    public String getFullCopyText() {
+        if (!mValid
+                || mLsdOffset == Integer.MAX_VALUE
+                || fullTextIsExact()
+                || mWholeLen > MAX_RECOMPUTE_DIGITS
+                || mWholeLen + mLsdOffset > MAX_RECOMPUTE_DIGITS
+                || mLsdOffset - mLastDisplayedOffset > MAX_COPY_EXTRA) {
+            return getFullText();
+        }
+        // It's reasonable to compute and copy the exact result instead.
+        final int nonNegLsdOffset = Math.max(0, mLsdOffset);
+        final String rawResult = mEvaluator.getRational().toString(nonNegLsdOffset);
+        final String formattedResult = formatResult(rawResult, nonNegLsdOffset, MAX_COPY_SIZE,
+                false, rawResult.charAt(0) == '-', null, true);
+        return KeyMaps.translateResult(formattedResult);
     }
 
     /**
@@ -582,9 +615,14 @@ public class CalculatorResult extends AlignedTextView {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
             case R.id.menu_copy:
-                copyContent();
-                mode.finish();
-                return true;
+                if (mEvaluator.reevaluationInProgress()) {
+                    // Refuse to copy placeholder characters.
+                    return false;
+                } else {
+                    copyContent();
+                    mode.finish();
+                    return true;
+                }
             default:
                 return false;
             }
@@ -638,7 +676,7 @@ public class CalculatorResult extends AlignedTextView {
     }
 
     private void copyContent() {
-        final CharSequence text = getFullText();
+        final CharSequence text = getFullCopyText();
         ClipboardManager clipboard =
                 (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         // We include a tag URI, to allow us to recognize our own results and handle them

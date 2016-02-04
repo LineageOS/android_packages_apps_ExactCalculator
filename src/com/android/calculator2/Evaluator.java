@@ -350,7 +350,7 @@ class Evaluator {
                     return new InitialResult(R.string.timeout);
                 }
                 int precOffset = INIT_PREC;
-                String initResult = res.val.toString(precOffset);
+                String initResult = res.toString(precOffset);
                 int msd = getMsdIndexOf(initResult);
                 if (BoundedRational.asBigInteger(res.ratVal) == null
                         && msd == INVALID_MSD) {
@@ -364,7 +364,7 @@ class Evaluator {
                 final int newPrecOffset = initDisplayOffset + EXTRA_DIGITS;
                 if (newPrecOffset > precOffset) {
                     precOffset = newPrecOffset;
-                    initResult = res.val.toString(precOffset);
+                    initResult = res.toString(precOffset);
                 }
                 return new InitialResult(res.val, res.ratVal,
                         initResult, precOffset, initDisplayOffset);
@@ -902,6 +902,13 @@ class Evaluator {
             mCalculator.onEvaluate(preferredPrecOffset, msdIndex, leastDigOffset,
                     truncatedWholePart);
         }
+    }
+
+    /**
+     * Is a reevaluation still in progress?
+     */
+    public boolean reevaluationInProgress() {
+        return mCurrentReevaluator != null;
     }
 
     /**

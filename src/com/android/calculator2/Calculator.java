@@ -939,8 +939,8 @@ public class Calculator extends Activity
      * Map them to the appropriate button pushes when possible.  Leftover characters
      * are added to mUnprocessedChars, which is presumed to immediately precede the newly
      * added characters.
-     * @param moreChars Characters to be added.
-     * @param explicit These characters were explicitly typed by the user, not pasted.
+     * @param moreChars characters to be added
+     * @param explicit these characters were explicitly typed by the user, not pasted
      */
     private void addChars(String moreChars, boolean explicit) {
         if (mUnprocessedChars != null) {

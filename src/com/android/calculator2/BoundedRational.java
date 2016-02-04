@@ -35,7 +35,7 @@ public class BoundedRational {
     // much faster.
     // TODO: Maybe eventually make this extend Number?
 
-    private static final int MAX_SIZE = 800; // total, in bits
+    private static final int MAX_SIZE = 2000; // total, in bits
 
     private final BigInteger mNum;
     private final BigInteger mDen;
@@ -70,11 +70,11 @@ public class BoundedRational {
 
     /**
      * Convert to readable String.
-     * Intended for output output to user.  More expensive, less useful for debugging than
+     * Intended for output to user.  More expensive, less useful for debugging than
      * toString().  Not internationalized.
      */
     public String toNiceString() {
-        BoundedRational nicer = reduce().positiveDen();
+        final BoundedRational nicer = reduce().positiveDen();
         String result = nicer.mNum.toString();
         if (!nicer.mDen.equals(BigInteger.ONE)) {
             result += "/" + nicer.mDen;
@@ -87,6 +87,33 @@ public class BoundedRational {
             return "not a small rational";
         }
         return r.toString();
+    }
+
+    /**
+     * Return a string with n copies of c.
+     */
+    private static String repeat(char c, int n) {
+        final StringBuilder result = new StringBuilder();
+        for (int i = 0; i < n; ++i) {
+            result.append(c);
+        }
+        return result.toString();
+    }
+
+    /*
+     * Returns a truncated (rounded towards 0) representation of the result.
+     * Includes n digits to the right of the decimal point.
+     * @param n result precision, >= 0
+     */
+    public String toString(int n) {
+        String digits = mNum.abs().multiply(BigInteger.TEN.pow(n)).divide(mDen.abs()).toString();
+        int len = digits.length();
+        if (len < n + 1) {
+            digits = repeat('0', n + 1 - len) + digits;
+            len = n + 1;
+        }
+        return (signum() < 0 ? "-" : "") + digits.substring(0, len - n) + "."
+                + digits.substring(len - n);
     }
 
     /**

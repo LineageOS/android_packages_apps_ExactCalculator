@@ -1130,6 +1130,15 @@ class CalculatorExpr {
             val = v;
             ratVal = rv;
         }
+        /*
+         * Return decimal String result to the indicated precision.
+         * For rational values this is the exactly truncated result.
+         * Otherwise the error is < 1 in the last included digit.
+         * @param precOffset Always non-negative. 1 is accurate 1/10, 2 means 1/100, etc.
+         */
+        public String toString(int precOffset) {
+            return ratVal == null ? val.toString(precOffset) : ratVal.toString(precOffset);
+        }
     }
 
     /**
