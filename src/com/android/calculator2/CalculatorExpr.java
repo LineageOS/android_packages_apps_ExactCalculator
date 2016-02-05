@@ -619,9 +619,9 @@ class CalculatorExpr {
      * The caller supplies the value, degree mode, and short string representation, which must
      * have been previously computed.  Thus this is guaranteed to terminate reasonably quickly.
      */
-    public CalculatorExpr abbreviate(CR val, BoundedRational ratVal,
-                              boolean dm, String sr) {
+    public CalculatorExpr abbreviate(CR val, BoundedRational ratVal, boolean dm, String sr) {
         CalculatorExpr result = new CalculatorExpr();
+        @SuppressWarnings("unchecked")
         Token t = new PreEval(val, ratVal, new CalculatorExpr((ArrayList<Token>) mExpr.clone()),
                 new EvalContext(dm, mExpr.size()), sr);
         result.mExpr.add(t);

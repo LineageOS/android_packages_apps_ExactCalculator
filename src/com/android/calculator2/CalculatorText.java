@@ -138,22 +138,20 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (!isLaidOut()) {
+            // Prevent shrinking/resizing with our variable textSize.
+            setTextSizeInternal(TypedValue.COMPLEX_UNIT_PX, mMaximumTextSize,
+                    false /* notifyListener */);
+            setMinHeight(getLineHeight() + getCompoundPaddingBottom()
+                    + getCompoundPaddingTop());
+        }
+
         // Re-calculate our textSize based on new width.
-        final int width = MeasureSpec.getSize(widthMeasureSpec)
+        mWidthConstraint = MeasureSpec.getSize(widthMeasureSpec)
                 - getPaddingLeft() - getPaddingRight();
-        if (mWidthConstraint != width) {
-            mWidthConstraint = width;
-
-            if (!isLaidOut()) {
-                // Prevent shrinking/resizing with our variable textSize.
-                setTextSizeInternal(TypedValue.COMPLEX_UNIT_PX, mMaximumTextSize,
-                        false /* notifyListener */);
-                setMinHeight(getLineHeight() + getCompoundPaddingBottom()
-                        + getCompoundPaddingTop());
-            }
-
-            setTextSizeInternal(TypedValue.COMPLEX_UNIT_PX, getVariableTextSize(getText()),
-                    false);
+        final float textSize = getVariableTextSize(getText());
+        if (getTextSize() != textSize) {
+            setTextSizeInternal(TypedValue.COMPLEX_UNIT_PX, textSize, false /* notifyListener */);
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
