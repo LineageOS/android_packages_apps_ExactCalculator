@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,8 +35,16 @@ public class CalculatorPadViewPager extends ViewPager {
         }
 
         @Override
-        public View instantiateItem(ViewGroup container, int position) {
-            return getChildAt(position);
+        public View instantiateItem(ViewGroup container, final int position) {
+            final View child = getChildAt(position);
+            child.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setCurrentItem(position, true /* smoothScroll */);
+                }
+            });
+
+            return child;
         }
 
         @Override
@@ -59,9 +68,11 @@ public class CalculatorPadViewPager extends ViewPager {
         public void onPageSelected(int position) {
             for (int i = getChildCount() - 1; i >= 0; --i) {
                 final View child = getChildAt(i);
+                // Only the "peeking" or covered page should be clickable.
+                child.setClickable(i != position);
+
                 // Prevent clicks and accessibility focus from going through to descendants of
                 // other pages which are covered by the current page.
-                child.setClickable(i == position);
                 child.setImportantForAccessibility(i == position
                         ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
                         : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
@@ -84,12 +95,38 @@ public class CalculatorPadViewPager extends ViewPager {
         }
     };
 
+    private final GestureDetector.SimpleOnGestureListener mGestureWatcher =
+            new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent ev) {
+                    if (mClickedItemIndex != -1) {
+                        getChildAt(mClickedItemIndex).performClick();
+                        mClickedItemIndex = -1;
+                        return true;
+                    }
+                    return super.onSingleTapUp(ev);
+                }
+
+                @Override
+                public boolean onDown(MotionEvent e) {
+                    // Return true so calls to onSingleTapUp are not blocked
+                    return true;
+                }
+            };
+
+    private final GestureDetector mGestureDetector;
+
+    private int mClickedItemIndex = -1;
+
     public CalculatorPadViewPager(Context context) {
         this(context, null /* attrs */);
     }
 
     public CalculatorPadViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        mGestureDetector = new GestureDetector(context, mGestureWatcher);
+        mGestureDetector.setIsLongpressEnabled(false);
 
         setAdapter(mStaticPagerAdapter);
         setBackgroundColor(Color.BLACK);
@@ -126,11 +163,21 @@ public class CalculatorPadViewPager extends ViewPager {
                         && x >= child.getLeft() && x < child.getRight()
                         && y >= child.getTop() && y < child.getBottom()) {
                     shouldIntercept = (childIndex != getCurrentItem());
+                    mClickedItemIndex = childIndex;
                     break;
                 }
             }
         }
 
         return shouldIntercept;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        // Allow both the gesture detector and super to handle the touch event so they both see
+        // the full sequence of events. This should be safe since the gesture detector only
+        // handle clicks and super only handles swipes.
+        mGestureDetector.onTouchEvent(ev);
+        return super.onTouchEvent(ev);
     }
 }
