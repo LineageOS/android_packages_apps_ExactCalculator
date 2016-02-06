@@ -184,12 +184,14 @@ public class Calculator extends Activity
         }
     };
 
-    private static final String NAME = Calculator.class.getName();
+    private static final String NAME = "Calculator";
     private static final String KEY_DISPLAY_STATE = NAME + "_display_state";
     private static final String KEY_UNPROCESSED_CHARS = NAME + "_unprocessed_chars";
+    /**
+     * Associated value is a byte array holding the evaluator state.
+     */
     private static final String KEY_EVAL_STATE = NAME + "_eval_state";
-                // Associated value is a byte array holding both mCalculatorState
-                // and the (much more complex) evaluator state.
+    private static final String KEY_INVERSE_MODE = NAME + "_inverse_mode";
 
     private CalculatorState mCurrentState;
     private Evaluator mEvaluator;
@@ -295,7 +297,8 @@ public class Calculator extends Activity
         mFormulaText.setOnPasteListener(this);
         mDeleteButton.setOnLongClickListener(this);
 
-        onInverseToggled(mInverseToggle.isSelected());
+        onInverseToggled(savedInstanceState != null
+                && savedInstanceState.getBoolean(KEY_INVERSE_MODE));
         onModeChanged(mEvaluator.getDegreeMode());
 
         if (mCurrentState != CalculatorState.INPUT) {
@@ -331,6 +334,7 @@ public class Calculator extends Activity
             throw new AssertionError("Impossible IO exception", e);
         }
         outState.putByteArray(KEY_EVAL_STATE, byteArrayStream.toByteArray());
+        outState.putBoolean(KEY_INVERSE_MODE, mInverseToggle.isSelected());
     }
 
     // Set the state, updating delete label and display colors.
@@ -409,6 +413,7 @@ public class Calculator extends Activity
      * @param showInverse {@code true} if inverse functions should be shown
      */
     private void onInverseToggled(boolean showInverse) {
+        mInverseToggle.setSelected(showInverse);
         if (showInverse) {
             mInverseToggle.setContentDescription(getString(R.string.desc_inv_on));
             for (View invertibleButton : mInvertibleButtons) {
