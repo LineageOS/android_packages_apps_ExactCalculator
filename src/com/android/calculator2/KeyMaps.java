@@ -463,10 +463,15 @@ public class KeyMaps {
             sOutputForResultChar.put('E', "E");
             sOutputForResultChar.put(' ', String.valueOf(CHAR_DIGIT_UNKNOWN));
             sOutputForResultChar.put(ELLIPSIS.charAt(0), ELLIPSIS);
+            // Translate numbers for fraction display, but not the separating slash, which appears
+            // to be universal.  We also do not translate the ln, sqrt, pi
             sOutputForResultChar.put('/', "/");
-                        // Translate numbers for fraction display, but not
-                        // the separating slash, which appears to be
-                        // universal.
+            sOutputForResultChar.put('(', "(");
+            sOutputForResultChar.put(')', ")");
+            sOutputForResultChar.put('l', "l");
+            sOutputForResultChar.put('n', "n");
+            sOutputForResultChar.put('\u221A', "\u221A"); // SQUARE ROOT
+            sOutputForResultChar.put('\u03C0', "\u03C0"); // GREEK SMALL LETTER PI
             addButtonToOutputMap('-', R.id.op_sub);
             addButtonToOutputMap('.', R.id.dec_point);
             for (int i = 0; i <= 9; ++i) {
@@ -500,6 +505,7 @@ public class KeyMaps {
     /**
      * Return the localization of the string s representing a numeric answer.
      * Callable only from UI thread.
+     * A trailing e is treated as the mathematical constant, not an exponent.
      */
     public static String translateResult(String s) {
         StringBuilder result = new StringBuilder();
@@ -507,13 +513,15 @@ public class KeyMaps {
         validateMaps();
         for (int i = 0; i < len; ++i) {
             char c = s.charAt(i);
-            String translation = sOutputForResultChar.get(c);
-            if (translation == null) {
-                // Should not get here.  Report if we do.
-                Log.v("Calculator", "Bad character:" + c);
-                result.append(String.valueOf(c));
-            } else {
-                result.append(translation);
+            if (i < len - 1 || c != 'e') {
+                String translation = sOutputForResultChar.get(c);
+                if (translation == null) {
+                    // Should not get here.  Report if we do.
+                    Log.v("Calculator", "Bad character:" + c);
+                    result.append(String.valueOf(c));
+                } else {
+                    result.append(translation);
+                }
             }
         }
         return result.toString();
