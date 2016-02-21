@@ -31,8 +31,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,11 +43,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.text.TextUtils;
 import android.util.Property;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -196,7 +194,7 @@ public class Calculator extends Activity
     private CalculatorState mCurrentState;
     private Evaluator mEvaluator;
 
-    private View mDisplayView;
+    private CalculatorDisplay mDisplayView;
     private TextView mModeView;
     private CalculatorText mFormulaText;
     private CalculatorResult mResultText;
@@ -232,7 +230,15 @@ public class Calculator extends Activity
         // Hide all default options in the ActionBar.
         getActionBar().setDisplayOptions(0);
 
-        mDisplayView = findViewById(R.id.display);
+        // Ensure the toolbar stays visible while the options menu is displayed.
+        getActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
+            @Override
+            public void onMenuVisibilityChanged(boolean isVisible) {
+                mDisplayView.setForceToolbarVisible(isVisible);
+            }
+        });
+
+        mDisplayView = (CalculatorDisplay) findViewById(R.id.display);
         mModeView = (TextView) findViewById(R.id.mode);
         mFormulaText = (CalculatorText) findViewById(R.id.formula);
         mResultText = (CalculatorResult) findViewById(R.id.result);
@@ -313,6 +319,14 @@ public class Calculator extends Activity
         //       We probably should.  Details may require care to deal with:
         //         - new display size
         //         - slow recomputation if we've scrolled far.
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Always show the toolbar initially on launch.
+        mDisplayView.showToolbar();
     }
 
     @Override
@@ -452,6 +466,9 @@ public class Calculator extends Activity
             mModeToggle.setText(R.string.mode_deg);
             mModeToggle.setContentDescription(getString(R.string.desc_switch_deg));
         }
+
+        // Show the toolbar to highlight the mode change.
+        mDisplayView.showToolbar();
     }
 
     /**
@@ -514,11 +531,16 @@ public class Calculator extends Activity
         // Any animation is ended before we get here.
         mCurrentButton = view;
         stopActionMode();
+
+        // Attempt to hide the toolbar whenever an interaction has occurred.
+        mDisplayView.hideToolbar();
+
         // See onKey above for the rationale behind some of the behavior below:
         if (mCurrentState != CalculatorState.EVALUATE) {
             // Cancel evaluations that were not specifically requested.
             mEvaluator.cancelAll(true);
         }
+
         final int id = view.getId();
         switch (id) {
             case R.id.eq:
@@ -581,6 +603,9 @@ public class Calculator extends Activity
     @Override
     public boolean onLongClick(View view) {
         mCurrentButton = view;
+
+        // Attempt to hide the toolbar whenever an interaction has occurred.
+        mDisplayView.hideToolbar();
 
         if (view.getId() == R.id.del) {
             onClear();
