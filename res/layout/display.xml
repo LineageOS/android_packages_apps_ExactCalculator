@@ -15,7 +15,7 @@
   limitations under the License.
   -->
 
-<RelativeLayout
+<com.android.calculator2.CalculatorDisplay
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/display"
     android:layout_width="match_parent"
@@ -61,4 +61,4 @@
         android:singleLine="true"
         android:textColor="@color/display_result_text_color" />
 
-</RelativeLayout>
+</com.android.calculator2.CalculatorDisplay>
