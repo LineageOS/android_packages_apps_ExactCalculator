@@ -776,7 +776,7 @@ public class Calculator extends Activity
     }
 
     private void onClear() {
-        if (mEvaluator.getExpr().isEmpty()) {
+        if (mEvaluator.getExpr().isEmpty() && !haveUnprocessed()) {
             return;
         }
         cancelIfEvaluating(true);
