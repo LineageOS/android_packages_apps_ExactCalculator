@@ -47,13 +47,6 @@ public class CalculatorResult extends AlignedTextView {
         // A larger value is unlikely to avoid running out of space
     final OverScroller mScroller;
     final GestureDetector mGestureDetector;
-    class MyTouchListener implements View.OnTouchListener {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            return mGestureDetector.onTouchEvent(event);
-        }
-    }
-    final MyTouchListener mTouchListener = new MyTouchListener();
     private Evaluator mEvaluator;
     private boolean mScrollable = false;
                             // A scrollable result is currently displayed.
@@ -158,12 +151,27 @@ public class CalculatorResult extends AlignedTextView {
                 @Override
                 public void onLongPress(MotionEvent e) {
                     if (mValid) {
-                        mActionMode = startActionMode(mCopyActionModeCallback,
-                                ActionMode.TYPE_FLOATING);
+                        performLongClick();
                     }
                 }
             });
-        setOnTouchListener(mTouchListener);
+        setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return mGestureDetector.onTouchEvent(event);
+            }
+        });
+        setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mValid) {
+                    mActionMode = startActionMode(mCopyActionModeCallback,
+                            ActionMode.TYPE_FLOATING);
+                    return true;
+                }
+                return false;
+            }
+        });
         setHorizontallyScrolling(false);  // do it ourselves
         setCursorVisible(false);
         mExponentColorSpan = new ForegroundColorSpan(
