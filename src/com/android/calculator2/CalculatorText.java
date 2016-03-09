@@ -23,7 +23,6 @@ import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.text.Layout;
 import android.text.TextPaint;
-import android.text.method.ScrollingMovementMethod;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.ActionMode;
@@ -37,6 +36,8 @@ import android.widget.TextView;
  * TextView adapted for Calculator display.
  */
 public class CalculatorText extends AlignedTextView implements View.OnLongClickListener {
+
+    public static final String TAG_ACTION_MODE = "ACTION_MODE";
 
     private final ActionMode.Callback2 mPasteActionModeCallback = new ActionMode.Callback2() {
 
@@ -52,6 +53,7 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.setTag(TAG_ACTION_MODE);
             final ClipboardManager clipboard = (ClipboardManager) getContext()
                     .getSystemService(Context.CLIPBOARD_SERVICE);
             if (clipboard.hasPrimaryClip()) {
@@ -120,12 +122,6 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
                 (mMaximumTextSize - mMinimumTextSize) / 3);
         a.recycle();
 
-        // Allow scrolling by default.
-        setMovementMethod(ScrollingMovementMethod.getInstance());
-
-        // Reset the clickable flag, which is added when specifying a movement method.
-        setClickable(false);
-
         // Add a long click to start the ActionMode manually.
         setOnLongClickListener(this);
     }
@@ -156,8 +152,6 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
-
-    public int getWidthConstraint() { return mWidthConstraint; }
 
     @Override
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {

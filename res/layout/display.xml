@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize">
 
-       <TextView
+        <TextView
             android:id="@+id/mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -38,25 +38,34 @@
 
     </Toolbar>
 
-    <com.android.calculator2.CalculatorText
-        android:id="@+id/formula"
-        style="@style/DisplayTextStyle.Formula"
+    <com.android.calculator2.CalculatorScrollView
+        android:id="@+id/formula_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/toolbar"
-        android:ellipsize="none"
-        android:longClickable="true"
-        android:singleLine="true"
-        android:scrollHorizontally="true"
-        android:textColor="@color/display_formula_text_color"
-        android:textIsSelectable="false" />
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+       <com.android.calculator2.CalculatorText
+            android:id="@+id/formula"
+            style="@style/DisplayTextStyle.Formula"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom|end"
+            android:ellipsize="none"
+            android:longClickable="true"
+            android:singleLine="true"
+            android:textColor="@color/display_formula_text_color"
+            android:textIsSelectable="false" />
+
+    </com.android.calculator2.CalculatorScrollView>
 
     <com.android.calculator2.CalculatorResult
         android:id="@+id/result"
         style="@style/DisplayTextStyle.Result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/formula"
+        android:layout_below="@id/formula_container"
         android:bufferType="spannable"
         android:singleLine="true"
         android:textColor="@color/display_result_text_color" />

@@ -43,11 +43,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Property;
+import android.view.ActionMode;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -57,7 +60,9 @@ import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroupOverlay;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -192,6 +197,38 @@ public class Calculator extends Activity
     private static final String KEY_EVAL_STATE = NAME + "_eval_state";
     private static final String KEY_INVERSE_MODE = NAME + "_inverse_mode";
 
+    private final ViewTreeObserver.OnPreDrawListener mPreDrawListener =
+            new ViewTreeObserver.OnPreDrawListener() {
+        @Override
+        public boolean onPreDraw() {
+            mFormulaContainer.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
+            final ViewTreeObserver observer = mFormulaContainer.getViewTreeObserver();
+            if (observer.isAlive()) {
+                observer.removeOnPreDrawListener(this);
+            }
+            return false;
+        }
+    };
+
+    private final TextWatcher mFormulaTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int start, int count, int after) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            final ViewTreeObserver observer = mFormulaContainer.getViewTreeObserver();
+            if (observer.isAlive()) {
+                observer.removeOnPreDrawListener(mPreDrawListener);
+                observer.addOnPreDrawListener(mPreDrawListener);
+            }
+        }
+    };
+
     private CalculatorState mCurrentState;
     private Evaluator mEvaluator;
 
@@ -199,6 +236,7 @@ public class Calculator extends Activity
     private TextView mModeView;
     private CalculatorText mFormulaText;
     private CalculatorResult mResultText;
+    private HorizontalScrollView mFormulaContainer;
 
     private ViewPager mPadViewPager;
     private View mDeleteButton;
@@ -243,6 +281,7 @@ public class Calculator extends Activity
         mModeView = (TextView) findViewById(R.id.mode);
         mFormulaText = (CalculatorText) findViewById(R.id.formula);
         mResultText = (CalculatorResult) findViewById(R.id.result);
+        mFormulaContainer = (HorizontalScrollView) findViewById(R.id.formula_container);
 
         mPadViewPager = (ViewPager) findViewById(R.id.pad_pager);
         mDeleteButton = findViewById(R.id.del);
@@ -302,6 +341,7 @@ public class Calculator extends Activity
         mFormulaText.setOnKeyListener(mFormulaOnKeyListener);
         mFormulaText.setOnTextSizeChangeListener(this);
         mFormulaText.setOnPasteListener(this);
+        mFormulaText.addTextChangedListener(mFormulaTextWatcher);
         mDeleteButton.setOnLongClickListener(this);
 
         onInverseToggled(savedInstanceState != null
@@ -350,6 +390,14 @@ public class Calculator extends Activity
         }
         outState.putByteArray(KEY_EVAL_STATE, byteArrayStream.toByteArray());
         outState.putBoolean(KEY_INVERSE_MODE, mInverseToggle.isSelected());
+    }
+
+    @Override
+    public void onActionModeStarted(ActionMode mode) {
+        super.onActionModeStarted(mode);
+        if (mode.getTag() == CalculatorText.TAG_ACTION_MODE) {
+            mFormulaContainer.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
+        }
     }
 
     // Set the state, updating delete label and display colors.
@@ -843,9 +891,9 @@ public class Calculator extends Activity
 
         // Calculate the necessary translations so the result takes the place of the formula and
         // the formula moves off the top of the screen.
-        final float resultTranslationY = (mFormulaText.getBottom() - mResultText.getBottom())
-                - (mFormulaText.getPaddingBottom() - mResultText.getPaddingBottom());
-        final float formulaTranslationY = -mFormulaText.getBottom();
+        final float resultTranslationY = (mFormulaContainer.getBottom() - mResultText.getBottom())
+                - (mFormulaContainer.getPaddingBottom() - mResultText.getPaddingBottom());
+        final float formulaTranslationY = -mFormulaContainer.getBottom();
 
         // Change the result's textColor to match the formula.
         final int formulaTextColor = mFormulaText.getCurrentTextColor();
@@ -861,7 +909,8 @@ public class Calculator extends Activity
                             PropertyValuesHolder.ofFloat(View.SCALE_Y, resultScale),
                             PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, resultTranslationY)),
                     ObjectAnimator.ofArgb(mResultText, TEXT_COLOR, formulaTextColor),
-                    ObjectAnimator.ofFloat(mFormulaText, View.TRANSLATION_Y, formulaTranslationY));
+                    ObjectAnimator.ofFloat(mFormulaContainer, View.TRANSLATION_Y,
+                            formulaTranslationY));
             animatorSet.setDuration(getResources().getInteger(
                     android.R.integer.config_longAnimTime));
             animatorSet.addListener(new AnimatorListenerAdapter() {
@@ -879,7 +928,7 @@ public class Calculator extends Activity
             mResultText.setScaleY(resultScale);
             mResultText.setTranslationY(resultTranslationY);
             mResultText.setTextColor(formulaTextColor);
-            mFormulaText.setTranslationY(formulaTranslationY);
+            mFormulaContainer.setTranslationY(formulaTranslationY);
             setState(CalculatorState.RESULT);
         }
     }
@@ -894,7 +943,7 @@ public class Calculator extends Activity
         mResultText.setScaleY(1.0f);
         mResultText.setTranslationX(0.0f);
         mResultText.setTranslationY(0.0f);
-        mFormulaText.setTranslationY(0.0f);
+        mFormulaContainer.setTranslationY(0.0f);
 
         mFormulaText.requestFocus();
     }
