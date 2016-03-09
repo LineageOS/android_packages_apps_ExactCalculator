@@ -1055,7 +1055,7 @@ class CalculatorExpr {
             return false;
         }
         Operator op = (Operator) mExpr.get(pos + 2);
-        return op.id == R.id.op_add || op.id == R.id.op_sub;
+        return op.id == R.id.op_add || op.id == R.id.op_sub || op.id == R.id.rparen;
     }
 
     /**
