@@ -213,6 +213,9 @@
     <!-- Content description for "inv" button to hide inverse functions. [CHAR_LIMIT=NONE] -->
     <string name="desc_inv_on">hide inverse functions</string>
 
+    <!-- Content description for formula field when it is empty. [CHAR_LIMIT=NONE] -->
+    <string name="desc_formula">No formula</string>
+
     <!-- Error displayed when expression evaluates to an undefined result. [CHAR_LIMIT=20] -->
     <string name="error_nan">Not a number</string>
     <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=20] -->

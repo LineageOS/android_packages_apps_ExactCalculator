@@ -45,6 +45,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Property;
 import android.view.KeyCharacterMap;
@@ -598,6 +599,8 @@ public class Calculator extends Activity
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         mFormulaText.changeTextTo(formula);
+        mFormulaText.setContentDescription(TextUtils.isEmpty(formula)
+                ? getString(R.string.desc_formula) : formula.toString());
     }
 
     @Override
