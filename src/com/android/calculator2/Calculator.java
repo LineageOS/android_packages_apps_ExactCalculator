@@ -973,7 +973,7 @@ public class Calculator extends Activity
 
         // Show the fraction option when displaying a rational result.
         menu.findItem(R.id.menu_fraction).setVisible(mCurrentState == CalculatorState.RESULT
-                && mEvaluator.getRational() != null);
+                && mEvaluator.getResult().exactlyDisplayable());
 
         return true;
     }
@@ -1000,7 +1000,7 @@ public class Calculator extends Activity
     }
 
     private void displayFraction() {
-        BoundedRational result = mEvaluator.getRational();
+        UnifiedReal result = mEvaluator.getResult();
         displayMessage(KeyMaps.translateResult(result.toNiceString()));
     }
 

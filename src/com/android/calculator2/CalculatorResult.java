@@ -510,7 +510,7 @@ public class CalculatorResult extends AlignedTextView {
         }
         // It's reasonable to compute and copy the exact result instead.
         final int nonNegLsdOffset = Math.max(0, mLsdOffset);
-        final String rawResult = mEvaluator.getRational().toString(nonNegLsdOffset);
+        final String rawResult = mEvaluator.getResult().toStringTruncated(nonNegLsdOffset);
         final String formattedResult = formatResult(rawResult, nonNegLsdOffset, MAX_COPY_SIZE,
                 false, rawResult.charAt(0) == '-', null, true);
         return KeyMaps.translateResult(formattedResult);
