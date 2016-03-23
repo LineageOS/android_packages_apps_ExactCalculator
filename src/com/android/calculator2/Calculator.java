@@ -892,7 +892,7 @@ public class Calculator extends Activity
         // Calculate the necessary translations so the result takes the place of the formula and
         // the formula moves off the top of the screen.
         final float resultTranslationY = (mFormulaContainer.getBottom() - mResultText.getBottom())
-                - (mFormulaContainer.getPaddingBottom() - mResultText.getPaddingBottom());
+                - (mFormulaText.getPaddingBottom() - mResultText.getPaddingBottom());
         final float formulaTranslationY = -mFormulaContainer.getBottom();
 
         // Change the result's textColor to match the formula.
