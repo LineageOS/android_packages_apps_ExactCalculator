@@ -979,6 +979,21 @@ class CalculatorExpr {
     }
 
     /**
+     * Does the expression contain trig operations?
+     */
+    public boolean hasTrigFuncs() {
+        for (Token t: mExpr) {
+            if (t instanceof Operator) {
+                Operator o = (Operator)t;
+                if (KeyMaps.isTrigFunc(o.id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Evaluate the expression excluding trailing binary operators.
      * Errors result in exceptions, most of which are unchecked.  Should not be called
      * concurrently with modification of the expression.  May take a very long time; avoid calling

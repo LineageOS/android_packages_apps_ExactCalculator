@@ -89,7 +89,7 @@ public class CalculatorDisplay extends RelativeLayout
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
                 if (mToolbar.getVisibility() != View.VISIBLE) {
-                    showToolbar();
+                    showToolbar(true);
                 } else {
                     hideToolbar();
                 }
@@ -97,7 +97,6 @@ public class CalculatorDisplay extends RelativeLayout
                 return true;
             }
         });
-        mTapDetector.setIsLongpressEnabled(false);
     }
 
     @Override
@@ -125,7 +124,7 @@ public class CalculatorDisplay extends RelativeLayout
     @Override
     public void onAccessibilityStateChanged(boolean enabled) {
         // Always show the toolbar whenever accessibility is enabled.
-        showToolbar();
+        showToolbar(true);
     }
 
     @Override
@@ -152,14 +151,17 @@ public class CalculatorDisplay extends RelativeLayout
      * @param forceToolbarVisible {@code true} to keep the toolbar visible
      */
     public void setForceToolbarVisible(boolean forceToolbarVisible) {
-        mForceToolbarVisible = forceToolbarVisible;
-        showToolbar();
+        if (mForceToolbarVisible != forceToolbarVisible) {
+            mForceToolbarVisible = forceToolbarVisible;
+            showToolbar(!forceToolbarVisible);
+        }
     }
 
     /**
      * Shows the toolbar.
+     * @param autoHide Automatically ide toolbar again after delay
      */
-    public void showToolbar() {
+    public void showToolbar(boolean autoHide) {
         // Only animate if we have been laid out at least once.
         if (isLaidOut()) {
             TransitionManager.beginDelayedTransition(this, mTransition);
@@ -170,7 +172,7 @@ public class CalculatorDisplay extends RelativeLayout
         removeCallbacks(mHideToolbarRunnable);
 
         // Auto hide the toolbar after 3 seconds.
-        if (!getForceToolbarVisible()) {
+        if (autoHide && !getForceToolbarVisible()) {
             postDelayed(mHideToolbarRunnable, AUTO_HIDE_DELAY_MILLIS);
         }
     }

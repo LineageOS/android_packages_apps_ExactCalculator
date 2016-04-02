@@ -303,8 +303,8 @@ public class Calculator extends Activity
     protected void onResume() {
         super.onResume();
 
-        // Always show the toolbar initially on launch.
-        mDisplayView.showToolbar();
+        // Always temporarily show the toolbar initially on launch.
+        showAndMaybeHideToolbar();
     }
 
     @Override
@@ -510,7 +510,7 @@ public class Calculator extends Activity
         }
 
         // Show the toolbar to highlight the mode change.
-        mDisplayView.showToolbar();
+        showAndMaybeHideToolbar();
     }
 
     /**
@@ -569,13 +569,33 @@ public class Calculator extends Activity
         }
     }
 
+    /**
+     * Show the toolbar.
+     * Automatically hide it again if it's not relevant to current formula.
+     */
+    private void showAndMaybeHideToolbar() {
+        final boolean shouldBeVisible =
+                mCurrentState == CalculatorState.INPUT && mEvaluator.hasTrigFuncs();
+        mDisplayView.showToolbar(!shouldBeVisible);
+    }
+
+    /**
+     * Display or hide the toolbar depending on calculator state.
+     */
+    private void showOrHideToolbar() {
+        final boolean shouldBeVisible =
+                mCurrentState == CalculatorState.INPUT && mEvaluator.hasTrigFuncs();
+        if (shouldBeVisible) {
+            mDisplayView.showToolbar(false);
+        } else {
+            mDisplayView.hideToolbar();
+        }
+    }
+
     public void onButtonClick(View view) {
         // Any animation is ended before we get here.
         mCurrentButton = view;
         stopActionMode();
-
-        // Attempt to hide the toolbar whenever an interaction has occurred.
-        mDisplayView.hideToolbar();
 
         // See onKey above for the rationale behind some of the behavior below:
         if (mCurrentState != CalculatorState.EVALUATE) {
@@ -593,7 +613,7 @@ public class Calculator extends Activity
                 break;
             case R.id.clr:
                 onClear();
-                break;
+                return;  // Toolbar visibility adjusted at end of animation.
             case R.id.toggle_inv:
                 final boolean selected = !mInverseToggle.isSelected();
                 mInverseToggle.setSelected(selected);
@@ -617,7 +637,7 @@ public class Calculator extends Activity
                 if (!haveUnprocessed() && mEvaluator.getExpr().hasInterestingOps()) {
                     mEvaluator.evaluateAndShowResult();
                 }
-                break;
+                return;  // onModeChanged adjusted toolbar visibility.
             default:
                 cancelIfEvaluating(false);
                 if (haveUnprocessed()) {
@@ -630,6 +650,7 @@ public class Calculator extends Activity
                 }
                 break;
         }
+        showOrHideToolbar();
     }
 
     void redisplayFormula() {
@@ -647,9 +668,6 @@ public class Calculator extends Activity
     @Override
     public boolean onLongClick(View view) {
         mCurrentButton = view;
-
-        // Attempt to hide the toolbar whenever an interaction has occurred.
-        mDisplayView.hideToolbar();
 
         if (view.getId() == R.id.del) {
             onClear();
@@ -832,6 +850,7 @@ public class Calculator extends Activity
                 mResultText.clear();
                 mEvaluator.clear();
                 setState(CalculatorState.INPUT);
+                showOrHideToolbar();
                 redisplayFormula();
             }
         });
@@ -1086,10 +1105,12 @@ public class Calculator extends Activity
             // There are characters left, but we can't convert them to button presses.
             mUnprocessedChars = moreChars.substring(current);
             redisplayAfterFormulaChange();
+            showOrHideToolbar();
             return;
         }
         mUnprocessedChars = null;
         redisplayAfterFormulaChange();
+        showOrHideToolbar();
     }
 
     @Override

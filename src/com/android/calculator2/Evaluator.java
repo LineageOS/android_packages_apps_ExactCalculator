@@ -148,6 +148,9 @@ class Evaluator {
     // value.
     private boolean mChangedValue;
 
+    // The main expression contains trig functions.
+    private boolean mHasTrigFuncs;
+
     private SharedPreferences mSharedPrefs;
 
     private boolean mDegreeMode;       // Currently in degree (not radian) mode.
@@ -847,6 +850,7 @@ class Evaluator {
 
     private void clearPreservingTimeout() {
         mExpr.clear();
+        mHasTrigFuncs = false;
         clearCache();
     }
 
@@ -957,6 +961,7 @@ class Evaluator {
             mExpr = new CalculatorExpr(in);
             mSavedName = in.readUTF();
             mSaved = new CalculatorExpr(in);
+            mHasTrigFuncs = mExpr.hasTrigFuncs();
         } catch (IOException e) {
             Log.v("Calculator", "Exception while restoring:\n" + e);
         }
@@ -992,7 +997,14 @@ class Evaluator {
             return true;
         } else {
             mChangedValue = mChangedValue || !KeyMaps.isBinary(id);
-            return mExpr.add(id);
+            if (mExpr.add(id)) {
+                if (!mHasTrigFuncs) {
+                    mHasTrigFuncs = KeyMaps.isTrigFunc(id);
+                }
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -1002,6 +1014,7 @@ class Evaluator {
         if (mExpr.isEmpty()) {
             mLongTimeout = false;
         }
+        mHasTrigFuncs = mExpr.hasTrigFuncs();
     }
 
     void setDegreeMode(boolean degreeMode) {
@@ -1039,6 +1052,7 @@ class Evaluator {
         clearPreservingTimeout();
         mExpr.append(abbrvExpr);
         mChangedValue = true;
+        mHasTrigFuncs = false;  // Degree mode no longer affects expression value.
     }
 
     /**
@@ -1121,6 +1135,14 @@ class Evaluator {
      */
     public CalculatorExpr getExpr() {
         return mExpr;
+    }
+
+    /**
+     * Does the current main expression contain trig functions?
+     * Might its value depend on DEG/RAD mode?
+     */
+    public boolean hasTrigFuncs() {
+        return mHasTrigFuncs;
     }
 
     /**

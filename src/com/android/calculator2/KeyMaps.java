@@ -183,10 +183,10 @@ public class KeyMaps {
     }
 
     /**
-     * Does a button id correspond to a function that introduces an implicit lparen?
+     * Does a button id correspond to a trig function?
      * Pure function.
      */
-    public static boolean isFunc(int id) {
+    public static boolean isTrigFunc(int id) {
         switch(id) {
             case R.id.fun_sin:
             case R.id.fun_cos:
@@ -194,6 +194,21 @@ public class KeyMaps {
             case R.id.fun_arcsin:
             case R.id.fun_arccos:
             case R.id.fun_arctan:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Does a button id correspond to a function that introduces an implicit lparen?
+     * Pure function.
+     */
+    public static boolean isFunc(int id) {
+        if (isTrigFunc(id)) {
+            return true;
+        }
+        switch(id) {
             case R.id.fun_ln:
             case R.id.fun_log:
             case R.id.fun_exp:
