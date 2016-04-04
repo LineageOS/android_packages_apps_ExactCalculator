@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 The Android Open Source Project
+ * Copyright (C) 2016 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroupOverlay;
@@ -127,67 +126,6 @@ public class Calculator extends Activity
         }
     };
 
-    // We currently assume that the formula does not change out from under us in
-    // any way. We explicitly handle all input to the formula here.
-    private final OnKeyListener mFormulaOnKeyListener = new OnKeyListener() {
-        @Override
-        public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-            stopActionMode();
-            // Never consume DPAD key events.
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_DPAD_UP:
-                case KeyEvent.KEYCODE_DPAD_DOWN:
-                case KeyEvent.KEYCODE_DPAD_LEFT:
-                case KeyEvent.KEYCODE_DPAD_RIGHT:
-                    return false;
-            }
-            // Always cancel unrequested in-progress evaluation, so that we don't have
-            // to worry about subsequent asynchronous completion.
-            // Requested in-progress evaluations are handled below.
-            if (mCurrentState != CalculatorState.EVALUATE) {
-                mEvaluator.cancelAll(true);
-            }
-            // In other cases we go ahead and process the input normally after cancelling:
-            if (keyEvent.getAction() != KeyEvent.ACTION_UP) {
-                return true;
-            }
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_NUMPAD_ENTER:
-                case KeyEvent.KEYCODE_ENTER:
-                case KeyEvent.KEYCODE_DPAD_CENTER:
-                    mCurrentButton = mEqualButton;
-                    onEquals();
-                    break;
-                case KeyEvent.KEYCODE_DEL:
-                    mCurrentButton = mDeleteButton;
-                    onDelete();
-                    break;
-                default:
-                    cancelIfEvaluating(false);
-                    final int raw = keyEvent.getKeyCharacterMap()
-                            .get(keyCode, keyEvent.getMetaState());
-                    if ((raw & KeyCharacterMap.COMBINING_ACCENT) != 0) {
-                        return true; // discard
-                    }
-                    // Try to discard non-printing characters and the like.
-                    // The user will have to explicitly delete other junk that gets past us.
-                    if (Character.isIdentifierIgnorable(raw)
-                            || Character.isWhitespace(raw)) {
-                        return true;
-                    }
-                    char c = (char) raw;
-                    if (c == '=') {
-                        mCurrentButton = mEqualButton;
-                        onEquals();
-                    } else {
-                        addChars(String.valueOf(c), true);
-                        redisplayAfterFormulaChange();
-                    }
-            }
-            return true;
-        }
-    };
-
     private static final String NAME = "Calculator";
     private static final String KEY_DISPLAY_STATE = NAME + "_display_state";
     private static final String KEY_UNPROCESSED_CHARS = NAME + "_unprocessed_chars";
@@ -201,7 +139,7 @@ public class Calculator extends Activity
             new ViewTreeObserver.OnPreDrawListener() {
         @Override
         public boolean onPreDraw() {
-            mFormulaContainer.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
+            mFormulaContainer.scrollTo(mFormulaText.getRight(), 0);
             final ViewTreeObserver observer = mFormulaContainer.getViewTreeObserver();
             if (observer.isAlive()) {
                 observer.removeOnPreDrawListener(this);
@@ -338,7 +276,6 @@ public class Calculator extends Activity
             mEvaluator.clear();
         }
 
-        mFormulaText.setOnKeyListener(mFormulaOnKeyListener);
         mFormulaText.setOnTextSizeChangeListener(this);
         mFormulaText.setOnPasteListener(this);
         mFormulaText.addTextChangedListener(mFormulaTextWatcher);
@@ -392,14 +329,6 @@ public class Calculator extends Activity
         outState.putBoolean(KEY_INVERSE_MODE, mInverseToggle.isSelected());
     }
 
-    @Override
-    public void onActionModeStarted(ActionMode mode) {
-        super.onActionModeStarted(mode);
-        if (mode.getTag() == CalculatorText.TAG_ACTION_MODE) {
-            mFormulaContainer.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
-        }
-    }
-
     // Set the state, updating delete label and display colors.
     // This restores display positions on moving to INPUT.
     // But movement/animation for moving to RESULT has already been done.
@@ -434,6 +363,14 @@ public class Calculator extends Activity
         }
     }
 
+    @Override
+    public void onActionModeStarted(ActionMode mode) {
+        super.onActionModeStarted(mode);
+        if (mode.getTag() == CalculatorText.TAG_ACTION_MODE) {
+            mFormulaContainer.scrollTo(mFormulaText.getRight(), 0);
+        }
+    }
+
     // Stop any active ActionMode.  Return true if there was one.
     private boolean stopActionMode() {
         if (mResultText.stopActionMode()) {
@@ -443,6 +380,17 @@ public class Calculator extends Activity
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+
+        // If there's an animation in progress, end it immediately, so the user interaction can
+        // be handled.
+        if (mCurrentAnimator != null) {
+            mCurrentAnimator.end();
+        }
     }
 
     @Override
@@ -460,13 +408,56 @@ public class Calculator extends Activity
     }
 
     @Override
-    public void onUserInteraction() {
-        super.onUserInteraction();
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        stopActionMode();
 
-        // If there's an animation in progress, end it immediately, so the user interaction can
-        // be handled.
-        if (mCurrentAnimator != null) {
-            mCurrentAnimator.end();
+        // Never consume DPAD key events.
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_UP:
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                return super.onKeyUp(keyCode, event);
+        }
+
+        // Always cancel unrequested in-progress evaluation, so that we don't have to worry about
+        // subsequent asynchronous completion.
+        // Requested in-progress evaluations are handled below.
+        if (mCurrentState != CalculatorState.EVALUATE) {
+            mEvaluator.cancelAll(true);
+        }
+
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_NUMPAD_ENTER:
+            case KeyEvent.KEYCODE_ENTER:
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+                mCurrentButton = mEqualButton;
+                onEquals();
+                return true;
+            case KeyEvent.KEYCODE_DEL:
+                mCurrentButton = mDeleteButton;
+                onDelete();
+                return true;
+            default:
+                cancelIfEvaluating(false);
+                final int raw = event.getKeyCharacterMap().get(keyCode, event.getMetaState());
+                if ((raw & KeyCharacterMap.COMBINING_ACCENT) != 0) {
+                    return true; // discard
+                }
+                // Try to discard non-printing characters and the like.
+                // The user will have to explicitly delete other junk that gets past us.
+                if (Character.isIdentifierIgnorable(raw) || Character.isWhitespace(raw)) {
+                    return true;
+                }
+                char c = (char) raw;
+                if (c == '=') {
+                    mCurrentButton = mEqualButton;
+                    onEquals();
+                } else {
+                    addChars(String.valueOf(c), true);
+                    redisplayAfterFormulaChange();
+                }
+                return true;
         }
     }
 
