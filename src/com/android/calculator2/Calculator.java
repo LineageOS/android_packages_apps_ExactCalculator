@@ -411,8 +411,9 @@ public class Calculator extends Activity
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         stopActionMode();
 
-        // Never consume DPAD key events.
+        // Allow the system to handle special key codes (e.g. "BACK" or "DPAD").
         switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
             case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_DPAD_LEFT:
