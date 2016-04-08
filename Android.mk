@@ -19,7 +19,6 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
 
-LOCAL_OVERRIDES_PACKAGES := Calculator
 LOCAL_PACKAGE_NAME := ExactCalculator
 
 LOCAL_SDK_VERSION := current
