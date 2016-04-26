@@ -61,7 +61,7 @@
     <string name="error_syntax" msgid="4786987111228645602">"খারাপ এক্সপ্রেশন"</string>
     <string name="error_aborted" msgid="3402238176316342537">"বাতিল করা হয়েছে"</string>
     <string name="error_overflow" msgid="7800547394563434764">"অসীম?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"0 দিয়ে শেয়ার করা যাবে না"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0 দিয়ে ভাগ করা যাবে না"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"পাঠ্য প্রতিলিপি হয়েছে"</string>
     <string name="cancelled" msgid="1618889609742874632">"গুনতি বাতিল করা হয়েছে"</string>
     <string name="timeout" msgid="802690170415591535">"সময় শেষ হয়েছে। মূল্য অসীম বা অনির্ধারিত হতে পারে।"</string>
