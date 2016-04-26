@@ -1034,6 +1034,13 @@ class Evaluator {
     }
 
     /**
+     * Mark the expression as changed, preventing next evaluation request from being ignored.
+     */
+    public void touch() {
+        mChangedValue = true;
+    }
+
+    /**
      * Abbreviate current expression, and put result in mSaved.
      * mExpr is left alone.  Return false if result is unavailable.
      */
