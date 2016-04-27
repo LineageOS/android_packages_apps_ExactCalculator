@@ -21,6 +21,7 @@ import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Rect;
+import android.support.v4.os.BuildCompat;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -655,17 +656,18 @@ public class CalculatorResult extends AlignedTextView {
                 outRect.left = outRect.right - width;
             }
 
-            // The CAB *currently* only takes the translation of a view into account, so if a scale
-            // is applied to the view then the offset outRect will end up being positioned
-            // incorrectly. We workaround that limitation by manually applying the scale to the
-            // outRect, which the CAB will then offset to the correct position.
-            final float scaleX = view.getScaleX();
-            final float scaleY = view.getScaleY();
-            outRect.left *= scaleX;
-            outRect.right *= scaleX;
-            outRect.top *= scaleY;
-            outRect.bottom *= scaleY;
-
+            if (!BuildCompat.isAtLeastN()) {
+                // The CAB (prior to N) only takes the translation of a view into account, so if
+                // a scale is applied to the view then the offset outRect will end up being
+                // positioned incorrectly. We workaround that limitation by manually applying the
+                // scale to the outRect, which the CAB will then offset to the correct position.
+                final float scaleX = view.getScaleX();
+                final float scaleY = view.getScaleY();
+                outRect.left *= scaleX;
+                outRect.right *= scaleX;
+                outRect.top *= scaleY;
+                outRect.bottom *= scaleY;
+            }
         }
     };
 
