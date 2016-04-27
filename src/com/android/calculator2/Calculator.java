@@ -409,8 +409,6 @@ public class Calculator extends Activity
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        stopActionMode();
-
         // Allow the system to handle special key codes (e.g. "BACK" or "DPAD").
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
@@ -420,6 +418,9 @@ public class Calculator extends Activity
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 return super.onKeyUp(keyCode, event);
         }
+
+        // Stop the action mode if it's showing.
+        stopActionMode();
 
         // Always cancel unrequested in-progress evaluation, so that we don't have to worry about
         // subsequent asynchronous completion.
