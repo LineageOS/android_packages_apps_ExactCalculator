@@ -56,12 +56,13 @@
     <string name="desc_clr" msgid="737502124268890797">"цэвэрлэх"</string>
     <string name="desc_del" msgid="7879515781929311432">"устгах"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"урвуу фүнкцыг харуулах"</string>
-    <string name="desc_inv_on" msgid="2515675590767677178">"урвуу функцыг нуух"</string>
+    <string name="desc_inv_on" msgid="2515675590767677178">"урвуу функцийг нуух"</string>
+    <string name="desc_formula" msgid="8056588859637585007">"Томъёо байхгүй"</string>
     <string name="error_nan" msgid="5674077944929888710">"Тоо биш байна"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Буруу илэрхийлэл"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Зогсоосон"</string>
     <string name="error_overflow" msgid="7800547394563434764">"хязгааргүй?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"0-д хуваах боломжгүй байна"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"0-д хуваах боломжгүй"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Текстийг хуулсан"</string>
     <string name="cancelled" msgid="1618889609742874632">"Тооцооллыг цуцаллаа"</string>
     <string name="timeout" msgid="802690170415591535">"Хугацаа дууссан. Утга нь эсвэл хязгааргүй эсвэл тодорхойгүй байж болно."</string>
