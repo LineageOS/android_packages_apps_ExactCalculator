@@ -60,7 +60,7 @@
     <string name="error_syntax" msgid="4786987111228645602">"Swak uitdrukking"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Gestaak"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Oneindig?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"Kan nie deur 0 deel"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"Kan nie deur 0 deel nie"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Teks is gekopieer"</string>
     <string name="cancelled" msgid="1618889609742874632">"Berekening is gekanselleer"</string>
     <string name="timeout" msgid="802690170415591535">"Het uitgetel. Waarde is dalk oneindig of ongedefinieer."</string>

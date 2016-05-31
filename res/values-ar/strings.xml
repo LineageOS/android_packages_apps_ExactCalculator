@@ -60,7 +60,7 @@
     <string name="error_syntax" msgid="4786987111228645602">"صيغة سيئة"</string>
     <string name="error_aborted" msgid="3402238176316342537">"تم الإلغاء"</string>
     <string name="error_overflow" msgid="7800547394563434764">"غير محدد؟"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"لا يمكن القسمة على 0"</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"لا يمكن القسمة على ۰"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"تم نسخ النص"</string>
     <string name="cancelled" msgid="1618889609742874632">"تم إلغاء العملية الحسابية"</string>
     <string name="timeout" msgid="802690170415591535">"انتهت المهلة. ربما تكون القيمة لانهائية أو غير مُحدَّدة."</string>

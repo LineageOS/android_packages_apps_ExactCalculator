@@ -52,8 +52,8 @@
     <string name="desc_switch_deg" msgid="6675211986921592374">"chuyển sang độ"</string>
     <string name="desc_switch_rad" msgid="2845875847488919914">"chuyển sang radian"</string>
     <string name="desc_eq" msgid="3349320880874699285">"bằng"</string>
-    <string name="desc_clr" msgid="737502124268890797">"xóa"</string>
-    <string name="desc_del" msgid="7879515781929311432">"xóa"</string>
+    <string name="desc_clr" msgid="737502124268890797">"xóa sạch"</string>
+    <string name="desc_del" msgid="7879515781929311432">"gạch bỏ"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"hiển thị hàm nghịch"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ẩn hàm nghịch"</string>
     <string name="error_nan" msgid="5674077944929888710">"Không phải số"</string>

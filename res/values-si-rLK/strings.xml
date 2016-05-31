@@ -57,7 +57,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"ප්‍රතිලෝම ශ්‍රිත පෙන්වන්න"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ප්‍රතිලෝම ශ්‍රිත සඟවන්න"</string>
     <string name="error_nan" msgid="5674077944929888710">"අංකයක් නොවේ"</string>
-    <string name="error_syntax" msgid="4786987111228645602">"වැරදි ප්‍රකාශනය"</string>
+    <string name="error_syntax" msgid="4786987111228645602">"වැරදි ප්‍රකාශනයක්"</string>
     <string name="error_aborted" msgid="3402238176316342537">"නතර කෙරිණි"</string>
     <string name="error_overflow" msgid="7800547394563434764">"අපිරිමිත?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0 න් බෙදිය නොහැකිය"</string>
