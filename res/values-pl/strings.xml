@@ -57,6 +57,7 @@
     <string name="desc_del" msgid="7879515781929311432">"usuń"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"pokaż funkcje odwrotne"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ukryj funkcje odwrotne"</string>
+    <string name="desc_formula" msgid="8056588859637585007">"Brak formuły"</string>
     <string name="error_nan" msgid="5674077944929888710">"To nie liczba"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Błędne wyrażenie"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Przerwano"</string>
