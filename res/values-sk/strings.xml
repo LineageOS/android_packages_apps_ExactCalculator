@@ -57,6 +57,7 @@
     <string name="desc_del" msgid="7879515781929311432">"odstrániť"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"zobraziť inverzné funkcie"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"skryť inverzné funkcie"</string>
+    <string name="desc_formula" msgid="8056588859637585007">"Žiadny vzorec"</string>
     <string name="error_nan" msgid="5674077944929888710">"Nie je číslo"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Chybný výraz"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Prerušené"</string>
