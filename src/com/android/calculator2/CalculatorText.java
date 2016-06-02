@@ -16,16 +16,19 @@
 
 package com.android.calculator2;
 
+import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.os.Build;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.ActionMode;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,57 +38,9 @@ import android.widget.TextView;
 /**
  * TextView adapted for Calculator display.
  */
-public class CalculatorText extends AlignedTextView implements View.OnLongClickListener {
+public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuItemClickListener {
 
     public static final String TAG_ACTION_MODE = "ACTION_MODE";
-
-    private final ActionMode.Callback2 mPasteActionModeCallback = new ActionMode.Callback2() {
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            if (item.getItemId() == R.id.menu_paste) {
-                paste();
-                mode.finish();
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.setTag(TAG_ACTION_MODE);
-            final ClipboardManager clipboard = (ClipboardManager) getContext()
-                    .getSystemService(Context.CLIPBOARD_SERVICE);
-            if (clipboard.hasPrimaryClip()) {
-                bringPointIntoView(length());
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.paste, menu);
-                return true;
-            }
-            // Prevents the selection action mode on double tap.
-            return false;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = null;
-        }
-
-        @Override
-        public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
-            super.onGetContentRect(mode, view, outRect);
-            outRect.top += getTotalPaddingTop();
-            outRect.right -= getTotalPaddingRight();
-            outRect.bottom -= getTotalPaddingBottom();
-            // Encourage menu positioning towards the right, possibly over formula.
-            outRect.left = outRect.right;
-        }
-    };
 
     // Temporary paint for use in layout methods.
     private final TextPaint mTempPaint = new TextPaint();
@@ -95,9 +50,9 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
     private final float mStepTextSize;
 
     private int mWidthConstraint = -1;
-
     private ActionMode mActionMode;
-
+    private ActionMode.Callback mPasteActionModeCallback;
+    private ContextMenu mContextMenu;
     private OnPasteListener mOnPasteListener;
     private OnTextSizeChangeListener mOnTextSizeChangeListener;
 
@@ -122,14 +77,11 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
                 (mMaximumTextSize - mMinimumTextSize) / 3);
         a.recycle();
 
-        // Add a long click to start the ActionMode manually.
-        setOnLongClickListener(this);
-    }
-
-    @Override
-    public boolean onLongClick(View v) {
-        mActionMode = startActionMode(mPasteActionModeCallback, ActionMode.TYPE_FLOATING);
-        return true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            setupActionMode();
+        } else {
+            setupContextMenu();
+        }
     }
 
     @Override
@@ -253,9 +205,13 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
         setText(newText);
     }
 
-    public boolean stopActionMode() {
+    public boolean stopActionModeOrContextMenu() {
         if (mActionMode != null) {
             mActionMode.finish();
+            return true;
+        }
+        if (mContextMenu != null) {
+            mContextMenu.close();
             return true;
         }
         return false;
@@ -269,6 +225,95 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
         mOnPasteListener = listener;
     }
 
+    /**
+     * Use ActionMode for paste support on M and higher.
+     */
+    @TargetApi(Build.VERSION_CODES.M)
+    private void setupActionMode() {
+        mPasteActionModeCallback = new ActionMode.Callback2() {
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                if (onMenuItemClick(item)) {
+                    mode.finish();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.setTag(TAG_ACTION_MODE);
+                final MenuInflater inflater = mode.getMenuInflater();
+                return createPasteMenu(inflater, menu);
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                mActionMode = null;
+            }
+
+            @Override
+            public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
+                super.onGetContentRect(mode, view, outRect);
+                outRect.top += getTotalPaddingTop();
+                outRect.right -= getTotalPaddingRight();
+                outRect.bottom -= getTotalPaddingBottom();
+                // Encourage menu positioning towards the right, possibly over formula.
+                outRect.left = outRect.right;
+            }
+        };
+        setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mActionMode = startActionMode(mPasteActionModeCallback, ActionMode.TYPE_FLOATING);
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Use ContextMenu for paste support on L and lower.
+     */
+    private void setupContextMenu() {
+        setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu, View view,
+                    ContextMenu.ContextMenuInfo contextMenuInfo) {
+                final MenuInflater inflater = new MenuInflater(getContext());
+                createPasteMenu(inflater, contextMenu);
+                mContextMenu = contextMenu;
+                for(int i = 0; i < contextMenu.size(); i++) {
+                    contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorText.this);
+                }
+            }
+        });
+        setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return showContextMenu();
+            }
+        });
+    }
+
+    private boolean createPasteMenu(MenuInflater inflater, Menu menu) {
+        final ClipboardManager clipboard = (ClipboardManager) getContext()
+                .getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard.hasPrimaryClip()) {
+            bringPointIntoView(length());
+            inflater.inflate(R.menu.paste, menu);
+            return true;
+        }
+        // Prevents the selection action mode on double tap.
+        return false;
+    }
+
     private void paste() {
         final ClipboardManager clipboard = (ClipboardManager) getContext()
                 .getSystemService(Context.CLIPBOARD_SERVICE);
@@ -276,6 +321,15 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
         if (primaryClip != null && mOnPasteListener != null) {
             mOnPasteListener.onPaste(primaryClip);
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.menu_paste) {
+            paste();
+            return true;
+        }
+        return false;
     }
 
     public interface OnTextSizeChangeListener {

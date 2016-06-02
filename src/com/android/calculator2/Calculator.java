@@ -34,6 +34,7 @@ import android.animation.PropertyValuesHolder;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -42,6 +43,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
@@ -369,14 +371,18 @@ public class Calculator extends Activity
             }
 
             if (mCurrentState == CalculatorState.ERROR) {
-                final int errorColor = getColor(R.color.calculator_error_color);
+                final int errorColor =
+                        ContextCompat.getColor(this, R.color.calculator_error_color);
                 mFormulaText.setTextColor(errorColor);
                 mResultText.setTextColor(errorColor);
                 getWindow().setStatusBarColor(errorColor);
             } else if (mCurrentState != CalculatorState.RESULT) {
-                mFormulaText.setTextColor(getColor(R.color.display_formula_text_color));
-                mResultText.setTextColor(getColor(R.color.display_result_text_color));
-                getWindow().setStatusBarColor(getColor(R.color.calculator_accent_color));
+                mFormulaText.setTextColor(
+                        ContextCompat.getColor(this, R.color.display_formula_text_color));
+                mResultText.setTextColor(
+                        ContextCompat.getColor(this, R.color.display_result_text_color));
+                getWindow().setStatusBarColor(
+                        ContextCompat.getColor(this, R.color.calculator_accent_color));
             }
 
             invalidateOptionsMenu();
@@ -391,12 +397,15 @@ public class Calculator extends Activity
         }
     }
 
-    // Stop any active ActionMode.  Return true if there was one.
-    private boolean stopActionMode() {
-        if (mResultText.stopActionMode()) {
+    /**
+     * Stop any active ActionMode or ContextMenu for copy/paste actions.
+     * Return true if there was one.
+     */
+    private boolean stopActionModeOrContextMenu() {
+        if (mResultText.stopActionModeOrContextMenu()) {
             return true;
         }
-        if (mFormulaText.stopActionMode()) {
+        if (mFormulaText.stopActionModeOrContextMenu()) {
             return true;
         }
         return false;
@@ -415,7 +424,7 @@ public class Calculator extends Activity
 
     @Override
     public void onBackPressed() {
-        if (!stopActionMode()) {
+        if (!stopActionModeOrContextMenu()) {
             if (mPadViewPager != null && mPadViewPager.getCurrentItem() != 0) {
                 // Select the previous pad.
                 mPadViewPager.setCurrentItem(mPadViewPager.getCurrentItem() - 1);
@@ -439,8 +448,8 @@ public class Calculator extends Activity
                 return super.onKeyUp(keyCode, event);
         }
 
-        // Stop the action mode if it's showing.
-        stopActionMode();
+        // Stop the action mode or context menu if it's showing.
+        stopActionModeOrContextMenu();
 
         // Always cancel unrequested in-progress evaluation, so that we don't have to worry about
         // subsequent asynchronous completion.
@@ -615,7 +624,7 @@ public class Calculator extends Activity
     public void onButtonClick(View view) {
         // Any animation is ended before we get here.
         mCurrentButton = view;
-        stopActionMode();
+        stopActionModeOrContextMenu();
 
         // See onKey above for the rationale behind some of the behavior below:
         if (mCurrentState != CalculatorState.EVALUATE) {
@@ -811,7 +820,7 @@ public class Calculator extends Activity
         revealView.setBottom(displayRect.bottom);
         revealView.setLeft(displayRect.left);
         revealView.setRight(displayRect.right);
-        revealView.setBackgroundColor(getColor(colorRes));
+        revealView.setBackgroundColor(ContextCompat.getColor(this, colorRes));
         groupOverlay.add(revealView);
 
         final int[] clearLocation = new int[2];
@@ -1161,5 +1170,13 @@ public class Calculator extends Activity
             addChars(item.coerceToText(this).toString(), false);
         }
         return true;
+    }
+
+    /**
+     * Clean up animation for context menu.
+     */
+    @Override
+    public void onContextMenuClosed(Menu menu) {
+        stopActionModeOrContextMenu();
     }
 }
