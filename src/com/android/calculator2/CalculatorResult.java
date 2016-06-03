@@ -194,13 +194,28 @@ public class CalculatorResult extends AlignedTextView {
         mEvaluator = evaluator;
     }
 
+    // Compute maximum digit width the hard way.
+    private static float getMaxDigitWidth(TextPaint paint) {
+        // Compute the maximum advance width for each digit, thus accounting for between-character
+        // spaces. If we ever support other kinds of digits, we may have to avoid kerning effects
+        // that could reduce the advance width within this particular string.
+        final String allDigits = "0123456789";
+        final float[] widths = new float[allDigits.length()];
+        paint.getTextWidths(allDigits, widths);
+        float maxWidth = 0;
+        for (float x : widths) {
+            maxWidth = Math.max(x, maxWidth);
+        }
+        return maxWidth;
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         final TextPaint paint = getPaint();
         final Context context = getContext();
-        final float newCharWidth = Layout.getDesiredWidth("\u2007", paint);
+        final float newCharWidth = getMaxDigitWidth(paint);
         // Digits are presumed to have no more than newCharWidth.
         // We sometimes replace a character by an ellipsis or, due to SCI_NOTATION_EXTRA, add
         // an extra decimal separator beyond the maximum number of characters we normally allow.
