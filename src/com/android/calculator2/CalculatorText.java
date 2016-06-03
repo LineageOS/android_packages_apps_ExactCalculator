@@ -138,8 +138,14 @@ public class CalculatorText extends AlignedTextView implements View.OnLongClickL
             // Prevent shrinking/resizing with our variable textSize.
             setTextSizeInternal(TypedValue.COMPLEX_UNIT_PX, mMaximumTextSize,
                     false /* notifyListener */);
-            setMinHeight(getLineHeight() + getCompoundPaddingBottom()
+            setMinimumHeight(getLineHeight() + getCompoundPaddingBottom()
                     + getCompoundPaddingTop());
+        }
+
+        // Ensure we are at least as big as our parent.
+        final int width = MeasureSpec.getSize(widthMeasureSpec);
+        if (getMinimumWidth() != width) {
+            setMinimumWidth(width);
         }
 
         // Re-calculate our textSize based on new width.
