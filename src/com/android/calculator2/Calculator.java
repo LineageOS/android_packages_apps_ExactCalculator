@@ -747,8 +747,8 @@ public class Calculator extends Activity
     }
 
     private void onEquals() {
-        // In non-INPUT state assume this was redundant and ignore it.
-        if (mCurrentState == CalculatorState.INPUT && !mEvaluator.getExpr().isEmpty()) {
+        // Ignore if in non-INPUT state, or if there are no operators.
+        if (mCurrentState == CalculatorState.INPUT && mEvaluator.getExpr().hasInterestingOps()) {
             setState(CalculatorState.EVALUATE);
             if (haveUnprocessed()) {
                 onError(R.string.error_syntax);
