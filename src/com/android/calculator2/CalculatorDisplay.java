@@ -25,10 +25,10 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.Toolbar;
 
-public class CalculatorDisplay extends RelativeLayout
+public class CalculatorDisplay extends LinearLayout
         implements AccessibilityManager.AccessibilityStateChangeListener {
 
     /**

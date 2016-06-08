@@ -19,6 +19,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.calculator2">
 
+    <supports-screens android:requiresSmallestWidthDp="230" />
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher_calculator"
@@ -42,5 +44,4 @@
             android:theme="@style/Theme.Licenses" />
 
     </application>
-
 </manifest>

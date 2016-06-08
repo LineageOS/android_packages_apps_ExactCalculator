@@ -16,5 +16,8 @@
   -->
 
 <resources>
-    <item name="activity_calculator" type="layout">@layout/activity_calculator_port</item>
+
+    <!-- The margin between the pad pages when displayed using a view pager. -->
+    <dimen name="pad_page_margin">24dip</dimen>
+
 </resources>

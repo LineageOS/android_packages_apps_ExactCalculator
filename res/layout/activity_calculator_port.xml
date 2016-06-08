@@ -21,16 +21,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include
-        layout="@layout/display"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <include layout="@layout/display"/>
 
     <com.android.calculator2.CalculatorPadViewPager
         android:id="@+id/pad_pager"
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:overScrollMode="never">
 
         <LinearLayout
@@ -38,7 +35,7 @@
             android:layout_height="match_parent">
 
             <include layout="@layout/pad_numeric" />
-            <include layout="@layout/pad_operator_one_col" />
+            <include layout="@layout/pad_operator" />
 
         </LinearLayout>
 
