@@ -32,6 +32,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -180,13 +181,17 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                 return mGestureDetector.onTouchEvent(event);
             }
         });
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             setupActionMode();
         } else {
             setupContextMenu();
         }
-        setHorizontallyScrolling(false);  // do it ourselves
+
         setCursorVisible(false);
+
+        // Set a minimum height so scaled error messages won't affect our layout.
+        setMinimumHeight(getLineHeight() + getCompoundPaddingBottom() + getCompoundPaddingTop());
     }
 
     void setEvaluator(Evaluator evaluator) {
@@ -210,8 +215,6 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
         final TextPaint paint = getPaint();
         final Context context = getContext();
         final float newCharWidth = getMaxDigitWidth(paint);
@@ -235,6 +238,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             mWidthConstraint = newWidthConstraint;
             mCharWidth = newCharWidth;
         }
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     // Return the length of the exponent representation for the given exponent, in
@@ -359,7 +364,22 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     void displayError(int resourceId) {
         mValid = true;
         mScrollable = false;
-        setText(resourceId);
+        final String msg = getContext().getString(resourceId);
+        final float widthConstraint;
+        synchronized(mWidthLock) {
+            widthConstraint = mWidthConstraint;
+        }
+        final float measuredWidth = Layout.getDesiredWidth(msg, getPaint());
+        if (measuredWidth > widthConstraint) {
+            // Multiply by .99 to avoid rounding effects.
+            final float scaleFactor = 0.99f * widthConstraint / measuredWidth;
+            final RelativeSizeSpan smallTextSpan = new RelativeSizeSpan(scaleFactor);
+            final SpannableString scaledMsg = new SpannableString(msg);
+            scaledMsg.setSpan(smallTextSpan, 0, msg.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            setText(scaledMsg);
+        } else {
+            setText(msg);
+        }
     }
 
     private final int MAX_COPY_SIZE = 1000000;
