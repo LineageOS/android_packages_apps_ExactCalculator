@@ -18,31 +18,17 @@
 <com.android.calculator2.CalculatorDisplay
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/display"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    style="@style/DisplayLayoutStyle"
     android:background="@color/display_background_color"
-    android:elevation="4dip">
+    android:elevation="4dip"
+    android:orientation="vertical">
 
-    <Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize">
-
-        <TextView
-            android:id="@+id/mode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
-            android:textAllCaps="true"
-            android:textSize="16sp" />
-
-    </Toolbar>
+    <include layout="@layout/toolbar" />
 
     <com.android.calculator2.CalculatorScrollView
         android:id="@+id/formula_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar"
         android:overScrollMode="never"
         android:scrollbars="none">
 
@@ -65,7 +51,6 @@
         style="@style/DisplayTextStyle.Result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/formula_container"
         android:bufferType="spannable"
         android:singleLine="true"
         android:textColor="@color/display_result_text_color" />

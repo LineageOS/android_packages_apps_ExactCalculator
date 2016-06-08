@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (C) 2014 The Android Open Source Project
+  Copyright (C) 2016 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,9 +15,19 @@
   limitations under the License.
   -->
 
-<resources>
+<Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/actionBarSize"
+    android:layout_gravity="top">
 
-    <!-- The margin between the pad pages when displayed using a view pager. -->
-    <dimen name="pad_page_margin">-24dip</dimen>
+    <TextView
+        android:id="@+id/mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textAllCaps="true"
+        android:textSize="16sp" />
 
-</resources>
+</Toolbar>

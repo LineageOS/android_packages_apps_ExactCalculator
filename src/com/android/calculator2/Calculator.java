@@ -198,6 +198,9 @@ public class Calculator extends Activity
     // TODO: should probably match this to the error color?
     private ForegroundColorSpan mUnprocessedColorSpan = new ForegroundColorSpan(Color.RED);
 
+    // Whether the display is one line.
+    private boolean mOneLine;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -231,6 +234,8 @@ public class Calculator extends Activity
 
         mInverseToggle = (TextView) findViewById(R.id.toggle_inv);
         mModeToggle = (TextView) findViewById(R.id.toggle_mode);
+
+        mOneLine = mResultText.getVisibility() == View.INVISIBLE;
 
         mInvertibleButtons = new View[] {
                 findViewById(R.id.fun_sin),
@@ -346,6 +351,18 @@ public class Calculator extends Activity
             } else {
                 mDeleteButton.setVisibility(View.VISIBLE);
                 mClearButton.setVisibility(View.GONE);
+            }
+
+            if (mOneLine) {
+                if (mCurrentState == CalculatorState.RESULT
+                        || mCurrentState == CalculatorState.EVALUATE
+                        || mCurrentState == CalculatorState.ANIMATE) {
+                    mFormulaText.setVisibility(View.VISIBLE);
+                    mResultText.setVisibility(View.VISIBLE);
+                } else {
+                    mFormulaText.setVisibility(View.VISIBLE);
+                    mResultText.setVisibility(View.INVISIBLE);
+                }
             }
 
             if (mCurrentState == CalculatorState.ERROR) {
@@ -903,6 +920,10 @@ public class Calculator extends Activity
 
         // Calculate the necessary translations so the result takes the place of the formula and
         // the formula moves off the top of the screen.
+        if (mOneLine) {
+            // Position the result text.
+            mResultText.setY(mResultText.getBottom());
+        }
         final float resultTranslationY = (mFormulaContainer.getBottom() - mResultText.getBottom())
                 - (mFormulaText.getPaddingBottom() - mResultText.getPaddingBottom());
         final float formulaTranslationY = -mFormulaContainer.getBottom();
