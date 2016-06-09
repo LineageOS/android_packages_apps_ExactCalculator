@@ -782,7 +782,7 @@ class CalculatorExpr {
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            return new EvalRet(argVal.pos, fromRadians(argVal.val.cos(), ec));
+            return new EvalRet(argVal.pos, fromRadians(argVal.val.acos(), ec));
         case R.id.fun_arctan:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
