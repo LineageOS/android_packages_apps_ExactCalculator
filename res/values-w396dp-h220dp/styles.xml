@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (C) 2014 The Android Open Source Project
+  Copyright (C) 2016 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@
         <item name="android:paddingBottom">0dip</item>
         <item name="android:paddingStart">16dip</item>
         <item name="android:paddingEnd">16dip</item>
-        <item name="minTextSize">32dip</item>
+        <item name="android:gravity">bottom</item>
+        <item name="minTextSize">4dip</item>
         <item name="maxTextSize">40dip</item>
         <item name="stepTextSize">8dip</item>
     </style>
@@ -32,7 +33,9 @@
         <item name="android:paddingBottom">0dip</item>
         <item name="android:paddingStart">16dip</item>
         <item name="android:paddingEnd">16dip</item>
-        <item name="android:textSize">24dip</item>
+        <item name="android:gravity">bottom</item>
+        <item name="android:textSize">40dip</item>
+        <item name="android:visibility">invisible</item>
     </style>
 
     <style name="PadButtonStyle.Advanced">
@@ -69,7 +72,6 @@
 
     <style name="PadLayoutStyle.Numeric">
         <item name="android:layout_width">0dip</item>
-        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:paddingTop">12dip</item>
         <item name="android:paddingBottom">20dip</item>
@@ -83,7 +85,6 @@
 
     <style name="PadLayoutStyle.Operator">
         <item name="android:layout_width">0dip</item>
-        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:paddingTop">8dip</item>
         <item name="android:paddingBottom">24dip</item>
