@@ -68,8 +68,7 @@
 
     <style name="DisplayLayoutStyle">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0dip</item>
-        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
 </resources>

@@ -920,13 +920,15 @@ public class Calculator extends Activity
 
         // Calculate the necessary translations so the result takes the place of the formula and
         // the formula moves off the top of the screen.
+        final float resultTranslationY = (mFormulaContainer.getBottom() - mResultText.getBottom())
+                - (mFormulaText.getPaddingBottom() - mResultText.getPaddingBottom());
+        float formulaTranslationY = -mFormulaContainer.getBottom();
         if (mOneLine) {
             // Position the result text.
             mResultText.setY(mResultText.getBottom());
+            formulaTranslationY = -(findViewById(R.id.toolbar).getBottom()
+                    + mFormulaContainer.getBottom());
         }
-        final float resultTranslationY = (mFormulaContainer.getBottom() - mResultText.getBottom())
-                - (mFormulaText.getPaddingBottom() - mResultText.getPaddingBottom());
-        final float formulaTranslationY = -mFormulaContainer.getBottom();
 
         // Change the result's textColor to match the formula.
         final int formulaTextColor = mFormulaText.getCurrentTextColor();

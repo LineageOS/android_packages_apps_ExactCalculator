@@ -19,8 +19,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pad_advanced"
     style="@style/PadLayoutStyle.Advanced"
-    android:rowCount="5"
-    android:columnCount="3"
+    android:rowCount="3"
+    android:columnCount="5"
     android:background="@color/pad_advanced_background_color">
 
     <Button
@@ -41,26 +41,18 @@
         android:text="@string/mode_deg" />
 
     <Button
-        android:id="@+id/op_pct"
+        android:id="@+id/fun_sin"
         style="@style/PadButtonStyle.Advanced"
         android:layout_row="0"
         android:layout_column="2"
-        android:contentDescription="@string/desc_op_pct"
-        android:text="@string/op_pct" />
-
-    <Button
-        android:id="@+id/fun_sin"
-        style="@style/PadButtonStyle.Advanced"
-        android:layout_row="1"
-        android:layout_column="0"
         android:contentDescription="@string/desc_fun_sin"
         android:text="@string/fun_sin" />
 
     <Button
         android:id="@+id/fun_arcsin"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="1"
-        android:layout_column="0"
+        android:layout_row="0"
+        android:layout_column="2"
         android:contentDescription="@string/desc_fun_arcsin"
         android:fontFamily="sans-serif-medium"
         android:text="@string/fun_arcsin"
@@ -69,16 +61,16 @@
     <Button
         android:id="@+id/fun_cos"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="1"
-        android:layout_column="1"
+        android:layout_row="0"
+        android:layout_column="3"
         android:contentDescription="@string/desc_fun_cos"
         android:text="@string/fun_cos" />
 
     <Button
         android:id="@+id/fun_arccos"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="1"
-        android:layout_column="1"
+        android:layout_row="0"
+        android:layout_column="3"
         android:contentDescription="@string/desc_fun_arccos"
         android:fontFamily="sans-serif-medium"
         android:text="@string/fun_arccos"
@@ -87,34 +79,42 @@
     <Button
         android:id="@+id/fun_tan"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="1"
-        android:layout_column="2"
+        android:layout_row="0"
+        android:layout_column="4"
         android:contentDescription="@string/desc_fun_tan"
         android:text="@string/fun_tan" />
 
     <Button
         android:id="@+id/fun_arctan"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="1"
-        android:layout_column="2"
+        android:layout_row="0"
+        android:layout_column="4"
         android:contentDescription="@string/desc_fun_arctan"
         android:fontFamily="sans-serif-medium"
         android:text="@string/fun_arctan"
         android:visibility="gone" />
 
     <Button
+        android:id="@+id/op_pct"
+        style="@style/PadButtonStyle.Advanced"
+        android:layout_row="1"
+        android:layout_column="0"
+        android:contentDescription="@string/desc_op_pct"
+        android:text="@string/op_pct" />
+
+    <Button
         android:id="@+id/fun_ln"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="2"
-        android:layout_column="0"
+        android:layout_row="1"
+        android:layout_column="1"
         android:contentDescription="@string/desc_fun_ln"
         android:text="@string/fun_ln" />
 
     <Button
         android:id="@+id/fun_exp"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="2"
-        android:layout_column="0"
+        android:layout_row="1"
+        android:layout_column="1"
         android:contentDescription="@string/desc_fun_exp"
         android:fontFamily="sans-serif-medium"
         android:text="@string/fun_exp"
@@ -123,16 +123,16 @@
     <Button
         android:id="@+id/fun_log"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="2"
-        android:layout_column="1"
+        android:layout_row="1"
+        android:layout_column="2"
         android:contentDescription="@string/desc_fun_log"
         android:text="@string/fun_log" />
 
     <Button
         android:id="@+id/fun_10pow"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="2"
-        android:layout_column="1"
+        android:layout_row="1"
+        android:layout_column="2"
         android:contentDescription="@string/desc_fun_10pow"
         android:fontFamily="sans-serif-medium"
         android:text="@string/fun_10pow"
@@ -141,15 +141,23 @@
     <Button
         android:id="@+id/op_fact"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="2"
-        android:layout_column="2"
+        android:layout_row="1"
+        android:layout_column="3"
         android:contentDescription="@string/desc_op_fact"
         android:text="@string/op_fact" />
 
     <Button
+        android:id="@+id/op_pow"
+        style="@style/PadButtonStyle.Advanced"
+        android:layout_row="1"
+        android:layout_column="4"
+        android:contentDescription="@string/desc_op_pow"
+        android:text="@string/op_pow" />
+
+    <Button
         android:id="@+id/const_pi"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="3"
+        android:layout_row="2"
         android:layout_column="0"
         android:contentDescription="@string/desc_const_pi"
         android:text="@string/const_pi" />
@@ -157,48 +165,40 @@
     <Button
         android:id="@+id/const_e"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="3"
+        android:layout_row="2"
         android:layout_column="1"
         android:contentDescription="@string/desc_const_e"
         android:text="@string/const_e" />
 
     <Button
-        android:id="@+id/op_pow"
-        style="@style/PadButtonStyle.Advanced"
-        android:layout_row="3"
-        android:layout_column="2"
-        android:contentDescription="@string/desc_op_pow"
-        android:text="@string/op_pow" />
-
-    <Button
         android:id="@+id/lparen"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="4"
-        android:layout_column="0"
+        android:layout_row="2"
+        android:layout_column="2"
         android:contentDescription="@string/desc_lparen"
         android:text="@string/lparen" />
 
     <Button
         android:id="@+id/rparen"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="4"
-        android:layout_column="1"
+        android:layout_row="2"
+        android:layout_column="3"
         android:contentDescription="@string/desc_rparen"
         android:text="@string/rparen" />
 
     <Button
         android:id="@+id/op_sqrt"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="4"
-        android:layout_column="2"
+        android:layout_row="2"
+        android:layout_column="4"
         android:contentDescription="@string/desc_op_sqrt"
         android:text="@string/op_sqrt" />
 
     <Button
         android:id="@+id/op_sqr"
         style="@style/PadButtonStyle.Advanced"
-        android:layout_row="4"
-        android:layout_column="2"
+        android:layout_row="2"
+        android:layout_column="4"
         android:contentDescription="@string/desc_op_sqr"
         android:fontFamily="sans-serif-medium"
         android:text="@string/op_sqr"
