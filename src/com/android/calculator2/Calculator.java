@@ -359,6 +359,9 @@ public class Calculator extends Activity
                         || mCurrentState == CalculatorState.ANIMATE) {
                     mFormulaText.setVisibility(View.VISIBLE);
                     mResultText.setVisibility(View.VISIBLE);
+                } else if (mCurrentState == CalculatorState.ERROR) {
+                    mFormulaText.setVisibility(View.INVISIBLE);
+                    mResultText.setVisibility(View.VISIBLE);
                 } else {
                     mFormulaText.setVisibility(View.VISIBLE);
                     mResultText.setVisibility(View.INVISIBLE);
