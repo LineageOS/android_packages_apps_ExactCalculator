@@ -30,7 +30,7 @@
 
     <style name="DisplayTextStyle.Result">
         <item name="android:paddingTop">0dip</item>
-        <item name="android:paddingBottom">0dip</item>
+        <item name="android:paddingBottom">18dip</item>
         <item name="android:paddingStart">16dip</item>
         <item name="android:paddingEnd">16dip</item>
         <item name="android:gravity">bottom</item>

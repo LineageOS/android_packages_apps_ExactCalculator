@@ -64,8 +64,8 @@
 
     <style name="PadLayoutStyle.Advanced">
         <item name="android:elevation">4dip</item>
-        <item name="android:paddingTop">12dip</item>
-        <item name="android:paddingBottom">20dip</item>
+        <item name="android:paddingTop">8dip</item>
+        <item name="android:paddingBottom">8dip</item>
         <item name="android:paddingStart">20dip</item>
         <item name="android:paddingEnd">20dip</item>
     </style>
@@ -73,8 +73,8 @@
     <style name="PadLayoutStyle.Numeric">
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:paddingTop">12dip</item>
-        <item name="android:paddingBottom">20dip</item>
+        <item name="android:paddingTop">8dip</item>
+        <item name="android:paddingBottom">8dip</item>
         <item name="android:paddingStart">12dip</item>
         <item name="android:paddingEnd">12dip</item>
     </style>
@@ -87,7 +87,7 @@
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_weight">1</item>
         <item name="android:paddingTop">8dip</item>
-        <item name="android:paddingBottom">24dip</item>
+        <item name="android:paddingBottom">8dip</item>
         <item name="android:paddingStart">4dip</item>
         <item name="android:paddingEnd">28dip</item>
     </style>

@@ -29,7 +29,7 @@
 
     <style name="DisplayTextStyle.Result">
         <item name="android:paddingTop">0dip</item>
-        <item name="android:paddingBottom">0dip</item>
+        <item name="android:paddingBottom">24dip</item>
         <item name="android:paddingStart">44dip</item>
         <item name="android:paddingEnd">44dip</item>
         <item name="android:textSize">24dip</item>
