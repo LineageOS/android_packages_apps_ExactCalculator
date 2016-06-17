@@ -66,7 +66,7 @@
     <string name="cancelled" msgid="1618889609742874632">"Počítanie bolo zrušené"</string>
     <string name="timeout" msgid="802690170415591535">"Časový limit vypršal. Hodnota môže byť nekonečná alebo nedefinovaná."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Použiť dlhšie časové limity"</string>
-    <string name="dismiss" msgid="7872443888515066216">"Zatvoriť"</string>
+    <string name="dismiss" msgid="7872443888515066216">"Zavrieť"</string>
     <string name="exact" msgid="2597237880041789948">"(presne)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 na poslednom mieste)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Výsledok vrátane prvých číslic"</string>

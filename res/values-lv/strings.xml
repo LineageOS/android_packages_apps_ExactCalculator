@@ -61,7 +61,7 @@
     <string name="error_syntax" msgid="4786987111228645602">"Kļūd. izteiksme"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Pārtraukts"</string>
     <string name="error_overflow" msgid="7800547394563434764">"Vai bezgalība?"</string>
-    <string name="error_zero_divide" msgid="458040988686661801">"Nevar dalīt ar 0."</string>
+    <string name="error_zero_divide" msgid="458040988686661801">"Nevar dalīt ar 0"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Teksts ir nokopēts."</string>
     <string name="cancelled" msgid="1618889609742874632">"Aprēķināšana tika pārtraukta."</string>
     <string name="timeout" msgid="802690170415591535">"Radās noildze. Vērtība var būt neierobežota vai nedefinēta."</string>
