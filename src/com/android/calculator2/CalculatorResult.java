@@ -16,11 +16,14 @@
 
 package com.android.calculator2;
 
+import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.os.BuildCompat;
 import android.text.Layout;
 import android.text.Spannable;
@@ -31,6 +34,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.ActionMode;
+import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,7 +46,7 @@ import android.widget.Toast;
 
 // A text widget that is "infinitely" scrollable to the right,
 // and obtains the text to display via a callback to Logic.
-public class CalculatorResult extends AlignedTextView {
+public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenuItemClickListener {
     static final int MAX_RIGHT_SCROLL = 10000000;
     static final int INVALID = MAX_RIGHT_SCROLL + 10000;
         // A larger value is unlikely to avoid running out of space
@@ -106,13 +110,19 @@ public class CalculatorResult extends AlignedTextView {
                             // The maximum number of digits we're willing to recompute in the UI
                             // thread.  We only do this for known rational results, where we
                             // can bound the computation cost.
+    private final ForegroundColorSpan mExponentColorSpan;
+    private final BackgroundColorSpan mHighlightSpan;
 
     private ActionMode mActionMode;
-    private final ForegroundColorSpan mExponentColorSpan;
+    private ActionMode.Callback mCopyActionModeCallback;
+    private ContextMenu mContextMenu;
 
     public CalculatorResult(Context context, AttributeSet attrs) {
         super(context, attrs);
         mScroller = new OverScroller(context);
+        mHighlightSpan = new BackgroundColorSpan(getHighlightColor());
+        mExponentColorSpan = new ForegroundColorSpan(
+                ContextCompat.getColor(context, R.color.display_result_exponent_text_color));
         mGestureDetector = new GestureDetector(context,
             new GestureDetector.SimpleOnGestureListener() {
                 @Override
@@ -126,7 +136,7 @@ public class CalculatorResult extends AlignedTextView {
                         mCurrentPos = mScroller.getFinalX();
                     }
                     mScroller.forceFinished(true);
-                    stopActionMode();
+                    stopActionModeOrContextMenu();
                     CalculatorResult.this.cancelLongPress();
                     // Ignore scrolls of error string, etc.
                     if (!mScrollable) return true;
@@ -143,7 +153,7 @@ public class CalculatorResult extends AlignedTextView {
                         mCurrentPos = mScroller.getFinalX();
                     }
                     mScroller.forceFinished(true);
-                    stopActionMode();
+                    stopActionModeOrContextMenu();
                     CalculatorResult.this.cancelLongPress();
                     if (!mScrollable) return true;
                     if (mCurrentPos + distance < mMinPos) {
@@ -170,24 +180,13 @@ public class CalculatorResult extends AlignedTextView {
                 return mGestureDetector.onTouchEvent(event);
             }
         });
-        setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (mValid) {
-                    mActionMode = startActionMode(mCopyActionModeCallback,
-                            ActionMode.TYPE_FLOATING);
-                    return true;
-                }
-                return false;
-            }
-        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            setupActionMode();
+        } else {
+            setupContextMenu();
+        }
         setHorizontallyScrolling(false);  // do it ourselves
         setCursorVisible(false);
-        mExponentColorSpan = new ForegroundColorSpan(
-                context.getColor(R.color.display_result_exponent_text_color));
-
-        // Copy ActionMode is triggered explicitly, not through
-        // setCustomSelectionActionModeCallback.
     }
 
     void setEvaluator(Evaluator evaluator) {
@@ -605,93 +604,135 @@ public class CalculatorResult extends AlignedTextView {
         }
     }
 
-    // Copy support:
+    /**
+     * Use ActionMode for copy support on M and higher.
+     */
+    @TargetApi(Build.VERSION_CODES.M)
+    private void setupActionMode() {
+        mCopyActionModeCallback = new ActionMode.Callback2() {
 
-    private ActionMode.Callback2 mCopyActionModeCallback = new ActionMode.Callback2() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                final MenuInflater inflater = mode.getMenuInflater();
+                return createCopyMenu(inflater, menu);
+            }
 
-        private BackgroundColorSpan mHighlightSpan;
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false; // Return false if nothing is done
+            }
 
-        private void highlightResult() {
-            final Spannable text = (Spannable) getText();
-            mHighlightSpan = new BackgroundColorSpan(getHighlightColor());
-            text.setSpan(mHighlightSpan, 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-
-        private void unhighlightResult() {
-            final Spannable text = (Spannable) getText();
-            text.removeSpan(mHighlightSpan);
-        }
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.copy, menu);
-            highlightResult();
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false; // Return false if nothing is done
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-            case R.id.menu_copy:
-                if (mEvaluator.reevaluationInProgress()) {
-                    // Refuse to copy placeholder characters.
-                    return false;
-                } else {
-                    copyContent();
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                if (onMenuItemClick(item)) {
                     mode.finish();
                     return true;
+                } else {
+                    return false;
                 }
-            default:
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                unhighlightResult();
+                mActionMode = null;
+            }
+
+            @Override
+            public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
+                super.onGetContentRect(mode, view, outRect);
+
+                outRect.left += view.getPaddingLeft();
+                outRect.top += view.getPaddingTop();
+                outRect.right -= view.getPaddingRight();
+                outRect.bottom -= view.getPaddingBottom();
+                final int width = (int) Layout.getDesiredWidth(getText(), getPaint());
+                if (width < outRect.width()) {
+                    outRect.left = outRect.right - width;
+                }
+
+                if (!BuildCompat.isAtLeastN()) {
+                    // The CAB (prior to N) only takes the translation of a view into account, so
+                    // if a scale is applied to the view then the offset outRect will end up being
+                    // positioned incorrectly. We workaround that limitation by manually applying
+                    // the scale to the outRect, which the CAB will then offset to the correct
+                    // position.
+                    final float scaleX = view.getScaleX();
+                    final float scaleY = view.getScaleY();
+                    outRect.left *= scaleX;
+                    outRect.right *= scaleX;
+                    outRect.top *= scaleY;
+                    outRect.bottom *= scaleY;
+                }
+            }
+        };
+        setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mValid) {
+                    mActionMode = startActionMode(mCopyActionModeCallback,
+                            ActionMode.TYPE_FLOATING);
+                    return true;
+                }
                 return false;
             }
-        }
+        });
+    }
 
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            unhighlightResult();
-            mActionMode = null;
-        }
-
-        @Override
-        public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
-            super.onGetContentRect(mode, view, outRect);
-
-            outRect.left += view.getPaddingLeft();
-            outRect.top += view.getPaddingTop();
-            outRect.right -= view.getPaddingRight();
-            outRect.bottom -= view.getPaddingBottom();
-            final int width = (int) Layout.getDesiredWidth(getText(), getPaint());
-            if (width < outRect.width()) {
-                outRect.left = outRect.right - width;
+    /**
+     * Use ContextMenu for copy support on L and lower.
+     */
+    private void setupContextMenu() {
+        setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu, View view,
+                    ContextMenu.ContextMenuInfo contextMenuInfo) {
+                final MenuInflater inflater = new MenuInflater(getContext());
+                createCopyMenu(inflater, contextMenu);
+                mContextMenu = contextMenu;
+                for(int i = 0; i < contextMenu.size(); i ++) {
+                    contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorResult.this);
+                }
             }
-
-            if (!BuildCompat.isAtLeastN()) {
-                // The CAB (prior to N) only takes the translation of a view into account, so if
-                // a scale is applied to the view then the offset outRect will end up being
-                // positioned incorrectly. We workaround that limitation by manually applying the
-                // scale to the outRect, which the CAB will then offset to the correct position.
-                final float scaleX = view.getScaleX();
-                final float scaleY = view.getScaleY();
-                outRect.left *= scaleX;
-                outRect.right *= scaleX;
-                outRect.top *= scaleY;
-                outRect.bottom *= scaleY;
+        });
+        setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mValid) {
+                    return showContextMenu();
+                }
+                return false;
             }
-        }
-    };
+        });
+    }
 
-    public boolean stopActionMode() {
+    private boolean createCopyMenu(MenuInflater inflater, Menu menu) {
+        inflater.inflate(R.menu.copy, menu);
+        highlightResult();
+        return true;
+    }
+
+    public boolean stopActionModeOrContextMenu() {
         if (mActionMode != null) {
             mActionMode.finish();
             return true;
         }
+        if (mContextMenu != null) {
+            unhighlightResult();
+            mContextMenu.close();
+            return true;
+        }
         return false;
+    }
+
+    private void highlightResult() {
+        final Spannable text = (Spannable) getText();
+        text.setSpan(mHighlightSpan, 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    private void unhighlightResult() {
+        final Spannable text = (Spannable) getText();
+        text.removeSpan(mHighlightSpan);
     }
 
     private void setPrimaryClip(ClipData clip) {
@@ -713,4 +754,20 @@ public class CalculatorResult extends AlignedTextView {
         Toast.makeText(getContext(), R.string.text_copied_toast, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_copy:
+                if (mEvaluator.reevaluationInProgress()) {
+                    // Refuse to copy placeholder characters.
+                    return false;
+                } else {
+                    copyContent();
+                    unhighlightResult();
+                    return true;
+                }
+            default:
+                return false;
+        }
+    }
 }
