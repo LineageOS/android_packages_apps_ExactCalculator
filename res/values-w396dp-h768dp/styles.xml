@@ -32,7 +32,7 @@
         <item name="android:paddingBottom">48dip</item>
         <item name="android:paddingStart">44dip</item>
         <item name="android:paddingEnd">44dip</item>
-        <item name="android:textSize">4dip</item>
+        <item name="android:textSize">48dip</item>
     </style>
 
     <style name="PadButtonStyle.Advanced">

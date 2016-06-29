@@ -23,7 +23,7 @@
         <item name="android:paddingStart">16dip</item>
         <item name="android:paddingEnd">16dip</item>
         <item name="android:gravity">bottom</item>
-        <item name="minTextSize">4dip</item>
+        <item name="minTextSize">40dip</item>
         <item name="maxTextSize">40dip</item>
         <item name="stepTextSize">8dip</item>
     </style>
