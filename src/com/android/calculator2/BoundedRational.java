@@ -91,17 +91,6 @@ public class BoundedRational {
     }
 
     /**
-     * Return a string with n copies of c.
-     */
-    static String repeat(char c, int n) {
-        final StringBuilder result = new StringBuilder();
-        for (int i = 0; i < n; ++i) {
-            result.append(c);
-        }
-        return result.toString();
-    }
-
-    /*
      * Returns a truncated (rounded towards 0) representation of the result.
      * Includes n digits to the right of the decimal point.
      * @param n result precision, >= 0
@@ -110,7 +99,7 @@ public class BoundedRational {
         String digits = mNum.abs().multiply(BigInteger.TEN.pow(n)).divide(mDen.abs()).toString();
         int len = digits.length();
         if (len < n + 1) {
-            digits = repeat('0', n + 1 - len) + digits;
+            digits = StringUtils.repeat('0', n + 1 - len) + digits;
             len = n + 1;
         }
         return (signum() < 0 ? "-" : "") + digits.substring(0, len - n) + "."

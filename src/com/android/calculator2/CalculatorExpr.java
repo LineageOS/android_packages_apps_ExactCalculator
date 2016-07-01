@@ -198,11 +198,17 @@ class CalculatorExpr {
 
         /**
          * Produce human-readable string representation of constant, as typed.
+         * We do add digit grouping separators to the whole number, even if not typed.
          * Result is internationalized.
          */
         @Override
         public String toString() {
-            String result = mWhole;
+            String result;
+            if (mExponent != 0) {
+                result = mWhole;
+            } else {
+                result = StringUtils.addCommas(mWhole, 0, mWhole.length());
+            }
             if (mSawDecimal) {
                 result += '.';
                 result += mFraction;

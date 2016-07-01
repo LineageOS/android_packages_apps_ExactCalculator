@@ -465,10 +465,10 @@ class Evaluator {
         }
         // Earlier digits could not have changed without a 0 to 9 or 9 to 0 flip at end.
         // The former is OK.
-        if (!newDigs.substring(newLen - precDiff).equals(repeat('0', precDiff))) {
+        if (!newDigs.substring(newLen - precDiff).equals(StringUtils.repeat('0', precDiff))) {
             throw new AssertionError("New approximation invalidates old one!");
         }
-        return oldDigs + repeat('9', precDiff);
+        return oldDigs + StringUtils.repeat('9', precDiff);
     }
 
     /**
@@ -582,19 +582,25 @@ class Evaluator {
     private int getPreferredPrec(String cache, int msd, int lastDigitOffset) {
         final int lineLength = mResult.getMaxChars();
         final int wholeSize = cache.indexOf('.');
+        final float rawSepChars = mResult.separatorChars(cache, wholeSize);
+        final float rawSepCharsNoDecimal = rawSepChars - mResult.getNoEllipsisCredit();
+        final float rawSepCharsWithDecimal = rawSepCharsNoDecimal - mResult.getDecimalCredit();
+        final int sepCharsNoDecimal = (int) Math.ceil(Math.max(rawSepCharsNoDecimal, 0.0f));
+        final int sepCharsWithDecimal = (int) Math.ceil(Math.max(rawSepCharsWithDecimal, 0.0f));
         final int negative = cache.charAt(0) == '-' ? 1 : 0;
         // Don't display decimal point if result is an integer.
         if (lastDigitOffset == 0) {
             lastDigitOffset = -1;
         }
         if (lastDigitOffset != Integer.MAX_VALUE) {
-            if (wholeSize <= lineLength && lastDigitOffset <= 0) {
+            if (wholeSize <= lineLength - sepCharsNoDecimal && lastDigitOffset <= 0) {
                 // Exact integer.  Prefer to display as integer, without decimal point.
                 return -1;
             }
             if (lastDigitOffset >= 0
-                    && wholeSize + lastDigitOffset + 1 /* decimal pt. */ <= lineLength) {
-                // Display full exact number wo scientific notation.
+                    && wholeSize + lastDigitOffset + 1 /* decimal pt. */
+                    <= lineLength - sepCharsWithDecimal) {
+                // Display full exact number without scientific notation.
                 return lastDigitOffset;
             }
         }
@@ -609,10 +615,20 @@ class Evaluator {
             // Treat extremely large msd values as unknown to avoid slow computations.
             return lineLength - 2;
         }
-        // Return position corresponding to having msd at left, effectively
-        // presuming scientific notation that preserves the left part of the
-        // result.
-        return msd - wholeSize + lineLength - negative - 1;
+        // Return position corresponding to having msd at left, effectively presuming scientific
+        // notation that preserves the left part of the result.
+        // After adjustment for the space required by an exponent, evaluating to the resulting
+        // precision should not overflow the display.
+        int result = msd - wholeSize + lineLength - negative - 1;
+        if (wholeSize <= lineLength - sepCharsNoDecimal) {
+            // Fits without scientific notation; will need space for separators.
+            if (wholeSize < lineLength - sepCharsWithDecimal) {
+                result -= sepCharsWithDecimal;
+            } else {
+                result -= sepCharsNoDecimal;
+            }
+        }
+        return result;
     }
 
     private static final int SHORT_TARGET_LENGTH  = 8;
@@ -745,17 +761,6 @@ class Evaluator {
         return result;
     }
 
-    /**
-     * Return a string with n copies of c.
-     */
-    private static String repeat(char c, int n) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < n; ++i) {
-            result.append(c);
-        }
-        return result.toString();
-    }
-
     // Refuse to scroll past the point at which this many digits from the whole number
     // part of the result are still displayed.  Avoids sily displays like 1E1.
     private static final int MIN_DISPLAYED_DIGS = 5;
@@ -823,7 +828,7 @@ class Evaluator {
         truncated[0] = (startIndex > getMsdIndex());
         String result = mResultString.substring(startIndex, endIndex);
         if (deficit > 0) {
-            result += repeat(' ', deficit);
+            result += StringUtils.repeat(' ', deficit);
             // Blank character is replaced during translation.
             // Since we always compute past the decimal point, this never fills in the spot
             // where the decimal point should go, and we can otherwise treat placeholders

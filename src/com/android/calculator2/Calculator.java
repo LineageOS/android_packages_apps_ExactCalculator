@@ -1054,7 +1054,7 @@ public class Calculator extends Activity
     // Display full result to currently evaluated precision
     private void displayFull() {
         Resources res = getResources();
-        String msg = mResultText.getFullText() + " ";
+        String msg = mResultText.getFullText(true /* withSeparators */) + " ";
         if (mResultText.fullTextIsExact()) {
             msg += res.getString(R.string.exact);
         } else {
@@ -1082,8 +1082,13 @@ public class Calculator extends Activity
             // Clear display immediately for incomplete function name.
             switchToInput(KeyMaps.keyForChar(moreChars.charAt(current)));
         }
+        char groupingSeparator = KeyMaps.translateResult(",").charAt(0);
         while (current < len) {
             char c = moreChars.charAt(current);
+            if (Character.isSpaceChar(c) || c == groupingSeparator) {
+                ++current;
+                continue;
+            }
             int k = KeyMaps.keyForChar(c);
             if (!explicit) {
                 int expEnd;
