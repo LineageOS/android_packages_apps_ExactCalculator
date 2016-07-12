@@ -182,13 +182,13 @@ public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuIt
      */
     public void changeTextTo(CharSequence newText) {
         final CharSequence oldText = getText();
-        if (startsWith(newText, oldText)) {
-            final int newLen = newText.length();
-            final int oldLen = oldText.length();
-            if (newLen == oldLen + 1) {
+        final char separator = KeyMaps.translateResult(",").charAt(0);
+        final CharSequence added = StringUtils.getExtensionIgnoring(newText, oldText, separator);
+        if (added != null) {
+            if (added.length() == 1) {
                 // The algorithm for pronouncing a single character doesn't seem
                 // to respect our hints.  Don't give it the choice.
-                final char c = newText.charAt(oldLen);
+                final char c = added.charAt(0);
                 final int id = KeyMaps.keyForChar(c);
                 final String descr = KeyMaps.toDescriptiveString(getContext(), id);
                 if (descr != null) {
@@ -196,8 +196,8 @@ public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuIt
                 } else {
                     announceForAccessibility(String.valueOf(c));
                 }
-            } else if (newLen > oldLen) {
-                announceForAccessibility(newText.subSequence(oldLen, newLen));
+            } else if (added.length() != 0) {
+                announceForAccessibility(added);
             }
         } else {
             announceForAccessibility(newText);

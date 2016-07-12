@@ -485,6 +485,8 @@ public class KeyMaps {
             sOutputForResultChar.put(')', ")");
             sOutputForResultChar.put('l', "l");
             sOutputForResultChar.put('n', "n");
+            sOutputForResultChar.put(',',
+                    String.valueOf(DecimalFormatSymbols.getInstance().getGroupingSeparator()));
             sOutputForResultChar.put('\u221A', "\u221A"); // SQUARE ROOT
             sOutputForResultChar.put('\u03C0', "\u03C0"); // GREEK SMALL LETTER PI
             addButtonToOutputMap('-', R.id.op_sub);

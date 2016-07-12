@@ -398,7 +398,7 @@ public class UnifiedReal {
         String digits = intScaled.toString();
         int len = digits.length();
         if (len < n + 1) {
-            digits = BoundedRational.repeat('0', n + 1 - len) + digits;
+            digits = StringUtils.repeat('0', n + 1 - len) + digits;
             len = n + 1;
         }
         return (negative ? "-" : "") + digits.substring(0, len - n) + "."
