@@ -37,12 +37,28 @@ public class CalculatorPadViewPager extends ViewPager {
         @Override
         public View instantiateItem(ViewGroup container, final int position) {
             final View child = getChildAt(position);
-            child.setOnClickListener(new View.OnClickListener() {
+
+            // Set a OnClickListener to scroll to item's position when it isn't the current item.
+            child.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     setCurrentItem(position, true /* smoothScroll */);
                 }
             });
+
+            // Set a OnHoverListener to always return true for onHover events so that focus cannot
+            // pass through the item to the item below.
+            child.setOnHoverListener(new OnHoverListener() {
+                @Override
+                public boolean onHover(View v, MotionEvent event) {
+                    v.onHoverEvent(event);
+                    return true;
+                }
+            });
+            // Make the item focusable so it can be selected via a11y.
+            child.setFocusable(true);
+            // Set the content description of the item which will be used by a11y to identify it.
+            child.setContentDescription(getPageTitle(position));
 
             return child;
         }
@@ -61,6 +77,13 @@ public class CalculatorPadViewPager extends ViewPager {
         public float getPageWidth(int position) {
             return position == 1 ? 7.0f / 9.0f : 1.0f;
         }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            final String[] pageDescriptions = getContext().getResources()
+                    .getStringArray(R.array.desc_pad_pages);
+            return pageDescriptions[position];
+        }
     };
 
     private final OnPageChangeListener mOnPageChangeListener = new SimpleOnPageChangeListener() {
@@ -73,9 +96,15 @@ public class CalculatorPadViewPager extends ViewPager {
 
                 // Prevent clicks and accessibility focus from going through to descendants of
                 // other pages which are covered by the current page.
-                child.setImportantForAccessibility(i == position
-                        ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
-                        : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+                if (child instanceof ViewGroup) {
+                    final ViewGroup childViewGroup = (ViewGroup) child;
+                    for (int j = childViewGroup.getChildCount() - 1; j >= 0; --j) {
+                        childViewGroup.getChildAt(j)
+                                .setImportantForAccessibility(i == position
+                                        ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                                        : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+                    }
+                }
             }
         }
     };
@@ -97,22 +126,22 @@ public class CalculatorPadViewPager extends ViewPager {
 
     private final GestureDetector.SimpleOnGestureListener mGestureWatcher =
             new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onSingleTapUp(MotionEvent ev) {
-                    if (mClickedItemIndex != -1) {
-                        getChildAt(mClickedItemIndex).performClick();
-                        mClickedItemIndex = -1;
-                        return true;
-                    }
-                    return super.onSingleTapUp(ev);
-                }
+        @Override
+        public boolean onDown(MotionEvent e) {
+            // Return true so calls to onSingleTapUp are not blocked.
+            return true;
+        }
 
-                @Override
-                public boolean onDown(MotionEvent e) {
-                    // Return true so calls to onSingleTapUp are not blocked
-                    return true;
-                }
-            };
+        @Override
+        public boolean onSingleTapUp(MotionEvent ev) {
+            if (mClickedItemIndex != -1) {
+                getChildAt(mClickedItemIndex).performClick();
+                mClickedItemIndex = -1;
+                return true;
+            }
+            return super.onSingleTapUp(ev);
+        }
+    };
 
     private final GestureDetector mGestureDetector;
 
@@ -148,7 +177,9 @@ public class CalculatorPadViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        boolean shouldIntercept = super.onInterceptTouchEvent(ev);
+        // Always intercept touch events when a11y focused since otherwise they will be
+        // incorrectly offset by a11y before being dispatched to children.
+        boolean shouldIntercept = isAccessibilityFocused() || super.onInterceptTouchEvent(ev);
 
         // Only allow the current item to receive touch events.
         if (!shouldIntercept && ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
@@ -159,12 +190,18 @@ public class CalculatorPadViewPager extends ViewPager {
             for (int i = childCount - 1; i >= 0; --i) {
                 final int childIndex = getChildDrawingOrder(childCount, i);
                 final View child = getChildAt(childIndex);
-                if (child.getVisibility() == View.VISIBLE
-                        && x >= child.getLeft() && x < child.getRight()
-                        && y >= child.getTop() && y < child.getBottom()) {
-                    shouldIntercept = (childIndex != getCurrentItem());
+                if (child.isAccessibilityFocused()) {
+                    // If a child is a11y focused then we must always intercept the touch event
+                    // since it will be incorrectly offset by a11y.
+                    shouldIntercept = true;
                     mClickedItemIndex = childIndex;
                     break;
+                } else if (child.getVisibility() == VISIBLE
+                        && x >= child.getLeft() && x < child.getRight()
+                        && y >= child.getTop() && y < child.getBottom()) {
+                    shouldIntercept = childIndex != getCurrentItem();
+                    mClickedItemIndex = childIndex;
+                    // continue; since another child may be a11y focused.
                 }
             }
         }
