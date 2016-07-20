@@ -202,7 +202,7 @@ public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuIt
         } else {
             announceForAccessibility(newText);
         }
-        setText(newText);
+        setText(newText, BufferType.SPANNABLE);
     }
 
     public boolean stopActionModeOrContextMenu() {

@@ -691,7 +691,7 @@ public class Calculator extends Activity
         }
         mFormulaText.changeTextTo(formula);
         mFormulaText.setContentDescription(TextUtils.isEmpty(formula)
-                ? getString(R.string.desc_formula) : formula.toString());
+                ? getString(R.string.desc_formula) : null);
     }
 
     @Override
