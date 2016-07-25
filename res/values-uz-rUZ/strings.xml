@@ -58,6 +58,8 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"teskari funksiyalarni ko‘rsatish"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"teskari funksiyalarni berkitish"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Formula yo‘q"</string>
+    <string name="desc_num_pad" msgid="515720457459745571">"Sonlar va asosiy amallar"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"Qo‘shimcha amallar"</string>
     <string name="error_nan" msgid="5674077944929888710">"Haqiqiy son emas"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Noto‘g‘ri ifoda"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Bekor qilindi"</string>

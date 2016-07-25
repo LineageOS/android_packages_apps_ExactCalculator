@@ -17,7 +17,7 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name" msgid="1756503303878374382">"കാൽക്കുലേറ്റർ"</string>
+    <string name="app_name" msgid="1756503303878374382">"കാൽക്കുലേ."</string>
     <string name="dec_point" msgid="8920102493070918054">"."</string>
     <string name="mode_deg" msgid="1146123354434332479">"ഡിഗ്രി"</string>
     <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
@@ -58,6 +58,10 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"വിപരീത പ്രവർത്തനങ്ങൾ കാണിക്കുക"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"വിപരീത പ്രവർത്തനങ്ങൾ മറയ്‌ക്കുക"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ഫോർമുലയില്ല"</string>
+    <!-- no translation found for desc_num_pad (515720457459745571) -->
+    <skip />
+    <!-- no translation found for desc_adv_pad (3794276256462677914) -->
+    <skip />
     <string name="error_nan" msgid="5674077944929888710">"സംഖ്യയല്ല"</string>
     <string name="error_syntax" msgid="4786987111228645602">"മോശം എക്‌സ്‌പ്രഷൻ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"പരാജയപ്പെട്ടു"</string>
