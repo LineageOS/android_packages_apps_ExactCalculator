@@ -677,7 +677,7 @@ class Evaluator {
         }
         if (msdIndex > dotIndex) {
             if (msdIndex <= dotIndex + EXP_COST + 1) {
-                // Preferred display format inthis cases is with leading zeroes, even if
+                // Preferred display format in this case is with leading zeroes, even if
                 // it doesn't fit entirely.  Replicate that here.
                 msdIndex = dotIndex - 1;
             } else if (lsdOffset <= SHORT_TARGET_LENGTH - negative - 2
@@ -697,7 +697,8 @@ class Evaluator {
             final int totalDigits = lsdIndex - msdIndex + negative + 1;
             if (totalDigits <= SHORT_TARGET_LENGTH && dotIndex > msdIndex && lsdOffset >= -1) {
                 // Fits, no exponent needed.
-                return negativeSign + cache.substring(msdIndex, lsdIndex + 1);
+                final String wholeWithCommas = StringUtils.addCommas(cache, msdIndex, dotIndex);
+                return negativeSign + wholeWithCommas + cache.substring(dotIndex, lsdIndex + 1);
             }
             if (totalDigits <= SHORT_TARGET_LENGTH - 3) {
                 return negativeSign + cache.charAt(msdIndex) + "."
@@ -706,8 +707,10 @@ class Evaluator {
         }
         // We need to abbreviate.
         if (dotIndex > msdIndex && dotIndex < msdIndex + SHORT_TARGET_LENGTH - negative - 1) {
-            return negativeSign + cache.substring(msdIndex,
-                    msdIndex + SHORT_TARGET_LENGTH - negative - 1) + KeyMaps.ELLIPSIS;
+            final String wholeWithCommas = StringUtils.addCommas(cache, msdIndex, dotIndex);
+            return negativeSign + wholeWithCommas
+                    + cache.substring(dotIndex, msdIndex + SHORT_TARGET_LENGTH - negative - 1)
+                    + KeyMaps.ELLIPSIS;
         }
         // Need abbreviation + exponent
         return negativeSign + cache.charAt(msdIndex) + "."
