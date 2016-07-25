@@ -58,6 +58,8 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"zobraziť inverzné funkcie"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"skryť inverzné funkcie"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Žiadny vzorec"</string>
+    <string name="desc_num_pad" msgid="515720457459745571">"Čísla a základné operácie"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"Pokročilé operácie"</string>
     <string name="error_nan" msgid="5674077944929888710">"Nie je číslo"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Chybný výraz"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Prerušené"</string>
@@ -67,7 +69,7 @@
     <string name="cancelled" msgid="1618889609742874632">"Počítanie bolo zrušené"</string>
     <string name="timeout" msgid="802690170415591535">"Časový limit vypršal. Hodnota môže byť nekonečná alebo nedefinovaná."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Použiť dlhšie časové limity"</string>
-    <string name="dismiss" msgid="7872443888515066216">"Zatvoriť"</string>
+    <string name="dismiss" msgid="7872443888515066216">"Zavrieť"</string>
     <string name="exact" msgid="2597237880041789948">"(presne)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 na poslednom mieste)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Výsledok vrátane prvých číslic"</string>

@@ -58,6 +58,8 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"паказаць адваротныя функцыі"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"схаваць адваротныя функцыі"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Няма формулы"</string>
+    <string name="desc_num_pad" msgid="515720457459745571">"Лічбы і асноўныя аперацыі"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"Дадатковыя аперацыі"</string>
     <string name="error_nan" msgid="5674077944929888710">"Не з\'яўляецца лікам"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Няправільны выраз"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Спынена"</string>

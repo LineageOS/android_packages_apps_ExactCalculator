@@ -53,11 +53,13 @@
     <string name="desc_switch_deg" msgid="6675211986921592374">"ဒီဂရီသို့ပြောင်းမည်"</string>
     <string name="desc_switch_rad" msgid="2845875847488919914">"ရေဒီယံသို့ ပြောင်းရန်"</string>
     <string name="desc_eq" msgid="3349320880874699285">"ညီမျှခြင်း"</string>
-    <string name="desc_clr" msgid="737502124268890797">"ရှင်းလင်းရန်"</string>
+    <string name="desc_clr" msgid="737502124268890797">"ရှင်းရန်"</string>
     <string name="desc_del" msgid="7879515781929311432">"ဖျက်ရန်"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"ပြောင်းပြန်ဆောင်ရွက်ချက်များ ပြပါ"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ပြောင်းပြန်ဆောင်ရွက်ချက်များ ဖျောက်ထားရန်"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ဖော်မြူလာမရှိပါ"</string>
+    <string name="desc_num_pad" msgid="515720457459745571">"နံပါတ်နှင့် အခြေခံလုပ်ငန်းများ"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"အဆင့်မြင့် လုပ်ငန်းများ"</string>
     <string name="error_nan" msgid="5674077944929888710">"ဂဏန်း မဟုတ်"</string>
     <string name="error_syntax" msgid="4786987111228645602">"ဖော်ပြချက်အမှား"</string>
     <string name="error_aborted" msgid="3402238176316342537">"ဖျက်လိုက်ပြီ"</string>

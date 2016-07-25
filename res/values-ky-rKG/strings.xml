@@ -58,6 +58,10 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"карама-каршы функцияларды көрсөтүү"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"карама-каршы функцияларды жашыруу"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Формула жок"</string>
+    <!-- no translation found for desc_num_pad (515720457459745571) -->
+    <skip />
+    <!-- no translation found for desc_adv_pad (3794276256462677914) -->
+    <skip />
     <string name="error_nan" msgid="5674077944929888710">"Сан эмес"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Начар туюнтма"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Үзгүлтккө учурды"</string>
