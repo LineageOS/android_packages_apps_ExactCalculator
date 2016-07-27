@@ -97,6 +97,9 @@ public class CalculatorDisplay extends LinearLayout
                 return true;
             }
         });
+
+        // Draw the children in reverse order so that the toolbar is on top.
+        setChildrenDrawingOrderEnabled(true);
     }
 
     @Override
@@ -107,6 +110,12 @@ public class CalculatorDisplay extends LinearLayout
         mTransition = new Fade()
                 .setDuration(FADE_DURATION)
                 .addTarget(mToolbar);
+    }
+
+    @Override
+    protected int getChildDrawingOrder(int childCount, int i) {
+        // Reverse the normal drawing order.
+        return (childCount - 1) - i;
     }
 
     @Override
