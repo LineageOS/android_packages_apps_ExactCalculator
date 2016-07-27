@@ -777,11 +777,12 @@ public class Calculator extends Activity
 
     private void onEquals() {
         // Ignore if in non-INPUT state, or if there are no operators.
-        if (mCurrentState == CalculatorState.INPUT && mEvaluator.getExpr().hasInterestingOps()) {
-            setState(CalculatorState.EVALUATE);
+        if (mCurrentState == CalculatorState.INPUT) {
             if (haveUnprocessed()) {
+                setState(CalculatorState.EVALUATE);
                 onError(R.string.error_syntax);
-            } else {
+            } else if (mEvaluator.getExpr().hasInterestingOps()) {
+                setState(CalculatorState.EVALUATE);
                 mEvaluator.requireResult();
             }
         }
