@@ -209,6 +209,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         }
 
         setCursorVisible(false);
+        setLongClickable(false);
     }
 
     void setEvaluator(Evaluator evaluator) {
@@ -492,6 +493,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      */
     void displayError(int resourceId) {
         mValid = true;
+        setLongClickable(false);
         mScrollable = false;
         final String msg = getContext().getString(resourceId);
         final float measuredWidth = Layout.getDesiredWidth(msg, getPaint());
@@ -795,6 +797,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         mValid = false;
         mScrollable = false;
         setText("");
+        setLongClickable(false);
     }
 
     /**
@@ -823,6 +826,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         }
         mLastDisplayedOffset = lastDisplayedOffset[0];
         mValid = true;
+        setLongClickable(true);
     }
 
     @Override

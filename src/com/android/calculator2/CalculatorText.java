@@ -25,6 +25,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.text.Layout;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.ActionMode;
@@ -38,7 +39,8 @@ import android.widget.TextView;
 /**
  * TextView adapted for Calculator display.
  */
-public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuItemClickListener {
+public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuItemClickListener,
+        ClipboardManager.OnPrimaryClipChangedListener {
 
     public static final String TAG_ACTION_MODE = "ACTION_MODE";
 
@@ -48,6 +50,8 @@ public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuIt
     private final float mMaximumTextSize;
     private final float mMinimumTextSize;
     private final float mStepTextSize;
+
+    private final ClipboardManager mClipboardManager;
 
     private int mWidthConstraint = -1;
     private ActionMode mActionMode;
@@ -66,6 +70,8 @@ public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuIt
 
     public CalculatorText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        mClipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 
         final TypedArray a = context.obtainStyledAttributes(
                 attrs, R.styleable.CalculatorText, defStyleAttr, 0);
@@ -109,6 +115,21 @@ public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuIt
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        mClipboardManager.addPrimaryClipChangedListener(this);
+        onPrimaryClipChanged();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        mClipboardManager.removePrimaryClipChangedListener(this);
     }
 
     @Override
@@ -330,6 +351,17 @@ public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuIt
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onPrimaryClipChanged() {
+        final ClipData clip = mClipboardManager.getPrimaryClip();
+        if (clip == null || clip.getItemCount() == 0) {
+            setLongClickable(false);
+            return;
+        }
+        final CharSequence clipText = clip.getItemAt(0).coerceToText(getContext());
+        setLongClickable(!TextUtils.isEmpty(clipText));
     }
 
     public interface OnTextSizeChangeListener {
