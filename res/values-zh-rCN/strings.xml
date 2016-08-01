@@ -58,10 +58,8 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"显示反函数"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"隐藏反函数"</string>
     <string name="desc_formula" msgid="8056588859637585007">"无任何公式"</string>
-    <!-- no translation found for desc_num_pad (515720457459745571) -->
-    <skip />
-    <!-- no translation found for desc_adv_pad (3794276256462677914) -->
-    <skip />
+    <string name="desc_num_pad" msgid="515720457459745571">"数字和基本操作"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"高级操作"</string>
     <string name="error_nan" msgid="5674077944929888710">"不是数字"</string>
     <string name="error_syntax" msgid="4786987111228645602">"表达式错误"</string>
     <string name="error_aborted" msgid="3402238176316342537">"已中止"</string>

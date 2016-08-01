@@ -58,10 +58,8 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"ප්‍රතිලෝම ශ්‍රිත පෙන්වන්න"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ප්‍රතිලෝම ශ්‍රිත සඟවන්න"</string>
     <string name="desc_formula" msgid="8056588859637585007">"සූත්‍රයක් නැත"</string>
-    <!-- no translation found for desc_num_pad (515720457459745571) -->
-    <skip />
-    <!-- no translation found for desc_adv_pad (3794276256462677914) -->
-    <skip />
+    <string name="desc_num_pad" msgid="515720457459745571">"අංක සහ මූලික මෙහෙයුම්"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"උසස් මෙහෙයුම්"</string>
     <string name="error_nan" msgid="5674077944929888710">"අංකයක් නොවේ"</string>
     <string name="error_syntax" msgid="4786987111228645602">"වැරදි ප්‍රකාශනයක්"</string>
     <string name="error_aborted" msgid="3402238176316342537">"නතර කෙරිණි"</string>
