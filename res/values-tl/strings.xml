@@ -58,10 +58,8 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"ipakita ang mga inverse function"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"itago ang mga inverse function"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Walang formula"</string>
-    <!-- no translation found for desc_num_pad (515720457459745571) -->
-    <skip />
-    <!-- no translation found for desc_adv_pad (3794276256462677914) -->
-    <skip />
+    <string name="desc_num_pad" msgid="515720457459745571">"Mga numero at basic na pagpapatakbo"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"Mga advanced na pagpapatakbo"</string>
     <string name="error_nan" msgid="5674077944929888710">"Hindi numero"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Bad expression"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Itinigil"</string>

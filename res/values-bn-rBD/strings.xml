@@ -58,10 +58,8 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"বিপরীত ক্রিয়াকলাপ দেখান"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"বিপরীত ক্রিয়াকলাপ লুকান"</string>
     <string name="desc_formula" msgid="8056588859637585007">"কোনো সূত্র নেই"</string>
-    <!-- no translation found for desc_num_pad (515720457459745571) -->
-    <skip />
-    <!-- no translation found for desc_adv_pad (3794276256462677914) -->
-    <skip />
+    <string name="desc_num_pad" msgid="515720457459745571">"নম্বর এবং মৌলিক ক্রিয়াকলাপ"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"উন্নত ক্রিয়াকলাপ"</string>
     <string name="error_nan" msgid="5674077944929888710">"একটি সংখ্যা নয়"</string>
     <string name="error_syntax" msgid="4786987111228645602">"খারাপ এক্সপ্রেশন"</string>
     <string name="error_aborted" msgid="3402238176316342537">"বাতিল করা হয়েছে"</string>

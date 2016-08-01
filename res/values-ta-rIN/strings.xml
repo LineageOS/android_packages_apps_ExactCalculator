@@ -58,10 +58,8 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"நேர்மாறு சார்புகளைக் காட்டு"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"நேர்மாறு சார்புகளை மறை"</string>
     <string name="desc_formula" msgid="8056588859637585007">"சூத்திரம் இல்லை"</string>
-    <!-- no translation found for desc_num_pad (515720457459745571) -->
-    <skip />
-    <!-- no translation found for desc_adv_pad (3794276256462677914) -->
-    <skip />
+    <string name="desc_num_pad" msgid="515720457459745571">"எண்களும் அடிப்படை செயல்பாடுகளும்"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"மேம்பட்ட செயல்பாடுகள்"</string>
     <string name="error_nan" msgid="5674077944929888710">"எண் அல்ல"</string>
     <string name="error_syntax" msgid="4786987111228645602">"தவறான கோவை"</string>
     <string name="error_aborted" msgid="3402238176316342537">"நிறுத்தப்பட்டது"</string>
