@@ -136,6 +136,10 @@ public class Calculator extends Activity
      */
     private static final String KEY_EVAL_STATE = NAME + "_eval_state";
     private static final String KEY_INVERSE_MODE = NAME + "_inverse_mode";
+    /**
+     * Associated value is an boolean holding the visibility state of the toolbar.
+     */
+    private static final String KEY_SHOW_TOOLBAR = NAME + "_show_toolbar";
 
     private final ViewTreeObserver.OnPreDrawListener mPreDrawListener =
             new ViewTreeObserver.OnPreDrawListener() {
@@ -290,7 +294,14 @@ public class Calculator extends Activity
 
         onInverseToggled(savedInstanceState != null
                 && savedInstanceState.getBoolean(KEY_INVERSE_MODE));
+
         onModeChanged(mEvaluator.getDegreeMode());
+        if (savedInstanceState != null &&
+                savedInstanceState.getBoolean(KEY_SHOW_TOOLBAR, true) == false) {
+            mDisplayView.hideToolbar();
+        } else {
+            showAndMaybeHideToolbar();
+        }
 
         if (mCurrentState != CalculatorState.INPUT) {
             // Just reevaluate.
@@ -309,9 +320,9 @@ public class Calculator extends Activity
     @Override
     protected void onResume() {
         super.onResume();
-
-        // Always temporarily show the toolbar initially on launch.
-        showAndMaybeHideToolbar();
+        if (mDisplayView.isToolbarVisible()) {
+            showAndMaybeHideToolbar();
+        }
     }
 
     @Override
@@ -334,6 +345,7 @@ public class Calculator extends Activity
         }
         outState.putByteArray(KEY_EVAL_STATE, byteArrayStream.toByteArray());
         outState.putBoolean(KEY_INVERSE_MODE, mInverseToggle.isSelected());
+        outState.putBoolean(KEY_SHOW_TOOLBAR, mDisplayView.isToolbarVisible());
     }
 
     // Set the state, updating delete label and display colors.
@@ -519,7 +531,8 @@ public class Calculator extends Activity
     }
 
     /**
-     * Invoked whenever the deg/rad mode may have changed to update the UI.
+     * Invoked whenever the deg/rad mode may have changed to update the UI. Note that the mode has
+     * not necessarily actually changed where this is invoked.
      *
      * @param degreeMode {@code true} if in degree mode
      */
@@ -537,9 +550,6 @@ public class Calculator extends Activity
             mModeToggle.setText(R.string.mode_deg);
             mModeToggle.setContentDescription(getString(R.string.desc_switch_deg));
         }
-
-        // Show the toolbar to highlight the mode change.
-        showAndMaybeHideToolbar();
     }
 
     /**
@@ -661,12 +671,14 @@ public class Calculator extends Activity
                 // In input mode, we reinterpret already entered trig functions.
                 mEvaluator.setDegreeMode(mode);
                 onModeChanged(mode);
+                // Show the toolbar to highlight the mode change.
+                showAndMaybeHideToolbar();
                 setState(CalculatorState.INPUT);
                 mResultText.clear();
                 if (!haveUnprocessed() && mEvaluator.getExpr().hasInterestingOps()) {
                     mEvaluator.evaluateAndShowResult();
                 }
-                return;  // onModeChanged adjusted toolbar visibility.
+                return;
             default:
                 cancelIfEvaluating(false);
                 if (haveUnprocessed()) {
