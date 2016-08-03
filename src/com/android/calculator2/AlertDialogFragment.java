@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -41,7 +40,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
          *            {@link DialogInterface#BUTTON_POSITIVE}) or the position
          *            of the item clicked
          */
-        public void onClick(AlertDialogFragment fragment, int which);
+        void onClick(AlertDialogFragment fragment, int which);
     }
 
     private static final String NAME = AlertDialogFragment.class.getName();
@@ -76,18 +75,21 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Bundle args = getArguments() == null ? Bundle.EMPTY : getArguments();
-        final Context context = getContext();
-        final LayoutInflater inflater = LayoutInflater.from(context);
-        final TextView textView = (TextView) inflater.inflate(R.layout.dialog_message,
-                null /* root */);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        final LayoutInflater inflater = LayoutInflater.from(builder.getContext());
+        final TextView textView = (TextView) inflater.inflate(
+                R.layout.dialog_message, null /* root */);
         textView.setText(args.getCharSequence(KEY_MESSAGE));
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                .setView(textView)
-                .setNegativeButton(args.getCharSequence(KEY_BUTTON_NEGATIVE), null /* listener */);
+
+        builder.setView(textView);
+        builder.setNegativeButton(args.getCharSequence(KEY_BUTTON_NEGATIVE), null /* listener */);
+
         final CharSequence positiveButtonLabel = args.getCharSequence(KEY_BUTTON_POSITIVE);
         if (positiveButtonLabel != null) {
             builder.setPositiveButton(positiveButtonLabel, this);
         }
+
         return builder.create();
     }
 
