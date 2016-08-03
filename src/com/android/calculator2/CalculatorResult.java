@@ -209,9 +209,6 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         }
 
         setCursorVisible(false);
-
-        // Set a minimum height so scaled error messages won't affect our layout.
-        setMinimumHeight(getLineHeight() + getCompoundPaddingBottom() + getCompoundPaddingTop());
     }
 
     void setEvaluator(Evaluator evaluator) {
@@ -235,6 +232,12 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (!isLaidOut()) {
+            // Set a minimum height so scaled error messages won't affect our layout.
+            setMinimumHeight(getLineHeight() + getCompoundPaddingBottom()
+                    + getCompoundPaddingTop());
+        }
+
         final TextPaint paint = getPaint();
         final Context context = getContext();
         final float newCharWidth = getMaxDigitWidth(paint);
