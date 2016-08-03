@@ -75,7 +75,6 @@
     <style name="PadLayoutStyle.Numeric">
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_weight">500</item>
-        <item name="android:layout_height">match_parent</item>
         <item name="android:paddingTop">8dip</item>
         <item name="android:paddingBottom">8dip</item>
         <item name="android:paddingStart">16dip</item>
@@ -85,16 +84,10 @@
     <style name="PadLayoutStyle.Operator">
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_weight">264</item>
-        <item name="android:layout_height">match_parent</item>
         <item name="android:paddingTop">8dip</item>
         <item name="android:paddingBottom">8dip</item>
         <item name="android:paddingStart">8dip</item>
         <item name="android:paddingEnd">8dip</item>
-    </style>
-
-    <style name="DisplayLayoutStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
     </style>
 
 </resources>

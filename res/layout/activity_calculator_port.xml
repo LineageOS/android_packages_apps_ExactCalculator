@@ -27,7 +27,7 @@
         android:id="@+id/pad_pager"
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:overScrollMode="never">
 
         <LinearLayout

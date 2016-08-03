@@ -18,7 +18,8 @@
 <com.android.calculator2.CalculatorDisplay
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/display"
-    style="@style/DisplayLayoutStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/display_background_color"
     android:elevation="4dip"
     android:orientation="vertical">

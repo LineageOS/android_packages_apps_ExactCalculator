@@ -16,8 +16,8 @@
   -->
 
 <resources>
-    <item name="activity_calculator" type="layout">@layout/activity_calculator_port</item>
+    <item name="activity_calculator" type="layout">@layout/activity_calculator_land</item>
     <item name="display" type="layout">@layout/display_one_line</item>
-    <item name="pad_operator" type="layout">@layout/pad_operator_one_col</item>
+    <item name="pad_operator" type="layout">@layout/pad_operator_two_col</item>
     <item name="pad_advanced" type="layout">@layout/pad_advanced_4x4</item>
 </resources>

@@ -15,7 +15,6 @@
   limitations under the License.
   -->
 
-<!-- Styles for portrait 800dip-wide tablet (e.g. Nexus 10). -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="DisplayTextStyle.Formula">
@@ -64,34 +63,31 @@
         <item name="android:textSize">26dip</item>
     </style>
 
-    <style name="PadLayoutStyle.Operator">
+    <style name="PadLayoutStyle.Advanced">
+        <item name="android:layout_weight">5</item>
         <item name="android:layout_width">0dip</item>
-        <item name="android:layout_weight">20</item>
-        <item name="android:layout_height">match_parent</item>
         <item name="android:paddingTop">8dip</item>
-        <item name="android:paddingBottom">24dip</item>
-        <item name="android:paddingStart">4dip</item>
-        <item name="android:paddingEnd">4dip</item>
+        <item name="android:paddingBottom">8dip</item>
+        <item name="android:paddingStart">12dip</item>
+        <item name="android:paddingEnd">12dip</item>
     </style>
 
     <style name="PadLayoutStyle.Numeric">
         <item name="android:layout_width">0dip</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_weight">40</item>
+        <item name="android:layout_weight">5</item>
         <item name="android:paddingTop">12dip</item>
         <item name="android:paddingBottom">20dip</item>
         <item name="android:paddingStart">12dip</item>
         <item name="android:paddingEnd">12dip</item>
     </style>
 
-    <style name="PadLayoutStyle.Advanced">
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_weight">40</item>
+    <style name="PadLayoutStyle.Operator">
         <item name="android:layout_width">0dip</item>
+        <item name="android:layout_weight">3</item>
         <item name="android:paddingTop">8dip</item>
-        <item name="android:paddingBottom">8dip</item>
-        <item name="android:paddingStart">16dip</item>
-        <item name="android:paddingEnd">16dip</item>
+        <item name="android:paddingBottom">24dip</item>
+        <item name="android:paddingStart">12dip</item>
+        <item name="android:paddingEnd">12dip</item>
     </style>
 
 </resources>
