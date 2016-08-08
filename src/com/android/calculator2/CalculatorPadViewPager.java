@@ -45,8 +45,17 @@ public class CalculatorPadViewPager extends ViewPager {
                     setCurrentItem(position, true /* smoothScroll */);
                 }
             });
+            // Set an OnTouchListener to always return true for onTouch events so that a touch
+            // sequence cannot pass through the item to the item below.
+            child.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    v.onTouchEvent(event);
+                    return true;
+                }
+            });
 
-            // Set a OnHoverListener to always return true for onHover events so that focus cannot
+            // Set an OnHoverListener to always return true for onHover events so that focus cannot
             // pass through the item to the item below.
             child.setOnHoverListener(new OnHoverListener() {
                 @Override
@@ -96,7 +105,15 @@ public class CalculatorPadViewPager extends ViewPager {
 
                 // Prevent clicks and accessibility focus from going through to descendants of
                 // other pages which are covered by the current page.
-                recursivelySetEnabled(child, i == position /* enable */);
+                if (child instanceof ViewGroup) {
+                    final ViewGroup childViewGroup = (ViewGroup) child;
+                    for (int j = childViewGroup.getChildCount() - 1; j >= 0; --j) {
+                        childViewGroup.getChildAt(j)
+                                .setImportantForAccessibility(i == position
+                                        ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                                        : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+                    }
+                }
             }
         }
     };
@@ -178,6 +195,9 @@ public class CalculatorPadViewPager extends ViewPager {
             final int x = (int) ev.getX() + getScrollX();
             final int y = (int) ev.getY() + getScrollY();
 
+            // Reset the previously clicked item index.
+            mClickedItemIndex = -1;
+
             final int childCount = getChildCount();
             for (int i = childCount - 1; i >= 0; --i) {
                 final int childIndex = getChildDrawingOrder(childCount, i);
@@ -188,7 +208,8 @@ public class CalculatorPadViewPager extends ViewPager {
                     shouldIntercept = true;
                     mClickedItemIndex = childIndex;
                     break;
-                } else if (child.getVisibility() == VISIBLE
+                } else if (mClickedItemIndex == -1
+                        && child.getVisibility() == VISIBLE
                         && x >= child.getLeft() && x < child.getRight()
                         && y >= child.getTop() && y < child.getBottom()) {
                     shouldIntercept = childIndex != getCurrentItem();
@@ -208,22 +229,5 @@ public class CalculatorPadViewPager extends ViewPager {
         // handle clicks and super only handles swipes.
         mGestureDetector.onTouchEvent(ev);
         return super.onTouchEvent(ev);
-    }
-
-    /**
-     * Disables or enables the children for a given view. Iterates to get all children
-     * if the given view is a ViewGroup.
-     */
-    private void recursivelySetEnabled(View view, boolean enable) {
-        view.setImportantForAccessibility(enable
-                ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
-                : IMPORTANT_FOR_ACCESSIBILITY_NO);
-        view.setEnabled(enable);
-        if (view instanceof ViewGroup) {
-            final ViewGroup viewGroup = (ViewGroup) view;
-            for (int i = viewGroup.getChildCount() - 1; i >= 0; --i) {
-                recursivelySetEnabled(viewGroup.getChildAt(i), enable);
-            }
-        }
     }
 }
