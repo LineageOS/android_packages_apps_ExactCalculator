@@ -57,6 +57,9 @@
     <string name="desc_del" msgid="7879515781929311432">"हटवा"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"व्यस्त कार्ये दर्शवा"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"व्यस्त कार्ये लपवा"</string>
+    <string name="desc_formula" msgid="8056588859637585007">"सूत्र नाही"</string>
+    <string name="desc_num_pad" msgid="515720457459745571">"संख्या आणि मूलभूत ऑपरेशन"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"प्रगत ऑपरेशन"</string>
     <string name="error_nan" msgid="5674077944929888710">"संख्या नाही"</string>
     <string name="error_syntax" msgid="4786987111228645602">"खराब पदावली"</string>
     <string name="error_aborted" msgid="3402238176316342537">"विलोपन केले"</string>

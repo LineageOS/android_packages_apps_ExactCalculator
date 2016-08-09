@@ -57,6 +57,9 @@
     <string name="desc_del" msgid="7879515781929311432">"radera"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"visa inverterade funktioner"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"dölj inverterade funktioner"</string>
+    <string name="desc_formula" msgid="8056588859637585007">"Ingen formel"</string>
+    <string name="desc_num_pad" msgid="515720457459745571">"Siffror och grundläggande åtgärder"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"Avancerade åtgärder"</string>
     <string name="error_nan" msgid="5674077944929888710">"Inte ett tal"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Felaktigt uttryck"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Avbruten"</string>

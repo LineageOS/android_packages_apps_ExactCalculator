@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 The Android Open Source Project
+ * Copyright (C) 2016 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
-import com.hp.creals.CR;
+import com.hp.creals.CR;  // For exception classes.
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -61,15 +61,16 @@ import java.util.TimeZone;
  * return a result containing placeholder ' ' characters.  If we had to return palceholder
  * characters, we start a background task, which invokes the onReevaluate() callback when it
  * completes.  In either case, the background task computes the appropriate result digits by
- * evaluating the constructive real (CR) returned by CalculatorExpr.eval() to the required
+ * evaluating the UnifiedReal returned by CalculatorExpr.eval() to the required
  * precision.
  *
  * We cache the best decimal approximation we have already computed.  We compute generously to
  * allow for some scrolling without recomputation and to minimize the chance of digits flipping
  * from "0000" to "9999".  The best known result approximation is maintained as a string by
- * mResultString (and in a different format by the CR representation of the result).  When we are
- * in danger of not having digits to display in response to further scrolling, we also initiate a
- * background computation to higher precision, as if we had generated placeholder characters.
+ * mResultString (and often in a different format by the CR representation of the result).  When
+ * we are in danger of not having digits to display in response to further scrolling, we also
+ * initiate a background computation to higher precision, as if we had generated placeholder
+ * characters.
  *
  * The code is designed to ensure that the error in the displayed result (excluding any
  * placeholder characters) is always strictly less than 1 in the last displayed digit.  Typically
@@ -123,6 +124,8 @@ class Evaluator {
     // The largest number of digits to the right of the decimal point to which we will evaluate to
     // compute proper scientific notation for values close to zero.  Chosen to ensure that we
     // always to better than IEEE double precision at identifying nonzeros.
+    // This used only when we cannot a prior determine the most significant digit position, as
+    // we always can if we have a rational representation.
     private static final int MAX_MSD_PREC_OFFSET = 320;
 
     // If we can replace an exponent by this many leading zeroes, we do so.  Also used in
@@ -145,6 +148,9 @@ class Evaluator {
     // value.
     private boolean mChangedValue;
 
+    // The main expression contains trig functions.
+    private boolean mHasTrigFuncs;
+
     private SharedPreferences mSharedPrefs;
 
     private boolean mDegreeMode;       // Currently in degree (not radian) mode.
@@ -152,8 +158,7 @@ class Evaluator {
     private final Handler mTimeoutHandler;  // Used to schedule evaluation timeouts.
 
     // The following are valid only if an evaluation completed successfully.
-        private CR mVal;               // Value of mExpr as constructive real.
-        private BoundedRational mRatVal; // Value of mExpr as rational or null.
+        private UnifiedReal mVal;               // Value of mExpr as UnifiedReal.
 
     // We cache the best known decimal result in mResultString.  Whenever that is
     // non-null, it is computed to exactly mResultStringOffset, which is always > 0.
@@ -197,23 +202,20 @@ class Evaluator {
      */
     private static class InitialResult {
         public final int errorResourceId;    // Error string or INVALID_RES_ID.
-        public final CR val;                 // Constructive real value.
-        public final BoundedRational ratVal; // Rational value or null.
+        public final UnifiedReal val;        // Constructive real value.
         public final String newResultString;       // Null iff it can't be computed.
         public final int newResultStringOffset;
         public final int initDisplayOffset;
-        InitialResult(CR v, BoundedRational rv, String s, int p, int idp) {
+        InitialResult(UnifiedReal v, String s, int p, int idp) {
             errorResourceId = Calculator.INVALID_RES_ID;
             val = v;
-            ratVal = rv;
             newResultString = s;
             newResultStringOffset = p;
             initDisplayOffset = idp;
         }
         InitialResult(int errorId) {
             errorResourceId = errorId;
-            val = CR.valueOf(0);
-            ratVal = BoundedRational.ZERO;
+            val = UnifiedReal.ZERO;
             newResultString = "BAD";
             newResultStringOffset = 0;
             initDisplayOffset = 0;
@@ -275,6 +277,7 @@ class Evaluator {
 
     /**
      * Maximum result bit length for unrequested, speculative evaluations.
+     * Also used to bound evaluation precision for small non-zero fractions.
      */
     private final int QUICK_MAX_RESULT_BITS = 50000;
 
@@ -333,44 +336,50 @@ class Evaluator {
         /**
          * Is a computed result too big for decimal conversion?
          */
-        private boolean isTooBig(CalculatorExpr.EvalResult res) {
+        private boolean isTooBig(UnifiedReal res) {
             int maxBits = mRequired ? getMaxResultBits(mLongTimeout) : QUICK_MAX_RESULT_BITS;
-            if (res.ratVal != null) {
-                return res.ratVal.wholeNumberBits() > maxBits;
-            } else {
-                return res.val.get_appr(maxBits).bitLength() > 2;
-            }
+            return res.approxWholeNumberBitsGreaterThan(maxBits);
         }
         @Override
         protected InitialResult doInBackground(Void... nothing) {
             try {
-                CalculatorExpr.EvalResult res = mExpr.eval(mDm);
+                UnifiedReal res = mExpr.eval(mDm);
                 if (isTooBig(res)) {
                     // Avoid starting a long uninterruptible decimal conversion.
                     return new InitialResult(R.string.timeout);
                 }
                 int precOffset = INIT_PREC;
-                String initResult = res.val.toString(precOffset);
+                String initResult = res.toStringTruncated(precOffset);
                 int msd = getMsdIndexOf(initResult);
-                if (BoundedRational.asBigInteger(res.ratVal) == null
-                        && msd == INVALID_MSD) {
-                    precOffset = MAX_MSD_PREC_OFFSET;
-                    initResult = res.val.toString(precOffset);
-                    msd = getMsdIndexOf(initResult);
+                if (msd == INVALID_MSD) {
+                    int leadingZeroBits = res.leadingBinaryZeroes();
+                    if (leadingZeroBits < QUICK_MAX_RESULT_BITS) {
+                        // Enough initial nonzero digits for most displays.
+                        precOffset = 30 +
+                                (int)Math.ceil(Math.log(2.0d) / Math.log(10.0d) * leadingZeroBits);
+                        initResult = res.toStringTruncated(precOffset);
+                        msd = getMsdIndexOf(initResult);
+                        if (msd == INVALID_MSD) {
+                            throw new AssertionError("Impossible zero result");
+                        }
+                    } else {
+                        // Just try once more at higher fixed precision.
+                        precOffset = MAX_MSD_PREC_OFFSET;
+                        initResult = res.toStringTruncated(precOffset);
+                        msd = getMsdIndexOf(initResult);
+                    }
                 }
-                final int lsdOffset = getLsdOffset(res.ratVal, initResult,
-                        initResult.indexOf('.'));
+                final int lsdOffset = getLsdOffset(res, initResult, initResult.indexOf('.'));
                 final int initDisplayOffset = getPreferredPrec(initResult, msd, lsdOffset);
                 final int newPrecOffset = initDisplayOffset + EXTRA_DIGITS;
                 if (newPrecOffset > precOffset) {
                     precOffset = newPrecOffset;
-                    initResult = res.val.toString(precOffset);
+                    initResult = res.toStringTruncated(precOffset);
                 }
-                return new InitialResult(res.val, res.ratVal,
-                        initResult, precOffset, initDisplayOffset);
+                return new InitialResult(res, initResult, precOffset, initDisplayOffset);
             } catch (CalculatorExpr.SyntaxException e) {
                 return new InitialResult(R.string.error_syntax);
-            } catch (BoundedRational.ZeroDivisionException e) {
+            } catch (UnifiedReal.ZeroDivisionException e) {
                 return new InitialResult(R.string.error_zero_divide);
             } catch(ArithmeticException e) {
                 return new InitialResult(R.string.error_nan);
@@ -397,11 +406,6 @@ class Evaluator {
                 return;
             }
             mVal = result.val;
-            mRatVal = result.ratVal;
-            // TODO: If the new result ends in lots of zeroes, and we have a rational result which
-            // is greater than (in absolute value) the result string, we should subtract 1 ulp
-            // from the result string.  That will prevent a later change from zeroes to nines.  We
-            // know that the correct, rounded-toward-zero result has nines.
             mResultString = result.newResultString;
             mResultStringOffset = result.newResultStringOffset;
             final int dotIndex = mResultString.indexOf('.');
@@ -412,7 +416,7 @@ class Evaluator {
             // TODO: Could optimize by remembering display size and checking for change.
             int initPrecOffset = result.initDisplayOffset;
             final int msdIndex = getMsdIndexOf(mResultString);
-            final int leastDigOffset = getLsdOffset(mRatVal, mResultString, dotIndex);
+            final int leastDigOffset = getLsdOffset(mVal, mResultString, dotIndex);
             final int newInitPrecOffset = getPreferredPrec(mResultString, msdIndex, leastDigOffset);
             if (newInitPrecOffset < initPrecOffset) {
                 initPrecOffset = newInitPrecOffset;
@@ -461,10 +465,10 @@ class Evaluator {
         }
         // Earlier digits could not have changed without a 0 to 9 or 9 to 0 flip at end.
         // The former is OK.
-        if (!newDigs.substring(newLen - precDiff).equals(repeat('0', precDiff))) {
+        if (!newDigs.substring(newLen - precDiff).equals(StringUtils.repeat('0', precDiff))) {
             throw new AssertionError("New approximation invalidates old one!");
         }
-        return oldDigs + repeat('9', precDiff);
+        return oldDigs + StringUtils.repeat('9', precDiff);
     }
 
     /**
@@ -489,7 +493,7 @@ class Evaluator {
         protected ReevalResult doInBackground(Integer... prec) {
             try {
                 final int precOffset = prec[0].intValue();
-                return new ReevalResult(mVal.toString(precOffset), precOffset);
+                return new ReevalResult(mVal.toStringTruncated(precOffset), precOffset);
             } catch(ArithmeticException e) {
                 return null;
             } catch(CR.PrecisionOverflowException e) {
@@ -544,16 +548,16 @@ class Evaluator {
 
     /**
      * Return the rightmost nonzero digit position, if any.
-     * @param ratVal Rational value of result or null.
+     * @param val UnifiedReal value of result.
      * @param cache Current cached decimal string representation of result.
      * @param decIndex Index of decimal point in cache.
      * @result Position of rightmost nonzero digit relative to decimal point.
-     *         Integer.MIN_VALUE if ratVal is zero.  Integer.MAX_VALUE if there is no lsd,
+     *         Integer.MIN_VALUE if we cannot determine.  Integer.MAX_VALUE if there is no lsd,
      *         or we cannot determine it.
      */
-    int getLsdOffset(BoundedRational ratVal, String cache, int decIndex) {
-        if (ratVal != null && ratVal.signum() == 0) return Integer.MIN_VALUE;
-        int result = BoundedRational.digitsRequired(ratVal);
+    int getLsdOffset(UnifiedReal val, String cache, int decIndex) {
+        if (val.definitelyZero()) return Integer.MIN_VALUE;
+        int result = val.digitsRequired();
         if (result == 0) {
             int i;
             for (i = -1; decIndex + i > 0 && cache.charAt(decIndex + i) == '0'; --i) { }
@@ -578,19 +582,25 @@ class Evaluator {
     private int getPreferredPrec(String cache, int msd, int lastDigitOffset) {
         final int lineLength = mResult.getMaxChars();
         final int wholeSize = cache.indexOf('.');
+        final float rawSepChars = mResult.separatorChars(cache, wholeSize);
+        final float rawSepCharsNoDecimal = rawSepChars - mResult.getNoEllipsisCredit();
+        final float rawSepCharsWithDecimal = rawSepCharsNoDecimal - mResult.getDecimalCredit();
+        final int sepCharsNoDecimal = (int) Math.ceil(Math.max(rawSepCharsNoDecimal, 0.0f));
+        final int sepCharsWithDecimal = (int) Math.ceil(Math.max(rawSepCharsWithDecimal, 0.0f));
         final int negative = cache.charAt(0) == '-' ? 1 : 0;
         // Don't display decimal point if result is an integer.
         if (lastDigitOffset == 0) {
             lastDigitOffset = -1;
         }
         if (lastDigitOffset != Integer.MAX_VALUE) {
-            if (wholeSize <= lineLength && lastDigitOffset <= 0) {
+            if (wholeSize <= lineLength - sepCharsNoDecimal && lastDigitOffset <= 0) {
                 // Exact integer.  Prefer to display as integer, without decimal point.
                 return -1;
             }
             if (lastDigitOffset >= 0
-                    && wholeSize + lastDigitOffset + 1 /* decimal pt. */ <= lineLength) {
-                // Display full exact number wo scientific notation.
+                    && wholeSize + lastDigitOffset + 1 /* decimal pt. */
+                    <= lineLength - sepCharsWithDecimal) {
+                // Display full exact number without scientific notation.
                 return lastDigitOffset;
             }
         }
@@ -598,17 +608,27 @@ class Evaluator {
             // Display number without scientific notation.  Treat leading zero as msd.
             msd = wholeSize - 1;
         }
-        if (msd > wholeSize + MAX_MSD_PREC_OFFSET) {
-            // Display a probable but uncertain 0 as "0.000000000",
-            // without exponent.  That's a judgment call, but less likely
-            // to confuse naive users.  A more informative and confusing
-            // option would be to use a large negative exponent.
+        if (msd > QUICK_MAX_RESULT_BITS) {
+            // Display a probable but uncertain 0 as "0.000000000", without exponent.  That's a
+            // judgment call, but less likely to confuse naive users.  A more informative and
+            // confusing option would be to use a large negative exponent.
+            // Treat extremely large msd values as unknown to avoid slow computations.
             return lineLength - 2;
         }
-        // Return position corresponding to having msd at left, effectively
-        // presuming scientific notation that preserves the left part of the
-        // result.
-        return msd - wholeSize + lineLength - negative - 1;
+        // Return position corresponding to having msd at left, effectively presuming scientific
+        // notation that preserves the left part of the result.
+        // After adjustment for the space required by an exponent, evaluating to the resulting
+        // precision should not overflow the display.
+        int result = msd - wholeSize + lineLength - negative - 1;
+        if (wholeSize <= lineLength - sepCharsNoDecimal) {
+            // Fits without scientific notation; will need space for separators.
+            if (wholeSize < lineLength - sepCharsWithDecimal) {
+                result -= sepCharsWithDecimal;
+            } else {
+                result -= sepCharsNoDecimal;
+            }
+        }
+        return result;
     }
 
     private static final int SHORT_TARGET_LENGTH  = 8;
@@ -657,7 +677,7 @@ class Evaluator {
         }
         if (msdIndex > dotIndex) {
             if (msdIndex <= dotIndex + EXP_COST + 1) {
-                // Preferred display format inthis cases is with leading zeroes, even if
+                // Preferred display format in this case is with leading zeroes, even if
                 // it doesn't fit entirely.  Replicate that here.
                 msdIndex = dotIndex - 1;
             } else if (lsdOffset <= SHORT_TARGET_LENGTH - negative - 2
@@ -677,7 +697,8 @@ class Evaluator {
             final int totalDigits = lsdIndex - msdIndex + negative + 1;
             if (totalDigits <= SHORT_TARGET_LENGTH && dotIndex > msdIndex && lsdOffset >= -1) {
                 // Fits, no exponent needed.
-                return negativeSign + cache.substring(msdIndex, lsdIndex + 1);
+                final String wholeWithCommas = StringUtils.addCommas(cache, msdIndex, dotIndex);
+                return negativeSign + wholeWithCommas + cache.substring(dotIndex, lsdIndex + 1);
             }
             if (totalDigits <= SHORT_TARGET_LENGTH - 3) {
                 return negativeSign + cache.charAt(msdIndex) + "."
@@ -686,8 +707,10 @@ class Evaluator {
         }
         // We need to abbreviate.
         if (dotIndex > msdIndex && dotIndex < msdIndex + SHORT_TARGET_LENGTH - negative - 1) {
-            return negativeSign + cache.substring(msdIndex,
-                    msdIndex + SHORT_TARGET_LENGTH - negative - 1) + KeyMaps.ELLIPSIS;
+            final String wholeWithCommas = StringUtils.addCommas(cache, msdIndex, dotIndex);
+            return negativeSign + wholeWithCommas
+                    + cache.substring(dotIndex, msdIndex + SHORT_TARGET_LENGTH - negative - 1)
+                    + KeyMaps.ELLIPSIS;
         }
         // Need abbreviation + exponent
         return negativeSign + cache.charAt(msdIndex) + "."
@@ -731,7 +754,7 @@ class Evaluator {
             }
             return mMsdIndex;
         }
-        if (mRatVal != null && mRatVal.signum() == 0) {
+        if (mVal.definitelyZero()) {
             return INVALID_MSD;  // None exists
         }
         int result = INVALID_MSD;
@@ -739,17 +762,6 @@ class Evaluator {
             result = getMsdIndexOf(mResultString);
         }
         return result;
-    }
-
-    /**
-     * Return a string with n copies of c.
-     */
-    private static String repeat(char c, int n) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < n; ++i) {
-            result.append(c);
-        }
-        return result.toString();
     }
 
     // Refuse to scroll past the point at which this many digits from the whole number
@@ -768,8 +780,8 @@ class Evaluator {
      * precOffset[0] = -1 means we drop the decimal point and start at the ones position.  Should
      * not be invoked before the onEvaluate() callback is received.  This essentially just returns
      * a substring of the full result; a leading minus sign or leading digits can be dropped.
-     * Result uses US conventions; is NOT internationalized.  Use getRational() to determine
-     * whether the result is exact, or whether we dropped trailing digits.
+     * Result uses US conventions; is NOT internationalized.  Use getResult() and UnifiedReal
+     * operations to determine whether the result is exact, or whether we dropped trailing digits.
      *
      * @param precOffset Zeroth element indicates desired and actual precision
      * @param maxPrecOffset Maximum adjusted precOffset[0]
@@ -819,7 +831,7 @@ class Evaluator {
         truncated[0] = (startIndex > getMsdIndex());
         String result = mResultString.substring(startIndex, endIndex);
         if (deficit > 0) {
-            result += repeat(' ', deficit);
+            result += StringUtils.repeat(' ', deficit);
             // Blank character is replaced during translation.
             // Since we always compute past the decimal point, this never fills in the spot
             // where the decimal point should go, and we can otherwise treat placeholders
@@ -833,8 +845,8 @@ class Evaluator {
      * Return null if the result is irrational, or we couldn't track the rational value,
      * e.g. because the denominator got too big.
      */
-    public BoundedRational getRational() {
-        return mRatVal;
+    public UnifiedReal getResult() {
+        return mVal;
     }
 
     private void clearCache() {
@@ -846,6 +858,7 @@ class Evaluator {
 
     private void clearPreservingTimeout() {
         mExpr.clear();
+        mHasTrigFuncs = false;
         clearCache();
     }
 
@@ -895,13 +908,20 @@ class Evaluator {
             // Notify immediately, reusing existing result.
             final int dotIndex = mResultString.indexOf('.');
             final String truncatedWholePart = mResultString.substring(0, dotIndex);
-            final int leastDigOffset = getLsdOffset(mRatVal, mResultString, dotIndex);
+            final int leastDigOffset = getLsdOffset(mVal, mResultString, dotIndex);
             final int msdIndex = getMsdIndex();
             final int preferredPrecOffset = getPreferredPrec(mResultString, msdIndex,
                     leastDigOffset);
             mCalculator.onEvaluate(preferredPrecOffset, msdIndex, leastDigOffset,
                     truncatedWholePart);
         }
+    }
+
+    /**
+     * Is a reevaluation still in progress?
+     */
+    public boolean reevaluationInProgress() {
+        return mCurrentReevaluator != null;
     }
 
     /**
@@ -949,6 +969,7 @@ class Evaluator {
             mExpr = new CalculatorExpr(in);
             mSavedName = in.readUTF();
             mSaved = new CalculatorExpr(in);
+            mHasTrigFuncs = mExpr.hasTrigFuncs();
         } catch (IOException e) {
             Log.v("Calculator", "Exception while restoring:\n" + e);
         }
@@ -984,7 +1005,14 @@ class Evaluator {
             return true;
         } else {
             mChangedValue = mChangedValue || !KeyMaps.isBinary(id);
-            return mExpr.add(id);
+            if (mExpr.add(id)) {
+                if (!mHasTrigFuncs) {
+                    mHasTrigFuncs = KeyMaps.isTrigFunc(id);
+                }
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -994,6 +1022,7 @@ class Evaluator {
         if (mExpr.isEmpty()) {
             mLongTimeout = false;
         }
+        mHasTrigFuncs = mExpr.hasTrigFuncs();
     }
 
     void setDegreeMode(boolean degreeMode) {
@@ -1014,8 +1043,8 @@ class Evaluator {
      */
     private CalculatorExpr getResultExpr() {
         final int dotIndex = mResultString.indexOf('.');
-        final int leastDigOffset = getLsdOffset(mRatVal, mResultString, dotIndex);
-        return mExpr.abbreviate(mVal, mRatVal, mDegreeMode,
+        final int leastDigOffset = getLsdOffset(mVal, mResultString, dotIndex);
+        return mExpr.abbreviate(mVal, mDegreeMode,
                 getShortString(mResultString, getMsdIndexOf(mResultString), leastDigOffset));
     }
 
@@ -1030,6 +1059,14 @@ class Evaluator {
         final CalculatorExpr abbrvExpr = getResultExpr();
         clearPreservingTimeout();
         mExpr.append(abbrvExpr);
+        mChangedValue = true;
+        mHasTrigFuncs = false;  // Degree mode no longer affects expression value.
+    }
+
+    /**
+     * Mark the expression as changed, preventing next evaluation request from being ignored.
+     */
+    public void touch() {
         mChangedValue = true;
     }
 
@@ -1106,6 +1143,14 @@ class Evaluator {
      */
     public CalculatorExpr getExpr() {
         return mExpr;
+    }
+
+    /**
+     * Does the current main expression contain trig functions?
+     * Might its value depend on DEG/RAD mode?
+     */
+    public boolean hasTrigFuncs() {
+        return mHasTrigFuncs;
     }
 
     /**
