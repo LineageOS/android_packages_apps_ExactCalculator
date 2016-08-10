@@ -57,6 +57,9 @@
     <string name="desc_del" msgid="7879515781929311432">"видалити"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"показати обернені функції"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"сховати обернені функції"</string>
+    <string name="desc_formula" msgid="8056588859637585007">"Немає формули"</string>
+    <string name="desc_num_pad" msgid="515720457459745571">"Числа й основні операції"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"Додаткові операції"</string>
     <string name="error_nan" msgid="5674077944929888710">"Не число"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Невірний вираз"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Скасовано"</string>

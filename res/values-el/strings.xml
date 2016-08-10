@@ -57,6 +57,9 @@
     <string name="desc_del" msgid="7879515781929311432">"διαγραφή"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"εμφάνιση αντίστροφων λειτουργιών"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"απόκρυψη αντίστροφων λειτουργιών"</string>
+    <string name="desc_formula" msgid="8056588859637585007">"Δεν υπάρχει τύπος"</string>
+    <string name="desc_num_pad" msgid="515720457459745571">"Αριθμοί και βασικές λειτουργίες"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"Προηγμένες λειτουργίες"</string>
     <string name="error_nan" msgid="5674077944929888710">"Όχι αριθμός"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Λάθος έκφραση"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Ακυρώθηκε"</string>
