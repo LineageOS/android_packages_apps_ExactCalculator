@@ -57,6 +57,9 @@
     <string name="desc_del" msgid="7879515781929311432">"kustutamine"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"pöördfunktsioonide kuvamine"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"pöördfunktsioonide peitmine"</string>
+    <string name="desc_formula" msgid="8056588859637585007">"Valem puudub"</string>
+    <string name="desc_num_pad" msgid="515720457459745571">"Numbrid ja lihtsad toimingud"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"Täpsemad toimingud"</string>
     <string name="error_nan" msgid="5674077944929888710">"Pole number"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Vale avaldis"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Katkestatud"</string>
@@ -68,7 +71,7 @@
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Kasuta pikemaid ajalõppe"</string>
     <string name="dismiss" msgid="7872443888515066216">"Loobu"</string>
     <string name="exact" msgid="2597237880041789948">"(täpne)"</string>
-    <string name="approximate" msgid="7117143366610670836">"(±1 viimases arvus)"</string>
+    <string name="approximate" msgid="7117143366610670836">"(±1 viimases numbris)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Vasta esimeste numbritega"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"Vasta murdarvuga"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"Avat. lähtek. lits."</string>
