@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 The Android Open Source Project
+ * Copyright (C) 2016 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -42,23 +43,27 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.text.SpannableString;
+import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Property;
+import android.view.ActionMode;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroupOverlay;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -123,81 +128,55 @@ public class Calculator extends Activity
         }
     };
 
-    // We currently assume that the formula does not change out from under us in
-    // any way. We explicitly handle all input to the formula here.
-    private final OnKeyListener mFormulaOnKeyListener = new OnKeyListener() {
+    private static final String NAME = "Calculator";
+    private static final String KEY_DISPLAY_STATE = NAME + "_display_state";
+    private static final String KEY_UNPROCESSED_CHARS = NAME + "_unprocessed_chars";
+    /**
+     * Associated value is a byte array holding the evaluator state.
+     */
+    private static final String KEY_EVAL_STATE = NAME + "_eval_state";
+    private static final String KEY_INVERSE_MODE = NAME + "_inverse_mode";
+
+    private final ViewTreeObserver.OnPreDrawListener mPreDrawListener =
+            new ViewTreeObserver.OnPreDrawListener() {
         @Override
-        public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-            stopActionMode();
-            // Never consume DPAD key events.
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_DPAD_UP:
-                case KeyEvent.KEYCODE_DPAD_DOWN:
-                case KeyEvent.KEYCODE_DPAD_LEFT:
-                case KeyEvent.KEYCODE_DPAD_RIGHT:
-                    return false;
-            }
-            // Always cancel unrequested in-progress evaluation, so that we don't have
-            // to worry about subsequent asynchronous completion.
-            // Requested in-progress evaluations are handled below.
-            if (mCurrentState != CalculatorState.EVALUATE) {
-                mEvaluator.cancelAll(true);
-            }
-            // In other cases we go ahead and process the input normally after cancelling:
-            if (keyEvent.getAction() != KeyEvent.ACTION_UP) {
-                return true;
-            }
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_NUMPAD_ENTER:
-                case KeyEvent.KEYCODE_ENTER:
-                case KeyEvent.KEYCODE_DPAD_CENTER:
-                    mCurrentButton = mEqualButton;
-                    onEquals();
-                    return true;
-                case KeyEvent.KEYCODE_DEL:
-                    mCurrentButton = mDeleteButton;
-                    onDelete();
-                    return true;
-                default:
-                    cancelIfEvaluating(false);
-                    final int raw = keyEvent.getKeyCharacterMap()
-                            .get(keyCode, keyEvent.getMetaState());
-                    if ((raw & KeyCharacterMap.COMBINING_ACCENT) != 0) {
-                        return true; // discard
-                    }
-                    // Try to discard non-printing characters and the like.
-                    // The user will have to explicitly delete other junk that gets past us.
-                    if (Character.isIdentifierIgnorable(raw)
-                            || Character.isWhitespace(raw)) {
-                        return true;
-                    }
-                    char c = (char) raw;
-                    if (c == '=') {
-                        mCurrentButton = mEqualButton;
-                        onEquals();
-                    } else {
-                        addChars(String.valueOf(c), true);
-                        redisplayAfterFormulaChange();
-                    }
+        public boolean onPreDraw() {
+            mFormulaContainer.scrollTo(mFormulaText.getRight(), 0);
+            final ViewTreeObserver observer = mFormulaContainer.getViewTreeObserver();
+            if (observer.isAlive()) {
+                observer.removeOnPreDrawListener(this);
             }
             return false;
         }
     };
 
-    private static final String NAME = Calculator.class.getName();
-    private static final String KEY_DISPLAY_STATE = NAME + "_display_state";
-    private static final String KEY_UNPROCESSED_CHARS = NAME + "_unprocessed_chars";
-    private static final String KEY_EVAL_STATE = NAME + "_eval_state";
-                // Associated value is a byte array holding both mCalculatorState
-                // and the (much more complex) evaluator state.
+    private final TextWatcher mFormulaTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int start, int count, int after) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            final ViewTreeObserver observer = mFormulaContainer.getViewTreeObserver();
+            if (observer.isAlive()) {
+                observer.removeOnPreDrawListener(mPreDrawListener);
+                observer.addOnPreDrawListener(mPreDrawListener);
+            }
+        }
+    };
 
     private CalculatorState mCurrentState;
     private Evaluator mEvaluator;
 
-    private View mDisplayView;
+    private CalculatorDisplay mDisplayView;
     private TextView mModeView;
     private CalculatorText mFormulaText;
     private CalculatorResult mResultText;
+    private HorizontalScrollView mFormulaContainer;
 
     private ViewPager mPadViewPager;
     private View mDeleteButton;
@@ -221,6 +200,9 @@ public class Calculator extends Activity
     // TODO: should probably match this to the error color?
     private ForegroundColorSpan mUnprocessedColorSpan = new ForegroundColorSpan(Color.RED);
 
+    // Whether the display is one line.
+    private boolean mOneLine;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -230,10 +212,19 @@ public class Calculator extends Activity
         // Hide all default options in the ActionBar.
         getActionBar().setDisplayOptions(0);
 
-        mDisplayView = findViewById(R.id.display);
+        // Ensure the toolbar stays visible while the options menu is displayed.
+        getActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
+            @Override
+            public void onMenuVisibilityChanged(boolean isVisible) {
+                mDisplayView.setForceToolbarVisible(isVisible);
+            }
+        });
+
+        mDisplayView = (CalculatorDisplay) findViewById(R.id.display);
         mModeView = (TextView) findViewById(R.id.mode);
         mFormulaText = (CalculatorText) findViewById(R.id.formula);
         mResultText = (CalculatorResult) findViewById(R.id.result);
+        mFormulaContainer = (HorizontalScrollView) findViewById(R.id.formula_container);
 
         mPadViewPager = (ViewPager) findViewById(R.id.pad_pager);
         mDeleteButton = findViewById(R.id.del);
@@ -245,6 +236,8 @@ public class Calculator extends Activity
 
         mInverseToggle = (TextView) findViewById(R.id.toggle_inv);
         mModeToggle = (TextView) findViewById(R.id.toggle_mode);
+
+        mOneLine = mResultText.getVisibility() == View.INVISIBLE;
 
         mInvertibleButtons = new View[] {
                 findViewById(R.id.fun_sin),
@@ -290,12 +283,13 @@ public class Calculator extends Activity
             mEvaluator.clear();
         }
 
-        mFormulaText.setOnKeyListener(mFormulaOnKeyListener);
         mFormulaText.setOnTextSizeChangeListener(this);
         mFormulaText.setOnPasteListener(this);
+        mFormulaText.addTextChangedListener(mFormulaTextWatcher);
         mDeleteButton.setOnLongClickListener(this);
 
-        onInverseToggled(mInverseToggle.isSelected());
+        onInverseToggled(savedInstanceState != null
+                && savedInstanceState.getBoolean(KEY_INVERSE_MODE));
         onModeChanged(mEvaluator.getDegreeMode());
 
         if (mCurrentState != CalculatorState.INPUT) {
@@ -310,6 +304,14 @@ public class Calculator extends Activity
         //       We probably should.  Details may require care to deal with:
         //         - new display size
         //         - slow recomputation if we've scrolled far.
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Always temporarily show the toolbar initially on launch.
+        showAndMaybeHideToolbar();
     }
 
     @Override
@@ -331,6 +333,7 @@ public class Calculator extends Activity
             throw new AssertionError("Impossible IO exception", e);
         }
         outState.putByteArray(KEY_EVAL_STATE, byteArrayStream.toByteArray());
+        outState.putBoolean(KEY_INVERSE_MODE, mInverseToggle.isSelected());
     }
 
     // Set the state, updating delete label and display colors.
@@ -352,44 +355,60 @@ public class Calculator extends Activity
                 mClearButton.setVisibility(View.GONE);
             }
 
+            if (mOneLine) {
+                if (mCurrentState == CalculatorState.RESULT
+                        || mCurrentState == CalculatorState.EVALUATE
+                        || mCurrentState == CalculatorState.ANIMATE) {
+                    mFormulaText.setVisibility(View.VISIBLE);
+                    mResultText.setVisibility(View.VISIBLE);
+                } else if (mCurrentState == CalculatorState.ERROR) {
+                    mFormulaText.setVisibility(View.INVISIBLE);
+                    mResultText.setVisibility(View.VISIBLE);
+                } else {
+                    mFormulaText.setVisibility(View.VISIBLE);
+                    mResultText.setVisibility(View.INVISIBLE);
+                }
+            }
+
             if (mCurrentState == CalculatorState.ERROR) {
-                final int errorColor = getColor(R.color.calculator_error_color);
+                final int errorColor =
+                        ContextCompat.getColor(this, R.color.calculator_error_color);
                 mFormulaText.setTextColor(errorColor);
                 mResultText.setTextColor(errorColor);
                 getWindow().setStatusBarColor(errorColor);
             } else if (mCurrentState != CalculatorState.RESULT) {
-                mFormulaText.setTextColor(getColor(R.color.display_formula_text_color));
-                mResultText.setTextColor(getColor(R.color.display_result_text_color));
-                getWindow().setStatusBarColor(getColor(R.color.calculator_accent_color));
+                mFormulaText.setTextColor(
+                        ContextCompat.getColor(this, R.color.display_formula_text_color));
+                mResultText.setTextColor(
+                        ContextCompat.getColor(this, R.color.display_result_text_color));
+                getWindow().setStatusBarColor(
+                        ContextCompat.getColor(this, R.color.calculator_accent_color));
             }
 
             invalidateOptionsMenu();
         }
     }
 
-    // Stop any active ActionMode.  Return true if there was one.
-    private boolean stopActionMode() {
-        if (mResultText.stopActionMode()) {
+    @Override
+    public void onActionModeStarted(ActionMode mode) {
+        super.onActionModeStarted(mode);
+        if (mode.getTag() == CalculatorText.TAG_ACTION_MODE) {
+            mFormulaContainer.scrollTo(mFormulaText.getRight(), 0);
+        }
+    }
+
+    /**
+     * Stop any active ActionMode or ContextMenu for copy/paste actions.
+     * Return true if there was one.
+     */
+    private boolean stopActionModeOrContextMenu() {
+        if (mResultText.stopActionModeOrContextMenu()) {
             return true;
         }
-        if (mFormulaText.stopActionMode()) {
+        if (mFormulaText.stopActionModeOrContextMenu()) {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!stopActionMode()) {
-            if (mPadViewPager != null && mPadViewPager.getCurrentItem() != 0) {
-                // Select the previous pad.
-                mPadViewPager.setCurrentItem(mPadViewPager.getCurrentItem() - 1);
-            } else {
-                // If the user is currently looking at the first pad (or the pad is not paged),
-                // allow the system to handle the Back button.
-                super.onBackPressed();
-            }
-        }
     }
 
     @Override
@@ -403,12 +422,83 @@ public class Calculator extends Activity
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!stopActionModeOrContextMenu()) {
+            if (mPadViewPager != null && mPadViewPager.getCurrentItem() != 0) {
+                // Select the previous pad.
+                mPadViewPager.setCurrentItem(mPadViewPager.getCurrentItem() - 1);
+            } else {
+                // If the user is currently looking at the first pad (or the pad is not paged),
+                // allow the system to handle the Back button.
+                super.onBackPressed();
+            }
+        }
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // Allow the system to handle special key codes (e.g. "BACK" or "DPAD").
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+            case KeyEvent.KEYCODE_DPAD_UP:
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                return super.onKeyUp(keyCode, event);
+        }
+
+        // Stop the action mode or context menu if it's showing.
+        stopActionModeOrContextMenu();
+
+        // Always cancel unrequested in-progress evaluation, so that we don't have to worry about
+        // subsequent asynchronous completion.
+        // Requested in-progress evaluations are handled below.
+        if (mCurrentState != CalculatorState.EVALUATE) {
+            mEvaluator.cancelAll(true);
+        }
+
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_NUMPAD_ENTER:
+            case KeyEvent.KEYCODE_ENTER:
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+                mCurrentButton = mEqualButton;
+                onEquals();
+                return true;
+            case KeyEvent.KEYCODE_DEL:
+                mCurrentButton = mDeleteButton;
+                onDelete();
+                return true;
+            default:
+                cancelIfEvaluating(false);
+                final int raw = event.getKeyCharacterMap().get(keyCode, event.getMetaState());
+                if ((raw & KeyCharacterMap.COMBINING_ACCENT) != 0) {
+                    return true; // discard
+                }
+                // Try to discard non-printing characters and the like.
+                // The user will have to explicitly delete other junk that gets past us.
+                if (Character.isIdentifierIgnorable(raw) || Character.isWhitespace(raw)) {
+                    return true;
+                }
+                char c = (char) raw;
+                if (c == '=') {
+                    mCurrentButton = mEqualButton;
+                    onEquals();
+                } else {
+                    addChars(String.valueOf(c), true);
+                    redisplayAfterFormulaChange();
+                }
+                return true;
+        }
+    }
+
     /**
      * Invoked whenever the inverse button is toggled to update the UI.
      *
      * @param showInverse {@code true} if inverse functions should be shown
      */
     private void onInverseToggled(boolean showInverse) {
+        mInverseToggle.setSelected(showInverse);
         if (showInverse) {
             mInverseToggle.setContentDescription(getString(R.string.desc_inv_on));
             for (View invertibleButton : mInvertibleButtons) {
@@ -447,6 +537,9 @@ public class Calculator extends Activity
             mModeToggle.setText(R.string.mode_deg);
             mModeToggle.setContentDescription(getString(R.string.desc_switch_deg));
         }
+
+        // Show the toolbar to highlight the mode change.
+        showAndMaybeHideToolbar();
     }
 
     /**
@@ -492,22 +585,53 @@ public class Calculator extends Activity
         // TODO: Could do this more incrementally.
         redisplayFormula();
         setState(CalculatorState.INPUT);
-        if (mEvaluator.getExpr().hasInterestingOps()) {
-            mEvaluator.evaluateAndShowResult();
-        } else {
+        if (haveUnprocessed()) {
             mResultText.clear();
+            // Force reevaluation when text is deleted, even if expression is unchanged.
+            mEvaluator.touch();
+        } else {
+            if (mEvaluator.getExpr().hasInterestingOps()) {
+                mEvaluator.evaluateAndShowResult();
+            } else {
+                mResultText.clear();
+            }
+        }
+    }
+
+    /**
+     * Show the toolbar.
+     * Automatically hide it again if it's not relevant to current formula.
+     */
+    private void showAndMaybeHideToolbar() {
+        final boolean shouldBeVisible =
+                mCurrentState == CalculatorState.INPUT && mEvaluator.hasTrigFuncs();
+        mDisplayView.showToolbar(!shouldBeVisible);
+    }
+
+    /**
+     * Display or hide the toolbar depending on calculator state.
+     */
+    private void showOrHideToolbar() {
+        final boolean shouldBeVisible =
+                mCurrentState == CalculatorState.INPUT && mEvaluator.hasTrigFuncs();
+        if (shouldBeVisible) {
+            mDisplayView.showToolbar(false);
+        } else {
+            mDisplayView.hideToolbar();
         }
     }
 
     public void onButtonClick(View view) {
         // Any animation is ended before we get here.
         mCurrentButton = view;
-        stopActionMode();
+        stopActionModeOrContextMenu();
+
         // See onKey above for the rationale behind some of the behavior below:
         if (mCurrentState != CalculatorState.EVALUATE) {
             // Cancel evaluations that were not specifically requested.
             mEvaluator.cancelAll(true);
         }
+
         final int id = view.getId();
         switch (id) {
             case R.id.eq:
@@ -518,7 +642,7 @@ public class Calculator extends Activity
                 break;
             case R.id.clr:
                 onClear();
-                break;
+                return;  // Toolbar visibility adjusted at end of animation.
             case R.id.toggle_inv:
                 final boolean selected = !mInverseToggle.isSelected();
                 mInverseToggle.setSelected(selected);
@@ -539,16 +663,23 @@ public class Calculator extends Activity
                 onModeChanged(mode);
                 setState(CalculatorState.INPUT);
                 mResultText.clear();
-                if (mEvaluator.getExpr().hasInterestingOps()) {
+                if (!haveUnprocessed() && mEvaluator.getExpr().hasInterestingOps()) {
                     mEvaluator.evaluateAndShowResult();
                 }
-                break;
+                return;  // onModeChanged adjusted toolbar visibility.
             default:
                 cancelIfEvaluating(false);
-                addExplicitKeyToExpr(id);
-                redisplayAfterFormulaChange();
+                if (haveUnprocessed()) {
+                    // For consistency, append as uninterpreted characters.
+                    // This may actually be useful for a left parenthesis.
+                    addChars(KeyMaps.toString(this, id), true);
+                } else {
+                    addExplicitKeyToExpr(id);
+                    redisplayAfterFormulaChange();
+                }
                 break;
         }
+        showOrHideToolbar();
     }
 
     void redisplayFormula() {
@@ -559,6 +690,8 @@ public class Calculator extends Activity
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         mFormulaText.changeTextTo(formula);
+        mFormulaText.setContentDescription(TextUtils.isEmpty(formula)
+                ? getString(R.string.desc_formula) : null);
     }
 
     @Override
@@ -638,11 +771,20 @@ public class Calculator extends Activity
         }
     }
 
+    private boolean haveUnprocessed() {
+        return mUnprocessedChars != null && !mUnprocessedChars.isEmpty();
+    }
+
     private void onEquals() {
-        // In non-INPUT state assume this was redundant and ignore it.
-        if (mCurrentState == CalculatorState.INPUT && !mEvaluator.getExpr().isEmpty()) {
-            setState(CalculatorState.EVALUATE);
-            mEvaluator.requireResult();
+        // Ignore if in non-INPUT state, or if there are no operators.
+        if (mCurrentState == CalculatorState.INPUT) {
+            if (haveUnprocessed()) {
+                setState(CalculatorState.EVALUATE);
+                onError(R.string.error_syntax);
+            } else if (mEvaluator.getExpr().hasInterestingOps()) {
+                setState(CalculatorState.EVALUATE);
+                mEvaluator.requireResult();
+            }
         }
     }
 
@@ -655,18 +797,12 @@ public class Calculator extends Activity
         // If there is an in-progress explicit evaluation, just cancel it and return.
         if (cancelIfEvaluating(false)) return;
         setState(CalculatorState.INPUT);
-        if (mUnprocessedChars != null) {
-            int len = mUnprocessedChars.length();
-            if (len > 0) {
-                mUnprocessedChars = mUnprocessedChars.substring(0, len-1);
-            } else {
-                mEvaluator.delete();
-            }
+        if (haveUnprocessed()) {
+            mUnprocessedChars = mUnprocessedChars.substring(0, mUnprocessedChars.length() - 1);
         } else {
             mEvaluator.delete();
         }
-        if (mEvaluator.getExpr().isEmpty()
-                && (mUnprocessedChars == null || mUnprocessedChars.isEmpty())) {
+        if (mEvaluator.getExpr().isEmpty() && !haveUnprocessed()) {
             // Resulting formula won't be announced, since it's empty.
             announceClearedForAccessibility();
         }
@@ -685,7 +821,7 @@ public class Calculator extends Activity
         revealView.setBottom(displayRect.bottom);
         revealView.setLeft(displayRect.left);
         revealView.setRight(displayRect.right);
-        revealView.setBackgroundColor(getResources().getColor(colorRes));
+        revealView.setBackgroundColor(ContextCompat.getColor(this, colorRes));
         groupOverlay.add(revealView);
 
         final int[] clearLocation = new int[2];
@@ -732,7 +868,7 @@ public class Calculator extends Activity
     }
 
     private void onClear() {
-        if (mEvaluator.getExpr().isEmpty()) {
+        if (mEvaluator.getExpr().isEmpty() && !haveUnprocessed()) {
             return;
         }
         cancelIfEvaluating(true);
@@ -744,6 +880,7 @@ public class Calculator extends Activity
                 mResultText.clear();
                 mEvaluator.clear();
                 setState(CalculatorState.INPUT);
+                showOrHideToolbar();
                 redisplayFormula();
             }
         });
@@ -769,7 +906,6 @@ public class Calculator extends Activity
             mResultText.clear();
         }
     }
-
 
     // Animate movement of result into the top formula slot.
     // Result window now remains translated in the top slot while the result is displayed.
@@ -797,9 +933,15 @@ public class Calculator extends Activity
 
         // Calculate the necessary translations so the result takes the place of the formula and
         // the formula moves off the top of the screen.
-        final float resultTranslationY = (mFormulaText.getBottom() - mResultText.getBottom())
+        final float resultTranslationY = (mFormulaContainer.getBottom() - mResultText.getBottom())
                 - (mFormulaText.getPaddingBottom() - mResultText.getPaddingBottom());
-        final float formulaTranslationY = -mFormulaText.getBottom();
+        float formulaTranslationY = -mFormulaContainer.getBottom();
+        if (mOneLine) {
+            // Position the result text.
+            mResultText.setY(mResultText.getBottom());
+            formulaTranslationY = -(findViewById(R.id.toolbar).getBottom()
+                    + mFormulaContainer.getBottom());
+        }
 
         // Change the result's textColor to match the formula.
         final int formulaTextColor = mFormulaText.getCurrentTextColor();
@@ -815,7 +957,8 @@ public class Calculator extends Activity
                             PropertyValuesHolder.ofFloat(View.SCALE_Y, resultScale),
                             PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, resultTranslationY)),
                     ObjectAnimator.ofArgb(mResultText, TEXT_COLOR, formulaTextColor),
-                    ObjectAnimator.ofFloat(mFormulaText, View.TRANSLATION_Y, formulaTranslationY));
+                    ObjectAnimator.ofFloat(mFormulaContainer, View.TRANSLATION_Y,
+                            formulaTranslationY));
             animatorSet.setDuration(getResources().getInteger(
                     android.R.integer.config_longAnimTime));
             animatorSet.addListener(new AnimatorListenerAdapter() {
@@ -833,7 +976,7 @@ public class Calculator extends Activity
             mResultText.setScaleY(resultScale);
             mResultText.setTranslationY(resultTranslationY);
             mResultText.setTextColor(formulaTextColor);
-            mFormulaText.setTranslationY(formulaTranslationY);
+            mFormulaContainer.setTranslationY(formulaTranslationY);
             setState(CalculatorState.RESULT);
         }
     }
@@ -848,7 +991,7 @@ public class Calculator extends Activity
         mResultText.setScaleY(1.0f);
         mResultText.setTranslationX(0.0f);
         mResultText.setTranslationY(0.0f);
-        mFormulaText.setTranslationY(0.0f);
+        mFormulaContainer.setTranslationY(0.0f);
 
         mFormulaText.requestFocus();
     }
@@ -878,7 +1021,7 @@ public class Calculator extends Activity
 
         // Show the fraction option when displaying a rational result.
         menu.findItem(R.id.menu_fraction).setVisible(mCurrentState == CalculatorState.RESULT
-                && mEvaluator.getRational() != null);
+                && mEvaluator.getResult().exactlyDisplayable());
 
         return true;
     }
@@ -905,14 +1048,14 @@ public class Calculator extends Activity
     }
 
     private void displayFraction() {
-        BoundedRational result = mEvaluator.getRational();
+        UnifiedReal result = mEvaluator.getResult();
         displayMessage(KeyMaps.translateResult(result.toNiceString()));
     }
 
     // Display full result to currently evaluated precision
     private void displayFull() {
         Resources res = getResources();
-        String msg = mResultText.getFullText() + " ";
+        String msg = mResultText.getFullText(true /* withSeparators */) + " ";
         if (mResultText.fullTextIsExact()) {
             msg += res.getString(R.string.exact);
         } else {
@@ -926,8 +1069,8 @@ public class Calculator extends Activity
      * Map them to the appropriate button pushes when possible.  Leftover characters
      * are added to mUnprocessedChars, which is presumed to immediately precede the newly
      * added characters.
-     * @param moreChars Characters to be added.
-     * @param explicit These characters were explicitly typed by the user, not pasted.
+     * @param moreChars characters to be added
+     * @param explicit these characters were explicitly typed by the user, not pasted
      */
     private void addChars(String moreChars, boolean explicit) {
         if (mUnprocessedChars != null) {
@@ -940,8 +1083,13 @@ public class Calculator extends Activity
             // Clear display immediately for incomplete function name.
             switchToInput(KeyMaps.keyForChar(moreChars.charAt(current)));
         }
+        char groupingSeparator = KeyMaps.translateResult(",").charAt(0);
         while (current < len) {
             char c = moreChars.charAt(current);
+            if (Character.isSpaceChar(c) || c == groupingSeparator) {
+                ++current;
+                continue;
+            }
             int k = KeyMaps.keyForChar(c);
             if (!explicit) {
                 int expEnd;
@@ -998,10 +1146,12 @@ public class Calculator extends Activity
             // There are characters left, but we can't convert them to button presses.
             mUnprocessedChars = moreChars.substring(current);
             redisplayAfterFormulaChange();
+            showOrHideToolbar();
             return;
         }
         mUnprocessedChars = null;
         redisplayAfterFormulaChange();
+        showOrHideToolbar();
     }
 
     @Override
@@ -1026,5 +1176,13 @@ public class Calculator extends Activity
             addChars(item.coerceToText(this).toString(), false);
         }
         return true;
+    }
+
+    /**
+     * Clean up animation for context menu.
+     */
+    @Override
+    public void onContextMenuClosed(Menu menu) {
+        stopActionModeOrContextMenu();
     }
 }

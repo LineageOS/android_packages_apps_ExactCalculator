@@ -57,6 +57,9 @@
     <string name="desc_del" msgid="7879515781929311432">"ഇല്ലാതാക്കുക"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"വിപരീത പ്രവർത്തനങ്ങൾ കാണിക്കുക"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"വിപരീത പ്രവർത്തനങ്ങൾ മറയ്‌ക്കുക"</string>
+    <string name="desc_formula" msgid="8056588859637585007">"ഫോർമുലയില്ല"</string>
+    <string name="desc_num_pad" msgid="515720457459745571">"നമ്പറുകളും അടിസ്ഥാന പ്രവർത്തനങ്ങളും"</string>
+    <string name="desc_adv_pad" msgid="3794276256462677914">"വിപുലമായ പ്രവർത്തനങ്ങൾ"</string>
     <string name="error_nan" msgid="5674077944929888710">"സംഖ്യയല്ല"</string>
     <string name="error_syntax" msgid="4786987111228645602">"മോശം എക്‌സ്‌പ്രഷൻ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"പരാജയപ്പെട്ടു"</string>

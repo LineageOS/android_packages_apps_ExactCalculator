@@ -16,10 +16,6 @@
 
 package com.android.calculator2;
 
-
-import com.hp.creals.CR;
-import com.hp.creals.UnaryCRFunction;
-
 import android.content.Context;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -42,12 +38,13 @@ import java.util.IdentityHashMap;
  * A token may also represent the result of a previously evaluated expression.
  * The add() method adds a token to the end of the expression.  The delete method() removes one.
  * Clear() deletes the entire expression contents. Eval() evaluates the expression,
- * producing both a constructive real (CR), and possibly a BoundedRational result.
+ * producing a UnifiedReal result.
  * Expressions are parsed only during evaluation; no explicit parse tree is maintained.
  *
- * The write() method is used to save the current expression.  Note that CR provides no
- * serialization facility.  Thus we save all previously computed values by writing out the
- * expression that was used to compute them, and reevaluate on input.
+ * The write() method is used to save the current expression.  Note that neither UnifiedReal
+ * nor the underlying CR provide a serialization facility.  Thus we save all previously
+ * computed values by writing out the expression that was used to compute them, and reevaluate
+ * when reading it back in.
  */
 class CalculatorExpr {
     private ArrayList<Token> mExpr;  // The actual representation
@@ -201,11 +198,17 @@ class CalculatorExpr {
 
         /**
          * Produce human-readable string representation of constant, as typed.
+         * We do add digit grouping separators to the whole number, even if not typed.
          * Result is internationalized.
          */
         @Override
         public String toString() {
-            String result = mWhole;
+            String result;
+            if (mExponent != 0) {
+                result = mWhole;
+            } else {
+                result = StringUtils.addCommas(mWhole, 0, mWhole.length());
+            }
             if (mSawDecimal) {
                 result += '.';
                 result += mFraction;
@@ -265,11 +268,11 @@ class CalculatorExpr {
 
     // Hash maps used to detect duplicate subexpressions when we write out CalculatorExprs and
     // read them back in.
-    private static final ThreadLocal<IdentityHashMap<CR,Integer>>outMap =
-            new ThreadLocal<IdentityHashMap<CR,Integer>>();
+    private static final ThreadLocal<IdentityHashMap<UnifiedReal, Integer>>outMap =
+            new ThreadLocal<IdentityHashMap<UnifiedReal, Integer>>();
         // Maps expressions to indices on output
-    private static final ThreadLocal<HashMap<Integer,PreEval>>inMap =
-            new ThreadLocal<HashMap<Integer,PreEval>>();
+    private static final ThreadLocal<HashMap<Integer, PreEval>>inMap =
+            new ThreadLocal<HashMap<Integer, PreEval>>();
         // Maps expressions to indices on output
     private static final ThreadLocal<Integer> exprIndex = new ThreadLocal<Integer>();
 
@@ -279,7 +282,7 @@ class CalculatorExpr {
      * This avoids a potential exponential blow-up in the expression size.
      */
     public static void initExprOutput() {
-        outMap.set(new IdentityHashMap<CR,Integer>());
+        outMap.set(new IdentityHashMap<UnifiedReal, Integer>());
         exprIndex.set(Integer.valueOf(0));
     }
 
@@ -288,7 +291,7 @@ class CalculatorExpr {
      * Initializes map that will be used to reconstruct shared subexpressions.
      */
     public static void initExprInput() {
-        inMap.set(new HashMap<Integer,PreEval>());
+        inMap.set(new HashMap<Integer, PreEval>());
     }
 
     /**
@@ -296,31 +299,26 @@ class CalculatorExpr {
      * We treat previously evaluated subexpressions as tokens.  These are inserted when we either
      * continue an expression after evaluating some of it, or copy an expression and paste it back
      * in.
-     * The representation includes both CR and possibly BoundedRational values.  In order to
+     * The representation includes a UnifiedReal value.  In order to
      * support saving and restoring, we also include the underlying expression itself, and the
      * context (currently just degree mode) used to evaluate it.  The short string representation
      * is also stored in order to avoid potentially expensive recomputation in the UI thread.
      */
     private static class PreEval extends Token {
-        public final CR value;
-        public final BoundedRational ratValue;
+        public final UnifiedReal value;
         private final CalculatorExpr mExpr;
         private final EvalContext mContext;
         private final String mShortRep;  // Not internationalized.
-        PreEval(CR val, BoundedRational ratVal, CalculatorExpr expr,
-                EvalContext ec, String shortRep) {
+        PreEval(UnifiedReal val, CalculatorExpr expr, EvalContext ec, String shortRep) {
             value = val;
-            ratValue = ratVal;
             mExpr = expr;
             mContext = ec;
             mShortRep = shortRep;
         }
-        // In writing out PreEvals, we are careful to avoid writing
-        // out duplicates.  We assume that two expressions are
-        // duplicates if they have the same CR value.  This avoids a
-        // potential exponential blow up in certain off cases and
-        // redundant evaluation after reading them back in.
-        // The parameter hash map maps expressions we've seen
+        // In writing out PreEvals, we are careful to avoid writing out duplicates.  We conclude
+        // that two expressions are duplicates if they have the same UnifiedReal value.  This
+        // avoids a potential exponential blow up in certain off cases and redundant evaluation
+        // after reading them back in.  The parameter hash map maps expressions we've seen
         // before to their index.
         @Override
         public void write(DataOutput out) throws IOException {
@@ -359,12 +357,10 @@ class CalculatorExpr {
                     Log.e("Calculator", "Unexpected syntax exception" + e);
                 }
                 value = res.val;
-                ratValue = res.ratVal;
                 mShortRep = in.readUTF();
                 inMap.get().put(index, this);
             } else {
                 value = prev.value;
-                ratValue = prev.ratValue;
                 mExpr = prev.mExpr;
                 mContext = prev.mContext;
                 mShortRep = prev.mShortRep;
@@ -619,28 +615,26 @@ class CalculatorExpr {
      * The caller supplies the value, degree mode, and short string representation, which must
      * have been previously computed.  Thus this is guaranteed to terminate reasonably quickly.
      */
-    public CalculatorExpr abbreviate(CR val, BoundedRational ratVal,
-                              boolean dm, String sr) {
+    public CalculatorExpr abbreviate(UnifiedReal val, boolean dm, String sr) {
         CalculatorExpr result = new CalculatorExpr();
-        Token t = new PreEval(val, ratVal, new CalculatorExpr((ArrayList<Token>) mExpr.clone()),
+        @SuppressWarnings("unchecked")
+        Token t = new PreEval(val, new CalculatorExpr((ArrayList<Token>) mExpr.clone()),
                 new EvalContext(dm, mExpr.size()), sr);
         result.mExpr.add(t);
         return result;
     }
 
     /**
-     * Internal evaluation functions return an EvalRet triple.
+     * Internal evaluation functions return an EvalRet pair.
      * We compute rational (BoundedRational) results when possible, both as a performance
      * optimization, and to detect errors exactly when we can.
      */
     private static class EvalRet {
         public int pos; // Next position (expression index) to be parsed.
-        public final CR val; // Constructive Real result of evaluating subexpression.
-        public final BoundedRational ratVal;  // Exact Rational value or null.
-        EvalRet(int p, CR v, BoundedRational r) {
+        public final UnifiedReal val; // Constructive Real result of evaluating subexpression.
+        EvalRet(int p, UnifiedReal v) {
             pos = p;
             val = v;
-            ratVal = r;
         }
     }
 
@@ -664,21 +658,17 @@ class CalculatorExpr {
         }
     }
 
-    private final CR RADIANS_PER_DEGREE = CR.PI.divide(CR.valueOf(180));
-
-    private final CR DEGREES_PER_RADIAN = CR.valueOf(180).divide(CR.PI);
-
-    private CR toRadians(CR x, EvalContext ec) {
+    private UnifiedReal toRadians(UnifiedReal x, EvalContext ec) {
         if (ec.mDegreeMode) {
-            return x.multiply(RADIANS_PER_DEGREE);
+            return x.multiply(UnifiedReal.RADIANS_PER_DEGREE);
         } else {
             return x;
         }
     }
 
-    private CR fromRadians(CR x, EvalContext ec) {
+    private UnifiedReal fromRadians(UnifiedReal x, EvalContext ec) {
         if (ec.mDegreeMode) {
-            return x.multiply(DEGREES_PER_RADIAN);
+            return x.divide(UnifiedReal.RADIANS_PER_DEGREE);
         } else {
             return x;
         }
@@ -719,255 +709,131 @@ class CalculatorExpr {
 
     private EvalRet evalUnary(int i, EvalContext ec) throws SyntaxException {
         final Token t = mExpr.get(i);
-        BoundedRational ratVal;
         if (t instanceof Constant) {
             Constant c = (Constant)t;
-            ratVal = c.toRational();
-            return new EvalRet(i+1, ratVal.CRValue(), ratVal);
+            return new EvalRet(i+1,new UnifiedReal(c.toRational()));
         }
         if (t instanceof PreEval) {
             final PreEval p = (PreEval)t;
-            return new EvalRet(i+1, p.value, p.ratValue);
+            return new EvalRet(i+1, p.value);
         }
         EvalRet argVal;
         switch(((Operator)(t)).id) {
         case R.id.const_pi:
-            return new EvalRet(i+1, CR.PI, null);
+            return new EvalRet(i+1, UnifiedReal.PI);
         case R.id.const_e:
-            return new EvalRet(i+1, REAL_E, null);
+            return new EvalRet(i+1, UnifiedReal.E);
         case R.id.op_sqrt:
             // Seems to have highest precedence.
             // Does not add implicit paren.
             // Does seem to accept a leading minus.
             if (isOperator(i+1, R.id.op_sub, ec)) {
                 argVal = evalUnary(i+2, ec);
-                ratVal = BoundedRational.sqrt(BoundedRational.negate(argVal.ratVal));
-                if (ratVal != null) {
-                    break;
-                }
-                return new EvalRet(argVal.pos,
-                                   argVal.val.negate().sqrt(), null);
+                return new EvalRet(argVal.pos, argVal.val.negate().sqrt());
             } else {
                 argVal = evalUnary(i+1, ec);
-                ratVal = BoundedRational.sqrt(argVal.ratVal);
-                if (ratVal != null) {
-                    break;
-                }
-                return new EvalRet(argVal.pos, argVal.val.sqrt(), null);
+                return new EvalRet(argVal.pos, argVal.val.sqrt());
             }
         case R.id.lparen:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            return new EvalRet(argVal.pos, argVal.val, argVal.ratVal);
+            return new EvalRet(argVal.pos, argVal.val);
         case R.id.fun_sin:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            ratVal = ec.mDegreeMode ? BoundedRational.degreeSin(argVal.ratVal)
-                                     : BoundedRational.sin(argVal.ratVal);
-            if (ratVal != null) {
-                break;
-            }
-            return new EvalRet(argVal.pos, toRadians(argVal.val,ec).sin(), null);
+            return new EvalRet(argVal.pos, toRadians(argVal.val, ec).sin());
         case R.id.fun_cos:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            ratVal = ec.mDegreeMode ? BoundedRational.degreeCos(argVal.ratVal)
-                                     : BoundedRational.cos(argVal.ratVal);
-            if (ratVal != null) {
-                break;
-            }
-            return new EvalRet(argVal.pos, toRadians(argVal.val,ec).cos(), null);
+            return new EvalRet(argVal.pos, toRadians(argVal.val,ec).cos());
         case R.id.fun_tan:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            ratVal = ec.mDegreeMode ? BoundedRational.degreeTan(argVal.ratVal)
-                                     : BoundedRational.tan(argVal.ratVal);
-            if (ratVal != null) {
-                break;
-            }
-            CR argCR = toRadians(argVal.val, ec);
-            return new EvalRet(argVal.pos, argCR.sin().divide(argCR.cos()), null);
+            UnifiedReal arg = toRadians(argVal.val, ec);
+            return new EvalRet(argVal.pos, arg.sin().divide(arg.cos()));
         case R.id.fun_ln:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            ratVal = BoundedRational.ln(argVal.ratVal);
-            if (ratVal != null) {
-                break;
-            }
-            return new EvalRet(argVal.pos, argVal.val.ln(), null);
+            return new EvalRet(argVal.pos, argVal.val.ln());
         case R.id.fun_exp:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            ratVal = BoundedRational.exp(argVal.ratVal);
-            if (ratVal != null) {
-                break;
-            }
-            return new EvalRet(argVal.pos, argVal.val.exp(), null);
+            return new EvalRet(argVal.pos, argVal.val.exp());
         case R.id.fun_log:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            ratVal = BoundedRational.log(argVal.ratVal);
-            if (ratVal != null) {
-                break;
-            }
-            return new EvalRet(argVal.pos, argVal.val.ln().divide(CR.valueOf(10).ln()), null);
+            return new EvalRet(argVal.pos, argVal.val.ln().divide(UnifiedReal.TEN.ln()));
         case R.id.fun_arcsin:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            ratVal = ec.mDegreeMode ? BoundedRational.degreeAsin(argVal.ratVal)
-                                     : BoundedRational.asin(argVal.ratVal);
-            if (ratVal != null) {
-                break;
-            }
-            return new EvalRet(argVal.pos,
-                    fromRadians(UnaryCRFunction.asinFunction.execute(argVal.val),ec), null);
+            return new EvalRet(argVal.pos, fromRadians(argVal.val.asin(), ec));
         case R.id.fun_arccos:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            ratVal = ec.mDegreeMode ? BoundedRational.degreeAcos(argVal.ratVal)
-                                     : BoundedRational.acos(argVal.ratVal);
-            if (ratVal != null) {
-                break;
-            }
-            return new EvalRet(argVal.pos,
-                    fromRadians(UnaryCRFunction.acosFunction.execute(argVal.val),ec), null);
+            return new EvalRet(argVal.pos, fromRadians(argVal.val.acos(), ec));
         case R.id.fun_arctan:
             argVal = evalExpr(i+1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            ratVal = ec.mDegreeMode ? BoundedRational.degreeAtan(argVal.ratVal)
-                                     : BoundedRational.atan(argVal.ratVal);
-            if (ratVal != null) {
-                break;
-            }
-            return new EvalRet(argVal.pos,
-                    fromRadians(UnaryCRFunction.atanFunction.execute(argVal.val),ec), null);
+            return new EvalRet(argVal.pos, fromRadians(argVal.val.atan(),ec));
         default:
             throw new SyntaxException("Unrecognized token in expression");
         }
-        // We have a rational value.
-        return new EvalRet(argVal.pos, ratVal.CRValue(), ratVal);
     }
 
-    /**
-     * Compute an integral power of a constructive real.
-     * Unlike the "general" case using logarithms, this handles a negative base.
-     */
-    private static CR pow(CR base, BigInteger exp) {
-        if (exp.compareTo(BigInteger.ZERO) < 0) {
-            return pow(base, exp.negate()).inverse();
-        }
-        if (exp.equals(BigInteger.ONE)) {
-            return base;
-        }
-        if (exp.and(BigInteger.ONE).intValue() == 1) {
-            return pow(base, exp.subtract(BigInteger.ONE)).multiply(base);
-        }
-        if (exp.equals(BigInteger.ZERO)) {
-            return CR.valueOf(1);
-        }
-        CR tmp = pow(base, exp.shiftRight(1));
-        return tmp.multiply(tmp);
-    }
-
-    // Number of bits past binary point to test for integer-ness.
-    private static final int TEST_PREC = -100;
-    private static final BigInteger MASK =
-            BigInteger.ONE.shiftLeft(-TEST_PREC).subtract(BigInteger.ONE);
-    private static final CR REAL_E = CR.valueOf(1).exp();
-    private static final CR REAL_ONE_HUNDREDTH = CR.valueOf(100).inverse();
-    private static final BoundedRational RATIONAL_ONE_HUNDREDTH = new BoundedRational(1,100);
-    private static boolean isApprInt(CR x) {
-        BigInteger appr = x.get_appr(TEST_PREC);
-        return appr.and(MASK).signum() == 0;
-    }
+    private static final UnifiedReal ONE_HUNDREDTH = new UnifiedReal(100).inverse();
 
     private EvalRet evalSuffix(int i, EvalContext ec) throws SyntaxException {
         final EvalRet tmp = evalUnary(i, ec);
         int cpos = tmp.pos;
-        CR crVal = tmp.val;
-        BoundedRational ratVal = tmp.ratVal;
+        UnifiedReal val = tmp.val;
+
         boolean isFact;
         boolean isSquared = false;
         while ((isFact = isOperator(cpos, R.id.op_fact, ec)) ||
                 (isSquared = isOperator(cpos, R.id.op_sqr, ec)) ||
                 isOperator(cpos, R.id.op_pct, ec)) {
             if (isFact) {
-                if (ratVal == null) {
-                    // Assume it was an integer, but we didn't figure it out.
-                    // KitKat may have used the Gamma function.
-                    if (!isApprInt(crVal)) {
-                        throw new ArithmeticException("factorial(non-integer)");
-                    }
-                    ratVal = new BoundedRational(crVal.BigIntegerValue());
-                }
-                ratVal = BoundedRational.fact(ratVal);
-                crVal = ratVal.CRValue();
+                val = val.fact();
             } else if (isSquared) {
-                ratVal = BoundedRational.multiply(ratVal, ratVal);
-                if (ratVal == null) {
-                    crVal = crVal.multiply(crVal);
-                } else {
-                    crVal = ratVal.CRValue();
-                }
+                val = val.multiply(val);
             } else /* percent */ {
-                ratVal = BoundedRational.multiply(ratVal, RATIONAL_ONE_HUNDREDTH);
-                if (ratVal == null) {
-                    crVal = crVal.multiply(REAL_ONE_HUNDREDTH);
-                } else {
-                    crVal = ratVal.CRValue();
-                }
+                val = val.multiply(ONE_HUNDREDTH);
             }
             ++cpos;
         }
-        return new EvalRet(cpos, crVal, ratVal);
+        return new EvalRet(cpos, val);
     }
 
     private EvalRet evalFactor(int i, EvalContext ec) throws SyntaxException {
         final EvalRet result1 = evalSuffix(i, ec);
         int cpos = result1.pos;  // current position
-        CR crVal = result1.val;   // value so far
-        BoundedRational ratVal = result1.ratVal;  // int value so far
+        UnifiedReal val = result1.val;   // value so far
         if (isOperator(cpos, R.id.op_pow, ec)) {
             final EvalRet exp = evalSignedFactor(cpos + 1, ec);
             cpos = exp.pos;
-            // Try completely rational evaluation first.
-            ratVal = BoundedRational.pow(ratVal, exp.ratVal);
-            if (ratVal != null) {
-                return new EvalRet(cpos, ratVal.CRValue(), ratVal);
-            }
-            // Power with integer exponent is defined for negative base.
-            // Thus we handle that case separately.
-            // We punt if the exponent is an integer computed from irrational
-            // values.  That wouldn't work reliably with floating point either.
-            BigInteger int_exp = BoundedRational.asBigInteger(exp.ratVal);
-            if (int_exp != null) {
-                crVal = pow(crVal, int_exp);
-            } else {
-                crVal = crVal.ln().multiply(exp.val).exp();
-            }
-            ratVal = null;
+            val = val.pow(exp.val);
         }
-        return new EvalRet(cpos, crVal, ratVal);
+        return new EvalRet(cpos, val);
     }
 
     private EvalRet evalSignedFactor(int i, EvalContext ec) throws SyntaxException {
@@ -975,10 +841,8 @@ class CalculatorExpr {
         int cpos = negative ? i + 1 : i;
         EvalRet tmp = evalFactor(cpos, ec);
         cpos = tmp.pos;
-        CR crVal = negative ? tmp.val.negate() : tmp.val;
-        BoundedRational ratVal = negative ? BoundedRational.negate(tmp.ratVal)
-                                         : tmp.ratVal;
-        return new EvalRet(cpos, crVal, ratVal);
+        final UnifiedReal result = negative ? tmp.val.negate() : tmp.val;
+        return new EvalRet(cpos, result);
     }
 
     private boolean canStartFactor(int i) {
@@ -1001,32 +865,21 @@ class CalculatorExpr {
         boolean is_mul = false;
         boolean is_div = false;
         int cpos = tmp.pos;   // Current position in expression.
-        CR crVal = tmp.val;    // Current value.
-        BoundedRational ratVal = tmp.ratVal; // Current rational value.
+        UnifiedReal val = tmp.val;    // Current value.
         while ((is_mul = isOperator(cpos, R.id.op_mul, ec))
                || (is_div = isOperator(cpos, R.id.op_div, ec))
                || canStartFactor(cpos)) {
             if (is_mul || is_div) ++cpos;
             tmp = evalSignedFactor(cpos, ec);
             if (is_div) {
-                ratVal = BoundedRational.divide(ratVal, tmp.ratVal);
-                if (ratVal == null) {
-                    crVal = crVal.divide(tmp.val);
-                } else {
-                    crVal = ratVal.CRValue();
-                }
+                val = val.divide(tmp.val);
             } else {
-                ratVal = BoundedRational.multiply(ratVal, tmp.ratVal);
-                if (ratVal == null) {
-                    crVal = crVal.multiply(tmp.val);
-                } else {
-                    crVal = ratVal.CRValue();
-                }
+                val = val.multiply(tmp.val);
             }
             cpos = tmp.pos;
             is_mul = is_div = false;
         }
-        return new EvalRet(cpos, crVal, ratVal);
+        return new EvalRet(cpos, val);
     }
 
     /**
@@ -1055,81 +908,45 @@ class CalculatorExpr {
             return false;
         }
         Operator op = (Operator) mExpr.get(pos + 2);
-        return op.id == R.id.op_add || op.id == R.id.op_sub;
+        return op.id == R.id.op_add || op.id == R.id.op_sub || op.id == R.id.rparen;
     }
 
     /**
      * Compute the multiplicative factor corresponding to an N% addition or subtraction.
-     * @param pos position of Constant or PreEval expression token corresponding to N
-     * @param isSubtraction this is a subtraction, as opposed to addition
-     * @param ec usable evaluation contex; only length matters
-     * @return Rational and CR values; position is pos + 2, i.e. after percent sign
+     * @param pos position of Constant or PreEval expression token corresponding to N.
+     * @param isSubtraction this is a subtraction, as opposed to addition.
+     * @param ec usable evaluation contex; only length matters.
+     * @return UnifiedReal value and position, which is pos + 2, i.e. after percent sign
      */
     private EvalRet getPercentFactor(int pos, boolean isSubtraction, EvalContext ec)
             throws SyntaxException {
         EvalRet tmp = evalUnary(pos, ec);
-        BoundedRational ratVal = isSubtraction ? BoundedRational.negate(tmp.ratVal)
-                : tmp.ratVal;
-        CR crVal = isSubtraction ? tmp.val.negate() : tmp.val;
-        ratVal = BoundedRational.add(BoundedRational.ONE,
-                BoundedRational.multiply(ratVal, RATIONAL_ONE_HUNDREDTH));
-        if (ratVal == null) {
-            crVal = CR.ONE.add(crVal.multiply(REAL_ONE_HUNDREDTH));
-        } else {
-            crVal = ratVal.CRValue();
-        }
-        return new EvalRet(pos + 2 /* after percent sign */, crVal, ratVal);
+        UnifiedReal val = isSubtraction ? tmp.val.negate() : tmp.val;
+        val = UnifiedReal.ONE.add(val.multiply(ONE_HUNDREDTH));
+        return new EvalRet(pos + 2 /* after percent sign */, val);
     }
 
     private EvalRet evalExpr(int i, EvalContext ec) throws SyntaxException {
         EvalRet tmp = evalTerm(i, ec);
         boolean is_plus;
         int cpos = tmp.pos;
-        CR crVal = tmp.val;
-        BoundedRational ratVal = tmp.ratVal;
+        UnifiedReal val = tmp.val;
         while ((is_plus = isOperator(cpos, R.id.op_add, ec))
                || isOperator(cpos, R.id.op_sub, ec)) {
             if (isPercent(cpos + 1)) {
                 tmp = getPercentFactor(cpos + 1, !is_plus, ec);
-                ratVal = BoundedRational.multiply(ratVal, tmp.ratVal);
-                if (ratVal == null) {
-                    crVal = crVal.multiply(tmp.val);
-                } else {
-                    crVal = ratVal.CRValue();
-                }
+                val = val.multiply(tmp.val);
             } else {
                 tmp = evalTerm(cpos + 1, ec);
                 if (is_plus) {
-                    ratVal = BoundedRational.add(ratVal, tmp.ratVal);
-                    if (ratVal == null) {
-                        crVal = crVal.add(tmp.val);
-                    } else {
-                        crVal = ratVal.CRValue();
-                    }
+                    val = val.add(tmp.val);
                 } else {
-                    ratVal = BoundedRational.subtract(ratVal, tmp.ratVal);
-                    if (ratVal == null) {
-                        crVal = crVal.subtract(tmp.val);
-                    } else {
-                        crVal = ratVal.CRValue();
-                    }
+                    val = val.subtract(tmp.val);
                 }
             }
             cpos = tmp.pos;
         }
-        return new EvalRet(cpos, crVal, ratVal);
-    }
-
-    /**
-     * Externally visible evaluation result.
-     */
-    public static class EvalResult {
-        public final CR val;
-        public final BoundedRational ratVal;
-        EvalResult (CR v, BoundedRational rv) {
-            val = v;
-            ratVal = rv;
-        }
+        return new EvalRet(cpos, val);
     }
 
     /**
@@ -1168,6 +985,21 @@ class CalculatorExpr {
     }
 
     /**
+     * Does the expression contain trig operations?
+     */
+    public boolean hasTrigFuncs() {
+        for (Token t: mExpr) {
+            if (t instanceof Operator) {
+                Operator o = (Operator)t;
+                if (KeyMaps.isTrigFunc(o.id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Evaluate the expression excluding trailing binary operators.
      * Errors result in exceptions, most of which are unchecked.  Should not be called
      * concurrently with modification of the expression.  May take a very long time; avoid calling
@@ -1175,8 +1007,8 @@ class CalculatorExpr {
      *
      * @param degreeMode use degrees rather than radians
      */
-    EvalResult eval(boolean degreeMode) throws SyntaxException
-                        // And unchecked exceptions thrown by CR
+    UnifiedReal eval(boolean degreeMode) throws SyntaxException
+                        // And unchecked exceptions thrown by UnifiedReal, CR,
                         // and BoundedRational.
     {
         try {
@@ -1190,7 +1022,7 @@ class CalculatorExpr {
             if (res.pos != prefixLen) {
                 throw new SyntaxException("Failed to parse full expression");
             }
-            return new EvalResult(res.val, res.ratVal);
+            return res.val;
         } catch (IndexOutOfBoundsException e) {
             throw new SyntaxException("Unexpected expression end");
         }
