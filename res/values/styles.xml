@@ -29,9 +29,6 @@
     <style name="PadButtonStyle" parent="@android:style/Widget.Material.Light.Button.Borderless">
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_height">0dip</item>
-        <item name="android:layout_rowWeight">1</item>
-        <item name="android:layout_columnWeight">1</item>
-        <item name="android:layout_gravity">fill</item>
         <item name="android:background">@drawable/pad_button_background</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:gravity">center</item>
@@ -41,6 +38,11 @@
         <item name="android:onClick">onButtonClick</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/pad_button_text_color</item>
+
+        <!-- Attributes from android.support.v7.gridlayout -->
+        <item name="layout_gravity">fill</item>
+        <item name="layout_rowWeight">1</item>
+        <item name="layout_columnWeight">1</item>
     </style>
 
     <style name="PadLayoutStyle">
