@@ -70,5 +70,5 @@
     <string name="approximate" msgid="7117143366610670836">"(±1 за последњу цифру)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Резултат са бројевима на почетку"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"Резултат као разломак"</string>
-    <string name="menu_licenses" msgid="1890541368064108592">"Лиценце отвор. кода"</string>
+    <string name="menu_licenses" msgid="1890541368064108592">"Лиценце отвореног кода"</string>
 </resources>
