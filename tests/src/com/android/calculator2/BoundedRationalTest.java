@@ -129,6 +129,14 @@ public class BoundedRationalTest extends TestCase {
         checkBR(new BoundedRational(36));
         checkBR(BoundedRational.negate(new BoundedRational(36)));
         check(BoundedRational.pow(null, BR_15) == null, "pow(null, 15)");
+        check(BoundedRational.multiply(null, BR_15) == null, "multiply(null, 15)");
+        check(BoundedRational.multiply(BR_15, null) == null, "multiply(15, null)");
+        check(BoundedRational.multiply(null, null) == null, "multiply(null, null)");
+        check(BoundedRational.divide(BR_15, null) == null, "divide(15, null)");
+        check(BoundedRational.add(null, BR_15) == null, "add(null, 15)");
+        check(BoundedRational.add(BR_15, null) == null, "add(15, null)");
+        check(BoundedRational.add(null, null) == null, "add(null, null)");
+        check(BoundedRational.subtract(null, BR_15) == null, "subtract(null, 15)");
     }
 
     public void testBRexceptions() {
@@ -153,5 +161,15 @@ public class BoundedRationalTest extends TestCase {
         // With MAX_SIZE = 10000, we seem to overflow at 3488.
         check(i > 3000, "Harmonic series overflowed at " + i);
         check(i < 4000, "Harmonic series didn't overflow");
+        BoundedRational veryBig = BoundedRational.pow(BoundedRational.TEN,
+                new BoundedRational(5000));
+        check(BoundedRational.divide(veryBig,
+                BoundedRational.divide(veryBig, veryBig)).equals(veryBig), "big / 1");
+        // Very large integers should not be mapped to null.
+        check(BoundedRational.divide(veryBig, BoundedRational.TEN) != null, "very big integer");
+        // The following assumes MAX_SIZE = 10000.
+        // Very large non-integers should be mapped to null.
+        check(BoundedRational.divide(veryBig, new BoundedRational(7)) == null,
+                "very big fraction");
     }
 }

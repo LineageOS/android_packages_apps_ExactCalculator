@@ -170,18 +170,19 @@ public class BoundedRational {
     static Random sReduceRng = new Random();
 
     /**
-     * Return a possibly reduced version of this that's not tooBig().
+     * Return a possibly reduced version of r that's not tooBig().
      * Return null if none exists.
      */
-    private BoundedRational maybeReduce() {
+    private static BoundedRational maybeReduce(BoundedRational r) {
+        if (r == null) return null;
         // Reduce randomly, with 1/16 probability, or if the result is too big.
-        if (!tooBig() && (sReduceRng.nextInt() & 0xf) != 0) {
-            return this;
+        if (!r.tooBig() && (sReduceRng.nextInt() & 0xf) != 0) {
+            return r;
         }
-        BoundedRational result = positiveDen();
+        BoundedRational result = r.positiveDen();
         result = result.reduce();
         if (!result.tooBig()) {
-            return this;
+            return result;
         }
         return null;
     }
@@ -225,7 +226,7 @@ public class BoundedRational {
         }
         final BigInteger den = r1.mDen.multiply(r2.mDen);
         final BigInteger num = r1.mNum.multiply(r2.mDen).add(r2.mNum.multiply(r1.mDen));
-        return new BoundedRational(num,den).maybeReduce();
+        return maybeReduce(new BoundedRational(num,den));
     }
 
     /**
@@ -265,7 +266,7 @@ public class BoundedRational {
     }
 
     static BoundedRational multiply(BoundedRational r1, BoundedRational r2) {
-        return rawMultiply(r1, r2).maybeReduce();
+        return maybeReduce(rawMultiply(r1, r2));
     }
 
     public static class ZeroDivisionException extends ArithmeticException {
