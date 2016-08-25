@@ -805,6 +805,9 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * Only called in UI thread.
      */
     void redisplay() {
+        if (mScroller.isFinished()) {
+            setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
+        }
         int currentCharOffset = getCharOffset(mCurrentPos);
         int maxChars = getMaxChars();
         int lastDisplayedOffset[] = new int[1];
@@ -840,7 +843,13 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             }
             if (!mScroller.isFinished()) {
                 postInvalidateOnAnimation();
+                setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_NONE);
+            } else {
+                setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
             }
+        } else {
+            // Finished scrolling.
+            setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
         }
     }
 
