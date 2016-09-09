@@ -210,6 +210,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
 
         setCursorVisible(false);
         setLongClickable(false);
+        setContentDescription(context.getString(R.string.desc_result));
     }
 
     void setEvaluator(Evaluator evaluator) {
@@ -805,7 +806,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * Only called in UI thread.
      */
     void redisplay() {
-        if (mScroller.isFinished()) {
+        if (mScroller.isFinished() && length() > 0) {
             setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
         }
         int currentCharOffset = getCharOffset(mCurrentPos);
@@ -833,22 +834,39 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     }
 
     @Override
+    protected void onTextChanged(java.lang.CharSequence text, int start, int lengthBefore,
+            int lengthAfter) {
+        super.onTextChanged(text, start, lengthBefore, lengthAfter);
+
+        if (!mScrollable || mScroller.isFinished()) {
+            if (lengthBefore == 0 && lengthAfter > 0) {
+                setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
+                setContentDescription(null);
+            } else if (lengthBefore > 0 && lengthAfter == 0) {
+                setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_NONE);
+                setContentDescription(getContext().getString(R.string.desc_result));
+            }
+        }
+    }
+
+    @Override
     public void computeScroll() {
-        if (!mScrollable) return;
+        if (!mScrollable) {
+            return;
+        }
+
         if (mScroller.computeScrollOffset()) {
             mCurrentPos = mScroller.getCurrX();
             if (getCharOffset(mCurrentPos) != getCharOffset(mLastPos)) {
                 mLastPos = mCurrentPos;
                 redisplay();
             }
-            if (!mScroller.isFinished()) {
+        }
+
+        if (!mScroller.isFinished()) {
                 postInvalidateOnAnimation();
                 setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_NONE);
-            } else {
-                setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
-            }
-        } else {
-            // Finished scrolling.
+        } else if (length() > 0){
             setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
         }
     }

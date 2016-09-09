@@ -215,6 +215,8 @@
 
     <!-- Content description for formula field when it is empty. [CHAR_LIMIT=NONE] -->
     <string name="desc_formula">No formula</string>
+    <!-- Content description for result field when it is empty. [CHAR_LIMIT=NONE] -->
+    <string name="desc_result">No result</string>
 
     <!-- Content description for the numeric/operation pad when slide-able. [CHAR_LIMIT=NONE] -->
     <string name="desc_num_pad">Numbers and basic operations</string>
