@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"ਉਲਟੇ ਫੰਕਸ਼ਨ ਦਿਖਾਓ"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ਉਲਟੇ ਫੰਕਸ਼ਨ ਲੁਕਾਓ"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ਕੋਈ ਫ਼ਾਰਮੂਲਾ ਨਹੀਂ"</string>
+    <string name="desc_result" msgid="1794073190203126821">"ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"ਨੰਬਰ ਅਤੇ ਮੂਲ ਆਪਰੇਸ਼ਨ"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"ਉੱਨਤ ਆਪਰੇਸ਼ਨ"</string>
     <string name="error_nan" msgid="5674077944929888710">"ਇੱਕ ਸੰਖਿਆ ਨਹੀਂ"</string>

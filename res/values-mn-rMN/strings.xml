@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"урвуу фүнкцыг харуулах"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"урвуу функцийг нуух"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Томъёо байхгүй"</string>
+    <string name="desc_result" msgid="1794073190203126821">"Илэрц алга"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"Тоо, үндсэн үйл ажиллагаа"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"Сайжруулсан үйл ажиллагаа"</string>
     <string name="error_nan" msgid="5674077944929888710">"Тоо биш байна"</string>

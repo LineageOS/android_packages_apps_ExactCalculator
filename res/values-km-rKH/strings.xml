@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"បង្ហាញមុខងារច្រាស"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"លាក់មុខងារច្រាស"</string>
     <string name="desc_formula" msgid="8056588859637585007">"គ្មានរូបមន្ត"</string>
+    <string name="desc_result" msgid="1794073190203126821">"គ្មានលទ្ធផលទេ"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"លេខ និងប្រតិបត្តិការមូលដ្ឋាន"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"ប្រតិបត្តិការកម្រិតខ្ពស់"</string>
     <string name="error_nan" msgid="5674077944929888710">"មិនមែនជាលេខទេ"</string>
