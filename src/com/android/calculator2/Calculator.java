@@ -34,7 +34,6 @@ import android.animation.PropertyValuesHolder;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ClipData;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -480,6 +479,10 @@ public class Calculator extends Activity
             case KeyEvent.KEYCODE_DEL:
                 mCurrentButton = mDeleteButton;
                 onDelete();
+                return true;
+            case KeyEvent.KEYCODE_CLEAR:
+                mCurrentButton = mClearButton;
+                onClear();
                 return true;
             default:
                 cancelIfEvaluating(false);
