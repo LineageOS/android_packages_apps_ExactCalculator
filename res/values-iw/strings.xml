@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"הצג פונקציות אינברס"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"הסתר פונקציות אינברס"</string>
     <string name="desc_formula" msgid="8056588859637585007">"אין נוסחה"</string>
+    <string name="desc_result" msgid="1794073190203126821">"אין תוצאה"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"מספרים ופעולות בסיסיות"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"פעולות מתקדמות"</string>
     <string name="error_nan" msgid="5674077944929888710">"אינו מספר"</string>

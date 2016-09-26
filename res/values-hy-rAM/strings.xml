@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"ցուցադրել հակադարձ գործառույթները"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"թաքցնել հակադարձ գործառույթները"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Բանաձև չկա"</string>
+    <string name="desc_result" msgid="1794073190203126821">"Արդյունք չկա"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"Թվեր և հիմնական գործողություններ"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"Լրացուցիչ գործողություններ"</string>
     <string name="error_nan" msgid="5674077944929888710">"Թիվ չէ"</string>
