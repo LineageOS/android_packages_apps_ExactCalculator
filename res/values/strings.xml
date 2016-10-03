@@ -127,6 +127,11 @@
     <!-- Toggle button to show/hide inverse functions. [CHAR_LIMIT=4] -->
     <string name="inv" translatable="false">inv</string>
 
+    <!-- Memory store button. [CHAR_LIMIT=2] -->
+    <string name="memory_store">MS</string>
+    <!-- Memory recall button. [CHAR_LIMIT=2] -->
+    <string name="memory_recall">MR</string>
+
     <!-- Content description for 'e' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_const_e">Euler\'s number</string>
     <!-- Content description for 'π' button. [CHAR_LIMIT=NONE] -->
@@ -212,6 +217,11 @@
     <string name="desc_inv_off">show inverse functions</string>
     <!-- Content description for "inv" button to hide inverse functions. [CHAR_LIMIT=NONE] -->
     <string name="desc_inv_on">hide inverse functions</string>
+
+    <!-- Content description for memory store button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_memory_store">memory store</string>
+    <!-- Content description for memory recall button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_memory_recall">memory recall</string>
 
     <!-- Content description for formula field when it is empty. [CHAR_LIMIT=NONE] -->
     <string name="desc_formula">No formula</string>

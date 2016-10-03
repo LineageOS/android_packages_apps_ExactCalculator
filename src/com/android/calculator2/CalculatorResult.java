@@ -47,12 +47,14 @@ import android.widget.Toast;
 
 // A text widget that is "infinitely" scrollable to the right,
 // and obtains the text to display via a callback to Logic.
-public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenuItemClickListener {
+public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenuItemClickListener,
+        Evaluator.EvaluationListener, Evaluator.CharMetricsInfo {
     static final int MAX_RIGHT_SCROLL = 10000000;
     static final int INVALID = MAX_RIGHT_SCROLL + 10000;
         // A larger value is unlikely to avoid running out of space
     final OverScroller mScroller;
     final GestureDetector mGestureDetector;
+    private long mIndex;  // Index of expression we are displaying.
     private Evaluator mEvaluator;
     private boolean mScrollable = false;
                             // A scrollable result is currently displayed.
@@ -213,8 +215,9 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         setContentDescription(context.getString(R.string.desc_result));
     }
 
-    void setEvaluator(Evaluator evaluator) {
+    void setEvaluator(Evaluator evaluator, long index) {
         mEvaluator = evaluator;
+        mIndex = index;
     }
 
     // Compute maximum digit width the hard way.
@@ -300,12 +303,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    /**
-     * Return the number of additional digit widths required to add digit separators to
-     * the supplied string prefix.
-     * The string prefix is assumed to represent a whole number, after skipping leading non-digits.
-     * Callable from non-UI thread.
-     */
+    // From Evaluator.CharMetricsInfo.
+    @Override
     public float separatorChars(String s, int len) {
         int start = 0;
         while (start < len && !Character.isDigit(s.charAt(start))) {
@@ -322,20 +321,16 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         }
     }
 
-    /**
-     * Return extra width credit for absence of ellipsis, as fraction of a digit width.
-     * May be called by non-UI thread.
-     */
+    // From Evaluator.CharMetricsInfo.
+    @Override
     public float getNoEllipsisCredit() {
         synchronized(mWidthLock) {
             return mNoEllipsisCredit;
         }
     }
 
-    /**
-     * Return extra width credit for presence of a decimal point, as fraction of a digit width.
-     * May be called by non-UI thread.
-     */
+    // From Evaluator.CharMetricsInfo.
+    @Override
     public float getDecimalCredit() {
         synchronized(mWidthLock) {
             return mDecimalCredit;
@@ -355,6 +350,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * Initiate display of a new result.
      * Only called from UI thread.
      * The parameters specify various properties of the result.
+     * @param index Index of expression that was just evaluated. Currently ignored, since we only
+     *            expect notification for the expression result being displayed.
      * @param initPrec Initial display precision computed by evaluator. (1 = tenths digit)
      * @param msd Position of most significant digit.  Offset from left of string.
                   Evaluator.INVALID_MSD if unknown.
@@ -363,7 +360,9 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * @param truncatedWholePart Result up to but not including decimal point.
                                  Currently we only use the length.
      */
-    void displayResult(int initPrec, int msd, int leastDigPos, String truncatedWholePart) {
+    @Override
+    public void onEvaluate(long index, int initPrec, int msd, int leastDigPos,
+            String truncatedWholePart) {
         initPositions(initPrec, msd, leastDigPos, truncatedWholePart);
         redisplay();
     }
@@ -492,7 +491,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * Display error message indicated by resourceId.
      * UI thread only.
      */
-    void displayError(int resourceId) {
+    @Override
+    public void onError(long index, int resourceId) {
         mValid = true;
         setLongClickable(false);
         mScrollable = false;
@@ -712,8 +712,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         final boolean truncated[] = new boolean[1];
         final boolean negative[] = new boolean[1];
         final int requestedPrecOffset[] = {precOffset};
-        final String rawResult = mEvaluator.getString(requestedPrecOffset, mMaxCharOffset,
-                maxSize, truncated, negative);
+        final String rawResult = mEvaluator.getString(mIndex, requestedPrecOffset, mMaxCharOffset,
+                maxSize, truncated, negative, this);
         return formatResult(rawResult, requestedPrecOffset[0], maxSize, truncated[0], negative[0],
                 lastDisplayedOffset, forcePrecision, forceSciNotation, insertCommas);
    }
@@ -753,7 +753,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         }
         // It's reasonable to compute and copy the exact result instead.
         final int nonNegLsdOffset = Math.max(0, mLsdOffset);
-        final String rawResult = mEvaluator.getResult().toStringTruncated(nonNegLsdOffset);
+        final String rawResult = mEvaluator.getResult(mIndex).toStringTruncated(nonNegLsdOffset);
         final String formattedResult = formatResult(rawResult, nonNegLsdOffset, MAX_COPY_SIZE,
                 false, rawResult.charAt(0) == '-', null, true /* forcePrecision */,
                 false /* forceSciNotation */, false /* insertCommas */);
@@ -762,9 +762,10 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
 
     /**
      * Return the maximum number of characters that will fit in the result display.
-     * May be called asynchronously from non-UI thread.
+     * May be called asynchronously from non-UI thread. From Evaluator.CharMetricsInfo.
      */
-    int getMaxChars() {
+    @Override
+    public int getMaxChars() {
         int result;
         synchronized(mWidthLock) {
             result = (int) Math.floor(mWidthConstraint / mCharWidth);
@@ -801,11 +802,21 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         setLongClickable(false);
     }
 
+    @Override
+    public void onCancelled(long index) {
+        clear();
+    }
+
     /**
      * Refresh display.
-     * Only called in UI thread.
+     * Only called in UI thread. Index argument is currently ignored.
      */
-    void redisplay() {
+    @Override
+    public void onReevaluate(long index) {
+        redisplay();
+    }
+
+    public void redisplay() {
         if (mScroller.isFinished() && length() > 0) {
             setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
         }
@@ -1014,7 +1025,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                 (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         // We include a tag URI, to allow us to recognize our own results and handle them
         // specially.
-        ClipData.Item newItem = new ClipData.Item(text, null, mEvaluator.capture());
+        ClipData.Item newItem = new ClipData.Item(text, null, mEvaluator.capture(mIndex));
         String[] mimeTypes = new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN};
         ClipData cd = new ClipData("calculator result", mimeTypes, newItem);
         clipboard.setPrimaryClip(cd);
@@ -1025,7 +1036,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_copy:
-                if (mEvaluator.reevaluationInProgress()) {
+                if (mEvaluator.evaluationInProgress(mIndex)) {
                     // Refuse to copy placeholder characters.
                     return false;
                 } else {
