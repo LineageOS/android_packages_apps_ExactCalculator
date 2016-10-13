@@ -17,7 +17,6 @@
 package com.android.calculator2;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -27,12 +26,11 @@ import android.preference.PreferenceManager;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
-import com.hp.creals.CR;  // For exception classes.
+import com.hp.creals.CR;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -88,7 +86,7 @@ import java.util.TimeZone;
  * We ensure that only one evaluation of either kind (AsyncEvaluator or AsyncReevaluator) is
  * running at a time.
  */
-class Evaluator {
+public class Evaluator {
 
     // When naming variables and fields, "Offset" denotes a character offset in a string
     // representing a decimal number, where the offset is relative to the decimal point.  1 =
@@ -451,7 +449,7 @@ class Evaluator {
      * but we have failed to prove there aren't such cases.
      */
     @VisibleForTesting
-    static String unflipZeroes(String oldDigs, int oldPrecOffset, String newDigs,
+    public static String unflipZeroes(String oldDigs, int oldPrecOffset, String newDigs,
             int newPrecOffset) {
         final int oldLen = oldDigs.length();
         if (oldDigs.charAt(oldLen - 1) != '9') {

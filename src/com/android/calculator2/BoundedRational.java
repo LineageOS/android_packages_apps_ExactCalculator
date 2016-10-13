@@ -16,10 +16,10 @@
 
 package com.android.calculator2;
 
-import java.util.Random;
+import com.hp.creals.CR;
 
 import java.math.BigInteger;
-import com.hp.creals.CR;
+import java.util.Random;
 
 /**
  * Rational numbers that may turn to null if they get too big.
@@ -240,7 +240,7 @@ public class BoundedRational {
         return new BoundedRational(r.mNum.negate(), r.mDen);
     }
 
-    static BoundedRational subtract(BoundedRational r1, BoundedRational r2) {
+    public static BoundedRational subtract(BoundedRational r1, BoundedRational r2) {
         return add(r1, negate(r2));
     }
 
@@ -265,7 +265,7 @@ public class BoundedRational {
         return new BoundedRational(num,den);
     }
 
-    static BoundedRational multiply(BoundedRational r1, BoundedRational r2) {
+    public static BoundedRational multiply(BoundedRational r1, BoundedRational r2) {
         return maybeReduce(rawMultiply(r1, r2));
     }
 
@@ -278,7 +278,7 @@ public class BoundedRational {
     /**
      * Return the reciprocal of r (or null if the argument was null).
      */
-    static BoundedRational inverse(BoundedRational r) {
+    public static BoundedRational inverse(BoundedRational r) {
         if (r == null) {
             return null;
         }
@@ -288,11 +288,11 @@ public class BoundedRational {
         return new BoundedRational(r.mDen, r.mNum);
     }
 
-    static BoundedRational divide(BoundedRational r1, BoundedRational r2) {
+    public static BoundedRational divide(BoundedRational r1, BoundedRational r2) {
         return multiply(r1, inverse(r2));
     }
 
-    static BoundedRational sqrt(BoundedRational r) {
+    public static BoundedRational sqrt(BoundedRational r) {
         // Return non-null if numerator and denominator are small perfect squares.
         if (r == null) {
             return null;
@@ -396,7 +396,7 @@ public class BoundedRational {
      * Return Integer.MAX_VALUE if that's not possible.  Never returns a value less than zero, even
      * if r is a power of ten.
      */
-    static int digitsRequired(BoundedRational r) {
+    public static int digitsRequired(BoundedRational r) {
         if (r == null) {
             return Integer.MAX_VALUE;
         }
