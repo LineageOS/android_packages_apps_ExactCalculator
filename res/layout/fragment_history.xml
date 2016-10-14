@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (C) 2014 The Android Open Source Project
+  Copyright (C) 2016 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,33 +14,29 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/display_background_color"
     android:orientation="vertical">
 
-    <include layout="@layout/display" />
-
-    <com.android.calculator2.CalculatorPadViewPager
-        android:id="@+id/pad_pager"
+    <Toolbar
+        android:id="@+id/history_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:overScrollMode="never">
+        android:layout_height="wrap_content"
+        android:background="?android:attr/colorPrimary"
+        android:elevation="4dip"
+        android:minHeight="?android:attr/actionBarSize"
+        android:navigationContentDescription="@string/desc_navigate_up"
+        android:navigationIcon="?android:attr/homeAsUpIndicator"
+        android:theme="@android:style/ThemeOverlay.Material.Dark.ActionBar"
+        android:title="@string/title_history" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <include layout="@layout/pad_numeric" />
-            <include layout="@layout/pad_operator" />
-
-        </LinearLayout>
-
-        <include layout="@layout/pad_advanced" />
-
-    </com.android.calculator2.CalculatorPadViewPager>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="No History" />
 
 </LinearLayout>

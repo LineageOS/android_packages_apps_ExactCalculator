@@ -1044,6 +1044,13 @@ public class Calculator extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.menu_history:
+                getFragmentManager().beginTransaction()
+                        .replace(android.R.id.content, new HistoryFragment(), HistoryFragment.TAG)
+                        .addToBackStack(HistoryFragment.TAG)
+                        .commit();
+
+                return true;
             case R.id.menu_leading:
                 displayFull();
                 return true;
