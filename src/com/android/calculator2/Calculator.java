@@ -33,6 +33,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -180,6 +181,7 @@ public class Calculator extends Activity
     private CalculatorText mFormulaText;
     private CalculatorResult mResultText;
     private HorizontalScrollView mFormulaContainer;
+    private DragLayout mDragLayout;
 
     private ViewPager mPadViewPager;
     private View mDeleteButton;
@@ -206,10 +208,12 @@ public class Calculator extends Activity
     // Whether the display is one line.
     private boolean mOneLine;
 
+    private HistoryFragment mHistoryFragment = new HistoryFragment();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calculator);
+        setContentView(R.layout.activity_calculator_main);
         setActionBar((Toolbar) findViewById(R.id.toolbar));
 
         // Hide all default options in the ActionBar.
@@ -262,6 +266,19 @@ public class Calculator extends Activity
         mEvaluator = new Evaluator(this, mResultText);
         mResultText.setEvaluator(mEvaluator);
         KeyMaps.setActivity(this);
+
+        mDragLayout = (DragLayout) findViewById(R.id.drag_layout);
+        mDragLayout.setOnDragCallback(new DragLayout.OnDragCallback() {
+            @Override
+            public void onStartDragging() {
+                showHistoryFragment(FragmentTransaction.TRANSIT_NONE);
+            }
+
+            @Override
+            public void onDragToClose() {
+                getFragmentManager().popBackStack();
+            }
+        });
 
         if (savedInstanceState != null) {
             setState(CalculatorState.values()[
@@ -436,6 +453,12 @@ public class Calculator extends Activity
     @Override
     public void onBackPressed() {
         if (!stopActionModeOrContextMenu()) {
+            if (mDragLayout.isOpen()) {
+                // Close the layout and remove the fragment.
+                mDragLayout.setClosed();
+                getFragmentManager().popBackStack();
+                return;
+            }
             if (mPadViewPager != null && mPadViewPager.getCurrentItem() != 0) {
                 // Select the previous pad.
                 mPadViewPager.setCurrentItem(mPadViewPager.getCurrentItem() - 1);
@@ -1045,11 +1068,8 @@ public class Calculator extends Activity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_history:
-                getFragmentManager().beginTransaction()
-                        .replace(android.R.id.content, new HistoryFragment(), HistoryFragment.TAG)
-                        .addToBackStack(HistoryFragment.TAG)
-                        .commit();
-
+                showHistoryFragment(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                mDragLayout.setOpen();
                 return true;
             case R.id.menu_leading:
                 displayFull();
@@ -1063,6 +1083,14 @@ public class Calculator extends Activity
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showHistoryFragment(int transit) {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.history_frame, mHistoryFragment, HistoryFragment.TAG)
+                .setTransition(transit)
+                .addToBackStack(HistoryFragment.TAG)
+                .commit();
     }
 
     private void displayMessage(String s) {
