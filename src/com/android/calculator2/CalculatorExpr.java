@@ -873,19 +873,25 @@ class CalculatorExpr {
      * Unlike the "general" case using logarithms, this handles a negative base.
      */
     private static CR pow(CR base, BigInteger exp) {
-        if (exp.compareTo(BigInteger.ZERO) < 0) {
-            return pow(base, exp.negate()).inverse();
+        BigInteger bigInteger = new BigInteger(exp.toString());
+
+        if (bigInteger.compareTo(BigInteger.ZERO) < 0) {
+            return pow(base, bigInteger.negate()).inverse();
         }
-        if (exp.equals(BigInteger.ONE)) {
+
+        if (bigInteger.equals(BigInteger.ONE)) {
             return base;
         }
-        if (exp.and(BigInteger.ONE).intValue() == 1) {
-            return pow(base, exp.subtract(BigInteger.ONE)).multiply(base);
+
+        if (bigInteger.and(BigInteger.ONE).intValue() == 1) {
+            return pow(base, bigInteger.subtract(BigInteger.ONE)).multiply(base);
         }
-        if (exp.equals(BigInteger.ZERO)) {
+
+        if (bigInteger.equals(BigInteger.ZERO)) {
             return CR.valueOf(1);
         }
-        CR tmp = pow(base, exp.shiftRight(1));
+
+        CR tmp = pow(base, bigInteger.shiftRight(1));
         return tmp.multiply(tmp);
     }
 
@@ -961,7 +967,8 @@ class CalculatorExpr {
             // values.  That wouldn't work reliably with floating point either.
             BigInteger int_exp = BoundedRational.asBigInteger(exp.ratVal);
             if (int_exp != null) {
-                crVal = pow(crVal, int_exp);
+                BigInteger bigInteger = new BigInteger(int_exp.toString());
+                crVal = pow(crVal, bigInteger);
             } else {
                 crVal = crVal.ln().multiply(exp.val).exp();
             }
