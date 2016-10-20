@@ -76,12 +76,8 @@
     <string name="menu_leading" msgid="2338520833272667740">"පළමු පූර්ණ සංඛාව සමගින් පිළිතුරු දෙන්න"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"භාග සංඛ්‍යාවක් ලෙස පිළිතුර දෙන්න"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"විවෘත මූලාශ්‍ර බලපත්‍ර"</string>
-    <!-- no translation found for menu_history (9006222701220105452) -->
-    <skip />
-    <!-- no translation found for menu_clear_history (902038191257404791) -->
-    <skip />
-    <!-- no translation found for title_history (7820912156315181539) -->
-    <skip />
-    <!-- no translation found for desc_navigate_up (6208699569165589623) -->
-    <skip />
+    <string name="menu_history" msgid="9006222701220105452">"ඉතිහාසය"</string>
+    <string name="menu_clear_history" msgid="902038191257404791">"ඉතිහාසය හිස් කරන්න"</string>
+    <string name="title_history" msgid="7820912156315181539">"ඉතිහාසය"</string>
+    <string name="desc_navigate_up" msgid="6208699569165589623">"ඉහළට සංචාලනය කරන්න"</string>
 </resources>
