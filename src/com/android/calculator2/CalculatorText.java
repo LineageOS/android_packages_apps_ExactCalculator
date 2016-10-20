@@ -286,8 +286,8 @@ public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuIt
                 outRect.top += getTotalPaddingTop();
                 outRect.right -= getTotalPaddingRight();
                 outRect.bottom -= getTotalPaddingBottom();
-                // Encourage menu positioning towards the right, possibly over formula.
-                outRect.left = outRect.right;
+                // Encourage menu positioning over the rightmost 10% of the screen.
+                outRect.left = (int) (outRect.right * 0.9f);
             }
         };
         setOnLongClickListener(new View.OnLongClickListener() {
