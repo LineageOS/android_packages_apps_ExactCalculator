@@ -76,12 +76,8 @@
     <string name="menu_leading" msgid="2338520833272667740">"ਮੋਹਰੀ ਅੰਕਾਂ ਦੇ ਨਾਲ ਜਵਾਬ ਦਿਓ"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"ਭਾਗਅੰਸ਼ ਦੇ ਰੂਪ ਵਿੱਚ ਜਵਾਬ ਦਿਓ"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"ਖੁੱਲ੍ਹਾ ਸਰੋਤ ਲਾਇਸੰਸ"</string>
-    <!-- no translation found for menu_history (9006222701220105452) -->
-    <skip />
-    <!-- no translation found for menu_clear_history (902038191257404791) -->
-    <skip />
-    <!-- no translation found for title_history (7820912156315181539) -->
-    <skip />
-    <!-- no translation found for desc_navigate_up (6208699569165589623) -->
-    <skip />
+    <string name="menu_history" msgid="9006222701220105452">"ਇਤਿਹਾਸ"</string>
+    <string name="menu_clear_history" msgid="902038191257404791">"ਇਤਿਹਾਸ ਸਾਫ਼ ਕਰੋ"</string>
+    <string name="title_history" msgid="7820912156315181539">"ਇਤਿਹਾਸ"</string>
+    <string name="desc_navigate_up" msgid="6208699569165589623">"ਉੱਪਰ ਆਵਾਗੌਣ ਕਰੋ"</string>
 </resources>
