@@ -77,7 +77,7 @@
     <string name="menu_fraction" msgid="1247477377840252234">"ចម្លើយជាប្រភាគ"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"អាជ្ញាប័ណ្ណប្រភពកូដចំហ"</string>
     <string name="menu_history" msgid="9006222701220105452">"ប្រវត្តិ"</string>
-    <string name="menu_clear_history" msgid="902038191257404791">"ជម្រះប្រវត្តិ"</string>
+    <string name="menu_clear_history" msgid="902038191257404791">"សម្អាត​ប្រវត្តិ"</string>
     <string name="title_history" msgid="7820912156315181539">"ប្រវត្តិ"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"រំកិលទៅលើ"</string>
 </resources>
