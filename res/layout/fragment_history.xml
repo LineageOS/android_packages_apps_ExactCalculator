@@ -16,10 +16,10 @@
   -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/display_background_color"
-    android:clickable="true"
     android:orientation="vertical">
 
     <Toolbar
@@ -34,10 +34,12 @@
         android:theme="@android:style/ThemeOverlay.Material.Dark.ActionBar"
         android:title="@string/title_history" />
 
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/history_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="No History" />
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        app:layoutManager="LinearLayoutManager"
+        app:stackFromEnd="true" />
 
 </LinearLayout>

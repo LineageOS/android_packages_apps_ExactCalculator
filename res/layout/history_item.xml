@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (C) 2014 The Android Open Source Project
+  Copyright (C) 2016 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,42 +15,45 @@
   limitations under the License.
   -->
 
-<com.android.calculator2.CalculatorDisplay
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/display"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/display_background_color"
-    android:elevation="4dip"
+    android:clipChildren="false"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar" />
+    <TextView
+        android:id="@+id/history_date"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/title_current_expression"
+        android:textColor="?android:attr/colorAccent"
+        android:textSize="14dp" />
 
     <com.android.calculator2.CalculatorScrollView
-        android:id="@+id/formula_container"
+        android:id="@+id/history_formula_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:overScrollMode="never"
         android:scrollbars="none">
 
-       <com.android.calculator2.CalculatorFormula
-            android:id="@+id/formula"
-            style="@style/DisplayTextStyle.Formula"
+        <com.android.calculator2.CalculatorFormula
+            android:id="@+id/history_formula"
+            style="@style/HistoryItemTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:ellipsize="none"
-            android:maxLines="1"
             android:textColor="@color/display_formula_text_color" />
 
     </com.android.calculator2.CalculatorScrollView>
 
     <com.android.calculator2.CalculatorResult
-        android:id="@+id/result"
-        style="@style/DisplayTextStyle.Result"
+        android:id="@+id/history_result"
+        style="@style/HistoryItemTextStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:bufferType="spannable"
-        android:singleLine="true"
         android:textColor="@color/display_result_text_color" />
 
-</com.android.calculator2.CalculatorDisplay>
+</LinearLayout>

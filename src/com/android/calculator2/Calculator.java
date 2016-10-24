@@ -57,12 +57,14 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroupOverlay;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.widget.Toolbar;
@@ -174,6 +176,44 @@ public class Calculator extends Activity
         }
     };
 
+    private final DragLayout.DragCallback mDragCallback = new DragLayout.DragCallback() {
+        @Override
+        public void onStartDragging() {
+            showHistoryFragment(FragmentTransaction.TRANSIT_NONE);
+        }
+
+        @Override
+        public void whileDragging(float yFraction) {
+            // no-op
+        }
+
+        @Override
+        public void onClosed() {
+            getFragmentManager().popBackStack();
+        }
+
+        @Override
+        public boolean allowDrag(MotionEvent event) {
+            return isViewTarget(mHistoryFrame, event) || isViewTarget(mDisplayView, event);
+        }
+
+        @Override
+        public boolean shouldInterceptTouchEvent(MotionEvent event) {
+            return isViewTarget(mHistoryFrame, event) || isViewTarget(mDisplayView, event);
+        }
+
+        @Override
+        public int getDisplayHeight() {
+            return mDisplayView.getMeasuredHeight();
+        }
+
+        public void onLayout(int translation) {
+            mHistoryFrame.setTranslationY(translation + mDisplayView.getBottom());
+        }
+    };
+
+    private final Rect mHitRect = new Rect();
+
     private CalculatorState mCurrentState;
     private Evaluator mEvaluator;
 
@@ -183,6 +223,7 @@ public class Calculator extends Activity
     private CalculatorResult mResultText;
     private HorizontalScrollView mFormulaContainer;
     private DragLayout mDragLayout;
+    private FrameLayout mHistoryFrame;
 
     private ViewPager mPadViewPager;
     private View mDeleteButton;
@@ -272,17 +313,10 @@ public class Calculator extends Activity
         KeyMaps.setActivity(this);
 
         mDragLayout = (DragLayout) findViewById(R.id.drag_layout);
-        mDragLayout.setOnDragCallback(new DragLayout.OnDragCallback() {
-            @Override
-            public void onStartDragging() {
-                showHistoryFragment(FragmentTransaction.TRANSIT_NONE);
-            }
+        mDragLayout.removeDragCallback(mDragCallback);
+        mDragLayout.addDragCallback(mDragCallback);
 
-            @Override
-            public void onDragToClose() {
-                getFragmentManager().popBackStack();
-            }
-        });
+        mHistoryFrame = (FrameLayout) findViewById(R.id.history_frame);
 
         if (savedInstanceState != null) {
             setState(CalculatorState.values()[
@@ -419,6 +453,12 @@ public class Calculator extends Activity
 
             invalidateOptionsMenu();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDragLayout.removeDragCallback(mDragCallback);
+        super.onDestroy();
     }
 
     @Override
@@ -1136,11 +1176,13 @@ public class Calculator extends Activity
     }
 
     private void showHistoryFragment(int transit) {
-        getFragmentManager().beginTransaction()
-                .replace(R.id.history_frame, mHistoryFragment, HistoryFragment.TAG)
-                .setTransition(transit)
-                .addToBackStack(HistoryFragment.TAG)
-                .commit();
+        if (!mDragLayout.isOpen()) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.history_frame, mHistoryFragment, HistoryFragment.TAG)
+                    .setTransition(transit)
+                    .addToBackStack(HistoryFragment.TAG)
+                    .commit();
+        }
     }
 
     private void displayMessage(String title, String message) {
@@ -1261,6 +1303,12 @@ public class Calculator extends Activity
             setState(CalculatorState.INPUT);
             mEvaluator.clearMain();
         }
+    }
+
+    private boolean isViewTarget(View view, MotionEvent event) {
+        mHitRect.set(0, 0, view.getWidth(), view.getHeight());
+        mDragLayout.offsetDescendantRectToMyCoords(view, mHitRect);
+        return mHitRect.contains((int) event.getX(), (int) event.getY());
     }
 
     @Override

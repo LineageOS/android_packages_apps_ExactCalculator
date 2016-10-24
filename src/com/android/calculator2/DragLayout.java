@@ -17,7 +17,6 @@
 package com.android.calculator2;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
@@ -28,24 +27,29 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DragLayout extends RelativeLayout {
 
+    private static final String TAG = "DragLayout";
     private static final double AUTO_OPEN_SPEED_LIMIT = 800.0;
     private static final String KEY_IS_OPEN = "IS_OPEN";
     private static final String KEY_SUPER_STATE = "SUPER_STATE";
 
-    private final Rect mHitRect = new Rect();
-
-    private CalculatorDisplay mCalculatorDisplay;
     private FrameLayout mHistoryFrame;
     private ViewDragHelper mDragHelper;
 
-    private OnDragCallback mOnDragCallback;
+    private final List<DragCallback> mDragCallbacks = new ArrayList<>();
 
     private int mDraggingState = ViewDragHelper.STATE_IDLE;
     private int mDraggingBorder;
     private int mVerticalRange;
     private boolean mIsOpen;
+
+    // Used to determine whether a touch event should be intercepted.
+    private float mInitialDownX;
+    private float mInitialDownY;
 
     public DragLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -55,7 +59,6 @@ public class DragLayout extends RelativeLayout {
     protected void onFinishInflate() {
         mDragHelper = ViewDragHelper.create(this, 1.0f, new DragHelperCallback());
         mHistoryFrame = (FrameLayout) findViewById(R.id.history_frame);
-        mCalculatorDisplay = (CalculatorDisplay) findViewById(R.id.display);
         super.onFinishInflate();
     }
 
@@ -63,17 +66,24 @@ public class DragLayout extends RelativeLayout {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         if (changed) {
-            mHistoryFrame.setTranslationY(-(b - t) + mCalculatorDisplay.getBottom());
-
+            for (DragCallback c : mDragCallbacks) {
+               c.onLayout(t-b);
+            }
             if (mIsOpen) {
                 setOpen();
+            } else {
+                setClosed();
             }
         }
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        mVerticalRange = h - mCalculatorDisplay.getMeasuredHeight();
+        int height = 0;
+        for (DragCallback c : mDragCallbacks) {
+            height += c.getDisplayHeight();
+        }
+        mVerticalRange = h - height;
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -97,13 +107,41 @@ public class DragLayout extends RelativeLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        return (isDisplayTarget(event) || isHistoryTarget(event))
-                && mDragHelper.shouldInterceptTouchEvent(event);
+        // First verify that we don't have a large deltaX (that the user is not trying to
+        // horizontally scroll).
+        final float x = event.getX();
+        final float y = event.getY();
+        final int action = event.getAction();
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                mInitialDownX = x;
+                mInitialDownY = y;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                final float deltaX = Math.abs(x - mInitialDownX);
+                final float deltaY = Math.abs(y - mInitialDownY);
+                final int slop = mDragHelper.getTouchSlop();
+                if (deltaY > slop && deltaX > deltaY) {
+                    mDragHelper.cancel();
+                    return false;
+                }
+        }
+
+        boolean doDrag = true;
+        for (DragCallback c : mDragCallbacks) {
+            doDrag &= c.allowDrag(event);
+        }
+        return doDrag && mDragHelper.shouldInterceptTouchEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (isDisplayTarget(event) || isHistoryTarget(event) || isMoving()) {
+        boolean doIntercept = true;
+        for (DragCallback c : mDragCallbacks) {
+            doIntercept &= c.shouldInterceptTouchEvent(event);
+        }
+        if (doIntercept || isMoving()) {
             mDragHelper.processTouchEvent(event);
             return true;
         } else {
@@ -119,22 +157,10 @@ public class DragLayout extends RelativeLayout {
     }
 
     private void onStartDragging() {
-        mOnDragCallback.onStartDragging();
+        for (DragCallback c : mDragCallbacks) {
+            c.onStartDragging();
+        }
         mHistoryFrame.setVisibility(VISIBLE);
-    }
-
-    private boolean isViewTarget(View view, MotionEvent event) {
-        view.getHitRect(mHitRect);
-        offsetDescendantRectToMyCoords(view, mHitRect);
-        return mHitRect.contains((int) event.getRawX(), (int) event.getRawY());
-    }
-
-    private boolean isDisplayTarget(MotionEvent event) {
-        return isViewTarget(mCalculatorDisplay, event);
-    }
-
-    private boolean isHistoryTarget(MotionEvent event) {
-        return isViewTarget(mHistoryFrame, event);
     }
 
     public boolean isMoving() {
@@ -153,22 +179,45 @@ public class DragLayout extends RelativeLayout {
     }
 
     public void setClosed() {
+        // Scroll the RecyclerView to the bottom.
+        for (DragCallback c : mDragCallbacks) {
+            c.onClosed();
+        }
         mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, 0);
-        mIsOpen = false;
-        mOnDragCallback.onDragToClose();
         mHistoryFrame.setVisibility(GONE);
+        mIsOpen = false;
     }
 
-    public void setOnDragCallback(OnDragCallback callback) {
-        mOnDragCallback = callback;
+    public void addDragCallback(DragCallback callback) {
+        mDragCallbacks.add(callback);
     }
 
-    public interface OnDragCallback {
+    public void removeDragCallback(DragCallback callback) {
+        mDragCallbacks.remove(callback);
+    }
+
+    /**
+     * Callbacks for coordinating with the RecyclerView or HistoryFragment.
+     */
+    public interface DragCallback {
         // Callback when a drag in any direction begins.
         void onStartDragging();
 
-        // Callback when a drag is used to close.
-        void onDragToClose();
+        // Animate the RecyclerView text.
+        void whileDragging(float yFraction);
+
+        // Scroll the RecyclerView to the bottom before closing the frame.
+        void onClosed();
+
+        // Whether we should allow the drag to happen
+        boolean allowDrag(MotionEvent event);
+
+        // Whether we should intercept the touch event
+        boolean shouldInterceptTouchEvent(MotionEvent event);
+
+        int getDisplayHeight();
+
+        void onLayout(int translation);
     }
 
     public class DragHelperCallback extends ViewDragHelper.Callback {
@@ -197,6 +246,11 @@ public class DragLayout extends RelativeLayout {
         @Override
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             mDraggingBorder = top;
+
+            // Animate RecyclerView text.
+            for (DragCallback c : mDragCallbacks) {
+                c.whileDragging(top / (mVerticalRange * 1.0f));
+            }
         }
 
         @Override
@@ -218,14 +272,6 @@ public class DragLayout extends RelativeLayout {
 
         @Override
         public void onViewReleased(View releasedChild, float xvel, float yvel) {
-            if (mDraggingBorder == 0) {
-                setClosed();
-                return;
-            }
-            if (mDraggingBorder == mVerticalRange) {
-                setOpen();
-                return;
-            }
             boolean settleToOpen = false;
             final float threshold = mVerticalRange / 2;
             if (yvel > AUTO_OPEN_SPEED_LIMIT) {
