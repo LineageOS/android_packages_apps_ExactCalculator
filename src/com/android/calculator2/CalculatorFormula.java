@@ -27,6 +27,7 @@ import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.ContextMenu;
@@ -360,7 +361,12 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
             setLongClickable(false);
             return;
         }
-        final CharSequence clipText = clip.getItemAt(0).coerceToText(getContext());
+        CharSequence clipText = null;
+        try {
+            clipText = clip.getItemAt(0).coerceToText(getContext());
+        } catch (Exception e) {
+            Log.i("Calculator", "Error reading clipboard:", e);
+        }
         setLongClickable(!TextUtils.isEmpty(clipText));
     }
 
