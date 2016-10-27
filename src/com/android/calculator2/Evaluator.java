@@ -224,14 +224,7 @@ public class Evaluator {
     }
 
     private void displayCancelledMessage() {
-        new AlertDialog.Builder(mCalculator)
-            .setMessage(R.string.cancelled)
-            .setPositiveButton(R.string.dismiss,
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface d, int which) { }
-                })
-            .create()
-            .show();
+        AlertDialogFragment.showMessageDialog(mCalculator, 0, R.string.cancelled, 0);
     }
 
     // Timeout handling.
@@ -280,8 +273,8 @@ public class Evaluator {
     private final int QUICK_MAX_RESULT_BITS = 50000;
 
     private void displayTimeoutMessage() {
-        AlertDialogFragment.showMessageDialog(mCalculator, mCalculator.getString(R.string.timeout),
-                (mLongTimeout ? null : mCalculator.getString(R.string.ok_remove_timeout)));
+        AlertDialogFragment.showMessageDialog(mCalculator, R.string.dialog_timeout,
+                R.string.timeout, mLongTimeout ? 0 : R.string.ok_remove_timeout);
     }
 
     public void setLongTimeOut() {

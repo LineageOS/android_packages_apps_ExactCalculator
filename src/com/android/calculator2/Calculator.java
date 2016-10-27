@@ -67,7 +67,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
-import com.android.calculator2.CalculatorText.OnTextSizeChangeListener;
+import com.android.calculator2.CalculatorFormula.OnTextSizeChangeListener;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -77,9 +77,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
-public class Calculator extends Activity
-        implements OnTextSizeChangeListener, OnLongClickListener, CalculatorText.OnPasteListener,
-        AlertDialogFragment.OnClickListener {
+public class Calculator extends Activity implements OnTextSizeChangeListener, OnLongClickListener,
+        CalculatorFormula.OnPasteListener, AlertDialogFragment.OnClickListener {
 
     /**
      * Constant for an invalid resource id.
@@ -178,7 +177,7 @@ public class Calculator extends Activity
 
     private CalculatorDisplay mDisplayView;
     private TextView mModeView;
-    private CalculatorText mFormulaText;
+    private CalculatorFormula mFormulaText;
     private CalculatorResult mResultText;
     private HorizontalScrollView mFormulaContainer;
     private DragLayout mDragLayout;
@@ -229,7 +228,7 @@ public class Calculator extends Activity
 
         mDisplayView = (CalculatorDisplay) findViewById(R.id.display);
         mModeView = (TextView) findViewById(R.id.mode);
-        mFormulaText = (CalculatorText) findViewById(R.id.formula);
+        mFormulaText = (CalculatorFormula) findViewById(R.id.formula);
         mResultText = (CalculatorResult) findViewById(R.id.result);
         mFormulaContainer = (HorizontalScrollView) findViewById(R.id.formula_container);
 
@@ -420,7 +419,7 @@ public class Calculator extends Activity
     @Override
     public void onActionModeStarted(ActionMode mode) {
         super.onActionModeStarted(mode);
-        if (mode.getTag() == CalculatorText.TAG_ACTION_MODE) {
+        if (mode.getTag() == CalculatorFormula.TAG_ACTION_MODE) {
             mFormulaContainer.scrollTo(mFormulaText.getRight(), 0);
         }
     }
@@ -1094,13 +1093,14 @@ public class Calculator extends Activity
                 .commit();
     }
 
-    private void displayMessage(String s) {
-        AlertDialogFragment.showMessageDialog(this, s, null);
+    private void displayMessage(String title, String message) {
+        AlertDialogFragment.showMessageDialog(this, title, message, null);
     }
 
     private void displayFraction() {
         UnifiedReal result = mEvaluator.getResult();
-        displayMessage(KeyMaps.translateResult(result.toNiceString()));
+        displayMessage(getString(R.string.menu_fraction),
+                KeyMaps.translateResult(result.toNiceString()));
     }
 
     // Display full result to currently evaluated precision
@@ -1112,7 +1112,7 @@ public class Calculator extends Activity
         } else {
             msg += res.getString(R.string.approximate);
         }
-        displayMessage(msg);
+        displayMessage(getString(R.string.menu_leading), msg);
     }
 
     /**

@@ -768,7 +768,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         int result;
         synchronized(mWidthLock) {
             result = (int) Math.floor(mWidthConstraint / mCharWidth);
-            // We can apparently finish evaluating before onMeasure in CalculatorText has been
+            // We can apparently finish evaluating before onMeasure in CalculatorFormula has been
             // called, in which case we get 0 or -1 as the width constraint.
         }
         if (result <= 0) {

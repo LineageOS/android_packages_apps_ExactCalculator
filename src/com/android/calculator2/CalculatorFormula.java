@@ -37,9 +37,9 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
- * TextView adapted for Calculator display.
+ * TextView adapted for displaying the formula and allowing pasting.
  */
-public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuItemClickListener,
+public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMenuItemClickListener,
         ClipboardManager.OnPrimaryClipChangedListener {
 
     public static final String TAG_ACTION_MODE = "ACTION_MODE";
@@ -60,26 +60,26 @@ public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuIt
     private OnPasteListener mOnPasteListener;
     private OnTextSizeChangeListener mOnTextSizeChangeListener;
 
-    public CalculatorText(Context context) {
+    public CalculatorFormula(Context context) {
         this(context, null /* attrs */);
     }
 
-    public CalculatorText(Context context, AttributeSet attrs) {
+    public CalculatorFormula(Context context, AttributeSet attrs) {
         this(context, attrs, 0 /* defStyleAttr */);
     }
 
-    public CalculatorText(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CalculatorFormula(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         mClipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 
         final TypedArray a = context.obtainStyledAttributes(
-                attrs, R.styleable.CalculatorText, defStyleAttr, 0);
+                attrs, R.styleable.CalculatorFormula, defStyleAttr, 0);
         mMaximumTextSize = a.getDimension(
-                R.styleable.CalculatorText_maxTextSize, getTextSize());
+                R.styleable.CalculatorFormula_maxTextSize, getTextSize());
         mMinimumTextSize = a.getDimension(
-                R.styleable.CalculatorText_minTextSize, getTextSize());
-        mStepTextSize = a.getDimension(R.styleable.CalculatorText_stepTextSize,
+                R.styleable.CalculatorFormula_minTextSize, getTextSize());
+        mStepTextSize = a.getDimension(R.styleable.CalculatorFormula_stepTextSize,
                 (mMaximumTextSize - mMinimumTextSize) / 3);
         a.recycle();
 
@@ -311,7 +311,7 @@ public class CalculatorText extends AlignedTextView implements MenuItem.OnMenuIt
                 createPasteMenu(inflater, contextMenu);
                 mContextMenu = contextMenu;
                 for(int i = 0; i < contextMenu.size(); i++) {
-                    contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorText.this);
+                    contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorFormula.this);
                 }
             }
         });

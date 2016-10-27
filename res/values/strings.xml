@@ -250,9 +250,9 @@
     <string name="text_copied_toast">Text copied</string>
 
     <!-- Dialog message when a computation is cancelled by the user. [CHAR_LIMIT=NONE] -->
-    <string name="cancelled">Computation cancelled</string>
+    <string name="cancelled">Computation cancelled.</string>
     <!-- Dialog message when a computation times out. [CHAR_LIMIT=NONE] -->
-    <string name="timeout">Timed out. Value may be infinite or undefined.</string>
+    <string name="timeout">Value may be infinite or undefined.</string>
     <!--
       Button label to allow future computations with a longer timeout.
 
@@ -285,4 +285,8 @@
     <string name="title_history">History</string>
     <!-- Action bar navigate up description in history page. [CHAR_LIMIT=40] -->
     <string name="desc_navigate_up">Navigate up</string>
+
+    <!-- Title for alert dialog when calculation takes too long (timeout). [CHAR_LIMIT=30] -->
+    <string name="dialog_timeout">Timeout</string>
+
 </resources>
