@@ -19,7 +19,7 @@ package com.android.calculator2;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
-import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,10 +53,7 @@ public class HistoryFragment extends Fragment {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final FragmentManager fm = getFragmentManager();
-                if (fm.getBackStackEntryCount() > 0) {
-                    fm.popBackStack();
-                }
+                getActivity().onBackPressed();
             }
         });
 
@@ -67,11 +64,12 @@ public class HistoryFragment extends Fragment {
     public Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
         final View view = getView();
         final int height = getResources().getDisplayMetrics().heightPixels;
-        if (enter) {
-            return ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, -height, 0f);
-        } else {
+        if (!enter) {
             return ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, -height);
+        } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
+            return ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, -height, 0f);
         }
+        return null;
     }
 
     private void clearHistory() {
