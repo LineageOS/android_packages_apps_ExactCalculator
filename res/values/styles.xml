@@ -26,6 +26,26 @@
         <item name="android:textAlignment">viewEnd</item>
     </style>
 
+    <style name="DisplayTextStyle.Formula">
+        <item name="android:paddingTop">@dimen/formula_padding_top</item>
+        <item name="android:paddingBottom">@dimen/formula_padding_bottom</item>
+        <item name="android:paddingStart">@dimen/formula_padding_start</item>
+        <item name="android:paddingEnd">@dimen/formula_padding_end</item>
+        <item name="android:gravity">bottom</item>
+        <item name="minTextSize">@dimen/formula_min_textsize</item>
+        <item name="maxTextSize">@dimen/formula_max_textsize</item>
+        <item name="stepTextSize">@dimen/formula_step_textsize</item>
+    </style>
+
+    <style name="DisplayTextStyle.Result">
+        <item name="android:paddingTop">@dimen/result_padding_top</item>
+        <item name="android:paddingBottom">@dimen/result_padding_bottom</item>
+        <item name="android:paddingStart">@dimen/result_padding_start</item>
+        <item name="android:paddingEnd">@dimen/result_padding_end</item>
+        <item name="android:gravity">bottom</item>
+        <item name="android:textSize">@dimen/result_textsize</item>
+    </style>
+
     <style name="PadButtonStyle" parent="@android:style/Widget.Material.Light.Button.Borderless">
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_height">0dip</item>
