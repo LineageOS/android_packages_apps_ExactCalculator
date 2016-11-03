@@ -31,6 +31,9 @@ import java.util.List;
  */
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
+    private static final int EMPTY_VIEW_TYPE = 0;
+    private static final int HISTORY_VIEW_TYPE = 1;
+
     private final List<HistoryItem> mDataSet = new ArrayList<>();
     private String mCurrentExpression;
 
@@ -43,19 +46,30 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             mDataSet.add(new HistoryItem(calendar.getTimeInMillis(), Integer.toString(i) + "+1",
                     Integer.toString(i+1)));
         }
+        // Temporary: just testing the empty view placeholder
+        mDataSet.add(new HistoryItem());
     }
 
     @Override
     public HistoryAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.history_item, parent, false);
-        return new ViewHolder(v);
+        final View v;
+        if (viewType == HISTORY_VIEW_TYPE) {
+            v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.history_item, parent, false);
+        } else {
+            v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.empty_history_view, parent, false);
+        }
+        return new ViewHolder(v, viewType);
     }
 
     @Override
     public void onBindViewHolder(HistoryAdapter.ViewHolder holder, int position) {
         final HistoryItem item = mDataSet.get(position);
 
+        if (item.isEmptyView()) {
+            return;
+        }
         if (!isCurrentExpressionItem(position)) {
             holder.mDate.setText(item.getDateString());
             holder.mDate.setContentDescription(item.getDateDescription());
@@ -78,6 +92,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return mDataSet.get(position).isEmptyView() ? EMPTY_VIEW_TYPE : HISTORY_VIEW_TYPE;
+    }
+
+    @Override
     public int getItemCount() {
         return mDataSet.size();
     }
@@ -88,12 +107,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView mDate;
-        private final CalculatorFormula mFormula;
-        private final CalculatorResult mResult;
+        private TextView mDate;
+        private CalculatorFormula mFormula;
+        private CalculatorResult mResult;
 
-        public ViewHolder(View v) {
+        public ViewHolder(View v, int viewType) {
             super(v);
+            if (viewType == EMPTY_VIEW_TYPE) {
+                return;
+            }
             mDate = (TextView) v.findViewById(R.id.history_date);
             mFormula = (CalculatorFormula) v.findViewById(R.id.history_formula);
             mResult = (CalculatorResult) v.findViewById(R.id.history_result);

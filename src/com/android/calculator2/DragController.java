@@ -53,7 +53,7 @@ public final class DragController {
 
     public void animateViews(float yFraction, RecyclerView recyclerView, int itemCount) {
         final HistoryAdapter.ViewHolder vh = (HistoryAdapter.ViewHolder)
-                recyclerView.findViewHolderForAdapterPosition(itemCount - 1);
+                recyclerView.findViewHolderForAdapterPosition(0);
         if (vh != null) {
             final CalculatorFormula formula = vh.getFormula();
             final CalculatorResult result = vh.getResult();
@@ -117,13 +117,14 @@ public final class DragController {
                         + (mDisplayFormula.getPaddingTop() * yFraction);
                 date.setTranslationY(dateTranslationY);
 
+                // Translate items above the Current Expression to accommodate the size change.
                 // Move up all ViewHolders above the current expression.
-                for (int i = recyclerView.getChildCount() - 2; i >= 0; --i) {
+                for (int i = recyclerView.getChildCount() - 1; i > 0; --i) {
                     final RecyclerView.ViewHolder vh2 =
                             recyclerView.getChildViewHolder(recyclerView.getChildAt(i));
                     if (vh2 != null) {
                         final View view = vh2.itemView;
-                        if (view != null){
+                        if (view != null) {
                             view.setTranslationY(dateTranslationY);
                         }
                     }

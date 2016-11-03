@@ -20,6 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/display_background_color"
+    android:clipChildren="false"
     android:orientation="vertical">
 
     <Toolbar
@@ -37,9 +38,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/history_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:clipChildren="false"
         app:layoutManager="LinearLayoutManager"
-        app:stackFromEnd="true" />
-
+        app:reverseLayout="true" />
 </LinearLayout>

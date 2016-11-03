@@ -31,10 +31,22 @@ public class HistoryItem {
     private String mFormula;
     private String mResult;
 
+    // This is true only for the "empty history" view.
+    private final boolean mIsEmpty;
+
     public HistoryItem(long millis, String formula, String result) {
         mDate = new Date(millis);
         mFormula = formula;
         mResult = result;
+        mIsEmpty = false;
+    }
+
+    public HistoryItem() {
+        mIsEmpty = true;
+    }
+
+    public boolean isEmptyView() {
+        return mIsEmpty;
     }
 
     public String getDateString() {

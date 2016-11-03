@@ -83,7 +83,7 @@ public class HistoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         // Temporary data
-        final int[] testArray = {1, 2, 3, 4, 5, 6, 7};
+        final int[] testArray = {7};
         mAdapter = new HistoryAdapter(testArray,
                 getContext().getResources().getString(R.string.title_current_expression));
     }
@@ -97,7 +97,6 @@ public class HistoryFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.history_recycler_view);
 
         // The size of the RecyclerView is not affected by the adapter's contents.
-        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
 
         final Toolbar toolbar = (Toolbar) view.findViewById(R.id.history_toolbar);
