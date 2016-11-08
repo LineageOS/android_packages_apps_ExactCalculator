@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -34,20 +33,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private static final int EMPTY_VIEW_TYPE = 0;
     private static final int HISTORY_VIEW_TYPE = 1;
 
-    private final List<HistoryItem> mDataSet = new ArrayList<>();
-    private String mCurrentExpression;
+    private final Evaluator mEvaluator;
+    /* Text/accessibility descriptor for the current expression item. */
+    private final String mCurrentExpressionDescription;
 
-    public HistoryAdapter(int[] dataset, String currentExpression) {
-        mCurrentExpression = currentExpression;
-        // Temporary dataset
-        final Calendar calendar = Calendar.getInstance();
-        for (int i: dataset) {
-            calendar.set(2016, 10, i);
-            mDataSet.add(new HistoryItem(calendar.getTimeInMillis(), Integer.toString(i) + "+1",
-                    Integer.toString(i+1)));
-        }
-        // Temporary: just testing the empty view placeholder
-        mDataSet.add(new HistoryItem());
+    private List<HistoryItem> mDataSet;
+
+    public HistoryAdapter(Calculator calculator, ArrayList<HistoryItem> dataSet,
+            String currentExpressionDescription) {
+        mEvaluator = Evaluator.getInstance(calculator);
+        mDataSet = dataSet;
+        mCurrentExpressionDescription = currentExpressionDescription;
     }
 
     @Override
@@ -64,21 +60,23 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(HistoryAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final HistoryAdapter.ViewHolder holder, int position) {
         final HistoryItem item = mDataSet.get(position);
 
         if (item.isEmptyView()) {
             return;
         }
-        if (!isCurrentExpressionItem(position)) {
+
+        holder.mFormula.setText(item.getFormula());
+        // Note: HistoryItems that are not the current expression will always have interesting ops.
+        holder.mResult.setEvaluator(mEvaluator, item.getId());
+        if (isCurrentExpressionItem(position)) {
+            holder.mDate.setText(mCurrentExpressionDescription);
+            holder.mDate.setContentDescription(mCurrentExpressionDescription);
+        } else {
             holder.mDate.setText(item.getDateString());
             holder.mDate.setContentDescription(item.getDateDescription());
-        } else {
-            holder.mDate.setText(mCurrentExpression);
-            holder.mDate.setContentDescription(mCurrentExpression);
         }
-        holder.mFormula.setText(item.getFormula());
-        holder.mResult.setText(item.getResult());
     }
 
     @Override
@@ -88,12 +86,23 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.mFormula.setText(null);
         holder.mResult.setText(null);
 
+        // TODO: Only cancel the calculation for the recycled view
+        mEvaluator.cancelAll(true);
+
         super.onViewRecycled(holder);
     }
 
     @Override
     public int getItemViewType(int position) {
-        return mDataSet.get(position).isEmptyView() ? EMPTY_VIEW_TYPE : HISTORY_VIEW_TYPE;
+        HistoryItem item = mDataSet.get(position);
+
+        // lazy-fill the data set
+        if (item == null) {
+            item = new HistoryItem(position, mEvaluator.getTimeStamp(position),
+                    mEvaluator.getExprAsSpannable(position));
+            mDataSet.add(position, item);
+        }
+        return item.isEmptyView() ? EMPTY_VIEW_TYPE : HISTORY_VIEW_TYPE;
     }
 
     @Override
@@ -102,7 +111,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     private boolean isCurrentExpressionItem(int position) {
-        return position == mDataSet.size() - 1;
+        return position == 0;
+    }
+
+    public void setDataSet(ArrayList<HistoryItem> dataSet) {
+        mDataSet = dataSet;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

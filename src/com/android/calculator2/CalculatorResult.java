@@ -303,6 +303,18 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        if (mEvaluator != null) {
+            final CalculatorExpr expr = mEvaluator.getExpr(mIndex);
+            if (expr != null && expr.hasInterestingOps()) {
+                mEvaluator.requireResult(mIndex, this, this);
+            }
+        }
+    }
+
     // From Evaluator.CharMetricsInfo.
     @Override
     public float separatorChars(String s, int len) {

@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -78,6 +79,10 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
      */
     public static void showMessageDialog(Activity activity, @Nullable CharSequence title,
             CharSequence message, @Nullable CharSequence positiveButtonLabel) {
+        final FragmentManager manager = activity.getFragmentManager();
+        if (manager == null || manager.isDestroyed()) {
+            return;
+        }
         final AlertDialogFragment dialogFragment = new AlertDialogFragment();
         final Bundle args = new Bundle();
         args.putCharSequence(KEY_MESSAGE, message);
@@ -87,7 +92,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
         }
         args.putCharSequence(KEY_TITLE, title);
         dialogFragment.setArguments(args);
-        dialogFragment.show(activity.getFragmentManager(), null /* tag */);
+        dialogFragment.show(manager, null /* tag */);
     }
 
     public AlertDialogFragment() {

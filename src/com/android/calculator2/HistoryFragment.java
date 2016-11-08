@@ -30,6 +30,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toolbar;
 
+import java.util.ArrayList;
+
 public class HistoryFragment extends Fragment {
 
     public static final String TAG = "HistoryFragment";
@@ -48,6 +50,9 @@ public class HistoryFragment extends Fragment {
 
                 @Override
                 public void onClosed() {
+                    // TODO: only cancel historical evaluations
+                    mEvaluator.cancelAll(true);
+
                     mRecyclerView.scrollToPosition(mAdapter.getItemCount() - 1);
                 }
 
@@ -78,13 +83,15 @@ public class HistoryFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private HistoryAdapter mAdapter;
 
+    private Evaluator mEvaluator;
+
+    private ArrayList<HistoryItem> mDataSet = new ArrayList<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Temporary data
-        final int[] testArray = {7};
-        mAdapter = new HistoryAdapter(testArray,
+        mAdapter = new HistoryAdapter((Calculator) getActivity(), mDataSet,
                 getContext().getResources().getString(R.string.title_current_expression));
     }
 
@@ -117,7 +124,6 @@ public class HistoryFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
-
         return view;
     }
 
@@ -129,6 +135,33 @@ public class HistoryFragment extends Fragment {
         final DragLayout dragLayout = (DragLayout) getActivity().findViewById(R.id.drag_layout);
         dragLayout.removeDragCallback(mDragCallback);
         dragLayout.addDragCallback(mDragCallback);
+
+        mEvaluator = Evaluator.getInstance((Calculator) getActivity());
+
+        if (mEvaluator != null) {
+            final long maxIndex = mEvaluator.getMaxIndex();
+
+            final ArrayList<HistoryItem> newDataSet = new ArrayList<>();
+            // Add the current expression as the first element in the list (the layout is reversed
+            // and we want the current expression to be the last one in the recyclerview).
+            newDataSet.add(new HistoryItem(Evaluator.MAIN_INDEX, 0 /* millis*/,
+                    mEvaluator.getExprAsSpannable(0)));
+            // We retrieve the current expression separately, so it's excluded from this loop.
+            for (long i = maxIndex; i > 0; --i ) {
+                newDataSet.add(null);
+            }
+            if (maxIndex == 0) {
+                newDataSet.add(new HistoryItem());
+            }
+
+            mDataSet = newDataSet;
+            mAdapter.setDataSet(mDataSet);
+            mAdapter.notifyDataSetChanged();
+
+//            // Initialize the current expression element to dimensions that match the display to avoid
+//            // flickering and scrolling when elements expand on drag start.
+//            mDragController.animateViews(1.0f, mRecyclerView, mAdapter.getItemCount());
+        }
     }
 
     @Override
@@ -149,6 +182,8 @@ public class HistoryFragment extends Fragment {
         if (dragLayout != null) {
             dragLayout.removeDragCallback(mDragCallback);
         }
+
+        mEvaluator.cancelAll(true);
         super.onDestroy();
     }
 
@@ -160,10 +195,6 @@ public class HistoryFragment extends Fragment {
                 (CalculatorResult) getActivity().findViewById(R.id.result));
 
         mDragController.setToolbar(getActivity().findViewById(R.id.toolbar));
-
-        // Initialize the current expression element to dimensions that match the display to avoid
-        // flickering and scrolling when elements expand on drag start.
-        mDragController.animateViews(1.0f, mRecyclerView, mAdapter.getItemCount());
     }
 
     private void clearHistory() {
