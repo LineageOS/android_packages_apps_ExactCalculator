@@ -24,6 +24,10 @@
     <string name="clr" msgid="6730945431543327337">"ລຶບລ້າງ"</string>
     <string name="cleared" msgid="3952521190281880880">"ລ້າງ​ແລ້ວ"</string>
     <string name="del" msgid="5878069000864178910">"ລຶບ"</string>
+    <!-- no translation found for memory_store (8744841923010012554) -->
+    <skip />
+    <!-- no translation found for memory_recall (3934832243943960434) -->
+    <skip />
     <string name="desc_const_e" msgid="1889187337970539507">"ຈຳ​ນວນ​ຄ່າ​ຄົງ​ທີ່"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"​ປີ່"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"​ຈ້ຳ​ເມັດ"</string>
@@ -57,6 +61,10 @@
     <string name="desc_del" msgid="7879515781929311432">"ລຶບ"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"ສະ​ແດງ​ຟັງ​ຄ໌​ຊັນ​ທີ່​ຈຸ່ມ​ລົງ"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ເຊື່ອງ​ຟັງ​ຄ໌​ຊັນ​ທີ່​ຈຸ່ມ​ລົງ"</string>
+    <!-- no translation found for desc_memory_store (3930533713663938153) -->
+    <skip />
+    <!-- no translation found for desc_memory_recall (2971412217997909907) -->
+    <skip />
     <string name="desc_formula" msgid="8056588859637585007">"ບໍ່ມີສູດຄຳນວນ"</string>
     <string name="desc_result" msgid="1794073190203126821">"ບໍ່ມີຜົນການຊອກຫາ"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"ຄຳສັ່ງພື້ນຖານ ແລະ ຕົວເລກ"</string>
@@ -67,8 +75,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"ອະ​ສົງ​ໄຂ​ບໍ?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"ບໍ່​ສາ​ມາດ​ຫານ​ດ້ວຍ 0 ໄດ້"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"ອັດ​ສຳ​ເນົາ​ຂໍ້​ຄວາມ​ແລ້ວ"</string>
-    <string name="cancelled" msgid="1618889609742874632">"ຍົກ​ເລີກ​ການ​ຄິດ​ໄລ່​ແລ້ວ"</string>
-    <string name="timeout" msgid="802690170415591535">"ໝົດ​ເວ​ລາ​ແລ້ວ. ຄ່າ​ອາດ​ຈະ​ບໍ່​ຈຳ​ກັດ ຫຼື​ບໍ່​ຖືກ​ກຳ​ນົດ."</string>
+    <string name="cancelled" msgid="2207323593183640994">"ຍົກເລີກການຄຳນວນແລ້ວ."</string>
+    <string name="timeout" msgid="5461892570729418573">"ຄ່າອາດເປັນອະສົງໄຂ ຫຼື ບໍ່ໄດ້ລະບຸ."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"ໃຊ້​ການ​ໝົດ​ເວ​ລາ​ດົນ​ຂຶ້ນ"</string>
     <string name="dismiss" msgid="7872443888515066216">"ປິດໄວ້"</string>
     <string name="exact" msgid="2597237880041789948">"(ແນ່ນອນ)"</string>
@@ -80,4 +88,5 @@
     <string name="menu_clear_history" msgid="902038191257404791">"ລຶບປະຫວັດ"</string>
     <string name="title_history" msgid="7820912156315181539">"ປະຫວັດ"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"ເລື່ອນຂຶ້ນໄປເທິງ"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"ໝົດເວລາ"</string>
 </resources>

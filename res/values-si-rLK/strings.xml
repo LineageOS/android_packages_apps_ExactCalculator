@@ -24,6 +24,10 @@
     <string name="clr" msgid="6730945431543327337">"clr"</string>
     <string name="cleared" msgid="3952521190281880880">"හිස් කරන ලදී"</string>
     <string name="del" msgid="5878069000864178910">"del"</string>
+    <!-- no translation found for memory_store (8744841923010012554) -->
+    <skip />
+    <!-- no translation found for memory_recall (3934832243943960434) -->
+    <skip />
     <string name="desc_const_e" msgid="1889187337970539507">"ඔයිලර් අංකය"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"පයි"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"දශම"</string>
@@ -57,6 +61,10 @@
     <string name="desc_del" msgid="7879515781929311432">"මකන්න"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"ප්‍රතිලෝම ශ්‍රිත පෙන්වන්න"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ප්‍රතිලෝම ශ්‍රිත සඟවන්න"</string>
+    <!-- no translation found for desc_memory_store (3930533713663938153) -->
+    <skip />
+    <!-- no translation found for desc_memory_recall (2971412217997909907) -->
+    <skip />
     <string name="desc_formula" msgid="8056588859637585007">"සූත්‍රයක් නැත"</string>
     <string name="desc_result" msgid="1794073190203126821">"ප්‍රතිඵල නැත"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"අංක සහ මූලික මෙහෙයුම්"</string>
@@ -67,8 +75,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"අපිරිමිත?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0 න් බෙදිය නොහැකිය"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"පෙළ පිටපත් කරන ලදී"</string>
-    <string name="cancelled" msgid="1618889609742874632">"ගණනය අවලංගු කරන ලදි"</string>
-    <string name="timeout" msgid="802690170415591535">"කාලය නිමා විය. අගය අපරිමිත හෝ අර්ථ දක්වා නොමැති විය හැකිය."</string>
+    <string name="cancelled" msgid="2207323593183640994">"ගණනය අවලංගු කරන ලදී."</string>
+    <string name="timeout" msgid="5461892570729418573">"අගය අපරිමිත හෝ අර්ථ දක්වා නොමැති විය හැකිය."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"දිගු කාල නිමාවන් භාවිත කරන්න"</string>
     <string name="dismiss" msgid="7872443888515066216">"ඉවත ලන්න"</string>
     <string name="exact" msgid="2597237880041789948">"(නිශ්චිත)"</string>
@@ -80,4 +88,5 @@
     <string name="menu_clear_history" msgid="902038191257404791">"ඉතිහාසය හිස් කරන්න"</string>
     <string name="title_history" msgid="7820912156315181539">"ඉතිහාසය"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"ඉහළට සංචාලනය කරන්න"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"කාල නිමාව"</string>
 </resources>

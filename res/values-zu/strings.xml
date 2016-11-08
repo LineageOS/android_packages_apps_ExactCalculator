@@ -24,6 +24,10 @@
     <string name="clr" msgid="6730945431543327337">"clr"</string>
     <string name="cleared" msgid="3952521190281880880">"kusuliwe"</string>
     <string name="del" msgid="5878069000864178910">"sula"</string>
+    <!-- no translation found for memory_store (8744841923010012554) -->
+    <skip />
+    <!-- no translation found for memory_recall (3934832243943960434) -->
+    <skip />
     <string name="desc_const_e" msgid="1889187337970539507">"Inombolo ye-Euler"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"pi"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"iphoyinti"</string>
@@ -57,6 +61,10 @@
     <string name="desc_del" msgid="7879515781929311432">"susa"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"bonisa imisebenzi yemuva"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"fihla imisebenzi yemuva"</string>
+    <!-- no translation found for desc_memory_store (3930533713663938153) -->
+    <skip />
+    <!-- no translation found for desc_memory_recall (2971412217997909907) -->
+    <skip />
     <string name="desc_formula" msgid="8056588859637585007">"Ayikho ifomula"</string>
     <string name="desc_result" msgid="1794073190203126821">"Awukho umphumela"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"Izinombolo nokusebenza okuyisisekelo"</string>
@@ -67,8 +75,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"Ukungapheleli?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"Ayikwazi ukuhlukanisa ngo-0"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Umbhalo okopishiwe"</string>
-    <string name="cancelled" msgid="1618889609742874632">"Ukubala ngekhompuyutha kukhanseliwe"</string>
-    <string name="timeout" msgid="802690170415591535">"Ikusikhathi sokuvala. Inani kungenzeka lingapheli noma lingachazeki."</string>
+    <string name="cancelled" msgid="2207323593183640994">"Ukubala ngekhompuyutha kukhanseliwe."</string>
+    <string name="timeout" msgid="5461892570729418573">"Inani kungenzeka alipheli noma alichaziwe."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Sebenzisa izikhathi zokuvala ezinde"</string>
     <string name="dismiss" msgid="7872443888515066216">"Cashisa"</string>
     <string name="exact" msgid="2597237880041789948">"(ukuqonda)"</string>
@@ -80,4 +88,5 @@
     <string name="menu_clear_history" msgid="902038191257404791">"Sula umlando"</string>
     <string name="title_history" msgid="7820912156315181539">"Umlando"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Zulazulela phezulu"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"Isikhathi sokuvala"</string>
 </resources>

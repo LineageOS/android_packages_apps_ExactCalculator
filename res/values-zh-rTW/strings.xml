@@ -24,6 +24,10 @@
     <string name="clr" msgid="6730945431543327337">"clr"</string>
     <string name="cleared" msgid="3952521190281880880">"清除完畢"</string>
     <string name="del" msgid="5878069000864178910">"del"</string>
+    <!-- no translation found for memory_store (8744841923010012554) -->
+    <skip />
+    <!-- no translation found for memory_recall (3934832243943960434) -->
+    <skip />
     <string name="desc_const_e" msgid="1889187337970539507">"尤拉數"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"圓周率符號"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"點"</string>
@@ -57,6 +61,10 @@
     <string name="desc_del" msgid="7879515781929311432">"刪除"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"顯示反函數"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"隱藏反函數"</string>
+    <!-- no translation found for desc_memory_store (3930533713663938153) -->
+    <skip />
+    <!-- no translation found for desc_memory_recall (2971412217997909907) -->
+    <skip />
     <string name="desc_formula" msgid="8056588859637585007">"沒有公式"</string>
     <string name="desc_result" msgid="1794073190203126821">"沒有任何相符的結果"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"數字和基本操作"</string>
@@ -67,8 +75,10 @@
     <string name="error_overflow" msgid="7800547394563434764">"無限值？"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"除數不得為零"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"文字已複製"</string>
-    <string name="cancelled" msgid="1618889609742874632">"已取消計算"</string>
-    <string name="timeout" msgid="802690170415591535">"已經逾時。您可能使用無限值或未定義的值。"</string>
+    <!-- no translation found for cancelled (2207323593183640994) -->
+    <skip />
+    <!-- no translation found for timeout (5461892570729418573) -->
+    <skip />
     <string name="ok_remove_timeout" msgid="8344529153919268011">"使用較長的逾時期限"</string>
     <string name="dismiss" msgid="7872443888515066216">"關閉"</string>
     <string name="exact" msgid="2597237880041789948">"(精確)"</string>
@@ -80,4 +90,6 @@
     <string name="menu_clear_history" msgid="902038191257404791">"清除紀錄"</string>
     <string name="title_history" msgid="7820912156315181539">"紀錄"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"向上瀏覽"</string>
+    <!-- no translation found for dialog_timeout (9069768442342329065) -->
+    <skip />
 </resources>
