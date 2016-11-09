@@ -75,10 +75,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"የትየለሌ?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"በ0 ማካፈል አይቻልም"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"ፅሁፍ ተቀድቷል"</string>
-    <!-- no translation found for cancelled (2207323593183640994) -->
-    <skip />
-    <!-- no translation found for timeout (5461892570729418573) -->
-    <skip />
+    <string name="cancelled" msgid="2207323593183640994">"ማስላት ተሰርዟል።"</string>
+    <string name="timeout" msgid="5461892570729418573">"እሴቱ የትየሌለ ወይም ያልተገለጸ ሊሆን ይችላል።"</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"ረጅም የመጠበቂያ ጊዜ ይጠቀሙ"</string>
     <string name="dismiss" msgid="7872443888515066216">"አሰናብት"</string>
     <string name="exact" msgid="2597237880041789948">"(ትክክለኛ)"</string>
@@ -90,6 +88,5 @@
     <string name="menu_clear_history" msgid="902038191257404791">"ታሪክን አጽዳ"</string>
     <string name="title_history" msgid="7820912156315181539">"ታሪክ"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"ወደ ላይ ያስሱ"</string>
-    <!-- no translation found for dialog_timeout (9069768442342329065) -->
-    <skip />
+    <string name="dialog_timeout" msgid="9069768442342329065">"ጊዜ አልቋል"</string>
 </resources>

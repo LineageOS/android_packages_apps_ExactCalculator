@@ -75,10 +75,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"Neskončno?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"Ni mogoče deliti z 0"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Besedilo kopirano"</string>
-    <!-- no translation found for cancelled (2207323593183640994) -->
-    <skip />
-    <!-- no translation found for timeout (5461892570729418573) -->
-    <skip />
+    <string name="cancelled" msgid="2207323593183640994">"Izračun preklican."</string>
+    <string name="timeout" msgid="5461892570729418573">"Vrednost je morda neskončna ali nedoločena."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Uporabi daljše časovne omejitve"</string>
     <string name="dismiss" msgid="7872443888515066216">"Opusti"</string>
     <string name="exact" msgid="2597237880041789948">"(natančno)"</string>
@@ -90,6 +88,5 @@
     <string name="menu_clear_history" msgid="902038191257404791">"Počisti zgodovino"</string>
     <string name="title_history" msgid="7820912156315181539">"Zgodovina"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Krmarjenje navzgor"</string>
-    <!-- no translation found for dialog_timeout (9069768442342329065) -->
-    <skip />
+    <string name="dialog_timeout" msgid="9069768442342329065">"Časovna omejitev"</string>
 </resources>

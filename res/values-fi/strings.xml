@@ -24,10 +24,8 @@
     <string name="clr" msgid="6730945431543327337">"thj"</string>
     <string name="cleared" msgid="3952521190281880880">"tyhjennetty"</string>
     <string name="del" msgid="5878069000864178910">"pst"</string>
-    <!-- no translation found for memory_store (8744841923010012554) -->
-    <skip />
-    <!-- no translation found for memory_recall (3934832243943960434) -->
-    <skip />
+    <string name="memory_store" msgid="8744841923010012554">"ST"</string>
+    <string name="memory_recall" msgid="3934832243943960434">"RC"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"Eulerin luku"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"pii"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"piste"</string>
@@ -61,10 +59,8 @@
     <string name="desc_del" msgid="7879515781929311432">"poista"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"näytä käänteisfunktiot"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"piilota käänteisfunktiot"</string>
-    <!-- no translation found for desc_memory_store (3930533713663938153) -->
-    <skip />
-    <!-- no translation found for desc_memory_recall (2971412217997909907) -->
-    <skip />
+    <string name="desc_memory_store" msgid="3930533713663938153">"muistiin tallentaminen"</string>
+    <string name="desc_memory_recall" msgid="2971412217997909907">"muistista hakeminen"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Ei kaavaa"</string>
     <string name="desc_result" msgid="1794073190203126821">"Ei tuloksia"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"Numerot ja peruslaskutoimitukset"</string>
@@ -75,10 +71,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"Päättymätön?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"Ei jaollinen luvulla 0"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Teksti kopioitiin."</string>
-    <!-- no translation found for cancelled (2207323593183640994) -->
-    <skip />
-    <!-- no translation found for timeout (5461892570729418573) -->
-    <skip />
+    <string name="cancelled" msgid="2207323593183640994">"Laskenta peruutettiin."</string>
+    <string name="timeout" msgid="5461892570729418573">"Arvo voi olla ääretön tai määrittämätön."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Käytä pidempää aikakatkaisua"</string>
     <string name="dismiss" msgid="7872443888515066216">"Hylkää"</string>
     <string name="exact" msgid="2597237880041789948">"(tarkka)"</string>
@@ -90,6 +84,5 @@
     <string name="menu_clear_history" msgid="902038191257404791">"Tyhjennä historia"</string>
     <string name="title_history" msgid="7820912156315181539">"Historia"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Siirry ylös"</string>
-    <!-- no translation found for dialog_timeout (9069768442342329065) -->
-    <skip />
+    <string name="dialog_timeout" msgid="9069768442342329065">"Aikakatkaistiin"</string>
 </resources>

@@ -24,10 +24,8 @@
     <string name="clr" msgid="6730945431543327337">"CE"</string>
     <string name="cleared" msgid="3952521190281880880">"vymazáno"</string>
     <string name="del" msgid="5878069000864178910">"←"</string>
-    <!-- no translation found for memory_store (8744841923010012554) -->
-    <skip />
-    <!-- no translation found for memory_recall (3934832243943960434) -->
-    <skip />
+    <string name="memory_store" msgid="8744841923010012554">"MS"</string>
+    <string name="memory_recall" msgid="3934832243943960434">"MR"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"Eulerovo číslo"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"pí"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"desetinná čárka"</string>
@@ -61,10 +59,8 @@
     <string name="desc_del" msgid="7879515781929311432">"smazat"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"zobrazit inverzní funkce"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"skrýt inverzní funkce"</string>
-    <!-- no translation found for desc_memory_store (3930533713663938153) -->
-    <skip />
-    <!-- no translation found for desc_memory_recall (2971412217997909907) -->
-    <skip />
+    <string name="desc_memory_store" msgid="3930533713663938153">"uložit do paměti"</string>
+    <string name="desc_memory_recall" msgid="2971412217997909907">"obnovit z paměti"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Žádný vzorec"</string>
     <string name="desc_result" msgid="1794073190203126821">"Žádný výsledek"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"Čísla a základní operace"</string>
@@ -75,10 +71,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"Nekonečno?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"Nulou nelze dělit"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Text byl zkopírován"</string>
-    <!-- no translation found for cancelled (2207323593183640994) -->
-    <skip />
-    <!-- no translation found for timeout (5461892570729418573) -->
-    <skip />
+    <string name="cancelled" msgid="2207323593183640994">"Výpočet byl zrušen."</string>
+    <string name="timeout" msgid="5461892570729418573">"Hodnota je možná nekonečná nebo není definována."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Používat delší časové limity"</string>
     <string name="dismiss" msgid="7872443888515066216">"Zavřít"</string>
     <string name="exact" msgid="2597237880041789948">"(přesně)"</string>
@@ -90,6 +84,5 @@
     <string name="menu_clear_history" msgid="902038191257404791">"Vymazat historii"</string>
     <string name="title_history" msgid="7820912156315181539">"Historie"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Přejít nahoru"</string>
-    <!-- no translation found for dialog_timeout (9069768442342329065) -->
-    <skip />
+    <string name="dialog_timeout" msgid="9069768442342329065">"Časový limit vypršel"</string>
 </resources>

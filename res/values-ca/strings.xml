@@ -24,10 +24,8 @@
     <string name="clr" msgid="6730945431543327337">"esb"</string>
     <string name="cleared" msgid="3952521190281880880">"esborrat"</string>
     <string name="del" msgid="5878069000864178910">"sup"</string>
-    <!-- no translation found for memory_store (8744841923010012554) -->
-    <skip />
-    <!-- no translation found for memory_recall (3934832243943960434) -->
-    <skip />
+    <string name="memory_store" msgid="8744841923010012554">"EM"</string>
+    <string name="memory_recall" msgid="3934832243943960434">"RM"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"nombre d\'Euler"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"pi"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"punt"</string>
@@ -61,10 +59,8 @@
     <string name="desc_del" msgid="7879515781929311432">"suprimeix"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"mostra les funcions inverses"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"amaga les funcions inverses"</string>
-    <!-- no translation found for desc_memory_store (3930533713663938153) -->
-    <skip />
-    <!-- no translation found for desc_memory_recall (2971412217997909907) -->
-    <skip />
+    <string name="desc_memory_store" msgid="3930533713663938153">"emmagatzema la memòria"</string>
+    <string name="desc_memory_recall" msgid="2971412217997909907">"recupera la memòria"</string>
     <string name="desc_formula" msgid="8056588859637585007">"No hi ha cap fórmula"</string>
     <string name="desc_result" msgid="1794073190203126821">"No hi ha cap resultat"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"Números i operacions bàsiques"</string>
@@ -75,10 +71,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"És infinit?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"No es pot dividir per 0"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Text copiat"</string>
-    <!-- no translation found for cancelled (2207323593183640994) -->
-    <skip />
-    <!-- no translation found for timeout (5461892570729418573) -->
-    <skip />
+    <string name="cancelled" msgid="2207323593183640994">"S\'ha cancel·lat el càlcul."</string>
+    <string name="timeout" msgid="5461892570729418573">"És possible que el valor sigui infinit o indefinit."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Utilitza temps d\'espera més llargs"</string>
     <string name="dismiss" msgid="7872443888515066216">"Accepta"</string>
     <string name="exact" msgid="2597237880041789948">"(exacte)"</string>
@@ -90,6 +84,5 @@
     <string name="menu_clear_history" msgid="902038191257404791">"Esborra l\'historial"</string>
     <string name="title_history" msgid="7820912156315181539">"Historial"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Navega cap a dalt"</string>
-    <!-- no translation found for dialog_timeout (9069768442342329065) -->
-    <skip />
+    <string name="dialog_timeout" msgid="9069768442342329065">"S\'ha esgotat el temps d\'espera"</string>
 </resources>
