@@ -53,7 +53,7 @@ public class HistoryFragment extends Fragment {
                     // TODO: only cancel historical evaluations
                     mEvaluator.cancelAll(true);
 
-                    mRecyclerView.scrollToPosition(mAdapter.getItemCount() - 1);
+                    mDragController.resetAnimationInitialized();
                 }
 
                 @Override
@@ -124,6 +124,7 @@ public class HistoryFragment extends Fragment {
                 getActivity().onBackPressed();
             }
         });
+
         return view;
     }
 
@@ -131,7 +132,6 @@ public class HistoryFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        initializeController();
         final DragLayout dragLayout = (DragLayout) getActivity().findViewById(R.id.drag_layout);
         dragLayout.removeDragCallback(mDragCallback);
         dragLayout.addDragCallback(mDragCallback);
@@ -139,29 +139,40 @@ public class HistoryFragment extends Fragment {
         mEvaluator = Evaluator.getInstance((Calculator) getActivity());
 
         if (mEvaluator != null) {
+            initializeController();
+
             final long maxIndex = mEvaluator.getMaxIndex();
 
             final ArrayList<HistoryItem> newDataSet = new ArrayList<>();
-            // Add the current expression as the first element in the list (the layout is reversed
-            // and we want the current expression to be the last one in the recyclerview).
-            newDataSet.add(new HistoryItem(Evaluator.MAIN_INDEX, 0 /* millis*/,
-                    mEvaluator.getExprAsSpannable(0)));
+
+            if (!mEvaluator.getExpr(Evaluator.MAIN_INDEX).isEmpty()) {
+                // Add the current expression as the first element in the list (the layout is reversed
+                // and we want the current expression to be the last one in the recyclerview).
+                newDataSet.add(new HistoryItem(Evaluator.MAIN_INDEX, 0 /* millis*/,
+                        mEvaluator.getExprAsSpannable(0)));
+            }
             // We retrieve the current expression separately, so it's excluded from this loop.
-            for (long i = maxIndex; i > 0; --i ) {
+            // We lazy-fill, so just retrieve the first 25 expressions for now.
+            for (long i = Math.min(maxIndex, 25); i > 0; --i) {
+                final HistoryItem item = new HistoryItem(i, mEvaluator.getTimeStamp(i),
+                        mEvaluator.getExprAsSpannable(i));
+                newDataSet.add(item);
+            }
+            for (long i = Math.max(maxIndex - 25, 0); i > 0; --i) {
                 newDataSet.add(null);
             }
             if (maxIndex == 0) {
                 newDataSet.add(new HistoryItem());
             }
-
             mDataSet = newDataSet;
             mAdapter.setDataSet(mDataSet);
-            mAdapter.notifyDataSetChanged();
-
-//            // Initialize the current expression element to dimensions that match the display to avoid
-//            // flickering and scrolling when elements expand on drag start.
-//            mDragController.animateViews(1.0f, mRecyclerView, mAdapter.getItemCount());
         }
+
+        mAdapter.notifyDataSetChanged();
+
+        // Initialize the current expression element to dimensions that match the display to
+        // avoid flickering and scrolling when elements expand on drag start.
+        mDragController.animateViews(1.0f, mRecyclerView, mAdapter.getItemCount());
     }
 
     @Override
@@ -195,6 +206,8 @@ public class HistoryFragment extends Fragment {
                 (CalculatorResult) getActivity().findViewById(R.id.result));
 
         mDragController.setToolbar(getActivity().findViewById(R.id.toolbar));
+
+        mDragController.setEvaluator(mEvaluator);
     }
 
     private void clearHistory() {

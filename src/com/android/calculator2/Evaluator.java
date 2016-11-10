@@ -1154,6 +1154,14 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     /**
+     * Whether this expression has explicitly been evaluated (User pressed "=")
+     */
+    public boolean hasResult(long index) {
+        final ExprInfo ei = ensureExprIsCached(index);
+        return ei.mResultString != null;
+    }
+
+    /**
      * Is a reevaluation still in progress?
      */
     public boolean evaluationInProgress(long index) {

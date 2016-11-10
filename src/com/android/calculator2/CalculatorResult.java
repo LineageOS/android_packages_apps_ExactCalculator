@@ -113,6 +113,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     private float mNoEllipsisCredit;
                             // Fraction of digit width saved by both replacing ellipsis with digit
                             // and avoiding scientific notation.
+    private boolean mShouldRequireResult = true;
     private static final int MAX_WIDTH = 100;
                             // Maximum number of digits displayed.
     public static final int MAX_LEADING_ZEROES = 6;
@@ -307,12 +308,16 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        if (mEvaluator != null) {
+        if (mEvaluator != null && mShouldRequireResult) {
             final CalculatorExpr expr = mEvaluator.getExpr(mIndex);
             if (expr != null && expr.hasInterestingOps()) {
                 mEvaluator.requireResult(mIndex, this, this);
             }
         }
+    }
+
+    public void setShouldRequireResult(boolean should) {
+        mShouldRequireResult = should;
     }
 
     // From Evaluator.CharMetricsInfo.

@@ -311,6 +311,8 @@ public class Calculator extends Activity
 
         mEvaluator = Evaluator.getInstance(this);
         mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
+        // This resultText should always use evaluateAndNotify, not requireResult().
+        mResultText.setShouldRequireResult(false);
         KeyMaps.setActivity(this);
 
         mDragLayout = (DragLayout) findViewById(R.id.drag_layout);
@@ -320,9 +322,10 @@ public class Calculator extends Activity
         mHistoryFrame = (FrameLayout) findViewById(R.id.history_frame);
 
         if (savedInstanceState != null) {
-            setState(CalculatorState.values()[
-                savedInstanceState.getInt(KEY_DISPLAY_STATE,
-                                          CalculatorState.INPUT.ordinal())]);
+            final CalculatorState savedState = CalculatorState.values()[
+                    savedInstanceState.getInt(KEY_DISPLAY_STATE,
+                            CalculatorState.INPUT.ordinal())];
+            setState(savedState);
             CharSequence unprocessed = savedInstanceState.getCharSequence(KEY_UNPROCESSED_CHARS);
             if (unprocessed != null) {
                 mUnprocessedChars = unprocessed.toString();

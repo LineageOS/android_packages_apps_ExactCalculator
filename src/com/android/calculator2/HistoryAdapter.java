@@ -39,6 +39,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     private List<HistoryItem> mDataSet;
 
+    private boolean mHasCurrentExpression = true;
+
     public HistoryAdapter(Calculator calculator, ArrayList<HistoryItem> dataSet,
             String currentExpressionDescription) {
         mEvaluator = Evaluator.getInstance(calculator);
@@ -70,13 +72,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.mFormula.setText(item.getFormula());
         // Note: HistoryItems that are not the current expression will always have interesting ops.
         holder.mResult.setEvaluator(mEvaluator, item.getId());
-        if (isCurrentExpressionItem(position)) {
+        if (mHasCurrentExpression && position == 0) {
             holder.mDate.setText(mCurrentExpressionDescription);
             holder.mDate.setContentDescription(mCurrentExpressionDescription);
         } else {
             holder.mDate.setText(item.getDateString());
             holder.mDate.setContentDescription(item.getDateDescription());
         }
+    }
+
+    public void setHasCurrentExpression(boolean has) {
+        mHasCurrentExpression = has;
     }
 
     @Override
@@ -96,11 +102,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public int getItemViewType(int position) {
         HistoryItem item = mDataSet.get(position);
 
-        // lazy-fill the data set
+        // Continue to lazy-fill the data set
         if (item == null) {
             item = new HistoryItem(position, mEvaluator.getTimeStamp(position),
                     mEvaluator.getExprAsSpannable(position));
-            mDataSet.add(position, item);
+            mDataSet.set(position, item);
         }
         return item.isEmptyView() ? EMPTY_VIEW_TYPE : HISTORY_VIEW_TYPE;
     }
@@ -108,10 +114,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     @Override
     public int getItemCount() {
         return mDataSet.size();
-    }
-
-    private boolean isCurrentExpressionItem(int position) {
-        return position == 0;
     }
 
     public void setDataSet(ArrayList<HistoryItem> dataSet) {
