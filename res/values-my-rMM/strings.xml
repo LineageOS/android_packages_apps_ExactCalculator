@@ -59,8 +59,8 @@
     <string name="desc_del" msgid="7879515781929311432">"ဖျက်ရန်"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"ပြောင်းပြန်ဆောင်ရွက်ချက်များ ပြပါ"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ပြောင်းပြန်ဆောင်ရွက်ချက်များ ဖျောက်ထားရန်"</string>
-    <string name="desc_memory_store" msgid="3930533713663938153">"မှတ်သားထားသည့်အရာကို သိမ်းဆည်းရန်"</string>
-    <string name="desc_memory_recall" msgid="2971412217997909907">"မှတ်သားထားသည့်အရာကို ပြန်သုံးရန်"</string>
+    <string name="desc_memory_store" msgid="3930533713663938153">"မှတ်သားချက်များ သိမ်းဆည်းရန်"</string>
+    <string name="desc_memory_recall" msgid="2971412217997909907">"မှတ်သားချက်များ ပြန်လည်ရယူရန်"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ဖော်မြူလာမရှိပါ"</string>
     <string name="desc_result" msgid="1794073190203126821">"ရလဒ်မရှိပါ"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"နံပါတ်နှင့် အခြေခံလုပ်ငန်းများ"</string>

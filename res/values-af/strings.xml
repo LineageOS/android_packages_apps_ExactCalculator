@@ -84,5 +84,5 @@
     <string name="menu_clear_history" msgid="902038191257404791">"Maak geskiedenis skoon"</string>
     <string name="title_history" msgid="7820912156315181539">"Geskiedenis"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Navigeer op"</string>
-    <string name="dialog_timeout" msgid="9069768442342329065">"Uitteltyd"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"Uitgetel"</string>
 </resources>

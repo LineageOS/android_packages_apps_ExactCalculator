@@ -60,7 +60,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"prikaži inverzne funkcije"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"sakrij inverzne funkcije"</string>
     <string name="desc_memory_store" msgid="3930533713663938153">"pohranjivanje memorije"</string>
-    <string name="desc_memory_recall" msgid="2971412217997909907">"povlačenje memorije"</string>
+    <string name="desc_memory_recall" msgid="2971412217997909907">"vraćanje iz memorije"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Nema formule"</string>
     <string name="desc_result" msgid="1794073190203126821">"Nema rezultata"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"Brojevi i osnovne operacije"</string>

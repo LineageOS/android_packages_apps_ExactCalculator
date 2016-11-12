@@ -72,7 +72,7 @@
     <string name="error_zero_divide" msgid="458040988686661801">"ไม่สามารถหารด้วย 0"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"คัดลอกข้อความแล้ว"</string>
     <string name="cancelled" msgid="2207323593183640994">"ยกเลิกการคำนวณแล้ว"</string>
-    <string name="timeout" msgid="5461892570729418573">"ค่าอาจเป็นอนันต์หรือระบุไม่ได้"</string>
+    <string name="timeout" msgid="5461892570729418573">"ค่าอาจเป็นอนันต์หรือไม่ระบุ"</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"ใช้ระยะหมดเวลาที่นานขึ้น"</string>
     <string name="dismiss" msgid="7872443888515066216">"ปิด"</string>
     <string name="exact" msgid="2597237880041789948">"(ลงตัว)"</string>
