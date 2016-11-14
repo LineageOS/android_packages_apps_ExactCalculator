@@ -582,7 +582,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                 }
                 return;
             }
-            // mExprInfo.mVal was already set asynchrously by child thread.
+            // mExprInfo.mVal was already set asynchronously by child thread.
             mExprInfo.mResultString = result.newResultString;
             mExprInfo.mResultStringOffset = result.newResultStringOffset;
             final int dotIndex = mExprInfo.mResultString.indexOf('.');
@@ -1085,7 +1085,9 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     private void evaluateResult(long index, EvaluationListener listener, CharMetricsInfo cmi,
             boolean required) {
         ExprInfo ei = mExprs.get(index);
-        clearMainCache();
+        if (index == MAIN_INDEX) {
+            clearMainCache();
+        }  // Otherwise the expression is immutable.
         AsyncEvaluator eval =  new AsyncEvaluator(index, listener, cmi, ei.mDegreeMode, required);
         ei.mEvaluator = eval;
         eval.execute();
@@ -1129,7 +1131,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     /**
      * Start required evaluation of expression at given index and call back listener when ready.
-     * If index is MAIN_EXPR, we may also directly display a timeout message.
+     * If index is MAIN_INDEX, we may also directly display a timeout message.
      * Uses longer timeouts than optional evaluation.
      */
     public void requireResult(long index, EvaluationListener listener, CharMetricsInfo cmi) {
