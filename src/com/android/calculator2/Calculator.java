@@ -80,8 +80,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
+import static com.android.calculator2.CalculatorFormula.OnFormulaContextMenuClickListener;
+
 public class Calculator extends Activity
-        implements OnTextSizeChangeListener, OnLongClickListener, CalculatorFormula.OnPasteListener,
+        implements OnTextSizeChangeListener, OnLongClickListener,
         AlertDialogFragment.OnClickListener, Evaluator.EvaluationListener /* for main result */ {
 
     /**
@@ -157,6 +159,48 @@ public class Calculator extends Activity
             return false;
         }
     };
+
+    public final OnDisplayMemoryOperationsListener mOnDisplayMemoryOperationsListener =
+            new OnDisplayMemoryOperationsListener() {
+        @Override
+        public boolean shouldDisplayMemory() {
+            return mEvaluator.getMemoryIndex() != 0;
+        }
+    };
+
+    public final OnFormulaContextMenuClickListener mOnFormulaContextMenuClickListener =
+            new OnFormulaContextMenuClickListener() {
+        @Override
+        public boolean onPaste(ClipData clip) {
+            final ClipData.Item item = clip.getItemCount() == 0 ? null : clip.getItemAt(0);
+            if (item == null) {
+                // nothing to paste, bail early...
+                return false;
+            }
+
+            // Check if the item is a previously copied result, otherwise paste as raw text.
+            final Uri uri = item.getUri();
+            if (uri != null && mEvaluator.isLastSaved(uri)) {
+                clearIfNotInputState();
+                mEvaluator.appendExpr(mEvaluator.getSavedIndex());
+                redisplayAfterFormulaChange();
+            } else {
+                addChars(item.coerceToText(Calculator.this).toString(), false);
+            }
+            return true;
+        }
+
+        @Override
+        public void onMemoryRecall() {
+            clearIfNotInputState();
+            long memoryIndex = mEvaluator.getMemoryIndex();
+            if (memoryIndex != 0) {
+                mEvaluator.appendExpr(mEvaluator.getMemoryIndex());
+                redisplayAfterFormulaChange();
+            }  // FIXME: Avoid the 0 case, e.g. by graying out button when memory is unavailable.
+        }
+    };
+
 
     private final TextWatcher mFormulaTextWatcher = new TextWatcher() {
         @Override
@@ -340,8 +384,10 @@ public class Calculator extends Activity
             mEvaluator.clearMain();
         }
 
+        mFormulaText.setOnContextMenuClickListener(mOnFormulaContextMenuClickListener);
+        mFormulaText.setOnDisplayMemoryOperationsListener(mOnDisplayMemoryOperationsListener);
+
         mFormulaText.setOnTextSizeChangeListener(this);
-        mFormulaText.setOnPasteListener(this);
         mFormulaText.addTextChangedListener(mFormulaTextWatcher);
         mDeleteButton.setOnLongClickListener(this);
 
@@ -765,12 +811,6 @@ public class Calculator extends Activity
                     mEvaluator.evaluateAndNotify(mEvaluator.MAIN_INDEX, this, mResultText);
                 }
                 return;
-            case R.id.memory_store:
-                mResultText.onMemoryStore();
-                return;
-            case R.id.memory_recall:
-                onMemoryRecall();
-                return;
             default:
                 cancelIfEvaluating(false);
                 if (haveUnprocessed()) {
@@ -918,15 +958,6 @@ public class Calculator extends Activity
             announceClearedForAccessibility();
         }
         redisplayAfterFormulaChange();
-    }
-
-    private void onMemoryRecall() {
-        clearIfNotInputState();
-        long memoryIndex = mEvaluator.getMemoryIndex();
-        if (memoryIndex != 0) {
-            mEvaluator.appendExpr(mEvaluator.getMemoryIndex());
-            redisplayAfterFormulaChange();
-        }  // FIXME: Avoid the 0 case, e.g. by graying out button when memory is unavailable.
     }
 
     private void reveal(View sourceView, int colorRes, AnimatorListener listener) {
@@ -1319,31 +1350,15 @@ public class Calculator extends Activity
         return mHitRect.contains((int) event.getX(), (int) event.getY());
     }
 
-    @Override
-    public boolean onPaste(ClipData clip) {
-        final ClipData.Item item = clip.getItemCount() == 0 ? null : clip.getItemAt(0);
-        if (item == null) {
-            // nothing to paste, bail early...
-            return false;
-        }
-
-        // Check if the item is a previously copied result, otherwise paste as raw text.
-        final Uri uri = item.getUri();
-        if (uri != null && mEvaluator.isLastSaved(uri)) {
-            clearIfNotInputState();
-            mEvaluator.appendExpr(mEvaluator.getSavedIndex());
-            redisplayAfterFormulaChange();
-        } else {
-            addChars(item.coerceToText(this).toString(), false);
-        }
-        return true;
-    }
-
     /**
      * Clean up animation for context menu.
      */
     @Override
     public void onContextMenuClosed(Menu menu) {
         stopActionModeOrContextMenu();
+    }
+
+    public interface OnDisplayMemoryOperationsListener {
+        boolean shouldDisplayMemory();
     }
 }

@@ -58,28 +58,12 @@
         app:layout_column="0" />
 
     <Button
-        android:id="@+id/memory_store"
-        style="@style/PadButtonStyle.Operator.Text"
-        android:contentDescription="@string/desc_memory_store"
-        android:text="@string/memory_store"
-        app:layout_row="1"
-        app:layout_column="1" />
-
-    <Button
         android:id="@+id/op_sub"
         style="@style/PadButtonStyle.Operator"
         android:contentDescription="@string/desc_op_sub"
         android:text="@string/op_sub"
         app:layout_row="2"
         app:layout_column="0" />
-
-    <Button
-        android:id="@+id/memory_recall"
-        style="@style/PadButtonStyle.Operator.Text"
-        android:contentDescription="@string/desc_memory_recall"
-        android:text="@string/memory_recall"
-        app:layout_row="2"
-        app:layout_column="1" />
 
     <Button
         android:id="@+id/op_add"

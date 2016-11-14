@@ -410,6 +410,20 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     }
 
     /**
+     * Add the result to the value currently in memory.
+     */
+    public void onMemoryAdd() {
+        mEvaluator.addToMemory(Evaluator.MAIN_INDEX);
+    }
+
+    /**
+     * Subtract the result from the value currently in memory.
+     */
+    public void onMemorySubtract() {
+        mEvaluator.subtractFromMemory(Evaluator.MAIN_INDEX);
+    }
+
+    /**
      * Set up scroll bounds (mMinPos, mMaxPos, etc.) and determine whether the result is
      * scrollable, based on the supplied information about the result.
      * This is unfortunately complicated because we need to predict whether trailing digits
@@ -920,7 +934,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     }
 
     /**
-     * Use ActionMode for copy support on M and higher.
+     * Use ActionMode for copy/memory support on M and higher.
      */
     @TargetApi(Build.VERSION_CODES.M)
     private void setupActionMode() {
@@ -995,7 +1009,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     }
 
     /**
-     * Use ContextMenu for copy support on L and lower.
+     * Use ContextMenu for copy/memory support on L and lower.
      */
     private void setupContextMenu() {
         setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
@@ -1022,7 +1036,12 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     }
 
     private boolean createCopyMenu(MenuInflater inflater, Menu menu) {
-        inflater.inflate(R.menu.copy, menu);
+        inflater.inflate(R.menu.menu_result, menu);
+        final boolean displayMemory = mEvaluator.getMemoryIndex() != 0;
+        final MenuItem memoryAddItem = menu.findItem(R.id.memory_add);
+        final MenuItem memorySubtractItem = menu.findItem(R.id.memory_subtract);
+        memoryAddItem.setEnabled(displayMemory);
+        memorySubtractItem.setEnabled(displayMemory);
         highlightResult();
         return true;
     }
@@ -1072,6 +1091,15 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.memory_add:
+                onMemoryAdd();
+                return true;
+            case R.id.memory_subtract:
+                onMemorySubtract();
+                return true;
+            case R.id.memory_store:
+                onMemoryStore();
+                return true;
             case R.id.menu_copy:
                 if (mEvaluator.evaluationInProgress(mIndex)) {
                     // Refuse to copy placeholder characters.

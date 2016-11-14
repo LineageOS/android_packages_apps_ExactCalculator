@@ -1362,6 +1362,22 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     /**
+     * Return an ExprInfo corresponding to the subtraction of the value at the subtrahend index
+     * from value at the minuend index (minuend - subtrahend = result). Both are presumed to have
+     * been previously evaluated. The result is unevaluated.
+     */
+    private ExprInfo difference(long minuendIndex, long subtrahendIndex) {
+        final CalculatorExpr resultExpr = new CalculatorExpr();
+        resultExpr.append(getCollapsedExpr(minuendIndex));
+        resultExpr.add(R.id.op_sub);
+        resultExpr.append(getCollapsedExpr(subtrahendIndex));
+        final ExprInfo result = new ExprInfo(resultExpr, false /* angular measure irrelevant */);
+        result.mLongTimeout = mExprs.get(minuendIndex).mLongTimeout
+                || mExprs.get(subtrahendIndex).mLongTimeout;
+        return result;
+    }
+
+    /**
      * Add the expression described by the argument to the database.
      * Returns the new row id in the database.
      * If in_history is true, add it with a positive index, so it will appear in the history.
@@ -1570,6 +1586,17 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     public void addToMemory(long index) {
         ExprInfo newEi = sum(mMemoryIndex, index);
+        long newIndex = addToDB(false, newEi);
+        mMemoryIndex = 0;  // Invalidate while we're evaluating.
+        setMemoryIndexWhenEvaluated(newIndex, true /* persist */);
+    }
+
+    /**
+     * Save an an expression representing the subtraction of the expression with the given index
+     * from "memory." Make mMemoryIndex point to it when we complete evaluating.
+     */
+    public void subtractFromMemory(long index) {
+        ExprInfo newEi = difference(mMemoryIndex, index);
         long newIndex = addToDB(false, newEi);
         mMemoryIndex = 0;  // Invalidate while we're evaluating.
         setMemoryIndexWhenEvaluated(newIndex, true /* persist */);
