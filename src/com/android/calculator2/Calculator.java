@@ -311,8 +311,6 @@ public class Calculator extends Activity
 
         mEvaluator = Evaluator.getInstance(this);
         mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
-        // This resultText should always use evaluateAndNotify, not requireResult().
-        mResultText.setShouldRequireResult(false);
         KeyMaps.setActivity(this);
 
         mDragLayout = (DragLayout) findViewById(R.id.drag_layout);
@@ -365,8 +363,11 @@ public class Calculator extends Activity
             // Just reevaluate.
             redisplayFormula();
             setState(CalculatorState.INIT);
-            mEvaluator.requireResult(Evaluator.MAIN_INDEX, this, mResultText);
+            // Request evaluation when we know display width.
+            mResultText.setShouldRequireResult(true, this);
         } else {
+            // This resultText will explicitly call evaluateAndNotify when ready.
+            mResultText.setShouldRequireResult(false, null);
             redisplayAfterFormulaChange();
         }
         // TODO: We're currently not saving and restoring scroll position.
@@ -412,6 +413,8 @@ public class Calculator extends Activity
     private void setState(CalculatorState state) {
         if (mCurrentState != state) {
             if (state == CalculatorState.INPUT) {
+                // We'll explicitly request evaluation from now on.
+                mResultText.setShouldRequireResult(false, null);
                 restoreDisplayPositions();
             }
             mCurrentState = state;

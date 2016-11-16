@@ -98,8 +98,9 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                             // Protects the next five fields.  These fields are only
                             // Updated by the UI thread, and read accesses by the UI thread
                             // sometimes do not acquire the lock.
-    private int mWidthConstraint = -1;
+    private int mWidthConstraint = 0;
                             // Our total width in pixels minus space for ellipsis.
+                            // 0 ==> uninitialized.
     private float mCharWidth = 1;
                             // Maximum character width. For now we pretend that all characters
                             // have this width.
@@ -114,8 +115,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                             // Fraction of digit width saved by both replacing ellipsis with digit
                             // and avoiding scientific notation.
     private boolean mShouldRequireResult = true;
-    private static final int MAX_WIDTH = 100;
-                            // Maximum number of digits displayed.
+    private Evaluator.EvaluationListener mEvaluationListener = this;
+                            // Listener to use if/when evaluation is requested.
     public static final int MAX_LEADING_ZEROES = 6;
                             // Maximum number of leading zeroes after decimal point before we
                             // switch to scientific notation with negative exponent.
@@ -311,12 +312,13 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         if (mEvaluator != null && mShouldRequireResult) {
             final CalculatorExpr expr = mEvaluator.getExpr(mIndex);
             if (expr != null && expr.hasInterestingOps()) {
-                mEvaluator.requireResult(mIndex, this, this);
+                mEvaluator.requireResult(mIndex, mEvaluationListener, this);
             }
         }
     }
 
-    public void setShouldRequireResult(boolean should) {
+    public void setShouldRequireResult(boolean should, Evaluator.EvaluationListener listener) {
+        mEvaluationListener = listener;
         mShouldRequireResult = should;
     }
 
@@ -780,20 +782,13 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     /**
      * Return the maximum number of characters that will fit in the result display.
      * May be called asynchronously from non-UI thread. From Evaluator.CharMetricsInfo.
+     * Returns zero if measurement hasn't completed.
      */
     @Override
     public int getMaxChars() {
         int result;
         synchronized(mWidthLock) {
-            result = (int) Math.floor(mWidthConstraint / mCharWidth);
-            // We can apparently finish evaluating before onMeasure in CalculatorFormula has been
-            // called, in which case we get 0 or -1 as the width constraint.
-        }
-        if (result <= 0) {
-            // Return something conservatively big, to force sufficient evaluation.
-            return MAX_WIDTH;
-        } else {
-            return result;
+            return (int) Math.floor(mWidthConstraint / mCharWidth);
         }
     }
 

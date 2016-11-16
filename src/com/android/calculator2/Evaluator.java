@@ -151,6 +151,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
          * the supplied string prefix.
          * The prefix consists of the first len characters of string s, which is presumed to
          * represent a whole number. Callable from non-UI thread.
+         * Returns zero if metrics information is not yet available.
          */
         public float separatorChars(String s, int len);
         /**
@@ -282,8 +283,8 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
             mVal = new AtomicReference<UnifiedReal>();
         }
 
-        // Currently running expression evaluator, if any.  This is an AsyncEvaluator if
-        // mVal.get() == null, an AsyncReevaluator otherwise.
+        // Currently running expression evaluator, if any.  This is either an AsyncEvaluator
+        // (if mResultString == null or it's obsolete), or an AsyncReevaluator.
         public AsyncTask mEvaluator;
 
         // The remaining fields are valid only if an evaluation completed successfully.
@@ -449,7 +450,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     class AsyncEvaluator extends AsyncTask<Void, Void, InitialResult> {
         private boolean mDm;  // degrees
-        private boolean mRequired; // Result was requested by user.
+        public boolean mRequired; // Result was requested by user.
         private boolean mQuiet;  // Suppress cancellation message.
         private Runnable mTimeoutRunnable = null;
         private EvaluationListener mListener;  // Completion callback.
@@ -1123,8 +1124,13 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * Start optional evaluation of expression and display when ready.
      * @param index of expression to be evaluated.
      * Can quietly time out without a listener callback.
+     * No-op if cmi.getMaxChars() == 0.
      */
     public void evaluateAndNotify(long index, EvaluationListener listener, CharMetricsInfo cmi) {
+        if (cmi.getMaxChars() == 0) {
+            // Probably shouldn't happen. If it does, we didn't promise to do anything anyway.
+            return;
+        }
         if (index == MAIN_INDEX) {
             if (mMainExpr.mResultString != null && !mChangedValue) {
                 // Already done. Just notify.
@@ -1141,13 +1147,22 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * Start required evaluation of expression at given index and call back listener when ready.
      * If index is MAIN_INDEX, we may also directly display a timeout message.
      * Uses longer timeouts than optional evaluation.
+     * Requires cmi.getMaxChars() != 0.
      */
     public void requireResult(long index, EvaluationListener listener, CharMetricsInfo cmi) {
+        if (cmi.getMaxChars() == 0) {
+            throw new AssertionError("requireResult called too early");
+        }
         ExprInfo ei = ensureExprIsCached(index);
         if (ei.mResultString == null || (index == MAIN_INDEX && mChangedValue)) {
-            // Restart evaluator in requested mode, i.e. with longer timeout.
-            cancel(ei, true);
-            evaluateResult(index, listener, cmi, true);
+            if ((ei.mEvaluator instanceof AsyncEvaluator)
+                    && ((AsyncEvaluator)(ei.mEvaluator)).mRequired) {
+                // Duplicate request; ignore.
+            } else {
+                // Restart evaluator in requested mode, i.e. with longer timeout.
+                cancel(ei, true);
+                evaluateResult(index, listener, cmi, true);
+            }
         } else {
             notifyImmediately(index, ei, listener, cmi);
         }
