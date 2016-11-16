@@ -56,4 +56,7 @@
     <!-- Ripple color when a button is pressed in a pad. -->
     <color name="pad_button_advanced_ripple_color">#1A000000</color>
 
+    <!-- Background color for empty history view. -->
+    <color name="empty_history_color">#EEEEEE</color>
+
 </resources>

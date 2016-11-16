@@ -21,9 +21,11 @@ import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toolbar;
@@ -32,11 +34,70 @@ public class HistoryFragment extends Fragment {
 
     public static final String TAG = "HistoryFragment";
 
+    private final DragLayout.DragCallback mDragCallback =
+            new DragLayout.DragCallback() {
+                @Override
+                public void onStartDragging() {
+                    // no-op
+                }
+
+                @Override
+                public void whileDragging(float yFraction) {
+                    mDragController.animateViews(yFraction, mRecyclerView, mAdapter.getItemCount());
+                }
+
+                @Override
+                public void onClosed() {
+                    mRecyclerView.scrollToPosition(mAdapter.getItemCount() - 1);
+                }
+
+                @Override
+                public boolean allowDrag(MotionEvent event) {
+                    // Do not allow drag if the recycler view can move down more
+                    return !mRecyclerView.canScrollVertically(1);
+                }
+
+                @Override
+                public boolean shouldInterceptTouchEvent(MotionEvent event) {
+                    return true;
+                }
+
+                @Override
+                public int getDisplayHeight() {
+                    return 0;
+                }
+
+                @Override
+                public void onLayout(int translation) {
+                    // no-op
+                }
+            };
+
+    private final DragController mDragController = new DragController();
+
+    private RecyclerView mRecyclerView;
+    private HistoryAdapter mAdapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Temporary data
+        final int[] testArray = {7};
+        mAdapter = new HistoryAdapter(testArray,
+                getContext().getResources().getString(R.string.title_current_expression));
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         final View view = inflater.inflate(
                 R.layout.fragment_history, container, false /* attachToRoot */);
+
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.history_recycler_view);
+
+        // The size of the RecyclerView is not affected by the adapter's contents.
+        mRecyclerView.setAdapter(mAdapter);
 
         final Toolbar toolbar = (Toolbar) view.findViewById(R.id.history_toolbar);
         toolbar.inflateMenu(R.menu.fragment_history);
@@ -61,6 +122,16 @@ public class HistoryFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        initializeController();
+        final DragLayout dragLayout = (DragLayout) getActivity().findViewById(R.id.drag_layout);
+        dragLayout.removeDragCallback(mDragCallback);
+        dragLayout.addDragCallback(mDragCallback);
+    }
+
+    @Override
     public Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
         final View view = getView();
         final int height = getResources().getDisplayMetrics().heightPixels;
@@ -70,6 +141,29 @@ public class HistoryFragment extends Fragment {
             return ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, -height, 0f);
         }
         return null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        final DragLayout dragLayout = (DragLayout) getActivity().findViewById(R.id.drag_layout);
+        if (dragLayout != null) {
+            dragLayout.removeDragCallback(mDragCallback);
+        }
+        super.onDestroy();
+    }
+
+    private void initializeController() {
+        mDragController.setDisplayFormula(
+                (CalculatorFormula) getActivity().findViewById(R.id.formula));
+
+        mDragController.setDisplayResult(
+                (CalculatorResult) getActivity().findViewById(R.id.result));
+
+        mDragController.setToolbar(getActivity().findViewById(R.id.toolbar));
+
+        // Initialize the current expression element to dimensions that match the display to avoid
+        // flickering and scrolling when elements expand on drag start.
+        mDragController.animateViews(1.0f, mRecyclerView, mAdapter.getItemCount());
     }
 
     private void clearHistory() {
