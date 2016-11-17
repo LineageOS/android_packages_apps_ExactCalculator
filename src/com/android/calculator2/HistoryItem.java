@@ -17,33 +17,27 @@
 package com.android.calculator2;
 
 import android.text.Spannable;
-import android.text.format.DateFormat;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import android.text.format.DateUtils;
 
 public class HistoryItem {
 
-    private static final String dateFormat = "EEEMMMd";
-    private static final String descriptionFormat = "EEEEMMMMd";
-
-    private long mId;
-    private Date mDate;
+    private long mEvaluatorIndex;
+    /** Date in millis */
+    private long mTimeInMillis;
     private Spannable mFormula;
 
-    // This is true only for the "empty history" view.
+    /** This is true only for the "empty history" view. */
     private final boolean mIsEmpty;
 
-    public HistoryItem(long id, long millis, Spannable formula) {
-        mId = id;
-        mDate = new Date(millis);
+    public HistoryItem(long evaluatorIndex, long millis, Spannable formula) {
+        mEvaluatorIndex = evaluatorIndex;
+        mTimeInMillis = millis;
         mFormula = formula;
         mIsEmpty = false;
     }
 
-    public long getId() {
-        return mId;
+    public long getEvaluatorIndex() {
+        return mEvaluatorIndex;
     }
 
     public HistoryItem() {
@@ -54,17 +48,13 @@ public class HistoryItem {
         return mIsEmpty;
     }
 
-    public String getDateString() {
-        // TODO: Use DateUtils?
-        final Locale l = Locale.getDefault();
-        final String datePattern = DateFormat.getBestDateTimePattern(l, dateFormat);
-        return new SimpleDateFormat(datePattern, l).format(mDate);
-    }
-
-    public String getDateDescription() {
-        final Locale l = Locale.getDefault();
-        final String descriptionPattern = DateFormat.getBestDateTimePattern(l, descriptionFormat);
-        return new SimpleDateFormat(descriptionPattern, l).format(mDate);
+    /**
+     * @return String in format "n days ago"
+     * For n > 7, the date is returned.
+     */
+    public CharSequence getDateString() {
+        return DateUtils.getRelativeTimeSpanString(mTimeInMillis, System.currentTimeMillis(),
+                DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
     }
 
     public Spannable getFormula() {

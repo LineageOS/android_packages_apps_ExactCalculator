@@ -39,13 +39,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     private List<HistoryItem> mDataSet;
 
-    private boolean mHasCurrentExpression = true;
-
     public HistoryAdapter(Calculator calculator, ArrayList<HistoryItem> dataSet,
             String currentExpressionDescription) {
         mEvaluator = Evaluator.getInstance(calculator);
         mDataSet = dataSet;
         mCurrentExpressionDescription = currentExpressionDescription;
+        setHasStableIds(true);
     }
 
     @Override
@@ -71,31 +70,33 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         holder.mFormula.setText(item.getFormula());
         // Note: HistoryItems that are not the current expression will always have interesting ops.
-        holder.mResult.setEvaluator(mEvaluator, item.getId());
-        if (mHasCurrentExpression && position == 0) {
+        holder.mResult.setEvaluator(mEvaluator, item.getEvaluatorIndex());
+        if (item.getEvaluatorIndex() == Evaluator.MAIN_INDEX) {
             holder.mDate.setText(mCurrentExpressionDescription);
             holder.mDate.setContentDescription(mCurrentExpressionDescription);
         } else {
             holder.mDate.setText(item.getDateString());
-            holder.mDate.setContentDescription(item.getDateDescription());
         }
-    }
-
-    public void setHasCurrentExpression(boolean has) {
-        mHasCurrentExpression = has;
     }
 
     @Override
     public void onViewRecycled(ViewHolder holder) {
+        if (holder.getItemViewType() == EMPTY_VIEW_TYPE) {
+            return;
+        }
+        mEvaluator.cancel(holder.getItemId(), true);
+
         holder.mDate.setContentDescription(null);
         holder.mDate.setText(null);
         holder.mFormula.setText(null);
         holder.mResult.setText(null);
 
-        // TODO: Only cancel the calculation for the recycled view
-        mEvaluator.cancelAll(true);
-
         super.onViewRecycled(holder);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mDataSet.get(position).getEvaluatorIndex();
     }
 
     @Override
@@ -104,8 +105,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         // Continue to lazy-fill the data set
         if (item == null) {
-            item = new HistoryItem(position, mEvaluator.getTimeStamp(position),
-                    mEvaluator.getExprAsSpannable(position));
+            final int evaluatorIndex = getEvaluatorIndex(position);
+            item = new HistoryItem(evaluatorIndex, mEvaluator.getTimeStamp(evaluatorIndex),
+                    mEvaluator.getExprAsSpannable(evaluatorIndex));
             mDataSet.set(position, item);
         }
         return item.isEmptyView() ? EMPTY_VIEW_TYPE : HISTORY_VIEW_TYPE;
@@ -118,6 +120,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     public void setDataSet(ArrayList<HistoryItem> dataSet) {
         mDataSet = dataSet;
+    }
+
+    private int getEvaluatorIndex(int position) {
+        if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
+            return (int) mEvaluator.getMaxIndex() - position;
+        } else {
+            // Account for the additional "Current Expression" with the +1.
+            return (int) mEvaluator.getMaxIndex() - position + 1;
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

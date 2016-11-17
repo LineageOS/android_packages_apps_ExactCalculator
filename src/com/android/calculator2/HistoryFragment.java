@@ -19,7 +19,6 @@ package com.android.calculator2;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -145,20 +144,13 @@ public class HistoryFragment extends Fragment {
 
             final ArrayList<HistoryItem> newDataSet = new ArrayList<>();
 
-            if (!mEvaluator.getExpr(Evaluator.MAIN_INDEX).isEmpty()) {
+            if (!EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
                 // Add the current expression as the first element in the list (the layout is reversed
                 // and we want the current expression to be the last one in the recyclerview).
-                newDataSet.add(new HistoryItem(Evaluator.MAIN_INDEX, 0 /* millis*/,
+                newDataSet.add(new HistoryItem(Evaluator.MAIN_INDEX, System.currentTimeMillis(),
                         mEvaluator.getExprAsSpannable(0)));
             }
-            // We retrieve the current expression separately, so it's excluded from this loop.
-            // We lazy-fill, so just retrieve the first 25 expressions for now.
-            for (long i = Math.min(maxIndex, 25); i > 0; --i) {
-                final HistoryItem item = new HistoryItem(i, mEvaluator.getTimeStamp(i),
-                        mEvaluator.getExprAsSpannable(i));
-                newDataSet.add(item);
-            }
-            for (long i = Math.max(maxIndex - 25, 0); i > 0; --i) {
+            for (long i = 0; i < maxIndex; ++i) {
                 newDataSet.add(null);
             }
             if (maxIndex == 0) {
@@ -179,12 +171,11 @@ public class HistoryFragment extends Fragment {
     public Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
         final View view = getView();
         final int height = getResources().getDisplayMetrics().heightPixels;
-        if (!enter) {
-            return ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, -height);
-        } else if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
+        if (enter) {
             return ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, -height, 0f);
+        } else {
+            return ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, -height);
         }
-        return null;
     }
 
     @Override

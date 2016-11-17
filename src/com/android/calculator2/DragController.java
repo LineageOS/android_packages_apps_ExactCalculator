@@ -53,10 +53,10 @@ public final class DragController {
 
         if (evaluator != null) {
             // Initialize controller
-            if (isDisplayEmpty()) {
+            if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
                 // Empty display
                 mAnimationController = new EmptyAnimationController();
-            } else if (mEvaluator.hasResult(Evaluator.MAIN_INDEX)) {
+            } else if (isResultState()) {
                 // Result
                 mAnimationController = new ResultAnimationController();
             } else {
@@ -67,14 +67,8 @@ public final class DragController {
         }
     }
 
-    // There is no formula or result in the CalculatorDisplay.
-    private boolean isDisplayEmpty() {
-        if (mEvaluator != null) {
-            final CalculatorExpr mainExpr = mEvaluator.getExpr(Evaluator.MAIN_INDEX);
-            return mainExpr == null || mainExpr.isEmpty();
-        } else {
-            return false;
-        }
+    private boolean isResultState() {
+        return mDisplayResult.getTranslationY() != 0;
     }
 
     public void setDisplayFormula(CalculatorFormula formula) {
@@ -92,7 +86,7 @@ public final class DragController {
     public void animateViews(float yFraction, RecyclerView recyclerView, int itemCount) {
         final HistoryAdapter.ViewHolder vh = (HistoryAdapter.ViewHolder)
                 recyclerView.findViewHolderForAdapterPosition(0);
-        if (vh != null && !isDisplayEmpty()) {
+        if (vh != null && !EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
             final CalculatorFormula formula = vh.getFormula();
             final CalculatorResult result = vh.getResult();
             final TextView date = vh.getDate();
@@ -132,7 +126,7 @@ public final class DragController {
 
                 date.setTranslationY(mAnimationController.getDateTranslationY(yFraction));
             }
-        } else if (isDisplayEmpty()) {
+        } else if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
             // There is no current expression but we still need to collect information
             // to translate the other viewholders.
             if (!mAnimationInitialized) {

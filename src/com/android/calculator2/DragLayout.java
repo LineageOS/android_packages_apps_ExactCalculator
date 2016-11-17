@@ -184,7 +184,6 @@ public class DragLayout extends RelativeLayout {
             c.onClosed();
         }
         mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, 0);
-        mHistoryFrame.setVisibility(GONE);
         mIsOpen = false;
     }
 
@@ -233,6 +232,7 @@ public class DragLayout extends RelativeLayout {
                 // The view stopped moving.
                 if (mDraggingBorder == 0) {
                     setClosed();
+                    mHistoryFrame.setVisibility(GONE);
                 } else if (mDraggingBorder == mVerticalRange) {
                     setOpen();
                 }

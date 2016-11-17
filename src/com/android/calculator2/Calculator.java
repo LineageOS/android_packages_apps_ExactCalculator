@@ -505,7 +505,6 @@ public class Calculator extends Activity
     public void onBackPressed() {
         if (!stopActionModeOrContextMenu()) {
             if (mDragLayout.isOpen()) {
-                // Close the layout and remove the fragment.
                 mDragLayout.setClosed();
                 popFragmentBackstack();
                 return;
