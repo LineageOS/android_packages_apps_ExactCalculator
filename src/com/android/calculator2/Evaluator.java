@@ -17,14 +17,13 @@
 package com.android.calculator2;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.VisibleForTesting;
+import android.text.Spannable;
 import android.util.Log;
 
 import com.hp.creals.CR;
@@ -38,11 +37,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Date;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This implements the calculator evaluation logic.
@@ -97,6 +96,15 @@ import java.util.TimeZone;
  * running at a time.
  */
 public class Evaluator implements CalculatorExpr.ExprResolver {
+
+    private static Evaluator evaluator;
+
+    public static Evaluator getInstance(Calculator calculator) {
+        if (evaluator == null) {
+            evaluator = new Evaluator(calculator);
+        }
+        return evaluator;
+    }
 
     public interface EvaluationListener {
         /**
@@ -1146,6 +1154,14 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     /**
+     * Whether this expression has explicitly been evaluated (User pressed "=")
+     */
+    public boolean hasResult(long index) {
+        final ExprInfo ei = ensureExprIsCached(index);
+        return ei.mResultString != null;
+    }
+
+    /**
      * Is a reevaluation still in progress?
      */
     public boolean evaluationInProgress(long index) {
@@ -1729,6 +1745,10 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     public String getExprAsString(long index) {
         return getExpr(index).toSpannableStringBuilder(mActivity).toString();
+    }
+
+    public Spannable getExprAsSpannable(long index) {
+        return getExpr(index).toSpannableStringBuilder(mActivity);
     }
 
     /**

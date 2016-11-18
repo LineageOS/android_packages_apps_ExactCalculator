@@ -21,15 +21,12 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.TtsSpan;
-import android.text.style.TtsSpan.TextBuilder;
 
-import java.math.BigInteger;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
 
 /**
  * A mathematical expression represented as a sequence of "tokens".

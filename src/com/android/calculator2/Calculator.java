@@ -33,6 +33,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.DialogInterface;
@@ -189,7 +190,7 @@ public class Calculator extends Activity
 
         @Override
         public void onClosed() {
-            getFragmentManager().popBackStack();
+            popFragmentBackstack();
         }
 
         @Override
@@ -308,8 +309,10 @@ public class Calculator extends Activity
                 findViewById(R.id.op_sqr)
         };
 
-        mEvaluator = new Evaluator(this);
+        mEvaluator = Evaluator.getInstance(this);
         mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
+        // This resultText should always use evaluateAndNotify, not requireResult().
+        mResultText.setShouldRequireResult(false);
         KeyMaps.setActivity(this);
 
         mDragLayout = (DragLayout) findViewById(R.id.drag_layout);
@@ -319,9 +322,10 @@ public class Calculator extends Activity
         mHistoryFrame = (FrameLayout) findViewById(R.id.history_frame);
 
         if (savedInstanceState != null) {
-            setState(CalculatorState.values()[
-                savedInstanceState.getInt(KEY_DISPLAY_STATE,
-                                          CalculatorState.INPUT.ordinal())]);
+            final CalculatorState savedState = CalculatorState.values()[
+                    savedInstanceState.getInt(KEY_DISPLAY_STATE,
+                            CalculatorState.INPUT.ordinal())];
+            setState(savedState);
             CharSequence unprocessed = savedInstanceState.getCharSequence(KEY_UNPROCESSED_CHARS);
             if (unprocessed != null) {
                 mUnprocessedChars = unprocessed.toString();
@@ -500,7 +504,7 @@ public class Calculator extends Activity
             if (mDragLayout.isOpen()) {
                 // Close the layout and remove the fragment.
                 mDragLayout.setClosed();
-                getFragmentManager().popBackStack();
+                popFragmentBackstack();
                 return;
             }
             if (mPadViewPager != null && mPadViewPager.getCurrentItem() != 0) {
@@ -623,6 +627,13 @@ public class Calculator extends Activity
         }
     }
 
+    private void popFragmentBackstack() {
+        final FragmentManager manager = getFragmentManager();
+        if (manager == null || manager.isDestroyed()) {
+            return;
+        }
+        manager.popBackStack();
+    }
     /**
      * Switch to INPUT from RESULT state in response to input of the specified button_id.
      * View.NO_ID is treated as an incomplete function id.
@@ -1176,6 +1187,10 @@ public class Calculator extends Activity
     }
 
     private void showHistoryFragment(int transit) {
+        final FragmentManager manager = getFragmentManager();
+        if (manager == null || manager.isDestroyed()) {
+            return;
+        }
         if (!mDragLayout.isOpen()) {
             getFragmentManager().beginTransaction()
                     .replace(R.id.history_frame, mHistoryFragment, HistoryFragment.TAG)
@@ -1183,6 +1198,7 @@ public class Calculator extends Activity
                     .addToBackStack(HistoryFragment.TAG)
                     .commit();
         }
+        // TODO: pass current scroll position of result
     }
 
     private void displayMessage(String title, String message) {

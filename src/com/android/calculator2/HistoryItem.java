@@ -16,6 +16,7 @@
 
 package com.android.calculator2;
 
+import android.text.Spannable;
 import android.text.format.DateFormat;
 
 import java.text.SimpleDateFormat;
@@ -27,18 +28,22 @@ public class HistoryItem {
     private static final String dateFormat = "EEEMMMd";
     private static final String descriptionFormat = "EEEEMMMMd";
 
+    private long mId;
     private Date mDate;
-    private String mFormula;
-    private String mResult;
+    private Spannable mFormula;
 
     // This is true only for the "empty history" view.
     private final boolean mIsEmpty;
 
-    public HistoryItem(long millis, String formula, String result) {
+    public HistoryItem(long id, long millis, Spannable formula) {
+        mId = id;
         mDate = new Date(millis);
         mFormula = formula;
-        mResult = result;
         mIsEmpty = false;
+    }
+
+    public long getId() {
+        return mId;
     }
 
     public HistoryItem() {
@@ -62,11 +67,7 @@ public class HistoryItem {
         return new SimpleDateFormat(descriptionPattern, l).format(mDate);
     }
 
-    public String getFormula() {
+    public Spannable getFormula() {
         return mFormula;
-    }
-
-    public String getResult() {
-        return mResult;
     }
 }
