@@ -220,6 +220,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     void setEvaluator(Evaluator evaluator, long index) {
         mEvaluator = evaluator;
         mIndex = index;
+        requestLayout();
     }
 
     // Compute maximum digit width the hard way.
