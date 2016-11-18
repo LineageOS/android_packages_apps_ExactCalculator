@@ -304,7 +304,6 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         // Long timeout needed for evaluation?
         public boolean mLongTimeout = false;
         public long mTimeStamp;
-        public int mUtcOffset;
     }
 
     private ConcurrentHashMap<Long, ExprInfo> mExprs = new ConcurrentHashMap<Long, ExprInfo>();
@@ -1378,14 +1377,13 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         }
         byte[] serializedExpr = byteArrayStream.toByteArray();
         ExpressionDB.RowData rd = new ExpressionDB.RowData(serializedExpr, ei.mDegreeMode,
-                ei.mLongTimeout, 0, 0);
+                ei.mLongTimeout, 0);
         long resultIndex = mExprDB.addRow(!in_history, rd);
         if (mExprs.get(resultIndex) != null) {
             throw new AssertionError("result slot already occupied! + Slot = " + resultIndex);
         }
         // Add newly assigned date to the cache.
         ei.mTimeStamp = rd.mTimeStamp;
-        ei.mUtcOffset = rd.utcOffset();
         mExprs.put(resultIndex, ei);
         return resultIndex;
     }
@@ -1660,7 +1658,6 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         try {
             ei = new ExprInfo(new CalculatorExpr(serializedExpr), row.degreeMode());
             ei.mTimeStamp = row.mTimeStamp;
-            ei.mUtcOffset = row.utcOffset();
         } catch(IOException e) {
             throw new AssertionError("IO Exception without real IO:" + e);
         }
@@ -1679,13 +1676,6 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     public long getTimeStamp(long index) {
         return ensureExprIsCached(index).mTimeStamp;
-    }
-
-    /*
-     * Return UTC offset associated with the expression in milliseconds.
-     */
-    public long getUtcOffset(long index) {
-        return ensureExprIsCached(index).mUtcOffset;
     }
 
     @Override

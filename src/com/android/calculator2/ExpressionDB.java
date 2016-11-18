@@ -45,8 +45,6 @@ public class ExpressionDB {
         public static final String COLUMN_NAME_FLAGS = "flags";
         // Time stamp as returned by currentTimeMillis().
         public static final String COLUMN_NAME_TIMESTAMP = "timeStamp";
-        // UTC offset at the locale when the expression was saved. In multiples of 15 minutes. 
-        public static final String COLUMN_NAME_COMPRESSED_UTC_OFFSET = "compressedUtcOffset";
     }
 
     /* Data to be written to or read from a row in the table */
@@ -56,7 +54,6 @@ public class ExpressionDB {
         public final byte[] mExpression;
         public final int mFlags;
         public long mTimeStamp;  // 0 ==> this and next field to be filled in when written.
-        public byte mCompressedUtcOffset;  // multiples of 15 minutes.
         private static int flagsFromDegreeAndTimeout(Boolean DegreeMode, Boolean LongTimeout) {
             return (DegreeMode ? DEGREE_MODE : 0) | (LongTimeout ? LONG_TIMEOUT : 0);
         }
@@ -67,44 +64,24 @@ public class ExpressionDB {
             return (flags & LONG_TIMEOUT) != 0;
         }
         private static final int MILLIS_IN_15_MINS = 15 * 60 * 1000;
-        private static byte compressUtcOffset(int utcOffsetMillis) {
-            // Rounded division, though it shouldn't really matter.
-            if (utcOffsetMillis > 0) {
-                return (byte) ((utcOffsetMillis + MILLIS_IN_15_MINS / 2) / MILLIS_IN_15_MINS);
-            } else {
-                return (byte) ((utcOffsetMillis - MILLIS_IN_15_MINS / 2) / MILLIS_IN_15_MINS);
-            }
-        }
-        private static int uncompressUtcOffset(byte compressedUtcOffset) {
-            return MILLIS_IN_15_MINS * (int)compressedUtcOffset;
-        }
-        private RowData(byte[] expr, int flags, long timeStamp, byte compressedUtcOffset) {
+        private RowData(byte[] expr, int flags, long timeStamp) {
             mExpression = expr;
             mFlags = flags;
             mTimeStamp = timeStamp;
-            mCompressedUtcOffset = compressedUtcOffset;
         }
         /**
          * More client-friendly constructor that hides implementation ugliness.
          * utcOffset here is uncompressed, in milliseconds.
          * A zero timestamp will cause it to be automatically filled in.
          */
-        public RowData(byte[] expr, boolean degreeMode, boolean longTimeout, long timeStamp,
-                int utcOffset) {
-            this(expr, flagsFromDegreeAndTimeout(degreeMode, longTimeout), timeStamp,
-                    compressUtcOffset(utcOffset));
+        public RowData(byte[] expr, boolean degreeMode, boolean longTimeout, long timeStamp) {
+            this(expr, flagsFromDegreeAndTimeout(degreeMode, longTimeout), timeStamp);
         }
         public boolean degreeMode() {
             return degreeModeFromFlags(mFlags);
         }
         public boolean longTimeout() {
             return longTimeoutFromFlags(mFlags);
-        }
-        /**
-         * Return UTC offset for timestamp in milliseconds.
-         */
-        public int utcOffset() {
-            return uncompressUtcOffset(mCompressedUtcOffset);
         }
         /**
          * Return a ContentValues object representing the current data.
@@ -115,11 +92,8 @@ public class ExpressionDB {
             cvs.put(ExpressionEntry.COLUMN_NAME_FLAGS, mFlags);
             if (mTimeStamp == 0) {
                 mTimeStamp = System.currentTimeMillis();
-                final TimeZone timeZone = Calendar.getInstance().getTimeZone();
-                mCompressedUtcOffset = compressUtcOffset(timeZone.getOffset(mTimeStamp));
             }
             cvs.put(ExpressionEntry.COLUMN_NAME_TIMESTAMP, mTimeStamp);
-            cvs.put(ExpressionEntry.COLUMN_NAME_COMPRESSED_UTC_OFFSET, mCompressedUtcOffset);
             return cvs;
         }
     }
@@ -129,9 +103,8 @@ public class ExpressionDB {
             ExpressionEntry._ID + " INTEGER PRIMARY KEY," +
             ExpressionEntry.COLUMN_NAME_EXPRESSION + " BLOB," +
             ExpressionEntry.COLUMN_NAME_FLAGS + " INTEGER," +
-            ExpressionEntry.COLUMN_NAME_TIMESTAMP + " INTEGER," +
-            ExpressionEntry.COLUMN_NAME_COMPRESSED_UTC_OFFSET + " INTEGER)";
-    private static final String SQL_DELETE_ENTRIES =
+            ExpressionEntry.COLUMN_NAME_TIMESTAMP + " INTEGER)";
+    private static final String SQL_DROP_TABLE =
             "DROP TABLE IF EXISTS " + ExpressionEntry.TABLE_NAME;
     private static final String SQL_GET_MIN = "SELECT MIN(" + ExpressionEntry._ID +
             ") FROM " + ExpressionEntry.TABLE_NAME;
@@ -139,6 +112,11 @@ public class ExpressionDB {
             ") FROM " + ExpressionEntry.TABLE_NAME;
     private static final String SQL_GET_ROW = "SELECT * FROM " + ExpressionEntry.TABLE_NAME +
             " WHERE " + ExpressionEntry._ID + " = ?";
+    // We may eventually need an index by timestamp. We don't use it yet.
+    private static final String SQL_CREATE_TIMESTAMP_INDEX =
+            "CREATE INDEX timestamp_index ON " + ExpressionEntry.TABLE_NAME + "(" +
+            ExpressionEntry.COLUMN_NAME_TIMESTAMP + ")";
+    private static final String SQL_DROP_TIMESTAMP_INDEX = "DROP INDEX IF EXISTS timestamp_index";
 
     private class ExpressionDBHelper extends SQLiteOpenHelper {
         // If you change the database schema, you must increment the database version.
@@ -150,10 +128,12 @@ public class ExpressionDB {
         }
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(SQL_CREATE_ENTRIES);
+            db.execSQL(SQL_CREATE_TIMESTAMP_INDEX);
         }
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             // For now just throw away history on database version upgrade/downgrade.
-            db.execSQL(SQL_DELETE_ENTRIES);
+            db.execSQL(SQL_DROP_TIMESTAMP_INDEX);
+            db.execSQL(SQL_DROP_TABLE);
             onCreate(db);
         }
         public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -298,33 +278,27 @@ public class ExpressionDB {
         }
     }
 
-    public synchronized void eraseAll() {
+    /**
+     * Erase ALL database entries.
+     * This is currently only safe if expressions that may refer to them are also erased.
+     * Should only be called when concurrent references to the database are impossible.
+     * TODO: Look at ways to more selectively clear the database.
+     */
+    public void eraseAll() {
         waitForExpressionDB();
-        mExpressionDB.execSQL("SQL_DELETE_ENTRIES");
+        mExpressionDB.execSQL(SQL_DROP_TIMESTAMP_INDEX);
+        mExpressionDB.execSQL(SQL_DROP_TABLE);
         try {
             mExpressionDB.execSQL("VACUUM");
         } catch(Exception e) {
             Log.v("Calculator", "Database VACUUM failed\n", e);
-            // FIXME: probably needed only if there is danger of concurrent execution.
+            // Should only happen with concurrent execution, which should be impossible.
         }
-    }
-
-    /**
-     * Update a row in place.
-     * Currently unused, since only the main expression is updated in place, and we
-     * don't save that in the DB.
-     */
-    public void updateRow(long index, RowData data) {
-        if (index == -1) {
-            setBadDB();
-            throw new AssertionError("Can't insert row index of -1");
-        }
-        ContentValues cvs = data.toContentValues();
-        cvs.put(ExpressionEntry._ID, index);
-        waitForExpressionDB();
-        long result = mExpressionDB.replace(ExpressionEntry.TABLE_NAME, null, cvs);
-        if (result == -1) {
-            throw new AssertionError("Row update failed");
+        mExpressionDB.execSQL(SQL_CREATE_ENTRIES);
+        mExpressionDB.execSQL(SQL_CREATE_TIMESTAMP_INDEX);
+        synchronized(mLock) {
+            mMinIndex = MAXIMUM_MIN_INDEX;
+            mMaxIndex = 0L;
         }
     }
 
@@ -368,7 +342,7 @@ public class ExpressionDB {
             throw new AssertionError("Missing Row");
         } else {
             result = new RowData(resultC.getBlob(1), resultC.getInt(2) /* flags */,
-                    resultC.getLong(3) /* timestamp */, (byte)resultC.getInt(4) /* UTC offset */);
+                    resultC.getLong(3) /* timestamp */);
         }
         return result;
     }

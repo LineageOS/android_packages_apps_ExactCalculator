@@ -1002,6 +1002,14 @@ public class Calculator extends Activity
         mResultText.announceForAccessibility(getResources().getString(R.string.cleared));
     }
 
+    public void onClearAnimationEnd() {
+         mUnprocessedChars = null;
+         mResultText.clear();
+         mEvaluator.clearMain();
+         setState(CalculatorState.INPUT);
+         redisplayFormula();
+    }
+
     private void onClear() {
         if (mEvaluator.getExpr(Evaluator.MAIN_INDEX).isEmpty() && !haveUnprocessed()) {
             return;
@@ -1011,12 +1019,8 @@ public class Calculator extends Activity
         reveal(mCurrentButton, R.color.calculator_accent_color, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mUnprocessedChars = null;
-                mResultText.clear();
-                mEvaluator.clearMain();
-                setState(CalculatorState.INPUT);
+                onClearAnimationEnd();
                 showOrHideToolbar();
-                redisplayFormula();
             }
         });
     }

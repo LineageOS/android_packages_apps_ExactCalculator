@@ -211,6 +211,14 @@ public class HistoryFragment extends Fragment {
     }
 
     private void clearHistory() {
-        Log.d(TAG, "Dropping history table");
+        // TODO: Try to preserve the current, saved, and memory expressions. How should we
+        // handle expressions to which they refer?
+        // FIXME: This should clearly happen on a background thread.
+        mEvaluator.clearEverything();
+        // TODO: It's not clear what we should really do here. This is an initial hack.
+        // May want to make onClearAnimationEnd() private if/when we fix this.
+        Calculator calculator = (Calculator) getActivity();
+        calculator.onClearAnimationEnd();
+        calculator.onBackPressed();
     }
 }
