@@ -462,6 +462,10 @@ public class Calculator extends Activity
         }
     }
 
+    public boolean isResultState() {
+        return mCurrentState == CalculatorState.RESULT;
+    }
+
     @Override
     protected void onDestroy() {
         mDragLayout.removeDragCallback(mDragCallback);

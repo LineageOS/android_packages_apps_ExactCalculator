@@ -135,7 +135,10 @@ public class HistoryFragment extends Fragment {
         dragLayout.removeDragCallback(mDragCallback);
         dragLayout.addDragCallback(mDragCallback);
 
-        mEvaluator = Evaluator.getInstance((Calculator) getActivity());
+        final Calculator activity = (Calculator) getActivity();
+        final boolean isResultState = activity.isResultState();
+
+        mEvaluator = Evaluator.getInstance(activity);
 
         if (mEvaluator != null) {
             initializeController();
@@ -144,9 +147,12 @@ public class HistoryFragment extends Fragment {
 
             final ArrayList<HistoryItem> newDataSet = new ArrayList<>();
 
-            if (!EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
-                // Add the current expression as the first element in the list (the layout is reversed
-                // and we want the current expression to be the last one in the recyclerview).
+            if (!EvaluatorStateUtils.isDisplayEmpty(mEvaluator) && !isResultState) {
+                // Add the current expression as the first element in the list (the layout is
+                // reversed and we want the current expression to be the last one in the
+                // recyclerview).
+                // If we are in the result state, the result will animate to the last history
+                // element in the list and there will be no "Current Expression."
                 newDataSet.add(new HistoryItem(Evaluator.MAIN_INDEX, System.currentTimeMillis(),
                         mEvaluator.getExprAsSpannable(0)));
             }
@@ -158,6 +164,7 @@ public class HistoryFragment extends Fragment {
             }
             mDataSet = newDataSet;
             mAdapter.setDataSet(mDataSet);
+            mAdapter.setIsResultState(isResultState);
         }
 
         mAdapter.notifyDataSetChanged();
