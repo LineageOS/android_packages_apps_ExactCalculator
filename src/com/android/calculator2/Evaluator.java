@@ -1391,17 +1391,19 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     /**
      * Preserve a copy of the current main expression as the most recent history entry,
-     * assuming it is already in teh database, but was lost from the cache.
+     * assuming it is already in the database, but may have been lost from the cache.
      */
     public void represerve() {
         // FIXME: Think about odd races in which other things happened before we get here.
-        ExprInfo ei = copy(MAIN_INDEX, true);
         long resultIndex = getMaxIndex();
         if (mExprs.get(resultIndex) != null) {
-            throw new AssertionError("result slot already occupied! + Slot = " + resultIndex);
+            // We actually didn't lose the cache. Nothing to do.
+            return;
         }
+        ExprInfo ei = copy(MAIN_INDEX, true);
         mExprs.put(resultIndex, ei);
     }
+
     /**
      * @return the {@link CalculatorExpr} representation of the result of the given
      * expression.
@@ -1763,7 +1765,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * The expression must exist in the database.
      */
     public String getExprAsString(long index) {
-        return getExpr(index).toSpannableStringBuilder(mActivity).toString();
+        return getExprAsSpannable(index).toString();
     }
 
     public Spannable getExprAsSpannable(long index) {
