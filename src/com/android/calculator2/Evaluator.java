@@ -1154,7 +1154,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     /**
-     * Cancel all current background tasks.
+     * Cancel any current background task associated with the given ExprInfo.
      * @param quiet suppress cancellation message
      * @return true if we cancelled an initial evaluation
      */
@@ -1188,6 +1188,21 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         return false;
     }
 
+    /**
+     * Cancel any current background task associated with the given ExprInfo.
+     * @param quiet suppress cancellation message
+     * @return true if we cancelled an initial evaluation
+     */
+    public boolean cancel(long index, boolean quiet)
+    {
+        ExprInfo ei = mExprs.get(index);
+        if (ei == null) {
+            return false;
+        } else {
+            return cancel(ei, quiet);
+        }
+    }
+
     public void cancelAll(boolean quiet) {
         // TODO: May want to keep active evaluators in a HashSet to avoid traversing
         // all expressions we've looked at.
@@ -1197,7 +1212,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     /**
-     * Restore the evaluator state, including the expression and any saved value.
+     * Restore the evaluator state, including the current expression.
      */
     public void restoreInstanceState(DataInput in) {
         mChangedValue = true;
@@ -1276,7 +1291,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     /**
-     * Return an ExprInfo for a copy of the main expression.
+     * Return an ExprInfo for a copy of the expression with the given index.
      * We remove trailing binary operators in the copy.
      */
     private ExprInfo copy(long index, boolean copyValue) {
@@ -1298,18 +1313,22 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     /**
      * Return an ExprInfo corresponding to the sum of the expressions at the
      * two indices.
-     * index2 should correspond to an immutable expression, and should thus NOT
-     * be MAIN_INDEX.  Both are presumed to have been previously evaluated.
-     * The result is unevaluated.
+     * index1 should correspond to an immutable expression, and should thus NOT
+     * be MAIN_INDEX. Index2 may be MAIN_INDEX. Both expressions are presumed
+     * to have been evaluated.  The result is unevaluated.
      */
     private ExprInfo sum(long index1, long index2) {
-        ExprInfo ei = copy(index1, false);
-        // ei is still private to us, so we can modify it.
-        ExprInfo other =  mExprs.get(index2);
-        ei.mLongTimeout |= other.mLongTimeout;
-        ei.mExpr.add(R.id.op_add);
-        ei.mExpr.append(getCollapsedExpr(index2));
-        return ei;
+        ExprInfo expr1 = mExprs.get(index1);
+        ExprInfo expr2 = mExprs.get(index2);
+        // TODO: Consider not collapsing expr2, to save database space.
+        // Note that this is a bit tricky, since our expressions can contain unbalanced lparens.
+        CalculatorExpr result = new CalculatorExpr();
+        result.append(getCollapsedExpr(index1));
+        result.add(R.id.op_add);
+        result.append(getCollapsedExpr(index2));
+        ExprInfo resultEi = new ExprInfo(result, false /* dont care about degrees/radians */);
+        resultEi.mLongTimeout = expr1.mLongTimeout || expr2.mLongTimeout;
+        return resultEi;
     }
 
     /**
@@ -1519,7 +1538,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * given index. Make mMemoryIndex point to it when we complete evaluating.
      */
     public void addToMemory(long index) {
-        ExprInfo newEi = sum(index, mMemoryIndex);
+        ExprInfo newEi = sum(mMemoryIndex, index);
         long newIndex = addToDB(false, newEi);
         mMemoryIndex = 0;  // Invalidate while we're evaluating.
         setMemoryIndexWhenEvaluated(newIndex, true /* persist */);

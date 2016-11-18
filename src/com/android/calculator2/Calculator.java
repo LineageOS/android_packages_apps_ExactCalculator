@@ -530,11 +530,11 @@ public class Calculator extends Activity
         // Stop the action mode or context menu if it's showing.
         stopActionModeOrContextMenu();
 
-        // Always cancel unrequested in-progress evaluation, so that we don't have to worry about
-        // subsequent asynchronous completion.
+        // Always cancel unrequested in-progress evaluation of the main expression, so that
+        // we don't have to worry about subsequent asynchronous completion.
         // Requested in-progress evaluations are handled below.
         if (mCurrentState != CalculatorState.EVALUATE) {
-            mEvaluator.cancelAll(true);
+            mEvaluator.cancel(Evaluator.MAIN_INDEX, true);
         }
 
         switch (keyCode) {
@@ -707,8 +707,8 @@ public class Calculator extends Activity
 
         // See onKey above for the rationale behind some of the behavior below:
         if (mCurrentState != CalculatorState.EVALUATE) {
-            // Cancel evaluations that were not specifically requested.
-            mEvaluator.cancelAll(true);
+            // Cancel main expression evaluations that were not specifically requested.
+            mEvaluator.cancel(Evaluator.MAIN_INDEX, true);
         }
 
         final int id = view.getId();
