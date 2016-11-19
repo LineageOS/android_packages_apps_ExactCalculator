@@ -85,4 +85,6 @@
     <string name="title_history" msgid="7820912156315181539">"ਇਤਿਹਾਸ"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"ਉੱਪਰ ਆਵਾਗੌਣ ਕਰੋ"</string>
     <string name="dialog_timeout" msgid="9069768442342329065">"ਸਮਾਂ ਸਮਾਪਤ"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"ਮੌਜੂਦਾ ਸਮੀਕਰਨ"</string>
+    <string name="no_history" msgid="4331262030447527188">"ਕੋਈ ਇਤਿਹਾਸ ਨਹੀਂ"</string>
 </resources>

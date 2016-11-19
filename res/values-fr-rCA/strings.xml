@@ -85,4 +85,6 @@
     <string name="title_history" msgid="7820912156315181539">"Historique"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Naviguer vers le haut"</string>
     <string name="dialog_timeout" msgid="9069768442342329065">"Le délai a expiré"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"Expression actuelle"</string>
+    <string name="no_history" msgid="4331262030447527188">"Aucun historique"</string>
 </resources>

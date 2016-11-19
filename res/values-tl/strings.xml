@@ -85,4 +85,8 @@
     <string name="title_history" msgid="7820912156315181539">"History"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Mag-navigate pataas"</string>
     <string name="dialog_timeout" msgid="9069768442342329065">"Timeout"</string>
+    <!-- no translation found for title_current_expression (2442754548537900591) -->
+    <skip />
+    <!-- no translation found for no_history (4331262030447527188) -->
+    <skip />
 </resources>

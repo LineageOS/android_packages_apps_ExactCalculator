@@ -85,4 +85,6 @@
     <string name="title_history" msgid="7820912156315181539">"ചരിത്രം"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"മുകളിലേക്ക് നാവിഗേറ്റ് ചെയ്യുക"</string>
     <string name="dialog_timeout" msgid="9069768442342329065">"കാലഹരണപ്പെട്ടു"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"നിലവിലെ എക്സ്പ്രഷൻ"</string>
+    <string name="no_history" msgid="4331262030447527188">"ചരിത്രമില്ല"</string>
 </resources>
