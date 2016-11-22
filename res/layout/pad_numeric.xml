@@ -91,7 +91,6 @@
         android:id="@+id/dec_point"
         style="@style/PadButtonStyle.Numeric"
         android:contentDescription="@string/desc_dec_point"
-        android:text="@string/dec_point"
         app:layout_row="3"
         app:layout_column="0" />
 
