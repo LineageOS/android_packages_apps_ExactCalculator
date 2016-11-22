@@ -253,9 +253,6 @@ public class Calculator extends Activity
 
     private HistoryFragment mHistoryFragment = new HistoryFragment();
 
-    // The user requested that the result currently being evaluated should be stored to "memory".
-    private boolean mStoreToMemoryRequested = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -769,7 +766,7 @@ public class Calculator extends Activity
                 }
                 return;
             case R.id.memory_store:
-                onMemoryStore();
+                mResultText.onMemoryStore();
                 return;
             case R.id.memory_recall:
                 onMemoryRecall();
@@ -819,10 +816,7 @@ public class Calculator extends Activity
         if (index != Evaluator.MAIN_INDEX) {
             throw new AssertionError("Unexpected evaluation result index\n");
         }
-        if (mStoreToMemoryRequested) {
-            mEvaluator.copyToMemory(Evaluator.MAIN_INDEX);
-            mStoreToMemoryRequested = false;
-        }
+
         // Invalidate any options that may depend on the current result.
         invalidateOptionsMenu();
 
@@ -924,18 +918,6 @@ public class Calculator extends Activity
             announceClearedForAccessibility();
         }
         redisplayAfterFormulaChange();
-    }
-
-    private void onMemoryStore() {
-        if (mCurrentState == CalculatorState.RESULT) {
-            mEvaluator.copyToMemory(Evaluator.MAIN_INDEX);
-        } else {
-            // Defer the store until we have the actual result.
-            mStoreToMemoryRequested = true;
-            if (mCurrentState == CalculatorState.INPUT) {
-                onEquals();
-            }
-        }
     }
 
     private void onMemoryRecall() {

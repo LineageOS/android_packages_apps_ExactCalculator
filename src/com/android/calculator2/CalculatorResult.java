@@ -142,6 +142,9 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     private ActionMode.Callback mCopyActionModeCallback;
     private ContextMenu mContextMenu;
 
+    // The user requested that the result currently being evaluated should be stored to "memory".
+    private boolean mStoreToMemoryRequested = false;
+
     public CalculatorResult(Context context, AttributeSet attrs) {
         super(context, attrs);
         mScroller = new OverScroller(context);
@@ -384,7 +387,26 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     public void onEvaluate(long index, int initPrec, int msd, int leastDigPos,
             String truncatedWholePart) {
         initPositions(initPrec, msd, leastDigPos, truncatedWholePart);
+
+        if (mStoreToMemoryRequested) {
+            mEvaluator.copyToMemory(index);
+            mStoreToMemoryRequested = false;
+        }
         redisplay();
+    }
+
+    /**
+     * Store the result for this index if it is available.
+     * If it is unavailable, set mStoreToMemoryRequested to indicate that we should store
+     * when evaluation is complete.
+     */
+    public void onMemoryStore() {
+        if (mEvaluator.hasResult(mIndex)) {
+            mEvaluator.copyToMemory(mIndex);
+        } else {
+            mStoreToMemoryRequested = true;
+            mEvaluator.requireResult(mIndex, this /* listener */, this /* CharMetricsInfo */);
+        }
     }
 
     /**
@@ -513,6 +535,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      */
     @Override
     public void onError(long index, int resourceId) {
+        mStoreToMemoryRequested = false;
         mValid = true;
         setLongClickable(false);
         mScrollable = false;
@@ -818,6 +841,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     @Override
     public void onCancelled(long index) {
         clear();
+        mStoreToMemoryRequested = false;
     }
 
     /**
