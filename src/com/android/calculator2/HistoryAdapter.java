@@ -125,7 +125,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     private int getEvaluatorIndex(int position) {
-        if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
+        if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator) || mIsResultState) {
             return (int) mEvaluator.getMaxIndex() - position;
         } else {
             // Account for the additional "Current Expression" with the +1.

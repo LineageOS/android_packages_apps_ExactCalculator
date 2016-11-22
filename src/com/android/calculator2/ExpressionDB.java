@@ -34,9 +34,6 @@ import android.os.AsyncTask;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-
 public class ExpressionDB {
     /* Table contents */
     public static class ExpressionEntry implements BaseColumns {
