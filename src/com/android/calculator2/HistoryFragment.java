@@ -19,9 +19,9 @@ package com.android.calculator2;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -179,7 +179,11 @@ public class HistoryFragment extends Fragment {
         final View view = getView();
         final int height = getResources().getDisplayMetrics().heightPixels;
         if (enter) {
-            return ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, -height, 0f);
+            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
+                return ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, -height, 0f);
+            } else {
+                return null;
+            }
         } else {
             return ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, -height);
         }
