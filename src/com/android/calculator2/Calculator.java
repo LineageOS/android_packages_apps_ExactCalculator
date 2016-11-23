@@ -1215,11 +1215,12 @@ public class Calculator extends Activity
             return;
         }
         if (!mDragLayout.isOpen()) {
-            getFragmentManager().beginTransaction()
+            manager.beginTransaction()
                     .replace(R.id.history_frame, mHistoryFragment, HistoryFragment.TAG)
                     .setTransition(transit)
                     .addToBackStack(HistoryFragment.TAG)
                     .commit();
+            manager.executePendingTransactions();
         }
         // TODO: pass current scroll position of result
     }
