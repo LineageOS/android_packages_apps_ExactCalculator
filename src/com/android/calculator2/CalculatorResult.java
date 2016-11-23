@@ -23,6 +23,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
+import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.os.BuildCompat;
 import android.text.Layout;
@@ -44,6 +45,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.OverScroller;
 import android.widget.Toast;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 // A text widget that is "infinitely" scrollable to the right,
 // and obtains the text to display via a callback to Logic.
@@ -114,7 +118,14 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     private float mNoEllipsisCredit;
                             // Fraction of digit width saved by both replacing ellipsis with digit
                             // and avoiding scientific notation.
-    private boolean mShouldRequireResult = true;
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SHOULD_REQUIRE, SHOULD_EVALUATE, SHOULD_NOT_EVALUATE})
+    public @interface EvaluationRequest {}
+    public static final int SHOULD_REQUIRE = 2;
+    public static final int SHOULD_EVALUATE = 1;
+    public static final int SHOULD_NOT_EVALUATE = 0;
+    @EvaluationRequest private int mEvaluationRequest = SHOULD_REQUIRE;
+                            // Should we evaluate when layout completes, and how?
     private Evaluator.EvaluationListener mEvaluationListener = this;
                             // Listener to use if/when evaluation is requested.
     public static final int MAX_LEADING_ZEROES = 6;
@@ -313,17 +324,26 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        if (mEvaluator != null && mShouldRequireResult) {
+        if (mEvaluator != null && mEvaluationRequest != SHOULD_NOT_EVALUATE) {
             final CalculatorExpr expr = mEvaluator.getExpr(mIndex);
             if (expr != null && expr.hasInterestingOps()) {
-                mEvaluator.requireResult(mIndex, mEvaluationListener, this);
+                if (mEvaluationRequest == SHOULD_REQUIRE) {
+                    mEvaluator.requireResult(mIndex, mEvaluationListener, this);
+                } else {
+                    mEvaluator.evaluateAndNotify(mIndex, mEvaluationListener, this);
+                }
             }
         }
     }
 
-    public void setShouldRequireResult(boolean should, Evaluator.EvaluationListener listener) {
+    /**
+     * Specify whether we should evaluate result on layout.
+     * @param should one of SHOULD_REQUIRE, SHOULD_EVALUATE, SHOULD_NOT_EVALUATE
+     */
+    public void setShouldEvaluateResult(@EvaluationRequest int request,
+            Evaluator.EvaluationListener listener) {
         mEvaluationListener = listener;
-        mShouldRequireResult = should;
+        mEvaluationRequest = request;
     }
 
     // From Evaluator.CharMetricsInfo.

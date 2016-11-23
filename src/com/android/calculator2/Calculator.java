@@ -402,16 +402,15 @@ public class Calculator extends Activity
             showAndMaybeHideToolbar();
         }
 
+        redisplayFormula();
         if (mCurrentState != CalculatorState.INPUT) {
             // Just reevaluate.
-            redisplayFormula();
             setState(CalculatorState.INIT);
             // Request evaluation when we know display width.
-            mResultText.setShouldRequireResult(true, this);
+            mResultText.setShouldEvaluateResult(CalculatorResult.SHOULD_REQUIRE, this);
         } else {
             // This resultText will explicitly call evaluateAndNotify when ready.
-            mResultText.setShouldRequireResult(false, null);
-            redisplayAfterFormulaChange();
+            mResultText.setShouldEvaluateResult(CalculatorResult.SHOULD_EVALUATE, this);
         }
         // TODO: We're currently not saving and restoring scroll position.
         //       We probably should.  Details may require care to deal with:
@@ -457,7 +456,7 @@ public class Calculator extends Activity
         if (mCurrentState != state) {
             if (state == CalculatorState.INPUT) {
                 // We'll explicitly request evaluation from now on.
-                mResultText.setShouldRequireResult(false, null);
+                mResultText.setShouldEvaluateResult(CalculatorResult.SHOULD_NOT_EVALUATE, null);
                 restoreDisplayPositions();
             }
             mCurrentState = state;
@@ -722,6 +721,13 @@ public class Calculator extends Activity
         addKeyToExpr(id);
     }
 
+    public void evaluateInstantIfNecessary() {
+        if (mCurrentState == CalculatorState.INPUT
+                && mEvaluator.getExpr(Evaluator.MAIN_INDEX).hasInterestingOps()) {
+            mEvaluator.evaluateAndNotify(Evaluator.MAIN_INDEX, this, mResultText);
+        }
+    }
+
     private void redisplayAfterFormulaChange() {
         // TODO: Could do this more incrementally.
         redisplayFormula();
@@ -731,9 +737,7 @@ public class Calculator extends Activity
             // Force reevaluation when text is deleted, even if expression is unchanged.
             mEvaluator.touch();
         } else {
-            if (mEvaluator.getExpr(Evaluator.MAIN_INDEX).hasInterestingOps()) {
-                mEvaluator.evaluateAndNotify(Evaluator.MAIN_INDEX, this, mResultText);
-            }
+            evaluateInstantIfNecessary();
         }
     }
 
@@ -806,9 +810,8 @@ public class Calculator extends Activity
                 showAndMaybeHideToolbar();
                 setState(CalculatorState.INPUT);
                 mResultText.clear();
-                if (!haveUnprocessed()
-                        && mEvaluator.getExpr(Evaluator.MAIN_INDEX).hasInterestingOps()) {
-                    mEvaluator.evaluateAndNotify(mEvaluator.MAIN_INDEX, this, mResultText);
+                if (!haveUnprocessed()) {
+                    evaluateInstantIfNecessary();
                 }
                 return;
             default:
