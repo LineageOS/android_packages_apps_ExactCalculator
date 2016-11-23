@@ -413,14 +413,14 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * Add the result to the value currently in memory.
      */
     public void onMemoryAdd() {
-        mEvaluator.addToMemory(Evaluator.MAIN_INDEX);
+        mEvaluator.addToMemory(mIndex);
     }
 
     /**
      * Subtract the result from the value currently in memory.
      */
     public void onMemorySubtract() {
-        mEvaluator.subtractFromMemory(Evaluator.MAIN_INDEX);
+        mEvaluator.subtractFromMemory(mIndex);
     }
 
     /**
