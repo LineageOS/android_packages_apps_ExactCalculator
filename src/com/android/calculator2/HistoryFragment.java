@@ -198,6 +198,9 @@ public class HistoryFragment extends Fragment {
 
         mEvaluator.cancelAll(true);
         super.onDestroy();
+        // FIXME: There are probably better ways to do this. But we can end up cancelling
+        // an in-progress evaluation for the main expression that we have to restart.
+        ((Calculator)(getActivity())).evaluateInstantIfNecessary();
     }
 
     private void initializeController() {

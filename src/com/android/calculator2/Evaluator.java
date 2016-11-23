@@ -240,10 +240,10 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     // The largest number of digits to the right of the decimal point to which we will evaluate to
     // compute proper scientific notation for values close to zero.  Chosen to ensure that we
-    // always to better than IEEE double precision at identifying nonzeros.
-    // This used only when we cannot a prior determine the most significant digit position, as
+    // always to better than IEEE double precision at identifying nonzeros. And then some.
+    // This is used only when we cannot a priori determine the most significant digit position, as
     // we always can if we have a rational representation.
-    private static final int MAX_MSD_PREC_OFFSET = 320;
+    private static final int MAX_MSD_PREC_OFFSET = 1100;
 
     // If we can replace an exponent by this many leading zeroes, we do so.  Also used in
     // estimating exponent size for truncating short representation.
@@ -430,7 +430,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * Maximum result bit length for unrequested, speculative evaluations.
      * Also used to bound evaluation precision for small non-zero fractions.
      */
-    private static final int QUICK_MAX_RESULT_BITS = 50000;
+    private static final int QUICK_MAX_RESULT_BITS = 150000;
 
     private void displayTimeoutMessage(boolean longTimeout) {
         AlertDialogFragment.showMessageDialog(mActivity, R.string.dialog_timeout,
