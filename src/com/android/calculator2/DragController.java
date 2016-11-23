@@ -50,25 +50,20 @@ public final class DragController {
 
     public void setEvaluator(Evaluator evaluator) {
         mEvaluator = evaluator;
-
-        if (evaluator != null) {
-            // Initialize controller
-            if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
-                // Empty display
-                mAnimationController = new EmptyAnimationController();
-            } else if (isResultState()) {
-                // Result
-                mAnimationController = new ResultAnimationController();
-            } else {
-                // There is something in the formula field. There may or may not be
-                // a quick result.
-                mAnimationController = new AnimationController();
-            }
-        }
     }
 
-    private boolean isResultState() {
-        return mDisplayResult.getTranslationY() != 0;
+    public void initializeController(boolean isResult) {
+        if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
+            // Empty display
+            mAnimationController = new EmptyAnimationController();
+        } else if (isResult) {
+            // Result
+            mAnimationController = new ResultAnimationController();
+        } else {
+            // There is something in the formula field. There may or may not be
+            // a quick result.
+            mAnimationController = new AnimationController();
+        }
     }
 
     public void setDisplayFormula(CalculatorFormula formula) {
@@ -159,9 +154,10 @@ public final class DragController {
     /**
      * Reset all initialized values and set recyclerview to INVISIBLE to avoid flickering.
      */
-    public void initializeAnimation(RecyclerView recyclerView) {
+    public void initializeAnimation(RecyclerView recyclerView, boolean isResult) {
         recyclerView.setVisibility(View.INVISIBLE);
         mAnimationInitialized = false;
+        initializeController(isResult);
     }
 
     public interface AnimateTextInterface {

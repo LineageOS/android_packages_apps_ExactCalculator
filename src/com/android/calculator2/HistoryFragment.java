@@ -134,18 +134,18 @@ public class HistoryFragment extends Fragment {
         dragLayout.addDragCallback(mDragCallback);
 
         final Calculator activity = (Calculator) getActivity();
-        final boolean isResultState = activity.isResultState();
+        final boolean isResultLayout = activity.isResultLayout();
 
         mEvaluator = Evaluator.getInstance(activity);
 
         if (mEvaluator != null) {
-            initializeController();
+            initializeController(isResultLayout);
 
             final long maxIndex = mEvaluator.getMaxIndex();
 
             final ArrayList<HistoryItem> newDataSet = new ArrayList<>();
 
-            if (!EvaluatorStateUtils.isDisplayEmpty(mEvaluator) && !isResultState) {
+            if (!EvaluatorStateUtils.isDisplayEmpty(mEvaluator) && !isResultLayout) {
                 // Add the current expression as the first element in the list (the layout is
                 // reversed and we want the current expression to be the last one in the
                 // recyclerview).
@@ -162,7 +162,7 @@ public class HistoryFragment extends Fragment {
             }
             mDataSet = newDataSet;
             mAdapter.setDataSet(mDataSet);
-            mAdapter.setIsResultState(isResultState);
+            mAdapter.setIsResultLayout(isResultLayout);
         }
 
         mAdapter.notifyDataSetChanged();
@@ -173,7 +173,8 @@ public class HistoryFragment extends Fragment {
         super.onStart();
 
         // The orientation may have changed.
-        mDragController.initializeAnimation(mRecyclerView);
+        mDragController.initializeAnimation(mRecyclerView,
+                ((Calculator) getActivity()).isResultLayout());
     }
 
     @Override
@@ -205,7 +206,7 @@ public class HistoryFragment extends Fragment {
         ((Calculator)(getActivity())).evaluateInstantIfNecessary();
     }
 
-    private void initializeController() {
+    private void initializeController(boolean isResult) {
         mDragController.setDisplayFormula(
                 (CalculatorFormula) getActivity().findViewById(R.id.formula));
 
@@ -215,6 +216,8 @@ public class HistoryFragment extends Fragment {
         mDragController.setToolbar(getActivity().findViewById(R.id.toolbar));
 
         mDragController.setEvaluator(mEvaluator);
+
+        mDragController.initializeController(isResult);
     }
 
     private void clearHistory() {

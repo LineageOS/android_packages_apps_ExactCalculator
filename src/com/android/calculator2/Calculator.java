@@ -508,8 +508,10 @@ public class Calculator extends Activity
         }
     }
 
-    public boolean isResultState() {
-        return mCurrentState == CalculatorState.RESULT;
+    public boolean isResultLayout() {
+        return mCurrentState == CalculatorState.INIT
+                || mCurrentState == CalculatorState.RESULT
+                || mCurrentState == CalculatorState.ANIMATE;
     }
 
     @Override

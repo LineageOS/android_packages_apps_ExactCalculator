@@ -39,7 +39,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     private List<HistoryItem> mDataSet;
 
-    private boolean mIsResultState;
+    private boolean mIsResultLayout;
 
     public HistoryAdapter(Calculator calculator, ArrayList<HistoryItem> dataSet,
             String currentExpressionDescription) {
@@ -125,7 +125,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     private int getEvaluatorIndex(int position) {
-        if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator) || mIsResultState) {
+        if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator) || mIsResultLayout) {
             return (int) mEvaluator.getMaxIndex() - position;
         } else {
             // Account for the additional "Current Expression" with the +1.
@@ -133,8 +133,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
-    public void setIsResultState(boolean isResult) {
-        mIsResultState = isResult;
+    public void setIsResultLayout(boolean isResult) {
+        mIsResultLayout = isResult;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
