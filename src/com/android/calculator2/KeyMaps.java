@@ -480,10 +480,10 @@ public class KeyMaps {
     private static HashMap<Character, String> sOutputForResultChar;
 
     /**
-     * Locale string corresponding to preceding map and character constants.
+     * Locale corresponding to preceding map and character constants.
      * We recompute the map if this is not the current locale.
      */
-    private static String sLocaleForMaps = "none";
+    private static Locale sLocaleForMaps = null;
 
     /**
      * Activity to use for looking up buttons.
@@ -567,14 +567,14 @@ public class KeyMaps {
         sOutputForResultChar.put(c, button.getText().toString());
     }
 
-    // Ensure that the preceding map and character constants are
-    // initialized and correspond to the current locale.
-    // Called only by a single thread, namely the UI thread.
+    /**
+     * Ensure that the preceding map and character constants correspond to the current locale.
+     * Called only by UI thread.
+     */
     static void validateMaps() {
         Locale locale = Locale.getDefault();
-        String lname = locale.toString();
-        if (lname != sLocaleForMaps) {
-            Log.v ("Calculator", "Setting local to: " + lname);
+        if (!locale.equals(sLocaleForMaps)) {
+            Log.v ("Calculator", "Setting locale to: " + locale.toLanguageTag());
             sKeyValForFun = new HashMap<String, Integer>();
             sKeyValForFun.put("sin", R.id.fun_sin);
             sKeyValForFun.put("cos", R.id.fun_cos);
@@ -631,7 +631,7 @@ public class KeyMaps {
                 addButtonToOutputMap((char)('0' + i), keyForDigVal(i));
             }
 
-            sLocaleForMaps = lname;
+            sLocaleForMaps = locale;
 
         }
     }
