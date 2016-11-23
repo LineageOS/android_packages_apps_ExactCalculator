@@ -79,6 +79,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.text.DecimalFormatSymbols;
 
 import static com.android.calculator2.CalculatorFormula.OnFormulaContextMenuClickListener;
 
@@ -323,10 +324,13 @@ public class Calculator extends Activity
         mPadViewPager = (ViewPager) findViewById(R.id.pad_pager);
         mDeleteButton = findViewById(R.id.del);
         mClearButton = findViewById(R.id.clr);
-        mEqualButton = findViewById(R.id.pad_numeric).findViewById(R.id.eq);
+        final View numberPad = findViewById(R.id.pad_numeric);
+        mEqualButton = numberPad.findViewById(R.id.eq);
         if (mEqualButton == null || mEqualButton.getVisibility() != View.VISIBLE) {
             mEqualButton = findViewById(R.id.pad_operator).findViewById(R.id.eq);
         }
+        final TextView decimalPointButton = (TextView) numberPad.findViewById(R.id.dec_point);
+        decimalPointButton.setText(getDecimalSeparator());
 
         mInverseToggle = (TextView) findViewById(R.id.toggle_inv);
         mModeToggle = (TextView) findViewById(R.id.toggle_mode);
@@ -1352,6 +1356,15 @@ public class Calculator extends Activity
         mHitRect.set(0, 0, view.getWidth(), view.getHeight());
         mDragLayout.offsetDescendantRectToMyCoords(view, mHitRect);
         return mHitRect.contains((int) event.getX(), (int) event.getY());
+    }
+
+    /**
+     * Since we only support LTR format, using the RTL comma does not make sense.
+     */
+    private String getDecimalSeparator() {
+        final char defaultSeparator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
+        final char rtlComma = '\u066b';
+        return defaultSeparator == rtlComma ? "," : String.valueOf(defaultSeparator);
     }
 
     /**
