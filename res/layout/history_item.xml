@@ -27,6 +27,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fontFamily="sans-serif-medium"
+        android:paddingStart="@dimen/history_item_text_padding_start"
+        android:paddingEnd="@dimen/history_item_text_padding_end"
         android:text="@string/title_current_expression"
         android:textColor="?android:attr/colorAccent"
         android:textSize="14dp" />
