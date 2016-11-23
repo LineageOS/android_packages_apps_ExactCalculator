@@ -86,6 +86,9 @@ public final class DragController {
     public void animateViews(float yFraction, RecyclerView recyclerView, int itemCount) {
         final HistoryAdapter.ViewHolder vh = (HistoryAdapter.ViewHolder)
                 recyclerView.findViewHolderForAdapterPosition(0);
+        if (yFraction > 0) {
+            recyclerView.setVisibility(View.VISIBLE);
+        }
         if (vh != null && !EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
             final CalculatorFormula formula = vh.getFormula();
             final CalculatorResult result = vh.getResult();
@@ -154,10 +157,10 @@ public final class DragController {
     }
 
     /**
-     * Reset all initialized values whenever the History fragment is closed because the
-     * DisplayState may change.
+     * Reset all initialized values and set recyclerview to INVISIBLE to avoid flickering.
      */
-    public void resetAnimationInitialized() {
+    public void initializeAnimation(RecyclerView recyclerView) {
+        recyclerView.setVisibility(View.INVISIBLE);
         mAnimationInitialized = false;
     }
 

@@ -51,8 +51,6 @@ public class HistoryFragment extends Fragment {
                 public void onClosed() {
                     // TODO: only cancel historical evaluations
                     mEvaluator.cancelAll(true);
-
-                    mDragController.resetAnimationInitialized();
                 }
 
                 @Override
@@ -168,10 +166,14 @@ public class HistoryFragment extends Fragment {
         }
 
         mAdapter.notifyDataSetChanged();
+    }
 
-        // Initialize the current expression element to dimensions that match the display to
-        // avoid flickering and scrolling when elements expand on drag start.
-        mDragController.animateViews(1.0f, mRecyclerView, mAdapter.getItemCount());
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // The orientation may have changed.
+        mDragController.initializeAnimation(mRecyclerView);
     }
 
     @Override
