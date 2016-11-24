@@ -73,7 +73,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.mFormula.setText(item.getFormula());
         // Note: HistoryItems that are not the current expression will always have interesting ops.
         holder.mResult.setEvaluator(mEvaluator, item.getEvaluatorIndex());
-        if (item.getEvaluatorIndex() == Evaluator.MAIN_INDEX) {
+        if (item.getEvaluatorIndex() == Evaluator.HISTORY_MAIN_INDEX) {
             holder.mDate.setText(mCurrentExpressionDescription);
             holder.mDate.setContentDescription(mCurrentExpressionDescription);
         } else {

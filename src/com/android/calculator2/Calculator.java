@@ -99,6 +99,7 @@ public class Calculator extends Activity
                         // Not used for instant result evaluation.
         INIT,           // Very temporary state used as alternative to EVALUATE
                         // during reinitialization.  Do not animate on completion.
+        INIT_FOR_RESULT,  // Identical to INIT, but evaluation is known to terminate.
         ANIMATE,        // Result computed, animation to enlarge result window in progress.
         RESULT,         // Result displayed, formula invisible.
                         // If we are in RESULT state, the formula was evaluated without
@@ -114,8 +115,6 @@ public class Calculator extends Activity
     // initially evaluate assuming we were given a well-defined problem.  If we
     // were actually asked to compute sqrt(<extremely tiny negative number>) we produce 0
     // unless we are asked for enough precision that we can distinguish the argument from zero.
-    // TODO: Consider further heuristics to reduce the chance of observing this?
-    //       It already seems to be observable only in contrived cases.
     // ANIMATE, ERROR, and RESULT are translated to an INIT state if the application
     // is restarted in that state.  This leads us to recompute and redisplay the result
     // ASAP.
@@ -298,9 +297,64 @@ public class Calculator extends Activity
 
     private HistoryFragment mHistoryFragment = new HistoryFragment();
 
+    /**
+     * Restore Evaluator state and mCurrentState from savedInstanceState.
+     * Return true if the toolbar should be visible.
+     */
+    private void restoreInstanceState(Bundle savedInstanceState) {
+        final CalculatorState savedState = CalculatorState.values()[
+                savedInstanceState.getInt(KEY_DISPLAY_STATE,
+                        CalculatorState.INPUT.ordinal())];
+        setState(savedState);
+        CharSequence unprocessed = savedInstanceState.getCharSequence(KEY_UNPROCESSED_CHARS);
+        if (unprocessed != null) {
+            mUnprocessedChars = unprocessed.toString();
+        }
+        byte[] state = savedInstanceState.getByteArray(KEY_EVAL_STATE);
+        if (state != null) {
+            try (ObjectInput in = new ObjectInputStream(new ByteArrayInputStream(state))) {
+                mEvaluator.restoreInstanceState(in);
+            } catch (Throwable ignored) {
+                // When in doubt, revert to clean state
+                mCurrentState = CalculatorState.INPUT;
+                mEvaluator.clearMain();
+            }
+        }
+        if (savedInstanceState.getBoolean(KEY_SHOW_TOOLBAR, true)) {
+            showAndMaybeHideToolbar();
+        } else {
+            mDisplayView.hideToolbar();
+        }
+        onInverseToggled(savedInstanceState.getBoolean(KEY_INVERSE_MODE));
+        // TODO: We're currently not saving and restoring scroll position.
+        //       We probably should.  Details may require care to deal with:
+        //         - new display size
+        //         - slow recomputation if we've scrolled far.
+    }
+
+    private void restoreDisplay() {
+        onModeChanged(mEvaluator.getDegreeMode(Evaluator.MAIN_INDEX));
+        if (mCurrentState != CalculatorState.RESULT
+            && mCurrentState != CalculatorState.INIT_FOR_RESULT) {
+            redisplayFormula();
+        }
+        if (mCurrentState == CalculatorState.INPUT) {
+            // This resultText will explicitly call evaluateAndNotify when ready.
+            mResultText.setShouldEvaluateResult(CalculatorResult.SHOULD_EVALUATE, this);
+        } else {
+            // Just reevaluate.
+            setState((mCurrentState == CalculatorState.RESULT
+                    || mCurrentState == CalculatorState.INIT_FOR_RESULT) ?
+                    CalculatorState.INIT_FOR_RESULT : CalculatorState.INIT);
+            // Request evaluation when we know display width.
+            mResultText.setShouldEvaluateResult(CalculatorResult.SHOULD_REQUIRE, this);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_calculator_main);
         setActionBar((Toolbar) findViewById(R.id.toolbar));
 
@@ -320,6 +374,9 @@ public class Calculator extends Activity
         mFormulaText = (CalculatorFormula) findViewById(R.id.formula);
         mResultText = (CalculatorResult) findViewById(R.id.result);
         mFormulaContainer = (HorizontalScrollView) findViewById(R.id.formula_container);
+        mEvaluator = Evaluator.getInstance(this);
+        mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
+        KeyMaps.setActivity(this);
 
         mPadViewPager = (ViewPager) findViewById(R.id.pad_pager);
         mDeleteButton = findViewById(R.id.del);
@@ -354,39 +411,11 @@ public class Calculator extends Activity
                 findViewById(R.id.op_sqr)
         };
 
-        mEvaluator = Evaluator.getInstance(this);
-        mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
-        KeyMaps.setActivity(this);
-
         mDragLayout = (DragLayout) findViewById(R.id.drag_layout);
         mDragLayout.removeDragCallback(mDragCallback);
         mDragLayout.addDragCallback(mDragCallback);
 
         mHistoryFrame = (FrameLayout) findViewById(R.id.history_frame);
-
-        if (savedInstanceState != null) {
-            final CalculatorState savedState = CalculatorState.values()[
-                    savedInstanceState.getInt(KEY_DISPLAY_STATE,
-                            CalculatorState.INPUT.ordinal())];
-            setState(savedState);
-            CharSequence unprocessed = savedInstanceState.getCharSequence(KEY_UNPROCESSED_CHARS);
-            if (unprocessed != null) {
-                mUnprocessedChars = unprocessed.toString();
-            }
-            byte[] state = savedInstanceState.getByteArray(KEY_EVAL_STATE);
-            if (state != null) {
-                try (ObjectInput in = new ObjectInputStream(new ByteArrayInputStream(state))) {
-                    mEvaluator.restoreInstanceState(in);
-                } catch (Throwable ignored) {
-                    // When in doubt, revert to clean state
-                    mCurrentState = CalculatorState.INPUT;
-                    mEvaluator.clearMain();
-                }
-            }
-        } else {
-            mCurrentState = CalculatorState.INPUT;
-            mEvaluator.clearMain();
-        }
 
         mFormulaText.setOnContextMenuClickListener(mOnFormulaContextMenuClickListener);
         mFormulaText.setOnDisplayMemoryOperationsListener(mOnDisplayMemoryOperationsListener);
@@ -395,31 +424,15 @@ public class Calculator extends Activity
         mFormulaText.addTextChangedListener(mFormulaTextWatcher);
         mDeleteButton.setOnLongClickListener(this);
 
-        onInverseToggled(savedInstanceState != null
-                && savedInstanceState.getBoolean(KEY_INVERSE_MODE));
-
-        onModeChanged(mEvaluator.getDegreeMode(Evaluator.MAIN_INDEX));
-        if (savedInstanceState != null &&
-                savedInstanceState.getBoolean(KEY_SHOW_TOOLBAR, true) == false) {
-            mDisplayView.hideToolbar();
+        if (savedInstanceState != null) {
+            restoreInstanceState(savedInstanceState);
         } else {
+            mCurrentState = CalculatorState.INPUT;
+            mEvaluator.clearMain();
             showAndMaybeHideToolbar();
+            onInverseToggled(false);
         }
-
-        redisplayFormula();
-        if (mCurrentState != CalculatorState.INPUT) {
-            // Just reevaluate.
-            setState(CalculatorState.INIT);
-            // Request evaluation when we know display width.
-            mResultText.setShouldEvaluateResult(CalculatorResult.SHOULD_REQUIRE, this);
-        } else {
-            // This resultText will explicitly call evaluateAndNotify when ready.
-            mResultText.setShouldEvaluateResult(CalculatorResult.SHOULD_EVALUATE, this);
-        }
-        // TODO: We're currently not saving and restoring scroll position.
-        //       We probably should.  Details may require care to deal with:
-        //         - new display size
-        //         - slow recomputation if we've scrolled far.
+        restoreDisplay();
     }
 
     @Override
@@ -509,9 +522,12 @@ public class Calculator extends Activity
     }
 
     public boolean isResultLayout() {
-        return mCurrentState == CalculatorState.INIT
-                || mCurrentState == CalculatorState.RESULT
-                || mCurrentState == CalculatorState.ANIMATE;
+        if (mCurrentState == CalculatorState.ANIMATE) {
+            throw new AssertionError("impossible state");
+        }
+        // Note that ERROR has INPUT, not RESULT layout.
+        return mCurrentState == CalculatorState.INIT_FOR_RESULT
+                || mCurrentState == CalculatorState.RESULT;
     }
 
     @Override
@@ -591,9 +607,7 @@ public class Calculator extends Activity
         // Always cancel unrequested in-progress evaluation of the main expression, so that
         // we don't have to worry about subsequent asynchronous completion.
         // Requested in-progress evaluations are handled below.
-        if (mCurrentState != CalculatorState.EVALUATE) {
-            mEvaluator.cancel(Evaluator.MAIN_INDEX, true);
-        }
+        cancelUnrequested();
 
         switch (keyCode) {
             case KeyEvent.KEYCODE_NUMPAD_ENTER:
@@ -776,10 +790,7 @@ public class Calculator extends Activity
         stopActionModeOrContextMenu();
 
         // See onKey above for the rationale behind some of the behavior below:
-        if (mCurrentState != CalculatorState.EVALUATE) {
-            // Cancel main expression evaluations that were not specifically requested.
-            mEvaluator.cancel(Evaluator.MAIN_INDEX, true);
-        }
+        cancelUnrequested();
 
         final int id = view.getId();
         switch (id) {
@@ -870,8 +881,9 @@ public class Calculator extends Activity
         invalidateOptionsMenu();
 
         mResultText.onEvaluate(index, initDisplayPrec, msd, leastDigPos, truncatedWholeNumber);
-        if (mCurrentState != CalculatorState.INPUT) { // in EVALUATE or INIT state
-            onResult(mCurrentState != CalculatorState.INIT);
+        if (mCurrentState != CalculatorState.INPUT) {
+            // In EVALUATE, INIT, or INIT_FOR_RESULT state.
+            onResult(mCurrentState == CalculatorState.EVALUATE);
         }
     }
 
@@ -923,11 +935,17 @@ public class Calculator extends Activity
      */
     private boolean cancelIfEvaluating(boolean quiet) {
         if (mCurrentState == CalculatorState.EVALUATE) {
-            // TODO: Maybe just cancel main expression evaluation?
-            mEvaluator.cancelAll(quiet);
+            mEvaluator.cancel(Evaluator.MAIN_INDEX, quiet);
             return true;
         } else {
             return false;
+        }
+    }
+
+
+    private void cancelUnrequested() {
+        if (mCurrentState == CalculatorState.INPUT) {
+            mEvaluator.cancel(Evaluator.MAIN_INDEX, true);
         }
     }
 
@@ -1067,7 +1085,8 @@ public class Calculator extends Activity
                            mResultText.onError(index, errorResourceId);
                         }
                     });
-        } else if (mCurrentState == CalculatorState.INIT) {
+        } else if (mCurrentState == CalculatorState.INIT
+                || mCurrentState == CalculatorState.INIT_FOR_RESULT /* very unlikely */) {
             setState(CalculatorState.ERROR);
             mResultText.onError(index, errorResourceId);
         } else {
@@ -1218,9 +1237,31 @@ public class Calculator extends Activity
         }
     }
 
+    /**
+     * Change evaluation state to one that's friendly to the history fragment.
+     * Return false if that was not easily possible.
+     */
+    private boolean prepareForHistory() {
+        if (mCurrentState == CalculatorState.ANIMATE) {
+            throw new AssertionError("onUserInteraction should have ended animation");
+        } else if (mCurrentState == CalculatorState.EVALUATE
+                || mCurrentState == CalculatorState.INIT) {
+            // Easiest to just refuse.  Otherwise we can see a state change
+            // while in history mode, which causes all sorts of problems.
+            // TODO: Consider other alternatives. If we're just doing the decimal conversion
+            // at the end of an evaluation, we could treat this as RESULT state.
+            return false;
+        }
+        // We should be in INPUT, INIT_FOR_RESULT, RESULT, or ERROR state.
+        return true;
+    }
+
     private void showHistoryFragment(int transit) {
         final FragmentManager manager = getFragmentManager();
         if (manager == null || manager.isDestroyed()) {
+            return;
+        }
+        if (!prepareForHistory()) {
             return;
         }
         if (!mDragLayout.isOpen()) {

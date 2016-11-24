@@ -49,8 +49,7 @@ public class HistoryFragment extends Fragment {
 
                 @Override
                 public void onClosed() {
-                    // TODO: only cancel historical evaluations
-                    mEvaluator.cancelAll(true);
+                    mEvaluator.cancelNonMain();
                 }
 
                 @Override
@@ -152,8 +151,9 @@ public class HistoryFragment extends Fragment {
                 // recyclerview).
                 // If we are in the result state, the result will animate to the last history
                 // element in the list and there will be no "Current Expression."
-                newDataSet.add(new HistoryItem(Evaluator.MAIN_INDEX, System.currentTimeMillis(),
-                        mEvaluator.getExprAsSpannable(0)));
+                mEvaluator.copyMainToHistory();
+                newDataSet.add(new HistoryItem(Evaluator.HISTORY_MAIN_INDEX,
+                        System.currentTimeMillis(), mEvaluator.getExprAsSpannable(0)));
             }
             for (long i = 0; i < maxIndex; ++i) {
                 newDataSet.add(null);
@@ -200,11 +200,8 @@ public class HistoryFragment extends Fragment {
             dragLayout.removeDragCallback(mDragCallback);
         }
 
-        mEvaluator.cancelAll(true);
+        mEvaluator.cancelNonMain();
         super.onDestroy();
-        // FIXME: There are probably better ways to do this. But we can end up cancelling
-        // an in-progress evaluation for the main expression that we have to restart.
-        ((Calculator)(getActivity())).evaluateInstantIfNecessary();
     }
 
     private void initializeController(boolean isResult) {

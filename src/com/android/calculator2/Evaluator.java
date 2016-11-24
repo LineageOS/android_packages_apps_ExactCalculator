@@ -193,10 +193,14 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     public static final long MAIN_INDEX = 0;  // Index of main expression.
     // Once final evaluation of an expression is complete, or when we need to save
-    // a partial result, we copy the expression to a non-zero index.
+    // a partial result, we copy the main expression to a non-zero index.
     // At that point, the expression no longer changes, and is preserved
     // until the entire history is cleared. Only expressions at nonzero indices
     // may be embedded in other expressions.
+    // Each expression index can only have one outstanding evaluation request at a time.
+    // To avoid conflicts between the history and main View, we copy the main expression
+    // to allow independent evaluation by both.
+    public static final long HISTORY_MAIN_INDEX = -1;  // Read-only copy of main expression.
     // To update e.g. "memory" contents, we copy the corresponding expression to a permanent
     // index, and then remember that index.
     private long mSavedIndex;  // Index of "saved" expression mirroring clipboard. 0 if unused.
@@ -265,7 +269,8 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     /**
      * An individual CalculatorExpr, together with its evaluation state.
-     * Only the main expression may be changed in-place.
+     * Only the main expression may be changed in-place. The HISTORY_MAIN_INDEX expression is
+     * periodically reset to be a fresh immutable copy of the main expression.
      * All other expressions are only added and never removed. The expressions themselves are
      * never modified.
      * All fields other than mExpr and mVal are touched only by the UI thread.
@@ -285,6 +290,9 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
         // Currently running expression evaluator, if any.  This is either an AsyncEvaluator
         // (if mResultString == null or it's obsolete), or an AsyncReevaluator.
+        // We arrange that only one evaluator is active at a time, in part by maintaining
+        // two separate ExprInfo structure for the main and history view, so that they can
+        // arrange for independent evaluators.
         public AsyncTask mEvaluator;
 
         // The remaining fields are valid only if an evaluation completed successfully.
@@ -1130,14 +1138,14 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
             // Probably shouldn't happen. If it does, we didn't promise to do anything anyway.
             return;
         }
-        if (index == MAIN_INDEX) {
-            if (mMainExpr.mResultString != null && !mChangedValue) {
-                // Already done. Just notify.
-                notifyImmediately(MAIN_INDEX, mMainExpr, listener, cmi);
-                return;
-            }
-        } else {
-            ensureExprIsCached(index);
+        ExprInfo ei = ensureExprIsCached(index);
+        if (ei.mResultString != null && !(index == MAIN_INDEX && mChangedValue)) {
+            // Already done. Just notify.
+            notifyImmediately(MAIN_INDEX, mMainExpr, listener, cmi);
+            return;
+        } else if (ei.mEvaluator != null) {
+            // We only allow a single listener per expression, so this request must be redundant.
+            return;
         }
         evaluateResult(index, listener, cmi, false);
     }
@@ -1238,6 +1246,20 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         // all expressions we've looked at.
         for (ExprInfo expr: mExprs.values()) {
             cancel(expr, quiet);
+        }
+    }
+
+    /**
+     * Quietly cancel all evaluations associated with expressions other than the main one.
+     * These are currently the evaluations associated with the history fragment.
+     */
+    public void cancelNonMain() {
+        // TODO: May want to keep active evaluators in a HashSet to avoid traversing
+        // all expressions we've looked at.
+        for (ExprInfo expr: mExprs.values()) {
+            if (expr != mMainExpr) {
+                cancel(expr, true);
+            }
         }
     }
 
@@ -1400,6 +1422,9 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         }
         // Add newly assigned date to the cache.
         ei.mTimeStamp = rd.mTimeStamp;
+        if (resultIndex == MAIN_INDEX) {
+            throw new AssertionError("Should not store main expression");
+        }
         mExprs.put(resultIndex, ei);
         return resultIndex;
     }
@@ -1430,7 +1455,21 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
             return;
         }
         ExprInfo ei = copy(MAIN_INDEX, true);
+        if (resultIndex == MAIN_INDEX) {
+            throw new AssertionError("Should not store main expression");
+        }
         mExprs.put(resultIndex, ei);
+    }
+
+    /**
+     * Discard previous expression in HISTORY_MAIN_INDEX and replace it by a fresh copy
+     * of the main expression. Note that the HISTORY_MAIN_INDEX expresssion is not preserved
+     * in the database or anywhere else; it is always reconstructed when needed.
+     */
+    public void copyMainToHistory() {
+        cancel(HISTORY_MAIN_INDEX, true /* quiet */);
+        ExprInfo ei = copy(MAIN_INDEX, true);
+        mExprs.put(HISTORY_MAIN_INDEX, ei);
     }
 
     /**
@@ -1678,6 +1717,9 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         ExprInfo ei = mExprs.get(index);
         if (ei != null) {
             return ei;
+        }
+        if (index == MAIN_INDEX) {
+            throw new AssertionError("Main expression should be cached");
         }
         ExpressionDB.RowData row = mExprDB.getRow(index);
         DataInputStream serializedExpr =
