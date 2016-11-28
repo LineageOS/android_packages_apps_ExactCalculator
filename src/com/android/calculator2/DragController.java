@@ -16,6 +16,7 @@
 
 package com.android.calculator2;
 
+import android.animation.ArgbEvaluator;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -26,6 +27,8 @@ import android.widget.TextView;
 public final class DragController {
 
     private static final String TAG = "DragController";
+
+    private static final ArgbEvaluator mColorEvaluator = new ArgbEvaluator();
 
     // References to views from the Calculator Display.
     private CalculatorFormula mDisplayFormula;
@@ -41,6 +44,12 @@ public final class DragController {
     private int mResultTranslationX;
 
     private int mDisplayHeight;
+
+    private int mFormulaStartColor;
+    private int mFormulaEndColor;
+
+    private int mResultStartColor;
+    private int mResultEndColor;
 
     private boolean mAnimationInitialized;
 
@@ -78,7 +87,7 @@ public final class DragController {
         mToolbar = toolbar;
     }
 
-    public void animateViews(float yFraction, RecyclerView recyclerView, int itemCount) {
+    public void animateViews(float yFraction, RecyclerView recyclerView) {
         final HistoryAdapter.ViewHolder vh = (HistoryAdapter.ViewHolder)
                 recyclerView.findViewHolderForAdapterPosition(0);
         if (yFraction > 0) {
@@ -91,6 +100,8 @@ public final class DragController {
 
             if (!mAnimationInitialized) {
                 mAnimationController.initializeScales(formula, result);
+
+                mAnimationController.initializeColorAnimators(formula, result);
 
                 mAnimationController.initializeFormulaTranslationX(formula);
 
@@ -121,6 +132,12 @@ public final class DragController {
 
                 result.setTranslationX(mAnimationController.getResultTranslationX(yFraction));
                 result.setTranslationY(mAnimationController.getResultTranslationY(yFraction));
+
+                formula.setTextColor((int) mColorEvaluator.evaluate(yFraction, mFormulaStartColor,
+                        mFormulaEndColor));
+
+                result.setTextColor((int) mColorEvaluator.evaluate(yFraction, mResultStartColor,
+                        mResultEndColor));
 
                 date.setTranslationY(mAnimationController.getDateTranslationY(yFraction));
             }
@@ -165,6 +182,8 @@ public final class DragController {
 
         void initializeDisplayHeight();
 
+        void initializeColorAnimators(AlignedTextView formula, CalculatorResult result);
+
         void initializeScales(AlignedTextView formula, CalculatorResult result);
 
         void initializeFormulaTranslationX(AlignedTextView formula);
@@ -203,6 +222,14 @@ public final class DragController {
 
         public void initializeDisplayHeight() {
             // no-op
+        }
+
+        public void initializeColorAnimators(AlignedTextView formula, CalculatorResult result) {
+            mFormulaStartColor = mDisplayFormula.getCurrentTextColor();
+            mFormulaEndColor = formula.getCurrentTextColor();
+
+            mResultStartColor = mDisplayResult.getCurrentTextColor();
+            mResultEndColor = result.getCurrentTextColor();
         }
 
         public void initializeScales(AlignedTextView formula, CalculatorResult result) {

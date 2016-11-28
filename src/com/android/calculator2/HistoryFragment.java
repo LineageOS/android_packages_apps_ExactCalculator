@@ -44,7 +44,7 @@ public class HistoryFragment extends Fragment {
 
                 @Override
                 public void whileDragging(float yFraction) {
-                    mDragController.animateViews(yFraction, mRecyclerView, mAdapter.getItemCount());
+                    mDragController.animateViews(yFraction, mRecyclerView);
                 }
 
                 @Override
