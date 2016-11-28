@@ -158,7 +158,7 @@ public class HistoryFragment extends Fragment {
             for (long i = 0; i < maxIndex; ++i) {
                 newDataSet.add(null);
             }
-            if (maxIndex == 0) {
+            if (newDataSet.isEmpty()) {
                 newDataSet.add(new HistoryItem());
             }
             mDataSet = newDataSet;
