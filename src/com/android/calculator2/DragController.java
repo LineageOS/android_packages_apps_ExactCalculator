@@ -152,10 +152,11 @@ public final class DragController {
     }
 
     /**
-     * Reset all initialized values and set recyclerview to INVISIBLE to avoid flickering.
+     * Reset all initialized values.
+     * If the DragLayout is closed, set recyclerview to INVISIBLE to avoid flickering.
      */
-    public void initializeAnimation(RecyclerView recyclerView, boolean isResult) {
-        recyclerView.setVisibility(View.INVISIBLE);
+    public void initializeAnimation(RecyclerView recyclerView, boolean isResult, boolean isOpen) {
+        recyclerView.setVisibility(isOpen ? View.VISIBLE : View.INVISIBLE);
         mAnimationInitialized = false;
         initializeController(isResult);
     }

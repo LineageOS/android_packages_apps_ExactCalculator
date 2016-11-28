@@ -79,6 +79,7 @@ public class HistoryFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private HistoryAdapter mAdapter;
+    private DragLayout mDragLayout;
 
     private Evaluator mEvaluator;
 
@@ -129,12 +130,12 @@ public class HistoryFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        final DragLayout dragLayout = (DragLayout) getActivity().findViewById(R.id.drag_layout);
-        dragLayout.removeDragCallback(mDragCallback);
-        dragLayout.addDragCallback(mDragCallback);
-
         final Calculator activity = (Calculator) getActivity();
         final boolean isResultLayout = activity.isResultLayout();
+
+        mDragLayout = (DragLayout) activity.findViewById(R.id.drag_layout);
+        mDragLayout.removeDragCallback(mDragCallback);
+        mDragLayout.addDragCallback(mDragCallback);
 
         mEvaluator = Evaluator.getInstance(activity);
 
@@ -174,7 +175,7 @@ public class HistoryFragment extends Fragment {
 
         // The orientation may have changed.
         mDragController.initializeAnimation(mRecyclerView,
-                ((Calculator) getActivity()).isResultLayout());
+                ((Calculator) getActivity()).isResultLayout(), mDragLayout.isOpen());
     }
 
     @Override
