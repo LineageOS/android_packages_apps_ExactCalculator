@@ -140,7 +140,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mDate;
-        private CalculatorFormula mFormula;
+        private AlignedTextView mFormula;
         private CalculatorResult mResult;
 
         public ViewHolder(View v, int viewType) {
@@ -149,11 +149,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 return;
             }
             mDate = (TextView) v.findViewById(R.id.history_date);
-            mFormula = (CalculatorFormula) v.findViewById(R.id.history_formula);
+            mFormula = (AlignedTextView) v.findViewById(R.id.history_formula);
             mResult = (CalculatorResult) v.findViewById(R.id.history_result);
         }
 
-        public CalculatorFormula getFormula() {
+        public AlignedTextView getFormula() {
             return mFormula;
         }
 

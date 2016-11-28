@@ -46,6 +46,7 @@
     </style>
 
     <style name="HistoryItemTextStyle" parent="DisplayTextStyle">
+        <item name="android:layout_gravity">bottom|end</item>
         <item name="android:paddingTop">@dimen/history_item_text_padding_top</item>
         <item name="android:paddingBottom">@dimen/history_item_text_padding_bottom</item>
         <item name="android:paddingStart">@dimen/history_item_text_padding_start</item>

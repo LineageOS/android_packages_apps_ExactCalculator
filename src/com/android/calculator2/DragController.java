@@ -85,7 +85,7 @@ public final class DragController {
             recyclerView.setVisibility(View.VISIBLE);
         }
         if (vh != null && !EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
-            final CalculatorFormula formula = vh.getFormula();
+            final AlignedTextView formula = vh.getFormula();
             final CalculatorResult result = vh.getResult();
             final TextView date = vh.getDate();
 
@@ -164,11 +164,11 @@ public final class DragController {
 
         void initializeDisplayHeight();
 
-        void initializeScales(CalculatorFormula formula, CalculatorResult result);
+        void initializeScales(AlignedTextView formula, CalculatorResult result);
 
-        void initializeFormulaTranslationX(CalculatorFormula formula);
+        void initializeFormulaTranslationX(AlignedTextView formula);
 
-        void initializeFormulaTranslationY(CalculatorFormula formula, CalculatorResult result);
+        void initializeFormulaTranslationY(AlignedTextView formula, CalculatorResult result);
 
         void initializeResultTranslationX(CalculatorResult result);
 
@@ -204,12 +204,12 @@ public final class DragController {
             // no-op
         }
 
-        public void initializeScales(CalculatorFormula formula, CalculatorResult result) {
+        public void initializeScales(AlignedTextView formula, CalculatorResult result) {
             // Calculate the scale for the text
             mFormulaScale = (mDisplayFormula.getTextSize() * 1.0f) / formula.getTextSize();
         }
 
-        public void initializeFormulaTranslationY(CalculatorFormula formula,
+        public void initializeFormulaTranslationY(AlignedTextView formula,
                 CalculatorResult result) {
             // Baseline of formula moves by the difference in formula bottom padding and the
             // difference in result height.
@@ -219,7 +219,7 @@ public final class DragController {
 
         }
 
-        public void initializeFormulaTranslationX(CalculatorFormula formula) {
+        public void initializeFormulaTranslationX(AlignedTextView formula) {
             // Right border of formula moves by the difference in formula end padding.
             mFormulaTranslationX = mDisplayFormula.getPaddingEnd() - formula.getPaddingEnd();
         }
@@ -281,7 +281,7 @@ public final class DragController {
     public class ResultAnimationController extends AnimationController
             implements DragController.AnimateTextInterface {
         @Override
-        public void initializeScales(CalculatorFormula formula, CalculatorResult result) {
+        public void initializeScales(AlignedTextView formula, CalculatorResult result) {
             final float textSize = mDisplayResult.getTextSize() * mDisplayResult.getScaleX();
             mResultScale = textSize / result.getTextSize();
 
@@ -289,7 +289,7 @@ public final class DragController {
         }
 
         @Override
-        public void initializeFormulaTranslationY(CalculatorFormula formula,
+        public void initializeFormulaTranslationY(AlignedTextView formula,
                 CalculatorResult result) {
             // Baseline of formula moves by the difference in formula bottom padding and the
             // difference in the result height.
@@ -298,7 +298,7 @@ public final class DragController {
         }
 
         @Override
-        public void initializeFormulaTranslationX(CalculatorFormula formula) {
+        public void initializeFormulaTranslationX(AlignedTextView formula) {
             // Right border of formula moves by the difference in formula end padding.
             mFormulaTranslationX = mDisplayFormula.getPaddingEnd() - formula.getPaddingEnd();
         }
@@ -372,18 +372,18 @@ public final class DragController {
         }
 
         @Override
-        public void initializeScales(CalculatorFormula formula, CalculatorResult result) {
+        public void initializeScales(AlignedTextView formula, CalculatorResult result) {
             // no-op
         }
 
         @Override
-        public void initializeFormulaTranslationY(CalculatorFormula formula,
+        public void initializeFormulaTranslationY(AlignedTextView formula,
                 CalculatorResult result) {
             // no-op
         }
 
         @Override
-        public void initializeFormulaTranslationX(CalculatorFormula formula) {
+        public void initializeFormulaTranslationX(AlignedTextView formula) {
             // no-op
         }
 
