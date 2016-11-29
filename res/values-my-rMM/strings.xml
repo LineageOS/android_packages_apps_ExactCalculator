@@ -24,8 +24,6 @@
     <string name="clr" msgid="6730945431543327337">"clr"</string>
     <string name="cleared" msgid="3952521190281880880">"ရှင်းပြီးပါပြီ"</string>
     <string name="del" msgid="5878069000864178910">"ဖျက်ရန်ခလုတ်"</string>
-    <string name="memory_store" msgid="8744841923010012554">"MS"</string>
-    <string name="memory_recall" msgid="3934832243943960434">"MR"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"Euler\'s ဂဏန်း"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"ပိုင်"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"အစက်"</string>
@@ -59,8 +57,6 @@
     <string name="desc_del" msgid="7879515781929311432">"ဖျက်ရန်"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"ပြောင်းပြန်ဆောင်ရွက်ချက်များ ပြပါ"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ပြောင်းပြန်ဆောင်ရွက်ချက်များ ဖျောက်ထားရန်"</string>
-    <string name="desc_memory_store" msgid="3930533713663938153">"မှတ်သားချက်များ သိမ်းဆည်းရန်"</string>
-    <string name="desc_memory_recall" msgid="2971412217997909907">"မှတ်သားချက်များ ပြန်လည်ရယူရန်"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ဖော်မြူလာမရှိပါ"</string>
     <string name="desc_result" msgid="1794073190203126821">"ရလဒ်မရှိပါ"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"နံပါတ်နှင့် အခြေခံလုပ်ငန်းများ"</string>

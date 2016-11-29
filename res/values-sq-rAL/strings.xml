@@ -24,8 +24,6 @@
     <string name="clr" msgid="6730945431543327337">"pst"</string>
     <string name="cleared" msgid="3952521190281880880">"u pastruan"</string>
     <string name="del" msgid="5878069000864178910">"fsh"</string>
-    <string name="memory_store" msgid="8744841923010012554">"RM"</string>
-    <string name="memory_recall" msgid="3934832243943960434">"KM"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"Konstante matematikore"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"pi"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"pikë"</string>
@@ -59,8 +57,6 @@
     <string name="desc_del" msgid="7879515781929311432">"fshi"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"shfaq funksionet e kundërta"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"fshih funksionet e kundërta"</string>
-    <string name="desc_memory_store" msgid="3930533713663938153">"ruajtja në memorie"</string>
-    <string name="desc_memory_recall" msgid="2971412217997909907">"kthimi i memories"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Nuk ka formulë"</string>
     <string name="desc_result" msgid="1794073190203126821">"Asnjë rezultat"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"Numrat dhe veprimet bazë"</string>

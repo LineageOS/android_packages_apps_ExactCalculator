@@ -24,8 +24,6 @@
     <string name="clr" msgid="6730945431543327337">"அழி"</string>
     <string name="cleared" msgid="3952521190281880880">"அழிக்கப்பட்டது"</string>
     <string name="del" msgid="5878069000864178910">"நீக்கு"</string>
-    <string name="memory_store" msgid="8744841923010012554">"MS"</string>
-    <string name="memory_recall" msgid="3934832243943960434">"MR"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"ஆய்லரின் எண்"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"பை"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"புள்ளி"</string>
@@ -59,8 +57,6 @@
     <string name="desc_del" msgid="7879515781929311432">"நீக்கு"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"நேர்மாறு சார்புகளைக் காட்டு"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"நேர்மாறு சார்புகளை மறை"</string>
-    <string name="desc_memory_store" msgid="3930533713663938153">"மெமரி ஸ்டோர்"</string>
-    <string name="desc_memory_recall" msgid="2971412217997909907">"மெமரி ரீகால்"</string>
     <string name="desc_formula" msgid="8056588859637585007">"சூத்திரம் இல்லை"</string>
     <string name="desc_result" msgid="1794073190203126821">"முடிவு இல்லை"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"எண்களும் அடிப்படை செயல்பாடுகளும்"</string>
