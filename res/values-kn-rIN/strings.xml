@@ -24,8 +24,6 @@
     <string name="clr" msgid="6730945431543327337">"ತೆರ"</string>
     <string name="cleared" msgid="3952521190281880880">"ತೆರವುಗೊಳಿಸಲಾಗಿದೆ"</string>
     <string name="del" msgid="5878069000864178910">"ಅಳಿ"</string>
-    <string name="memory_store" msgid="8744841923010012554">"MS"</string>
-    <string name="memory_recall" msgid="3934832243943960434">"MR"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"ಯೂಲರ್‌ನ ಸಂಖ್ಯೆ"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"ಪೈ"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"ಬಿಂದು"</string>
@@ -59,8 +57,6 @@
     <string name="desc_del" msgid="7879515781929311432">"ಅಳಿಸು"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"ವಿಲೋಮ ಫಂಕ್ಷನ್‌ಗಳನ್ನು ತೋರಿಸು"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ವಿಲೋಮ ಫಂಕ್ಷನ್‌ಗಳನ್ನು ಮರೆಮಾಡು"</string>
-    <string name="desc_memory_store" msgid="3930533713663938153">"ಮೆಮೊರಿ ಸ್ಟೋರ್"</string>
-    <string name="desc_memory_recall" msgid="2971412217997909907">"ಮೆಮೊರಿ ರೀಕಾಲ್"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ಯಾವುದೇ ಫಾರ್ಮುಲಾ ಇಲ್ಲ"</string>
     <string name="desc_result" msgid="1794073190203126821">"ಯಾವುದೇ ಫಲಿತಾಂಶವಿಲ್ಲ"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"ಸಂಖ್ಯೆಗಳು ಮತ್ತು ಮೂಲ ಕಾರ್ಯಾಚರಣೆಗಳು"</string>

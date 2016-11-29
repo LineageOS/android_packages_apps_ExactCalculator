@@ -24,8 +24,6 @@
     <string name="clr" msgid="6730945431543327337">"C"</string>
     <string name="cleared" msgid="3952521190281880880">"notīrīts"</string>
     <string name="del" msgid="5878069000864178910">"CE"</string>
-    <string name="memory_store" msgid="8744841923010012554">"MS"</string>
-    <string name="memory_recall" msgid="3934832243943960434">"MR"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"Eilera skaitlis"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"pī"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"komats"</string>
@@ -59,8 +57,6 @@
     <string name="desc_del" msgid="7879515781929311432">"dzēst"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"rādīt inversās funkcijas"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"slēpt inversās funkcijas"</string>
-    <string name="desc_memory_store" msgid="3930533713663938153">"saglabāt atmiņā"</string>
-    <string name="desc_memory_recall" msgid="2971412217997909907">"atcerēties"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Nav formulas"</string>
     <string name="desc_result" msgid="1794073190203126821">"Nav neviena rezultāta"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"Skaitļi un pamatdarbības"</string>

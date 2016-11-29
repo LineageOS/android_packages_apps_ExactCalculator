@@ -24,8 +24,6 @@
     <string name="clr" msgid="6730945431543327337">"CLR"</string>
     <string name="cleared" msgid="3952521190281880880">"已清除"</string>
     <string name="del" msgid="5878069000864178910">"DEL"</string>
-    <string name="memory_store" msgid="8744841923010012554">"記憶體儲存"</string>
-    <string name="memory_recall" msgid="3934832243943960434">"記憶體復原"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"歐拉數"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"圓周率"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"小數點"</string>
@@ -59,8 +57,6 @@
     <string name="desc_del" msgid="7879515781929311432">"刪除"</string>
     <string name="desc_inv_off" msgid="3672218250519616068">"顯示反函數"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"隱藏反函數"</string>
-    <string name="desc_memory_store" msgid="3930533713663938153">"記憶體儲存"</string>
-    <string name="desc_memory_recall" msgid="2971412217997909907">"記憶體復原"</string>
     <string name="desc_formula" msgid="8056588859637585007">"沒有公式"</string>
     <string name="desc_result" msgid="1794073190203126821">"沒有結果"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"數字和基本操作"</string>
