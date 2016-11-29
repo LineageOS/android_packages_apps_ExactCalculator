@@ -44,7 +44,7 @@ public class HistoryFragment extends Fragment {
 
                 @Override
                 public void whileDragging(float yFraction) {
-                    mDragController.animateViews(yFraction, mRecyclerView, mAdapter.getItemCount());
+                    mDragController.animateViews(yFraction, mRecyclerView);
                 }
 
                 @Override
@@ -158,7 +158,7 @@ public class HistoryFragment extends Fragment {
             for (long i = 0; i < maxIndex; ++i) {
                 newDataSet.add(null);
             }
-            if (maxIndex == 0) {
+            if (newDataSet.isEmpty()) {
                 newDataSet.add(new HistoryItem());
             }
             mDataSet = newDataSet;
