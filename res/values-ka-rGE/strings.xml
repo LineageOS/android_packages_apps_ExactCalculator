@@ -61,7 +61,7 @@
     <string name="desc_num_pad" msgid="515720457459745571">"რიცხვები და ძირითადი ოპერაციები"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"დამატებითი ოპერაციები"</string>
     <string name="error_nan" msgid="5674077944929888710">"არ არის რიცხვი"</string>
-    <string name="error_syntax" msgid="4786987111228645602">"არასწორი ფრაზა"</string>
+    <string name="error_syntax" msgid="4786987111228645602">"არასწორი გამოსახულება"</string>
     <string name="error_aborted" msgid="3402238176316342537">"შეწყვეტილია"</string>
     <string name="error_overflow" msgid="7800547394563434764">"განუსაზღვრელი?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0-ზე გაყოფა შეუძლებელია"</string>
