@@ -87,6 +87,7 @@ public class Calculator extends Activity
         implements OnTextSizeChangeListener, OnLongClickListener,
         AlertDialogFragment.OnClickListener, Evaluator.EvaluationListener /* for main result */ {
 
+    private static final String TAG = "Calculator";
     /**
      * Constant for an invalid resource id.
      */
@@ -221,20 +222,22 @@ public class Calculator extends Activity
         }
     };
 
+    private final DragLayout.CloseCallback mCloseCallback = new DragLayout.CloseCallback() {
+        @Override
+        public void onClose() {
+            popFragmentBackstack();
+        }
+    };
+
     private final DragLayout.DragCallback mDragCallback = new DragLayout.DragCallback() {
         @Override
-        public void onStartDragging() {
+        public void onStartDraggingOpen() {
             showHistoryFragment(FragmentTransaction.TRANSIT_NONE);
         }
 
         @Override
         public void whileDragging(float yFraction) {
             // no-op
-        }
-
-        @Override
-        public void onClosed() {
-            popFragmentBackstack();
         }
 
         @Override
@@ -414,6 +417,7 @@ public class Calculator extends Activity
         mDragLayout = (DragLayout) findViewById(R.id.drag_layout);
         mDragLayout.removeDragCallback(mDragCallback);
         mDragLayout.addDragCallback(mDragCallback);
+        mDragLayout.setCloseCallback(mCloseCallback);
 
         mHistoryFrame = (FrameLayout) findViewById(R.id.history_frame);
 
@@ -701,7 +705,9 @@ public class Calculator extends Activity
             return;
         }
         manager.popBackStack();
+        manager.executePendingTransactions();
     }
+
     /**
      * Switch to INPUT from RESULT state in response to input of the specified button_id.
      * View.NO_ID is treated as an incomplete function id.
