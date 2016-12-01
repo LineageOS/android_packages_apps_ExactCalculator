@@ -334,12 +334,13 @@ public class ExpressionDB {
         RowData result;
         waitForExpressionDB();
         String args[] = new String[] { Long.toString(index) };
-        Cursor resultC = mExpressionDB.rawQuery(SQL_GET_ROW, args);
-        if (!resultC.moveToFirst()) {
-            throw new AssertionError("Missing Row");
-        } else {
-            result = new RowData(resultC.getBlob(1), resultC.getInt(2) /* flags */,
-                    resultC.getLong(3) /* timestamp */);
+        try (Cursor resultC = mExpressionDB.rawQuery(SQL_GET_ROW, args)) {
+            if (!resultC.moveToFirst()) {
+                throw new AssertionError("Missing Row");
+            } else {
+                result = new RowData(resultC.getBlob(1), resultC.getInt(2) /* flags */,
+                        resultC.getLong(3) /* timestamp */);
+            }
         }
         return result;
     }
