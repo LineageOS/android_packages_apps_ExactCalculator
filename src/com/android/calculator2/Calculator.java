@@ -100,7 +100,8 @@ public class Calculator extends Activity
                         // Not used for instant result evaluation.
         INIT,           // Very temporary state used as alternative to EVALUATE
                         // during reinitialization.  Do not animate on completion.
-        INIT_FOR_RESULT,  // Identical to INIT, but evaluation is known to terminate.
+        INIT_FOR_RESULT,  // Identical to INIT, but evaluation is known to terminate
+                          // with result, and current expression has been copied to history.
         ANIMATE,        // Result computed, animation to enlarge result window in progress.
         RESULT,         // Result displayed, formula invisible.
                         // If we are in RESULT state, the formula was evaluated without
@@ -116,9 +117,12 @@ public class Calculator extends Activity
     // initially evaluate assuming we were given a well-defined problem.  If we
     // were actually asked to compute sqrt(<extremely tiny negative number>) we produce 0
     // unless we are asked for enough precision that we can distinguish the argument from zero.
-    // ANIMATE, ERROR, and RESULT are translated to an INIT state if the application
+    // ERROR and RESULT are translated to INIT or INIT_FOR_RESULT state if the application
     // is restarted in that state.  This leads us to recompute and redisplay the result
-    // ASAP.
+    // ASAP. We avoid saving the ANIMATE state or activating history in that state.
+    // In INIT_FOR_RESULT, and RESULT state, a copy of the current
+    // expression has been saved in the history db; in the other non-ANIMATE states,
+    // it has not.
     // TODO: Possibly save a bit more information, e.g. its initial display string
     // or most significant digit position, to speed up restart.
 
@@ -301,6 +305,26 @@ public class Calculator extends Activity
     private HistoryFragment mHistoryFragment = new HistoryFragment();
 
     /**
+     * Map the old saved state to a new state reflecting requested result reevaluation.
+     */
+    private CalculatorState mapFromSaved(CalculatorState savedState) {
+        switch (savedState) {
+            case RESULT:
+            case INIT_FOR_RESULT:
+                // Evaluation is expected to terminate normally.
+                return CalculatorState.INIT_FOR_RESULT;
+            case ERROR:
+            case INIT:
+                return CalculatorState.INIT;
+            case EVALUATE:
+            case INPUT:
+                return savedState;
+            default:  // Includes ANIMATE state.
+                throw new AssertionError("Impossible saved state");
+        }
+    }
+
+    /**
      * Restore Evaluator state and mCurrentState from savedInstanceState.
      * Return true if the toolbar should be visible.
      */
@@ -346,9 +370,7 @@ public class Calculator extends Activity
             mResultText.setShouldEvaluateResult(CalculatorResult.SHOULD_EVALUATE, this);
         } else {
             // Just reevaluate.
-            setState((mCurrentState == CalculatorState.RESULT
-                    || mCurrentState == CalculatorState.INIT_FOR_RESULT) ?
-                    CalculatorState.INIT_FOR_RESULT : CalculatorState.INIT);
+            setState(mapFromSaved(mCurrentState));
             // Request evaluation when we know display width.
             mResultText.setShouldEvaluateResult(CalculatorResult.SHOULD_REQUIRE, this);
         }
@@ -538,6 +560,13 @@ public class Calculator extends Activity
     protected void onDestroy() {
         mDragLayout.removeDragCallback(mDragCallback);
         super.onDestroy();
+    }
+
+    /**
+     * Destroy the evaluator and close the underlying database.
+     */
+    public void destroyEvaluator() {
+        mEvaluator.destroyEvaluator();
     }
 
     @Override
@@ -1140,6 +1169,9 @@ public class Calculator extends Activity
         final int formulaTextColor = mFormulaText.getCurrentTextColor();
 
         if (animate) {
+            // Add current result to history.
+            mEvaluator.preserve(true);
+
             mResultText.announceForAccessibility(getResources().getString(R.string.desc_eq));
             mResultText.announceForAccessibility(mResultText.getText());
             setState(CalculatorState.ANIMATE);
@@ -1157,8 +1189,6 @@ public class Calculator extends Activity
             animatorSet.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    // Add current result to history.
-                    mEvaluator.preserve(true);
                     setState(CalculatorState.RESULT);
                     mCurrentAnimator = null;
                 }
