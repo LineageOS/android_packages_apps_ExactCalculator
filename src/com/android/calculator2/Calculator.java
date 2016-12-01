@@ -553,13 +553,8 @@ public class Calculator extends Activity
      * Return true if there was one.
      */
     private boolean stopActionModeOrContextMenu() {
-        if (mResultText.stopActionModeOrContextMenu()) {
-            return true;
-        }
-        if (mFormulaText.stopActionModeOrContextMenu()) {
-            return true;
-        }
-        return false;
+        return mResultText.stopActionModeOrContextMenu()
+                || mFormulaText.stopActionModeOrContextMenu();
     }
 
     @Override
@@ -577,8 +572,10 @@ public class Calculator extends Activity
     public void onBackPressed() {
         if (!stopActionModeOrContextMenu()) {
             if (mDragLayout.isOpen()) {
-                mDragLayout.setClosed();
-                popFragmentBackstack();
+                if (!mHistoryFragment.stopActionModeOrContextMenu()) {
+                    mDragLayout.setClosed();
+                    popFragmentBackstack();
+                }
                 return;
             }
             if (mPadViewPager != null && mPadViewPager.getCurrentItem() != 0) {
@@ -1271,6 +1268,8 @@ public class Calculator extends Activity
             return;
         }
         if (!mDragLayout.isOpen()) {
+            stopActionModeOrContextMenu();
+
             manager.beginTransaction()
                     .replace(R.id.history_frame, mHistoryFragment, HistoryFragment.TAG)
                     .setTransition(transit)

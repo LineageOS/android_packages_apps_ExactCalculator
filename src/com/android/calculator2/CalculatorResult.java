@@ -964,7 +964,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 final MenuInflater inflater = mode.getMenuInflater();
-                return createCopyMenu(inflater, menu);
+                return createContextMenu(inflater, menu);
             }
 
             @Override
@@ -1038,7 +1038,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             public void onCreateContextMenu(ContextMenu contextMenu, View view,
                     ContextMenu.ContextMenuInfo contextMenuInfo) {
                 final MenuInflater inflater = new MenuInflater(getContext());
-                createCopyMenu(inflater, contextMenu);
+                createContextMenu(inflater, contextMenu);
                 mContextMenu = contextMenu;
                 for(int i = 0; i < contextMenu.size(); i ++) {
                     contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorResult.this);
@@ -1056,7 +1056,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         });
     }
 
-    private boolean createCopyMenu(MenuInflater inflater, Menu menu) {
+    private boolean createContextMenu(MenuInflater inflater, Menu menu) {
         inflater.inflate(R.menu.menu_result, menu);
         final boolean displayMemory = mEvaluator.getMemoryIndex() != 0;
         final MenuItem memoryAddItem = menu.findItem(R.id.memory_add);
@@ -1133,5 +1133,11 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             default:
                 return false;
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        stopActionModeOrContextMenu();
+        super.onDetachedFromWindow();
     }
 }
