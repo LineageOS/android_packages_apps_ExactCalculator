@@ -569,6 +569,17 @@ public class Calculator extends Activity
     }
 
     @Override
+    public boolean dispatchTouchEvent(MotionEvent e) {
+        if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            stopActionModeOrContextMenu();
+            if (mDragLayout.isOpen()) {
+                mHistoryFragment.stopActionModeOrContextMenu();
+            }
+        }
+        return super.dispatchTouchEvent(e);
+    }
+
+    @Override
     public void onBackPressed() {
         if (!stopActionModeOrContextMenu()) {
             if (mDragLayout.isOpen()) {
