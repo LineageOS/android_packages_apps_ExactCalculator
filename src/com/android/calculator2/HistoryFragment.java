@@ -20,7 +20,9 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -96,6 +98,7 @@ public class HistoryFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.history_recycler_view);
 
         // The size of the RecyclerView is not affected by the adapter's contents.
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
 
         final Toolbar toolbar = (Toolbar) view.findViewById(R.id.history_toolbar);
@@ -153,7 +156,11 @@ public class HistoryFragment extends Fragment {
             for (long i = 0; i < maxIndex; ++i) {
                 newDataSet.add(null);
             }
-            if (newDataSet.isEmpty()) {
+            final boolean isEmpty = newDataSet.isEmpty();
+            mRecyclerView.setBackgroundColor(isEmpty
+                    ? ContextCompat.getColor(activity, R.color.empty_history_color)
+                    : Color.TRANSPARENT);
+            if (isEmpty) {
                 newDataSet.add(new HistoryItem());
             }
             mDataSet = newDataSet;

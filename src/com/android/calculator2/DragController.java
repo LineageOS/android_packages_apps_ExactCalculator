@@ -51,6 +51,9 @@ public final class DragController {
     private int mResultStartColor;
     private int mResultEndColor;
 
+    // The padding at the bottom of the RecyclerView itself.
+    private int mBottomPaddingHeight;
+
     private boolean mAnimationInitialized;
 
     private AnimationController mAnimationController;
@@ -97,8 +100,11 @@ public final class DragController {
             final AlignedTextView formula = vh.getFormula();
             final CalculatorResult result = vh.getResult();
             final TextView date = vh.getDate();
+            final View divider = vh.getDivider();
 
             if (!mAnimationInitialized) {
+                mBottomPaddingHeight = recyclerView.getPaddingBottom();
+
                 mAnimationController.initializeScales(formula, result);
 
                 mAnimationController.initializeColorAnimators(formula, result);
@@ -140,6 +146,7 @@ public final class DragController {
                         mResultEndColor));
 
                 date.setTranslationY(mAnimationController.getDateTranslationY(yFraction));
+                divider.setTranslationY(mAnimationController.getDateTranslationY(yFraction));
             }
         } else if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
             // There is no current expression but we still need to collect information
@@ -243,7 +250,8 @@ public final class DragController {
             // difference in result height.
             mFormulaTranslationY =
                     mDisplayFormula.getPaddingBottom() - formula.getPaddingBottom()
-                            + mDisplayResult.getHeight() - result.getHeight();
+                            + mDisplayResult.getHeight() - result.getHeight()
+                            - mBottomPaddingHeight;
 
         }
 
@@ -254,7 +262,8 @@ public final class DragController {
 
         public void initializeResultTranslationY(CalculatorResult result) {
             // Baseline of result moves by the difference in result bottom padding.
-            mResultTranslationY = mDisplayResult.getPaddingBottom() - result.getPaddingBottom();
+            mResultTranslationY = mDisplayResult.getPaddingBottom() - result.getPaddingBottom()
+            - mBottomPaddingHeight;
         }
 
         public void initializeResultTranslationX(CalculatorResult result) {
@@ -322,7 +331,8 @@ public final class DragController {
             // Baseline of formula moves by the difference in formula bottom padding and the
             // difference in the result height.
             mFormulaTranslationY = mDisplayFormula.getPaddingBottom() - formula.getPaddingBottom()
-                            + mDisplayResult.getHeight() - result.getHeight();
+                            + mDisplayResult.getHeight() - result.getHeight()
+                            - mBottomPaddingHeight;
         }
 
         @Override
@@ -334,8 +344,9 @@ public final class DragController {
         @Override
         public void initializeResultTranslationY(CalculatorResult result) {
             // Baseline of result moves by the difference in result bottom padding.
-            mResultTranslationY = mDisplayResult.getBottom() - result.getBottom() +
-                    mDisplayResult.getPaddingBottom() - result.getPaddingBottom();
+            mResultTranslationY = mDisplayResult.getBottom() - result.getBottom()
+                   + mDisplayResult.getPaddingBottom() - result.getPaddingBottom()
+                   - mBottomPaddingHeight;
         }
 
         @Override
@@ -447,7 +458,7 @@ public final class DragController {
 
         @Override
         public float getHistoryElementTranslationY(float yFraction) {
-            return -mDisplayHeight * (1 - yFraction);
+            return -mDisplayHeight * (1 - yFraction) - mBottomPaddingHeight;
         }
 
         @Override

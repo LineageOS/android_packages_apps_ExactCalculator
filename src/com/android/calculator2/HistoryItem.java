@@ -57,6 +57,10 @@ public class HistoryItem {
                 DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
     }
 
+    public long getTimeInMillis() {
+        return mTimeInMillis;
+    }
+
     public Spannable getFormula() {
         return mFormula;
     }
