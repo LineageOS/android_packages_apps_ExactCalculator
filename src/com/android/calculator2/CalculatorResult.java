@@ -255,6 +255,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (!isLaidOut()) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             // Set a minimum height so scaled error messages won't affect our layout.
             setMinimumHeight(getLineHeight() + getCompoundPaddingBottom()
                     + getCompoundPaddingTop());
