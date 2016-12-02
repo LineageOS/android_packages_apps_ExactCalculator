@@ -317,7 +317,7 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
                 final MenuInflater inflater = new MenuInflater(getContext());
                 createContextMenu(inflater, contextMenu);
                 mContextMenu = contextMenu;
-                for(int i = 0; i < contextMenu.size(); i++) {
+                for (int i = 0; i < contextMenu.size(); i++) {
                     contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorFormula.this);
                 }
             }
