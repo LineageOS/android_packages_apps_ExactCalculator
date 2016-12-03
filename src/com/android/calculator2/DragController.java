@@ -40,7 +40,7 @@ public final class DragController {
     private float mFormulaScale;
     private float mResultScale;
 
-    private int mResultTranslationY;
+    private float mResultTranslationY;
     private int mResultTranslationX;
 
     private int mDisplayHeight;
@@ -344,9 +344,9 @@ public final class DragController {
         @Override
         public void initializeResultTranslationY(CalculatorResult result) {
             // Baseline of result moves by the difference in result bottom padding.
-            mResultTranslationY = mDisplayResult.getBottom() - result.getBottom()
-                   + mDisplayResult.getPaddingBottom() - result.getPaddingBottom()
-                   - mBottomPaddingHeight;
+            mResultTranslationY =  mDisplayResult.getPaddingBottom() - result.getPaddingBottom()
+                    - mDisplayResult.getTranslationY()
+                    - mBottomPaddingHeight;
         }
 
         @Override
