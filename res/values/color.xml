@@ -27,7 +27,7 @@
     <color name="display_background_color">#FFF</color>
 
     <!-- Text color for the formula in the calculator display. -->
-    <color name="display_formula_text_color">#8A000000</color>
+    <color name="display_formula_text_color">#000000</color>
 
     <!-- Text color for the result in the calculator display. -->
     <color name="display_result_text_color">#6C000000</color>
