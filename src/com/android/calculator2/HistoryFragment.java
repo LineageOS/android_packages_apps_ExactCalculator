@@ -38,18 +38,13 @@ public class HistoryFragment extends Fragment {
     private final DragLayout.DragCallback mDragCallback =
             new DragLayout.DragCallback() {
                 @Override
-                public void onStartDragging() {
+                public void onStartDraggingOpen() {
                     // no-op
                 }
 
                 @Override
                 public void whileDragging(float yFraction) {
                     mDragController.animateViews(yFraction, mRecyclerView);
-                }
-
-                @Override
-                public void onClosed() {
-                    mEvaluator.cancelNonMain();
                 }
 
                 @Override
@@ -200,8 +195,11 @@ public class HistoryFragment extends Fragment {
             dragLayout.removeDragCallback(mDragCallback);
         }
 
+        // Note that the view is destroyed when the fragment backstack is popped, so
+        // these are essentially called when the DragLayout is closed.
         mEvaluator.cancelNonMain();
-        super.onDestroy();
+
+        super.onDestroyView();
     }
 
     private void initializeController(boolean isResult) {

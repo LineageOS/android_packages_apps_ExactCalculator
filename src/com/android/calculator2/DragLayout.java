@@ -41,6 +41,7 @@ public class DragLayout extends RelativeLayout {
     private ViewDragHelper mDragHelper;
 
     private final List<DragCallback> mDragCallbacks = new ArrayList<>();
+    private CloseCallback mCloseCallback;
 
     private int mDraggingState = ViewDragHelper.STATE_IDLE;
     private int mDraggingBorder;
@@ -158,7 +159,7 @@ public class DragLayout extends RelativeLayout {
 
     private void onStartDragging() {
         for (DragCallback c : mDragCallbacks) {
-            c.onStartDragging();
+            c.onStartDraggingOpen();
         }
         mHistoryFrame.setVisibility(VISIBLE);
     }
@@ -174,17 +175,15 @@ public class DragLayout extends RelativeLayout {
 
     public void setOpen() {
         mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, mVerticalRange);
-        mIsOpen = true;
         mHistoryFrame.setVisibility(VISIBLE);
     }
 
     public void setClosed() {
-        // Scroll the RecyclerView to the bottom.
-        for (DragCallback c : mDragCallbacks) {
-            c.onClosed();
-        }
         mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, 0);
-        mIsOpen = false;
+    }
+
+    public void setCloseCallback(CloseCallback callback) {
+        mCloseCallback = callback;
     }
 
     public void addDragCallback(DragCallback callback) {
@@ -196,17 +195,25 @@ public class DragLayout extends RelativeLayout {
     }
 
     /**
+     * Callback when the layout is closed.
+     * We use this to pop the HistoryFragment off the backstack.
+     * We can't use a method in DragCallback because we get ConcurrentModificationExceptions on
+     * mDragCallbacks when executePendingTransactions() is called for popping the fragment off the
+     * backstack.
+     */
+    public interface CloseCallback {
+        void onClose();
+    }
+
+    /**
      * Callbacks for coordinating with the RecyclerView or HistoryFragment.
      */
     public interface DragCallback {
-        // Callback when a drag in any direction begins.
-        void onStartDragging();
+        // Callback when a drag to open begins.
+        void onStartDraggingOpen();
 
         // Animate the RecyclerView text.
         void whileDragging(float yFraction);
-
-        // Scroll the RecyclerView to the bottom before closing the frame.
-        void onClosed();
 
         // Whether we should allow the drag to happen
         boolean allowDrag(MotionEvent event);
@@ -232,12 +239,16 @@ public class DragLayout extends RelativeLayout {
                 // The view stopped moving.
                 if (mDraggingBorder == 0) {
                     setClosed();
+                    mIsOpen = false;
                     mHistoryFrame.setVisibility(GONE);
+                    if (mCloseCallback != null) {
+                        mCloseCallback.onClose();
+                    }
                 } else if (mDraggingBorder == mVerticalRange) {
                     setOpen();
+                    mIsOpen = true;
                 }
-            }
-            if (state == ViewDragHelper.STATE_DRAGGING) {
+            } else if (state == ViewDragHelper.STATE_DRAGGING && !mIsOpen) {
                 onStartDragging();
             }
             mDraggingState = state;
