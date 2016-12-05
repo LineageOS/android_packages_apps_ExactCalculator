@@ -108,11 +108,17 @@ public class DragLayout extends RelativeLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        // First verify that we don't have a large deltaX (that the user is not trying to
-        // horizontally scroll).
+        final int action = event.getActionMasked();
+
+        // Always handle the case of the touch gesture being complete.
+        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+            // Release the scroll.
+            mDragHelper.cancel();
+            return false; // Do not intercept touch event, let the child handle it
+        }
+
         final float x = event.getX();
         final float y = event.getY();
-        final int action = event.getAction();
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -123,31 +129,23 @@ public class DragLayout extends RelativeLayout {
                 final float deltaX = Math.abs(x - mInitialDownX);
                 final float deltaY = Math.abs(y - mInitialDownY);
                 final int slop = mDragHelper.getTouchSlop();
-                if (deltaY > slop && deltaX > deltaY) {
-                    mDragHelper.cancel();
+                if (deltaY > slop && deltaY > deltaX) {
+                    break;
+                } else {
                     return false;
                 }
         }
-
         boolean doDrag = true;
         for (DragCallback c : mDragCallbacks) {
-            doDrag &= c.allowDrag(event);
+            doDrag &= c.shouldInterceptTouchEvent(event);
         }
         return doDrag && mDragHelper.shouldInterceptTouchEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        boolean doIntercept = true;
-        for (DragCallback c : mDragCallbacks) {
-            doIntercept &= c.shouldInterceptTouchEvent(event);
-        }
-        if (doIntercept || isMoving()) {
-            mDragHelper.processTouchEvent(event);
-            return true;
-        } else {
-            return super.onTouchEvent(event);
-        }
+        mDragHelper.processTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -214,9 +212,6 @@ public class DragLayout extends RelativeLayout {
 
         // Animate the RecyclerView text.
         void whileDragging(float yFraction);
-
-        // Whether we should allow the drag to happen
-        boolean allowDrag(MotionEvent event);
 
         // Whether we should intercept the touch event
         boolean shouldInterceptTouchEvent(MotionEvent event);

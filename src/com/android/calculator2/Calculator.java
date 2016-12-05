@@ -241,13 +241,11 @@ public class Calculator extends Activity
         }
 
         @Override
-        public boolean allowDrag(MotionEvent event) {
-            return isViewTarget(mHistoryFrame, event) || isViewTarget(mDisplayView, event);
-        }
-
-        @Override
         public boolean shouldInterceptTouchEvent(MotionEvent event) {
-            return isViewTarget(mHistoryFrame, event) || isViewTarget(mDisplayView, event);
+            if (!mDragLayout.isOpen()) {
+                return isViewTarget(mDisplayView, event);
+            }
+            return true;
         }
 
         @Override

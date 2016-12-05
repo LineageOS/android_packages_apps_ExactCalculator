@@ -43,6 +43,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.OverScroller;
 import android.widget.Toast;
 
@@ -153,6 +154,10 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     private ActionMode.Callback mCopyActionModeCallback;
     private ContextMenu mContextMenu;
 
+    // Used to determine whether a touch event should be intercepted.
+    private float mInitialDownX;
+    private float mInitialDownY;
+
     // The user requested that the result currently being evaluated should be stored to "memory".
     private boolean mStoreToMemoryRequested = false;
 
@@ -169,8 +174,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                     return true;
                 }
                 @Override
-                public boolean onFling(MotionEvent e1, MotionEvent e2,
-                                       float velocityX, float velocityY) {
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                        float velocityY) {
                     if (!mScroller.isFinished()) {
                         mCurrentPos = mScroller.getFinalX();
                     }
@@ -185,8 +190,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                     return true;
                 }
                 @Override
-                public boolean onScroll(MotionEvent e1, MotionEvent e2,
-                                        float distanceX, float distanceY) {
+                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+                        float distanceY) {
                     int distance = (int)distanceX;
                     if (!mScroller.isFinished()) {
                         mCurrentPos = mScroller.getFinalX();
@@ -216,6 +221,24 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                final int action = event.getActionMasked();
+
+                final float x = event.getX();
+                final float y = event.getY();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        mInitialDownX = x;
+                        mInitialDownY = y;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        final float deltaX = Math.abs(x - mInitialDownX);
+                        final float deltaY = Math.abs(y - mInitialDownY);
+                        final int slop = ViewConfiguration.get(v.getContext()).getScaledTouchSlop();
+                        if (deltaX > slop && deltaX > deltaY) {
+                            // Prevent the DragLayout from intercepting horizontal scrolls.
+                            getParent().requestDisallowInterceptTouchEvent(true);
+                        }
+                }
                 return mGestureDetector.onTouchEvent(event);
             }
         });

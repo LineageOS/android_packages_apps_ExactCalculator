@@ -52,14 +52,8 @@ public class HistoryFragment extends Fragment {
                 }
 
                 @Override
-                public boolean allowDrag(MotionEvent event) {
-                    // Do not allow drag if the recycler view can move down more
-                    return !mRecyclerView.canScrollVertically(1);
-                }
-
-                @Override
                 public boolean shouldInterceptTouchEvent(MotionEvent event) {
-                    return true;
+                    return !mRecyclerView.canScrollVertically(1);
                 }
 
                 @Override
