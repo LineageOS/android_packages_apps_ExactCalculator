@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -30,12 +31,16 @@ import java.util.List;
  */
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
+    private static final String TAG = "HistoryAdapter";
+
     private static final int EMPTY_VIEW_TYPE = 0;
     private static final int HISTORY_VIEW_TYPE = 1;
 
     private final Evaluator mEvaluator;
     /* Text/accessibility descriptor for the current expression item. */
     private final String mCurrentExpressionDescription;
+
+    private final Calendar mCalendar = Calendar.getInstance();
 
     private List<HistoryItem> mDataSet;
 
@@ -64,7 +69,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(final HistoryAdapter.ViewHolder holder, int position) {
-        final HistoryItem item = mDataSet.get(position);
+        final HistoryItem item = getItem(position);
 
         if (item.isEmptyView()) {
             return;
@@ -77,7 +82,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             holder.mDate.setText(mCurrentExpressionDescription);
             holder.mDate.setContentDescription(mCurrentExpressionDescription);
         } else {
-            holder.mDate.setText(item.getDateString());
+            // If the previous item occurred on the same date, the current item does not need
+            // a date header.
+            if (shouldShowHeader(position, item)) {
+                holder.mDate.setText(item.getDateString());
+                // Special case -- very first item should not have a divider above it.
+                holder.mDivider.setVisibility(position == getItemCount() - 1
+                        ? View.GONE : View.VISIBLE);
+            } else {
+                holder.mDate.setVisibility(View.GONE);
+                holder.mDivider.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
@@ -88,6 +103,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
         mEvaluator.cancel(holder.getItemId(), true);
 
+        holder.mDate.setVisibility(View.VISIBLE);
+        holder.mDivider.setVisibility(View.VISIBLE);
         holder.mDate.setContentDescription(null);
         holder.mDate.setText(null);
         holder.mFormula.setText(null);
@@ -98,21 +115,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public long getItemId(int position) {
-        return mDataSet.get(position).getEvaluatorIndex();
+        return getItem(position).getEvaluatorIndex();
     }
 
     @Override
     public int getItemViewType(int position) {
-        HistoryItem item = mDataSet.get(position);
-
-        // Continue to lazy-fill the data set
-        if (item == null) {
-            final int evaluatorIndex = getEvaluatorIndex(position);
-            item = new HistoryItem(evaluatorIndex, mEvaluator.getTimeStamp(evaluatorIndex),
-                    mEvaluator.getExprAsSpannable(evaluatorIndex));
-            mDataSet.set(position, item);
-        }
-        return item.isEmptyView() ? EMPTY_VIEW_TYPE : HISTORY_VIEW_TYPE;
+        return getItem(position).isEmptyView() ? EMPTY_VIEW_TYPE : HISTORY_VIEW_TYPE;
     }
 
     @Override
@@ -124,17 +132,49 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         mDataSet = dataSet;
     }
 
+    public void setIsResultLayout(boolean isResult) {
+        mIsResultLayout = isResult;
+    }
+
     private int getEvaluatorIndex(int position) {
         if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator) || mIsResultLayout) {
-            return (int) mEvaluator.getMaxIndex() - position;
+            return (int) (mEvaluator.getMaxIndex() - position);
         } else {
             // Account for the additional "Current Expression" with the +1.
-            return (int) mEvaluator.getMaxIndex() - position + 1;
+            return (int) (mEvaluator.getMaxIndex() - position + 1);
         }
     }
 
-    public void setIsResultLayout(boolean isResult) {
-        mIsResultLayout = isResult;
+    private boolean shouldShowHeader(int position, HistoryItem item) {
+        if (position == getItemCount() - 1) {
+            // First/oldest element should always show the header.
+            return true;
+        }
+        final HistoryItem prevItem = getItem(position + 1);
+        // We need to use Calendars to determine this because of Daylight Savings.
+        mCalendar.setTimeInMillis(item.getTimeInMillis());
+        final int year = mCalendar.get(Calendar.YEAR);
+        final int day = mCalendar.get(Calendar.DAY_OF_YEAR);
+        mCalendar.setTimeInMillis(prevItem.getTimeInMillis());
+        final int prevYear = mCalendar.get(Calendar.YEAR);
+        final int prevDay = mCalendar.get(Calendar.DAY_OF_YEAR);
+        return year != prevYear || day != prevDay;
+    }
+
+    /**
+     * Gets the HistoryItem from mDataSet, lazy-filling the dataSet if necessary.
+     */
+    private HistoryItem getItem(int position) {
+        HistoryItem item = mDataSet.get(position);
+        // Lazy-fill the data set.
+        if (item == null) {
+            final int evaluatorIndex = getEvaluatorIndex(position);
+            item = new HistoryItem(evaluatorIndex,
+                    mEvaluator.getTimeStamp(evaluatorIndex),
+                    mEvaluator.getExprAsSpannable(evaluatorIndex));
+            mDataSet.set(position, item);
+        }
+        return item;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -142,6 +182,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         private TextView mDate;
         private AlignedTextView mFormula;
         private CalculatorResult mResult;
+        private View mDivider;
 
         public ViewHolder(View v, int viewType) {
             super(v);
@@ -151,6 +192,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             mDate = (TextView) v.findViewById(R.id.history_date);
             mFormula = (AlignedTextView) v.findViewById(R.id.history_formula);
             mResult = (CalculatorResult) v.findViewById(R.id.history_result);
+            mDivider = v.findViewById(R.id.history_divider);
         }
 
         public AlignedTextView getFormula() {
@@ -163,6 +205,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         public TextView getDate() {
             return mDate;
+        }
+
+        public View getDivider() {
+            return mDivider;
         }
     }
 }

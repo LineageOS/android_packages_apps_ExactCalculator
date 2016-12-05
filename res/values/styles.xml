@@ -49,8 +49,9 @@
         <item name="android:layout_gravity">bottom|end</item>
         <item name="android:paddingTop">@dimen/history_item_text_padding_top</item>
         <item name="android:paddingBottom">@dimen/history_item_text_padding_bottom</item>
-        <item name="android:paddingStart">@dimen/history_item_text_padding_start</item>
-        <item name="android:paddingEnd">@dimen/history_item_text_padding_end</item>
+        <!-- Note: result_padding_start == formula_padding_start. -->
+        <item name="android:paddingStart">@dimen/result_padding_start</item>
+        <item name="android:paddingEnd">@dimen/result_padding_end</item>
         <item name="android:textSize">@dimen/result_textsize</item>
     </style>
 
