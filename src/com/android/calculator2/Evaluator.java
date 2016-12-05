@@ -721,7 +721,6 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                 // This should only be possible in the extremely rare case of encountering a
                 // domain error while reevaluating or in case of a precision overflow.  We don't
                 // know of a way to get the latter with a plausible amount of user input.
-                // FIXME: Doesn't currently work. Didn't work in earlier releases either.
                 mListener.onError(mIndex, R.string.error_nan);
             } else {
                 if (result.newResultStringOffset < mExprInfo.mResultStringOffset) {

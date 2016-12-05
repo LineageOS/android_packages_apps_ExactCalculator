@@ -1040,7 +1040,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                 final MenuInflater inflater = new MenuInflater(getContext());
                 createCopyMenu(inflater, contextMenu);
                 mContextMenu = contextMenu;
-                for(int i = 0; i < contextMenu.size(); i ++) {
+                for (int i = 0; i < contextMenu.size(); i ++) {
                     contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorResult.this);
                 }
             }

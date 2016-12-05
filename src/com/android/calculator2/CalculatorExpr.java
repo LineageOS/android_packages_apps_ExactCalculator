@@ -27,6 +27,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * A mathematical expression represented as a sequence of "tokens".
@@ -55,7 +57,7 @@ class CalculatorExpr {
          */
         CalculatorExpr getExpr(long index);
         /*
-         * Retrive the degree mode associated with the expression at index i.
+         * Retrieve the degree mode associated with the expression at index i.
          */
         boolean getDegreeMode(long index);
         /*
@@ -575,7 +577,7 @@ class CalculatorExpr {
      */
     public Object clone() {
         CalculatorExpr result = new CalculatorExpr();
-        for (Token t: mExpr) {
+        for (Token t : mExpr) {
             if (t instanceof Constant) {
                 result.mExpr.add((Token)(((Constant)t).clone()));
             } else {
@@ -703,11 +705,9 @@ class CalculatorExpr {
             final long index = ((PreEval)t).mIndex;
             UnifiedReal res = ec.mExprResolver.getResult(index);
             if (res == null) {
-                CalculatorExpr nestedExpr = ec.mExprResolver.getExpr(index);
-                EvalContext newEc = new EvalContext(ec.mExprResolver.getDegreeMode(index),
-                        nestedExpr.trailingBinaryOpsStart(), ec.mExprResolver);
-                EvalRet new_res = nestedExpr.evalExpr(0, newEc);
-                res = ec.mExprResolver.putResultIfAbsent(index, new_res.val);
+                // We try to minimize this recursive evaluation case, but currently don't
+                // completely avoid it.
+                res = nestedEval(index, ec.mExprResolver);
             }
             return new EvalRet(i+1, res);
         }
@@ -982,7 +982,7 @@ class CalculatorExpr {
      * Does the expression contain trig operations?
      */
     public boolean hasTrigFuncs() {
-        for (Token t: mExpr) {
+        for (Token t : mExpr) {
             if (t instanceof Operator) {
                 Operator o = (Operator)t;
                 if (KeyMaps.isTrigFunc(o.id)) {
@@ -991,6 +991,58 @@ class CalculatorExpr {
             }
         }
         return false;
+    }
+
+    /**
+     * Add the indices of unevaluated PreEval expressions embedded in the current expression to
+     * argument.  This includes only directly referenced expressions e, not those indirectly
+     * referenced by e. If the index was already present, it is not added. If the argument
+     * contained no duplicates, the result will not either. New indices are added to the end of
+     * the list.
+     */
+    private void addReferencedExprs(ArrayList<Long> list, ExprResolver er) {
+        for (Token t : mExpr) {
+            if (t instanceof PreEval) {
+                Long index = ((PreEval) t).mIndex;
+                if (er.getResult(index) == null && !list.contains(index)) {
+                    list.add(index);
+                }
+            }
+        }
+    }
+
+    /**
+     * Return a list of unevaluated expressions transitively referenced by the current one.
+     * All expressions in the resulting list will have had er.getExpr() called on them.
+     * The resulting list is ordered such that evaluating expressions in list order
+     * should trigger few recursive evaluations.
+     */
+    public ArrayList<Long> getTransitivelyReferencedExprs(ExprResolver er) {
+        // We could avoid triggering any recursive evaluations by actually building the
+        // dependency graph and topologically sorting it. Note that sorting by index works
+        // for positive and negative indices separately, but not their union. Currently we
+        // just settle for reverse breadth-first-search order, which handles the common case
+        // of simple dependency chains well.
+        ArrayList<Long> list = new ArrayList<Long>();
+        int scanned = 0;  // We've added expressions referenced by [0, scanned) to the list
+        addReferencedExprs(list, er);
+        while (scanned != list.size()) {
+            er.getExpr(list.get(scanned++)).addReferencedExprs(list, er);
+        }
+        Collections.reverse(list);
+        return list;
+    }
+
+    /**
+     * Evaluate the expression at the given index to a UnifiedReal.
+     * Both saves and returns the result.
+     */
+    UnifiedReal nestedEval(long index, ExprResolver er) throws SyntaxException {
+        CalculatorExpr nestedExpr = er.getExpr(index);
+        EvalContext newEc = new EvalContext(er.getDegreeMode(index),
+                nestedExpr.trailingBinaryOpsStart(), er);
+        EvalRet new_res = nestedExpr.evalExpr(0, newEc);
+        return er.putResultIfAbsent(index, new_res.val);
     }
 
     /**
@@ -1005,6 +1057,15 @@ class CalculatorExpr {
                         // And unchecked exceptions thrown by UnifiedReal, CR,
                         // and BoundedRational.
     {
+        // First evaluate all indirectly referenced expressions in increasing index order.
+        // This ensures that subsequent evaluation never encounters an embedded PreEval
+        // expression that has not been previously evaluated.
+        // We could do the embedded evaluations recursively, but that risks running out of
+        // stack space.
+        ArrayList<Long> referenced = getTransitivelyReferencedExprs(er);
+        for (long index : referenced) {
+            nestedEval(index, er);
+        }
         try {
             // We currently never include trailing binary operators, but include other trailing
             // operators.  Thus we usually, but not always, display results for prefixes of valid
@@ -1025,7 +1086,7 @@ class CalculatorExpr {
     // Produce a string representation of the expression itself
     SpannableStringBuilder toSpannableStringBuilder(Context context) {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
-        for (Token t: mExpr) {
+        for (Token t : mExpr) {
             ssb.append(t.toCharSequence(context));
         }
         return ssb;
