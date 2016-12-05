@@ -1407,15 +1407,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * If in_history is true, add it with a positive index, so it will appear in the history.
      */
     private long addToDB(boolean in_history, ExprInfo ei) {
-        /* TODO: Possibly do this in a different thread. */
-        ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
-        try (DataOutputStream out = new DataOutputStream(byteArrayStream)) {
-            ei.mExpr.write(out);
-        } catch (IOException e) {
-            // Impossible; No IO involved.
-            throw new AssertionError("Impossible IO exception", e);
-        }
-        byte[] serializedExpr = byteArrayStream.toByteArray();
+        byte[] serializedExpr = ei.mExpr.toBytes();
         ExpressionDB.RowData rd = new ExpressionDB.RowData(serializedExpr, ei.mDegreeMode,
                 ei.mLongTimeout, 0);
         long resultIndex = mExprDB.addRow(!in_history, rd);

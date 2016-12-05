@@ -22,8 +22,10 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.TtsSpan;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -409,6 +411,21 @@ class CalculatorExpr {
         for (int i = 0; i < size; ++i) {
             mExpr.get(i).write(out);
         }
+    }
+
+    /**
+     * Use write() above to generate a byte array containing a serialized representation of
+     * this expression.
+     */
+    public byte[] toBytes() {
+        ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+        try (DataOutputStream out = new DataOutputStream(byteArrayStream)) {
+            write(out);
+        } catch (IOException e) {
+            // Impossible; No IO involved.
+            throw new AssertionError("Impossible IO exception", e);
+        }
+        return byteArrayStream.toByteArray();
     }
 
     /**

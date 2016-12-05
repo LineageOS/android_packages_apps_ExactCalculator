@@ -14,27 +14,47 @@
  * limitations under the License.
  */
 
-// FIXME: We need to rethink the error handling here. Do we want to revert to history-less
-// operation if something goes wrong with the database?
-// TODO: This tries to ensure strong thread-safety, i.e. each call looks atomic, both to
-// other threads and other database users. Is this useful?
+// We make some strong assumptions about the databases we manipulate.
+// We maintain a single table containg expressions, their indices in the sequence of
+// expressions, and some data associated with each expression.
+// All indices are used, except for a small gap around zero.  New rows are added
+// either just below the current minimum (negative) index, or just above the current
+// maximum index. Currently no rows are deleted unless we clear the whole table.
+
 // TODO: Especially if we notice serious performance issues on rotation in the history
 // view, we may need to use a CursorLoader or some other scheme to preserve the database
 // across rotations.
+// TODO: We may want to switch to a scheme in which all expressions saved in the database have
+// a positive index, and a flag indicates whether the expression is displayed as part of
+// the history or not. That would avoid potential thrashing between CursorWindows when accessing
+// with a negative index. It would also make it easy to sort expressions in dependency order,
+// which helps with avoiding deep recursion during evaluation. But it makes the history UI
+// implementation more complicated. It should be possible to make this change without a
+// database version bump.
+
+// This ensures strong thread-safety, i.e. each call looks atomic to other threads. We need some
+// such property, since expressions may be read by one thread while the main thread is updating
+// another expression.
 
 package com.android.calculator2;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.AbstractWindowedCursor;
 import android.database.Cursor;
+import android.database.CursorWindow;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.provider.BaseColumns;
 import android.util.Log;
+import android.view.View;
 
 public class ExpressionDB {
+    private final boolean CONTINUE_WITH_BAD_DB = false;
+
     /* Table contents */
     public static class ExpressionEntry implements BaseColumns {
         public static final String TABLE_NAME = "expressions";
@@ -96,23 +116,26 @@ public class ExpressionDB {
     }
 
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + ExpressionEntry.TABLE_NAME + " (" +
-            ExpressionEntry._ID + " INTEGER PRIMARY KEY," +
-            ExpressionEntry.COLUMN_NAME_EXPRESSION + " BLOB," +
-            ExpressionEntry.COLUMN_NAME_FLAGS + " INTEGER," +
-            ExpressionEntry.COLUMN_NAME_TIMESTAMP + " INTEGER)";
+            "CREATE TABLE " + ExpressionEntry.TABLE_NAME + " ("
+            + ExpressionEntry._ID + " INTEGER PRIMARY KEY,"
+            + ExpressionEntry.COLUMN_NAME_EXPRESSION + " BLOB,"
+            + ExpressionEntry.COLUMN_NAME_FLAGS + " INTEGER,"
+            + ExpressionEntry.COLUMN_NAME_TIMESTAMP + " INTEGER)";
     private static final String SQL_DROP_TABLE =
             "DROP TABLE IF EXISTS " + ExpressionEntry.TABLE_NAME;
-    private static final String SQL_GET_MIN = "SELECT MIN(" + ExpressionEntry._ID +
-            ") FROM " + ExpressionEntry.TABLE_NAME;
-    private static final String SQL_GET_MAX = "SELECT MAX(" + ExpressionEntry._ID +
-            ") FROM " + ExpressionEntry.TABLE_NAME;
-    private static final String SQL_GET_ROW = "SELECT * FROM " + ExpressionEntry.TABLE_NAME +
-            " WHERE " + ExpressionEntry._ID + " = ?";
+    private static final String SQL_GET_MIN = "SELECT MIN(" + ExpressionEntry._ID
+            + ") FROM " + ExpressionEntry.TABLE_NAME;
+    private static final String SQL_GET_MAX = "SELECT MAX(" + ExpressionEntry._ID
+            + ") FROM " + ExpressionEntry.TABLE_NAME;
+    private static final String SQL_GET_ROW = "SELECT * FROM " + ExpressionEntry.TABLE_NAME
+            + " WHERE " + ExpressionEntry._ID + " = ?";
+    private static final String SQL_GET_ALL = "SELECT * FROM " + ExpressionEntry.TABLE_NAME
+            + " WHERE " + ExpressionEntry._ID + " <= ? AND " +
+            ExpressionEntry._ID +  " >= ?" + " ORDER BY " + ExpressionEntry._ID + " DESC ";
     // We may eventually need an index by timestamp. We don't use it yet.
     private static final String SQL_CREATE_TIMESTAMP_INDEX =
-            "CREATE INDEX timestamp_index ON " + ExpressionEntry.TABLE_NAME + "(" +
-            ExpressionEntry.COLUMN_NAME_TIMESTAMP + ")";
+            "CREATE INDEX timestamp_index ON " + ExpressionEntry.TABLE_NAME + "("
+            + ExpressionEntry.COLUMN_NAME_TIMESTAMP + ")";
     private static final String SQL_DROP_TIMESTAMP_INDEX = "DROP INDEX IF EXISTS timestamp_index";
 
     private class ExpressionDBHelper extends SQLiteOpenHelper {
@@ -142,7 +165,14 @@ public class ExpressionDB {
 
     private SQLiteDatabase mExpressionDB;  // Constant after initialization.
 
-    private boolean mBadDB = false;      // Database initialization failed.
+    // Expression indices between mMinAccessible and mMaxAccessible inclusive can be accessed.
+    // We set these to more interesting values if a database access fails.
+    // We punt on writes outside this range. We should never read outside this range.
+    // If higher layers refer to an index outside this range, it will already be cached.
+    // This also somewhat limits the size of the database, but only to an unreasonably
+    // huge value.
+    private long mMinAccessible = -10000000L;
+    private long mMaxAccessible = 10000000L;
 
     // Never allocate new negative indicees (row ids) >= MAXIMUM_MIN_INDEX.
     public static final long MAXIMUM_MIN_INDEX = -10;
@@ -151,128 +181,205 @@ public class ExpressionDB {
     private long mMinIndex;
     // Maximum index value in DB.
     private long mMaxIndex;
-    // mMinIndex and mMaxIndex are correct.
-    private boolean mMinMaxValid;
 
-    // mLock protects mExpressionDB and mBadDB, though we access mExpressionDB without
+    // A cursor that refers to the whole table, in reverse order.
+    private AbstractWindowedCursor mAllCursor;
+
+    // Expression index corresponding to a zero absolute offset for mAllCursor.
+    // This is the argument we passed to the query.
+    // We explicitly query only for entries that existed when we started, to avoid
+    // interference from updates as we're running. It's unclear whether or not this matters.
+    private int mAllCursorBase;
+
+    // Database has been opened, mMinIndex and mMaxIndex are correct, mAllCursorBase and
+    // mAllCursor have been set.
+    private boolean mDBInitialized;
+
+    // Gap between negative and positive row ids in the database.
+    // Expressions with index [MAXIMUM_MIN_INDEX .. 0] are not stored.
+    private static final long GAP = -MAXIMUM_MIN_INDEX + 1;
+
+    // mLock protects mExpressionDB, mMinAccessible, and mMaxAccessible, mAllCursor,
+    // mAllCursorBase, mMinIndex, mMaxIndex, and mDBInitialized. We access mExpressionDB without
     // synchronization after it's known to be initialized.  Used to wait for database
-    // initialization. Also protects mMinIndex, mMaxIndex, and mMinMaxValid.
+    // initialization.
     private Object mLock = new Object();
 
-    public ExpressionDB(Context context) {
-        mExpressionDBHelper = new ExpressionDBHelper(context);
+    private Activity mActivity;
+
+    public ExpressionDB(Activity activity) {
+        mActivity = activity;
+        mExpressionDBHelper = new ExpressionDBHelper(activity);
         AsyncInitializer initializer = new AsyncInitializer();
-        initializer.execute(mExpressionDBHelper);
+        // All calls that create background database accesses are made from the UI thread, and
+        // use a SERIAL_EXECUTOR. Thus they execute in order.
+        initializer.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, mExpressionDBHelper);
     }
 
-    private boolean getBadDB() {
+    // Is database completely unusable?
+    private boolean isDBBad() {
+        if (!CONTINUE_WITH_BAD_DB) {
+            return false;
+        }
         synchronized(mLock) {
-            return mBadDB;
+            return mMinAccessible > mMaxAccessible;
         }
     }
 
-    private void setBadDB() {
+    // Is the index in the accessible range of the database?
+    private boolean inAccessibleRange(long index) {
+        if (!CONTINUE_WITH_BAD_DB) {
+            return true;
+        }
         synchronized(mLock) {
-            mBadDB = true;
+            return index >= mMinAccessible && index <= mMaxAccessible;
+        }
+    }
+
+
+    private void setBadDB() {
+        if (!CONTINUE_WITH_BAD_DB) {
+            Log.e("Calculator", "Database access failed");
+            throw new RuntimeException("Database access failed");
+        }
+        displayDatabaseWarning();
+        synchronized(mLock) {
+            mMinAccessible = 1L;
+            mMaxAccessible = -1L;
         }
     }
 
     /**
-     * Set mExpressionDB and compute minimum and maximum indices in the background.
+     * Initialize the database in the background.
      */
     private class AsyncInitializer extends AsyncTask<ExpressionDBHelper, Void, SQLiteDatabase> {
         @Override
         protected SQLiteDatabase doInBackground(ExpressionDBHelper... helper) {
-            SQLiteDatabase result;
             try {
-                result = helper[0].getWritableDatabase();
-                // We notify here, since there are unlikely cases in which the UI thread
-                // may be blocked on us, preventing onPostExecute from running.
+                SQLiteDatabase db = helper[0].getWritableDatabase();
                 synchronized(mLock) {
-                    mExpressionDB = result;
+                    mExpressionDB = db;
+                    try (Cursor minResult = db.rawQuery(SQL_GET_MIN, null)) {
+                        if (!minResult.moveToFirst()) {
+                            // Empty database.
+                            mMinIndex = MAXIMUM_MIN_INDEX;
+                        } else {
+                            mMinIndex = Math.min(minResult.getLong(0), MAXIMUM_MIN_INDEX);
+                        }
+                    }
+                    try (Cursor maxResult = db.rawQuery(SQL_GET_MAX, null)) {
+                        if (!maxResult.moveToFirst()) {
+                            // Empty database.
+                            mMaxIndex = 0L;
+                        } else {
+                            mMaxIndex = Math.max(maxResult.getLong(0), 0L);
+                        }
+                    }
+                    if (mMaxIndex > Integer.MAX_VALUE) {
+                        throw new AssertionError("Expression index absurdly large");
+                    }
+                    mAllCursorBase = (int)mMaxIndex;
+                    if (mMaxIndex != 0L || mMinIndex != MAXIMUM_MIN_INDEX) {
+                        // Set up a cursor for reading the entire database.
+                        String args[] = new String[]
+                                { Long.toString(mAllCursorBase), Long.toString(mMinIndex) };
+                        mAllCursor = (AbstractWindowedCursor) db.rawQuery(SQL_GET_ALL, args);
+                        if (!mAllCursor.moveToFirst()) {
+                            setBadDB();
+                            return null;
+                        }
+                    }
+                    mDBInitialized = true;
+                    // We notify here, since there are unlikely cases in which the UI thread
+                    // may be blocked on us, preventing onPostExecute from running.
                     mLock.notifyAll();
                 }
-                long min, max;
-                try (Cursor minResult = result.rawQuery(SQL_GET_MIN, null)) {
-                    if (!minResult.moveToFirst()) {
-                        // Empty database.
-                        min = MAXIMUM_MIN_INDEX;
-                    } else {
-                        min = Math.min(minResult.getLong(0), MAXIMUM_MIN_INDEX);
-                    }
-                }
-                try (Cursor maxResult = result.rawQuery(SQL_GET_MAX, null)) {
-                    if (!maxResult.moveToFirst()) {
-                        // Empty database.
-                        max = 0L;
-                    } else {
-                        max = Math.max(maxResult.getLong(0), 0L);
-                    }
-                }
-                synchronized(mLock) {
-                    mMinIndex = min;
-                    mMaxIndex = max;
-                    mMinMaxValid = true;
-                    mLock.notifyAll();
-                }
+                return db;
             } catch(SQLiteException e) {
                 Log.e("Calculator", "Database initialization failed.\n", e);
                 synchronized(mLock) {
-                    mBadDB = true;
+                    setBadDB();
                     mLock.notifyAll();
                 }
                 return null;
             }
-            return result;
         }
 
         @Override
         protected void onPostExecute(SQLiteDatabase result) {
             if (result == null) {
-                throw new AssertionError("Failed to open history DB");
-                // TODO: Should we try to run without persistent history instead?
+                displayDatabaseWarning();
             } // else doInBackground already set expressionDB.
         }
         // On cancellation we do nothing;
     }
 
+    private boolean databaseWarningIssued;
+
     /**
-     * Wait until expression DB is ready.
-     * This should usually be a no-op, since we set up the DB on creation. But there are a few
-     * cases, such as restarting the calculator in history mode, when we currently can't do
-     * anything but wait, possibly even in the UI thread.
+     * Display a warning message that a database access failed.
+     * Do this only once. TODO: Replace with a real UI message.
      */
-    private void waitForExpressionDB() {
+    void displayDatabaseWarning() {
+        if (!databaseWarningIssued) {
+            Log.e("Calculator", "Calculator restarting due to database error");
+            databaseWarningIssued = true;
+        }
+    }
+
+    /**
+     * Wait until the database and mAllCursor, etc. have been initialized.
+     */
+    private void waitForDBInitialized() {
         synchronized(mLock) {
-            while (mExpressionDB == null && !mBadDB) {
+            // InterruptedExceptions are inconvenient here. Defer.
+            boolean caught = false;
+            while (!mDBInitialized && !isDBBad()) {
                 try {
                     mLock.wait();
                 } catch(InterruptedException e) {
-                    mBadDB = true;
+                    caught = true;
                 }
             }
-            if (mBadDB) {
-                throw new AssertionError("Failed to open history DB");
+            if (caught) {
+                Thread.currentThread().interrupt();
             }
         }
     }
 
     /**
-     * Wait until the minimum key has been computed.
+     * Erase the entire database. Assumes no other accesses to the database are
+     * currently in progress
+     * These tasks must be executed on a serial executor to avoid reordering writes.
      */
-    private void waitForMinMaxValid() {
-        synchronized(mLock) {
-            while (!mMinMaxValid && !mBadDB) {
-                try {
-                    mLock.wait();
-                } catch(InterruptedException e) {
-                    mBadDB = true;
-                }
+    private class AsyncEraser extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... nothings) {
+            mExpressionDB.execSQL(SQL_DROP_TIMESTAMP_INDEX);
+            mExpressionDB.execSQL(SQL_DROP_TABLE);
+            try {
+                mExpressionDB.execSQL("VACUUM");
+            } catch(Exception e) {
+                Log.v("Calculator", "Database VACUUM failed\n", e);
+                // Should only happen with concurrent execution, which should be impossible.
             }
-            if (mBadDB) {
-                throw new AssertionError("Failed to compute minimum key");
+            mExpressionDB.execSQL(SQL_CREATE_ENTRIES);
+            mExpressionDB.execSQL(SQL_CREATE_TIMESTAMP_INDEX);
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void nothing) {
+            synchronized(mLock) {
+                // Reinitialize everything to an empty and fully functional database.
+                mMinAccessible = -10000000L;
+                mMaxAccessible = 10000000L;
+                mMinIndex = MAXIMUM_MIN_INDEX;
+                mMaxIndex = mAllCursorBase = 0;
+                mDBInitialized = true;
+                mLock.notifyAll();
             }
         }
+        // On cancellation we do nothing;
     }
 
     /**
@@ -282,61 +389,107 @@ public class ExpressionDB {
      * TODO: Look at ways to more selectively clear the database.
      */
     public void eraseAll() {
-        waitForExpressionDB();
-        mExpressionDB.execSQL(SQL_DROP_TIMESTAMP_INDEX);
-        mExpressionDB.execSQL(SQL_DROP_TABLE);
-        try {
-            mExpressionDB.execSQL("VACUUM");
-        } catch(Exception e) {
-            Log.v("Calculator", "Database VACUUM failed\n", e);
-            // Should only happen with concurrent execution, which should be impossible.
-        }
-        mExpressionDB.execSQL(SQL_CREATE_ENTRIES);
-        mExpressionDB.execSQL(SQL_CREATE_TIMESTAMP_INDEX);
+        waitForDBInitialized();
         synchronized(mLock) {
-            mMinIndex = MAXIMUM_MIN_INDEX;
-            mMaxIndex = 0L;
+            mDBInitialized = false;
         }
+        AsyncEraser eraser = new AsyncEraser();
+        eraser.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+    }
+
+    /**
+     * Insert the given row in the database without blocking the UI thread.
+     * These tasks must be executed on a serial executor to avoid reordering writes.
+     */
+    private class AsyncWriter extends AsyncTask<ContentValues, Void, Long> {
+        @Override
+        protected Long doInBackground(ContentValues... cvs) {
+            long index = cvs[0].getAsLong(ExpressionEntry._ID);
+            long result = mExpressionDB.insert(ExpressionEntry.TABLE_NAME, null, cvs[0]);
+            // Return 0 on success, row id on failure.
+            if (result == -1) {
+                return index;
+            } else if (result != index) {
+                throw new AssertionError("Expected row id " + index + ", got " + result);
+            } else {
+                return 0L;
+            }
+        }
+        @Override
+        protected void onPostExecute(Long result) {
+            if (result != 0) {
+                synchronized(mLock) {
+                    if (result > 0) {
+                        mMaxAccessible = result - 1;
+                    } else {
+                        mMinAccessible = result + 1;
+                    }
+                }
+                displayDatabaseWarning();
+            }
+        }
+        // On cancellation we do nothing;
     }
 
     /**
      * Add a row with index outside existing range.
-     * The returned index will be larger than any existing index unless negative_index is true.
+     * The returned index will be just larger than any existing index unless negative_index is true.
      * In that case it will be smaller than any existing index and smaller than MAXIMUM_MIN_INDEX.
+     * This ensures that prior additions have completed, but does not wait for this insertion
+     * to complete.
      */
-    public long addRow(boolean negative_index, RowData data) {
+    public long addRow(boolean negativeIndex, RowData data) {
         long result;
         long newIndex;
-        waitForMinMaxValid();
+        waitForDBInitialized();
         synchronized(mLock) {
-            if (negative_index) {
+            if (negativeIndex) {
                 newIndex = mMinIndex - 1;
                 mMinIndex = newIndex;
             } else {
                 newIndex = mMaxIndex + 1;
                 mMaxIndex = newIndex;
             }
+            if (!inAccessibleRange(newIndex)) {
+                // Just drop it, but go ahead and return a new index to use for the cache.
+                // So long as reads of previously written expressions continue to work,
+                // we should be fine. When the application is restarted, history will revert
+                // to just include values between mMinAccessible and mMaxAccessible.
+                return newIndex;
+            }
             ContentValues cvs = data.toContentValues();
             cvs.put(ExpressionEntry._ID, newIndex);
-            result = mExpressionDB.insert(ExpressionEntry.TABLE_NAME, null, cvs);
+            AsyncWriter awriter = new AsyncWriter();
+            // Ensure that writes are executed in order.
+            awriter.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, cvs);
         }
-        if (result != newIndex) {
-            throw new AssertionError("Expected row id " + newIndex + ", got " + result);
-        }
-        return result;
+        return newIndex;
     }
 
     /**
-     * Retrieve the row with the given index.
-     * Such a row must exist.
+     * Generate a fake database row that's good enough to hopefully prevent crashes,
+     * but bad enough to avoid confusion with real data. In particular, the result
+     * will fail to evaluate.
      */
-    public RowData getRow(long index) {
+    RowData makeBadRow() {
+        CalculatorExpr badExpr = new CalculatorExpr();
+        badExpr.add(R.id.lparen);
+        badExpr.add(R.id.rparen);
+        return new RowData(badExpr.toBytes(), false, false, 0);
+    }
+
+    /**
+     * Retrieve the row with the given index using a direct query.
+     * Such a row must exist.
+     * We assume that the database has been initialized, and the argument has been range checked.
+     */
+    private RowData getRowDirect(long index) {
         RowData result;
-        waitForExpressionDB();
         String args[] = new String[] { Long.toString(index) };
         try (Cursor resultC = mExpressionDB.rawQuery(SQL_GET_ROW, args)) {
             if (!resultC.moveToFirst()) {
-                throw new AssertionError("Missing Row");
+                setBadDB();
+                return makeBadRow();
             } else {
                 result = new RowData(resultC.getBlob(1), resultC.getInt(2) /* flags */,
                         resultC.getLong(3) /* timestamp */);
@@ -345,15 +498,73 @@ public class ExpressionDB {
         return result;
     }
 
+    /**
+     * Retrieve the row at the given offset from mAllCursorBase.
+     * Note the argument is NOT an expression index!
+     * We assume that the database has been initialized, and the argument has been range checked.
+     */
+    private RowData getRowFromCursor(int offset) {
+        RowData result;
+        synchronized(mLock) {
+            if (!mAllCursor.moveToPosition(offset)) {
+                Log.e("Calculator", "Failed to move cursor to position " + offset);
+                setBadDB();
+                return makeBadRow();
+            }
+            return new RowData(mAllCursor.getBlob(1), mAllCursor.getInt(2) /* flags */,
+                        mAllCursor.getLong(3) /* timestamp */);
+        }
+    }
+
+    /**
+     * Retrieve the database row at the given index.
+     * We currently assume that we never read data that we added since we initialized the database.
+     * This makes sense, since we cache it anyway. And we should always cache recently added data.
+     */
+    public RowData getRow(long index) {
+        waitForDBInitialized();
+        if (!inAccessibleRange(index)) {
+            // Even if something went wrong opening or writing the database, we should
+            // not see such read requests, unless they correspond to a persistently
+            // saved index, and we can't retrieve that expression.
+            displayDatabaseWarning();
+            return makeBadRow();
+        }
+        int position =  mAllCursorBase - (int)index;
+        // We currently assume that the only gap between expression indices is the one around 0.
+        if (index < 0) {
+            position -= GAP;
+        }
+        if (position < 0) {
+            throw new AssertionError("Database access out of range");
+        }
+        if (index < 0) {
+            // Avoid using mAllCursor to read data that's far away from the current position,
+            // since we're likely to have to return to the current position.
+            // This is a heuristic; we don't worry about doing the "wrong" thing in the race case.
+            int endPosition;
+            synchronized(mLock) {
+                CursorWindow window = mAllCursor.getWindow();
+                endPosition = window.getStartPosition() + window.getNumRows();
+            }
+            if (position >= endPosition) {
+                return getRowDirect(index);
+            }
+        }
+        // In the positive index case, it's probably OK to cross a cursor boundary, since
+        // we're much more likely to stay in the new window.
+        return getRowFromCursor(position);
+    }
+
     public long getMinIndex() {
-        waitForMinMaxValid();
+        waitForDBInitialized();
         synchronized(mLock) {
             return mMinIndex;
         }
     }
 
     public long getMaxIndex() {
-        waitForMinMaxValid();
+        waitForDBInitialized();
         synchronized(mLock) {
             return mMaxIndex;
         }
