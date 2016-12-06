@@ -33,6 +33,8 @@ import android.widget.Toolbar;
 
 import java.util.ArrayList;
 
+import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
+
 public class HistoryFragment extends Fragment {
 
     public static final String TAG = "HistoryFragment";
@@ -96,6 +98,15 @@ public class HistoryFragment extends Fragment {
                 R.layout.fragment_history, container, false /* attachToRoot */);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.history_recycler_view);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == SCROLL_STATE_DRAGGING) {
+                    stopActionModeOrContextMenu();
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
 
         // The size of the RecyclerView is not affected by the adapter's contents.
         mRecyclerView.setHasFixedSize(true);
@@ -233,5 +244,17 @@ public class HistoryFragment extends Fragment {
         Calculator calculator = (Calculator) getActivity();
         calculator.onClearAnimationEnd();
         calculator.onBackPressed();
+    }
+
+    public boolean stopActionModeOrContextMenu() {
+        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+            final View view = mRecyclerView.getChildAt(i);
+            final HistoryAdapter.ViewHolder viewHolder =
+                    (HistoryAdapter.ViewHolder) mRecyclerView.getChildViewHolder(view);
+            if (viewHolder != null && viewHolder.getResult().stopActionModeOrContextMenu()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
