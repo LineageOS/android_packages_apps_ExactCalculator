@@ -241,6 +241,9 @@ public class HistoryFragment extends Fragment {
     }
 
     public boolean stopActionModeOrContextMenu() {
+        if (mRecyclerView == null) {
+            return false;
+        }
         for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
             final View view = mRecyclerView.getChildAt(i);
             final HistoryAdapter.ViewHolder viewHolder =
