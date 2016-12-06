@@ -299,10 +299,10 @@ public final class DragController {
         public float getDateTranslationY(float yFraction) {
             // We also want the date to start out above the visible screen with
             // this distance decreasing as it's pulled down.
+            // Account for the scaled formula height.
             return -mToolbar.getHeight() * (1 - yFraction)
-                    + getResultTranslationY(yFraction)
-                    - mDisplayFormula.getPaddingTop() +
-                    (mDisplayFormula.getPaddingTop() * yFraction);
+                    + getFormulaTranslationY(yFraction)
+                    - mDisplayFormula.getHeight() /getFormulaScale(yFraction) * (1 - yFraction);
         }
 
         public float getHistoryElementTranslationY(float yFraction) {
