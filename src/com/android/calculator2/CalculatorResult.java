@@ -154,10 +154,6 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     private ActionMode.Callback mCopyActionModeCallback;
     private ContextMenu mContextMenu;
 
-    // Used to determine whether a touch event should be intercepted.
-    private float mInitialDownX;
-    private float mInitialDownY;
-
     // The user requested that the result currently being evaluated should be stored to "memory".
     private boolean mStoreToMemoryRequested = false;
 
@@ -218,7 +214,14 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                     }
                 }
             });
+
+        final int slop = ViewConfiguration.get(context).getScaledTouchSlop();
         setOnTouchListener(new View.OnTouchListener() {
+
+            // Used to determine whether a touch event should be intercepted.
+            private float mInitialDownX;
+            private float mInitialDownY;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 final int action = event.getActionMasked();
@@ -233,7 +236,6 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                     case MotionEvent.ACTION_MOVE:
                         final float deltaX = Math.abs(x - mInitialDownX);
                         final float deltaY = Math.abs(y - mInitialDownY);
-                        final int slop = ViewConfiguration.get(v.getContext()).getScaledTouchSlop();
                         if (deltaX > slop && deltaX > deltaY) {
                             // Prevent the DragLayout from intercepting horizontal scrolls.
                             getParent().requestDisallowInterceptTouchEvent(true);
