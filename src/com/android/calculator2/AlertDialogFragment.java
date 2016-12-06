@@ -62,10 +62,11 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
      * implement AlertDialogFragment.OnClickListener to respond.
      */
     public static void showMessageDialog(Activity activity, @StringRes int title,
-            @StringRes int message, @StringRes int positiveButtonLabel) {
+            @StringRes int message, @StringRes int positiveButtonLabel, @Nullable String tag) {
         showMessageDialog(activity, title != 0 ? activity.getString(title) : null,
                 activity.getString(message),
-                positiveButtonLabel != 0 ? activity.getString(positiveButtonLabel) : null);
+                positiveButtonLabel != 0 ? activity.getString(positiveButtonLabel) : null,
+                tag);
     }
 
     /**
@@ -78,7 +79,8 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
      * implement AlertDialogFragment.OnClickListener to respond.
      */
     public static void showMessageDialog(Activity activity, @Nullable CharSequence title,
-            CharSequence message, @Nullable CharSequence positiveButtonLabel) {
+            CharSequence message, @Nullable CharSequence positiveButtonLabel, @Nullable String tag)
+    {
         final FragmentManager manager = activity.getFragmentManager();
         if (manager == null || manager.isDestroyed()) {
             return;
@@ -92,7 +94,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
         }
         args.putCharSequence(KEY_TITLE, title);
         dialogFragment.setArguments(args);
-        dialogFragment.show(manager, null /* tag */);
+        dialogFragment.show(manager, tag /* tag */);
     }
 
     public AlertDialogFragment() {
