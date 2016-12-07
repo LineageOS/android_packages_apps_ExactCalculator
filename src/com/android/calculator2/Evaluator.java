@@ -1863,4 +1863,14 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         sb.append(" Saved index = ").append(getSavedIndex()).append("\n");
         return sb.toString();
     }
+
+    /**
+     * Destroy the current evaluator, forcing getEvaluator to allocate a new one.
+     * This is needed for testing, since Robolectric apparently doesn't let us preserve
+     * an open databse across tests. Cf. https://github.com/robolectric/robolectric/issues/1890 .
+     */
+    public void destroyEvaluator() {
+        mExprDB.close();
+        evaluator = null;
+    }
 }
