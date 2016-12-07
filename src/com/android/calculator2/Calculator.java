@@ -52,6 +52,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.util.Property;
 import android.view.ActionMode;
 import android.view.KeyCharacterMap;
@@ -1231,8 +1232,21 @@ public class Calculator extends Activity
     @Override
     public void onClick(AlertDialogFragment fragment, int which) {
         if (which == DialogInterface.BUTTON_POSITIVE) {
-            // Timeout extension request.
-            mEvaluator.setLongTimeout();
+            if (fragment.getTag() == HistoryFragment.CLEAR_DIALOG_TAG) {
+                // TODO: Try to preserve the current, saved, and memory expressions. How should we
+                // handle expressions to which they refer?
+                // FIXME: This should clearly happen on a background thread.
+                mEvaluator.clearEverything();
+                // TODO: It's not clear what we should really do here. This is an initial hack.
+                // May want to make onClearAnimationEnd() private if/when we fix this.
+                onClearAnimationEnd();
+                onBackPressed();
+            } else if (fragment.getTag() == Evaluator.TIMEOUT_DIALOG_TAG) {
+                // Timeout extension request.
+                mEvaluator.setLongTimeout();
+            } else {
+                Log.e(TAG, "Unknown AlertDialogFragment click:" + fragment.getTag());
+            }
         }
     }
 
@@ -1320,7 +1334,7 @@ public class Calculator extends Activity
     }
 
     private void displayMessage(String title, String message) {
-        AlertDialogFragment.showMessageDialog(this, title, message, null);
+        AlertDialogFragment.showMessageDialog(this, title, message, null, null /* tag */);
     }
 
     private void displayFraction() {

@@ -38,6 +38,7 @@ import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 public class HistoryFragment extends Fragment {
 
     public static final String TAG = "HistoryFragment";
+    public static final String CLEAR_DIALOG_TAG = "clear";
 
     private final DragLayout.DragCallback mDragCallback =
             new DragLayout.DragCallback() {
@@ -112,7 +113,11 @@ public class HistoryFragment extends Fragment {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.menu_clear_history) {
-                    clearHistory();
+                    final Calculator calculator = (Calculator) getActivity();
+                    AlertDialogFragment.showMessageDialog(calculator, "" /* title */,
+                            getString(R.string.dialog_clear),
+                            getString(R.string.menu_clear_history),
+                            CLEAR_DIALOG_TAG);
                     return true;
                 }
                 return onOptionsItemSelected(item);
@@ -226,18 +231,6 @@ public class HistoryFragment extends Fragment {
         mDragController.setEvaluator(mEvaluator);
 
         mDragController.initializeController(isResult);
-    }
-
-    private void clearHistory() {
-        // TODO: Try to preserve the current, saved, and memory expressions. How should we
-        // handle expressions to which they refer?
-        // FIXME: This should clearly happen on a background thread.
-        mEvaluator.clearEverything();
-        // TODO: It's not clear what we should really do here. This is an initial hack.
-        // May want to make onClearAnimationEnd() private if/when we fix this.
-        Calculator calculator = (Calculator) getActivity();
-        calculator.onClearAnimationEnd();
-        calculator.onBackPressed();
     }
 
     public boolean stopActionModeOrContextMenu() {

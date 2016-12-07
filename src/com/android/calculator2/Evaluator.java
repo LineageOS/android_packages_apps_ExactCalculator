@@ -99,6 +99,8 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     private static Evaluator evaluator;
 
+    public static String TIMEOUT_DIALOG_TAG = "timeout";
+
     public static Evaluator getInstance(Calculator calculator) {
         if (evaluator == null) {
             evaluator = new Evaluator(calculator);
@@ -402,7 +404,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     private void displayCancelledMessage() {
-        AlertDialogFragment.showMessageDialog(mActivity, 0, R.string.cancelled, 0);
+        AlertDialogFragment.showMessageDialog(mActivity, 0, R.string.cancelled, 0, null);
     }
 
     // Timeout handling.
@@ -442,7 +444,8 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     private void displayTimeoutMessage(boolean longTimeout) {
         AlertDialogFragment.showMessageDialog(mActivity, R.string.dialog_timeout,
-                R.string.timeout, longTimeout ? 0 : R.string.ok_remove_timeout);
+                R.string.timeout, longTimeout ? 0 : R.string.ok_remove_timeout,
+                TIMEOUT_DIALOG_TAG);
     }
 
     public void setLongTimeout() {

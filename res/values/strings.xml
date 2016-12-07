@@ -294,8 +294,8 @@
     <string name="menu_licenses">Open source licenses</string>
     <!-- Menu option to access calculation history. [CHAR_LIMIT=40] -->
     <string name="menu_history">History</string>
-    <!-- Menu option to clear calculation history. [CHAR_LIMIT=40] -->
-    <string name="menu_clear_history">Clear history</string>
+    <!-- Menu option to clear calculation history and memory. [CHAR_LIMIT=40] -->
+    <string name="menu_clear_history">Clear</string>
 
     <!-- Action bar title in history page. [CHAR_LIMIT=40] -->
     <string name="title_history">History</string>
@@ -304,6 +304,11 @@
 
     <!-- Title for alert dialog when calculation takes too long (timeout). [CHAR_LIMIT=30] -->
     <string name="dialog_timeout">Timeout</string>
+
+    <!--
+      Message for alert dialog when user is about to clear history and memory. [CHAR_LIMIT=30]
+    -->
+    <string name="dialog_clear">Clear history and memory?</string>
 
     <!-- Title for "current expression" in history page. [CHAR_LIMIT=40] -->
     <string name="title_current_expression">Current Expression</string>
