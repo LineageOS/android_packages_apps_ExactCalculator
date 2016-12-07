@@ -534,8 +534,14 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                 // mExpr does not change while we are evaluating; thus it's OK to read here.
                 UnifiedReal res = mExprInfo.mVal.get();
                 if (res == null) {
-                    res = mExprInfo.mExpr.eval(mDm, Evaluator.this);
-                    res = putResultIfAbsent(mIndex, res);
+                    try {
+                        res = mExprInfo.mExpr.eval(mDm, Evaluator.this);
+                        res = putResultIfAbsent(mIndex, res);
+                    } catch (StackOverflowError e) {
+                        // Absurdly large integer exponents can cause this. There might be other
+                        // examples as well. Treat it as a timeout.
+                        return new InitialResult(R.string.timeout);
+                    }
                 }
                 if (isTooBig(res)) {
                     // Avoid starting a long uninterruptible decimal conversion.
@@ -1721,6 +1727,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         try {
             ei = new ExprInfo(new CalculatorExpr(serializedExpr), row.degreeMode());
             ei.mTimeStamp = row.mTimeStamp;
+            ei.mLongTimeout = row.longTimeout();
         } catch(IOException e) {
             throw new AssertionError("IO Exception without real IO:" + e);
         }
