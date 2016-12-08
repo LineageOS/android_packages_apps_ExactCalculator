@@ -53,8 +53,10 @@ public class HistoryFragment extends Fragment {
                 }
 
                 @Override
-                public boolean shouldInterceptTouchEvent(MotionEvent event) {
-                    return !mRecyclerView.canScrollVertically(1);
+                public boolean shouldCaptureView(View view, int x, int y) {
+                    return view.getId() == R.id.history_frame
+                            && mDragLayout.isViewUnder(view, x, y)
+                            && !mRecyclerView.canScrollVertically(1 /* scrolling down */);
                 }
 
                 @Override
@@ -158,7 +160,7 @@ public class HistoryFragment extends Fragment {
             if (!EvaluatorStateUtils.isDisplayEmpty(mEvaluator) && !isResultLayout) {
                 // Add the current expression as the first element in the list (the layout is
                 // reversed and we want the current expression to be the last one in the
-                // recyclerview).
+                // RecyclerView).
                 // If we are in the result state, the result will animate to the last history
                 // element in the list and there will be no "Current Expression."
                 mEvaluator.copyMainToHistory();

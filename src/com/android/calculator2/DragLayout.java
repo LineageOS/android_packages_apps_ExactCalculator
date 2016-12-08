@@ -17,6 +17,8 @@
 package com.android.calculator2;
 
 import android.content.Context;
+import android.graphics.PointF;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
@@ -27,7 +29,9 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DragLayout extends RelativeLayout {
@@ -44,14 +48,13 @@ public class DragLayout extends RelativeLayout {
     private final List<DragCallback> mDragCallbacks = new CopyOnWriteArrayList<>();
     private CloseCallback mCloseCallback;
 
+    private final Map<Integer, PointF> mLastMotionPoints = new HashMap<>();
+    private final Rect mHitRect = new Rect();
+
     private int mDraggingState = ViewDragHelper.STATE_IDLE;
     private int mDraggingBorder;
     private int mVerticalRange;
     private boolean mIsOpen;
-
-    // Used to determine whether a touch event should be intercepted.
-    private float mInitialDownX;
-    private float mInitialDownY;
 
     public DragLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -69,7 +72,7 @@ public class DragLayout extends RelativeLayout {
         super.onLayout(changed, l, t, r, b);
         if (changed) {
             for (DragCallback c : mDragCallbacks) {
-               c.onLayout(t-b);
+                c.onLayout(t - b);
             }
             if (mIsOpen) {
                 setOpen();
@@ -107,46 +110,52 @@ public class DragLayout extends RelativeLayout {
         super.onRestoreInstanceState(state);
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
+    private void saveLastMotion(MotionEvent event) {
         final int action = event.getActionMasked();
-
-        // Always handle the case of the touch gesture being complete.
-        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
-            // Release the scroll.
-            mDragHelper.cancel();
-            return false; // Do not intercept touch event, let the child handle it
-        }
-
-        final float x = event.getX();
-        final float y = event.getY();
-
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                mInitialDownX = x;
-                mInitialDownY = y;
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                final int actionIndex = event.getActionIndex();
+                final int pointerId = event.getPointerId(actionIndex);
+                final PointF point = new PointF(event.getX(actionIndex), event.getY(actionIndex));
+                mLastMotionPoints.put(pointerId, point);
                 break;
-            case MotionEvent.ACTION_MOVE:
-                final float deltaX = Math.abs(x - mInitialDownX);
-                final float deltaY = Math.abs(y - mInitialDownY);
-                final int slop = mDragHelper.getTouchSlop();
-                if (deltaY > slop && deltaY > deltaX) {
-                    break;
-                } else {
-                    return false;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                for (int i = event.getPointerCount() - 1; i >= 0; --i) {
+                    final int pointerId = event.getPointerId(i);
+                    final PointF point = mLastMotionPoints.get(pointerId);
+                    if (point != null) {
+                        point.set(event.getX(i), event.getY(i));
+                    }
                 }
+                break;
+            }
+            case MotionEvent.ACTION_POINTER_UP: {
+                final int actionIndex = event.getActionIndex();
+                final int pointerId = event.getPointerId(actionIndex);
+                mLastMotionPoints.remove(pointerId);
+                break;
+            }
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL: {
+                mLastMotionPoints.clear();
+                break;
+            }
         }
-        boolean doDrag = true;
-        for (DragCallback c : mDragCallbacks) {
-            doDrag &= c.shouldInterceptTouchEvent(event);
-        }
-        return doDrag && mDragHelper.shouldInterceptTouchEvent(event);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        saveLastMotion(event);
+        return mDragHelper.shouldInterceptTouchEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        saveLastMotion(event);
         mDragHelper.processTouchEvent(event);
-        return super.onTouchEvent(event);
+        return true;
     }
 
     @Override
@@ -161,6 +170,12 @@ public class DragLayout extends RelativeLayout {
             c.onStartDraggingOpen();
         }
         mHistoryFrame.setVisibility(VISIBLE);
+    }
+
+    public boolean isViewUnder(View view, int x, int y) {
+        view.getHitRect(mHitRect);
+        offsetDescendantRectToMyCoords((View) view.getParent(), mHitRect);
+        return mHitRect.contains(x, y);
     }
 
     public boolean isMoving() {
@@ -214,8 +229,8 @@ public class DragLayout extends RelativeLayout {
         // Animate the RecyclerView text.
         void whileDragging(float yFraction);
 
-        // Whether we should intercept the touch event
-        boolean shouldInterceptTouchEvent(MotionEvent event);
+        // Whether we should allow the view to be dragged.
+        boolean shouldCaptureView(View view, int x, int y);
 
         int getDisplayHeight();
 
@@ -266,8 +281,21 @@ public class DragLayout extends RelativeLayout {
         }
 
         @Override
-        public boolean tryCaptureView(View view, int i) {
-            return view.getId() == R.id.history_frame;
+        public boolean tryCaptureView(View view, int pointerId) {
+            final PointF point = mLastMotionPoints.get(pointerId);
+            if (point == null) {
+                return false;
+            }
+
+            final int x = (int) point.x;
+            final int y = (int) point.y;
+
+            for (DragCallback c : mDragCallbacks) {
+                if (!c.shouldCaptureView(view, x, y)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         @Override

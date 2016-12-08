@@ -230,7 +230,7 @@ public class Calculator extends Activity
     private final DragLayout.CloseCallback mCloseCallback = new DragLayout.CloseCallback() {
         @Override
         public void onClose() {
-            popFragmentBackstack();
+            removeHistoryFragment(FragmentTransaction.TRANSIT_NONE);
         }
     };
 
@@ -246,11 +246,10 @@ public class Calculator extends Activity
         }
 
         @Override
-        public boolean shouldInterceptTouchEvent(MotionEvent event) {
-            if (!mDragLayout.isOpen()) {
-                return isViewTarget(mDisplayView, event);
-            }
-            return true;
+        public boolean shouldCaptureView(View view, int x, int y) {
+            return mDragLayout.isMoving()
+                    || mDragLayout.isOpen()
+                    || mDragLayout.isViewUnder(mDisplayView, x, y);
         }
 
         @Override
@@ -262,8 +261,6 @@ public class Calculator extends Activity
             mHistoryFrame.setTranslationY(translation + mDisplayView.getBottom());
         }
     };
-
-    private final Rect mHitRect = new Rect();
 
     private CalculatorState mCurrentState;
     private Evaluator mEvaluator;
@@ -613,7 +610,7 @@ public class Calculator extends Activity
             if (mDragLayout.isOpen()) {
                 if (!mHistoryFragment.stopActionModeOrContextMenu()) {
                     mDragLayout.setClosed();
-                    popFragmentBackstack();
+                    removeHistoryFragment(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                 }
                 return;
             }
@@ -735,12 +732,15 @@ public class Calculator extends Activity
         }
     }
 
-    private void popFragmentBackstack() {
+    private void removeHistoryFragment(int transit) {
         final FragmentManager manager = getFragmentManager();
         if (manager == null || manager.isDestroyed()) {
             return;
         }
-        manager.popBackStack();
+        manager.beginTransaction()
+                .remove(mHistoryFragment)
+                .setTransition(transit)
+                .commit();
         manager.executePendingTransactions();
     }
 
@@ -1451,12 +1451,6 @@ public class Calculator extends Activity
             setState(CalculatorState.INPUT);
             mEvaluator.clearMain();
         }
-    }
-
-    private boolean isViewTarget(View view, MotionEvent event) {
-        mHitRect.set(0, 0, view.getWidth(), view.getHeight());
-        mDragLayout.offsetDescendantRectToMyCoords(view, mHitRect);
-        return mHitRect.contains((int) event.getX(), (int) event.getY());
     }
 
     /**
