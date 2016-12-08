@@ -82,8 +82,7 @@ public class HistoryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new HistoryAdapter((Calculator) getActivity(), mDataSet,
-                getContext().getResources().getString(R.string.title_current_expression));
+        mAdapter = new HistoryAdapter(mDataSet);
     }
 
     @Override
@@ -138,6 +137,9 @@ public class HistoryFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         final Calculator activity = (Calculator) getActivity();
+
+        mAdapter.setEvaluator(Evaluator.getInstance(activity));
+
         final boolean isResultLayout = activity.isResultLayout();
 
         mDragLayout = (DragLayout) activity.findViewById(R.id.drag_layout);
