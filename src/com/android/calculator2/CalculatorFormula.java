@@ -55,9 +55,9 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
     private final ClipboardManager mClipboardManager;
 
     private int mWidthConstraint = -1;
-    private ActionMode mActionMode;
+    protected ActionMode mActionMode;
     private ActionMode.Callback mPasteActionModeCallback;
-    private ContextMenu mContextMenu;
+    protected ContextMenu mContextMenu;
     private OnTextSizeChangeListener mOnTextSizeChangeListener;
     private OnFormulaContextMenuClickListener mOnContextMenuClickListener;
     private Calculator.OnDisplayMemoryOperationsListener mOnDisplayMemoryOperationsListener;
@@ -331,9 +331,7 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
     }
 
     private boolean createContextMenu(MenuInflater inflater, Menu menu) {
-        final ClipboardManager clipboard = (ClipboardManager) getContext()
-                .getSystemService(Context.CLIPBOARD_SERVICE);
-        final boolean isPasteEnabled = clipboard.hasPrimaryClip();
+        final boolean isPasteEnabled = isPasteEnabled();
         final boolean isMemoryEnabled = isMemoryEnabled();
         if (!isPasteEnabled && !isMemoryEnabled) {
             return false;
@@ -349,9 +347,7 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
     }
 
     private void paste() {
-        final ClipboardManager clipboard = (ClipboardManager) getContext()
-                .getSystemService(Context.CLIPBOARD_SERVICE);
-        final ClipData primaryClip = clipboard.getPrimaryClip();
+        final ClipData primaryClip = mClipboardManager.getPrimaryClip();
         if (primaryClip != null && mOnContextMenuClickListener != null) {
             mOnContextMenuClickListener.onPaste(primaryClip);
         }
@@ -373,10 +369,22 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
 
     @Override
     public void onPrimaryClipChanged() {
+        setLongClickable(isPasteEnabled() || isMemoryEnabled());
+    }
+
+    public void onMemoryStateChanged() {
+        setLongClickable(isPasteEnabled() || isMemoryEnabled());
+    }
+
+    private boolean isMemoryEnabled() {
+        return !(mOnDisplayMemoryOperationsListener == null || mOnContextMenuClickListener == null)
+                && mOnDisplayMemoryOperationsListener.shouldDisplayMemory();
+    }
+
+    private boolean isPasteEnabled() {
         final ClipData clip = mClipboardManager.getPrimaryClip();
         if (clip == null || clip.getItemCount() == 0) {
-            setLongClickable(isMemoryEnabled());
-            return;
+            return false;
         }
         CharSequence clipText = null;
         try {
@@ -384,12 +392,7 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
         } catch (Exception e) {
             Log.i("Calculator", "Error reading clipboard:", e);
         }
-        setLongClickable(!TextUtils.isEmpty(clipText) || isMemoryEnabled());
-    }
-
-    private boolean isMemoryEnabled() {
-        return !(mOnDisplayMemoryOperationsListener == null || mOnContextMenuClickListener == null)
-                && mOnDisplayMemoryOperationsListener.shouldDisplayMemory();
+        return !TextUtils.isEmpty(clipText);
     }
 
     public interface OnTextSizeChangeListener {
