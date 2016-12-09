@@ -27,8 +27,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DragLayout extends RelativeLayout {
 
@@ -40,7 +40,8 @@ public class DragLayout extends RelativeLayout {
     private FrameLayout mHistoryFrame;
     private ViewDragHelper mDragHelper;
 
-    private final List<DragCallback> mDragCallbacks = new ArrayList<>();
+    // No concurrency; allow modifications while iterating.
+    private final List<DragCallback> mDragCallbacks = new CopyOnWriteArrayList<>();
     private CloseCallback mCloseCallback;
 
     private int mDraggingState = ViewDragHelper.STATE_IDLE;
