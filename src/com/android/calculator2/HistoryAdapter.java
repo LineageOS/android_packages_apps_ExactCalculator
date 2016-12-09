@@ -36,9 +36,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private static final int EMPTY_VIEW_TYPE = 0;
     private static final int HISTORY_VIEW_TYPE = 1;
 
-    private final Evaluator mEvaluator;
-    /* Text/accessibility descriptor for the current expression item. */
-    private final String mCurrentExpressionDescription;
+    private Evaluator mEvaluator;
 
     private final Calendar mCalendar = Calendar.getInstance();
 
@@ -46,11 +44,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     private boolean mIsResultLayout;
 
-    public HistoryAdapter(Calculator calculator, ArrayList<HistoryItem> dataSet,
-            String currentExpressionDescription) {
-        mEvaluator = Evaluator.getInstance(calculator);
+    public HistoryAdapter(ArrayList<HistoryItem> dataSet) {
         mDataSet = dataSet;
-        mCurrentExpressionDescription = currentExpressionDescription;
         setHasStableIds(true);
     }
 
@@ -79,8 +74,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         // Note: HistoryItems that are not the current expression will always have interesting ops.
         holder.mResult.setEvaluator(mEvaluator, item.getEvaluatorIndex());
         if (item.getEvaluatorIndex() == Evaluator.HISTORY_MAIN_INDEX) {
-            holder.mDate.setText(mCurrentExpressionDescription);
-            holder.mDate.setContentDescription(mCurrentExpressionDescription);
+            holder.mDate.setText(R.string.title_current_expression);
         } else {
             // If the previous item occurred on the same date, the current item does not need
             // a date header.
@@ -105,7 +99,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         holder.mDate.setVisibility(View.VISIBLE);
         holder.mDivider.setVisibility(View.VISIBLE);
-        holder.mDate.setContentDescription(null);
         holder.mDate.setText(null);
         holder.mFormula.setText(null);
         holder.mResult.setText(null);
@@ -134,6 +127,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     public void setIsResultLayout(boolean isResult) {
         mIsResultLayout = isResult;
+    }
+
+    public void setEvaluator(Evaluator evaluator) {
+        mEvaluator = evaluator;
     }
 
     private int getEvaluatorIndex(int position) {
