@@ -437,6 +437,16 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     private static final long QUICK_TIMEOUT = 1000;
 
     /**
+     * Timeout for non-MAIN expressions. Note that there may be many such evaluations in
+     * progress on the same thread or core. Thus the evaluation latency may include that needed
+     * to complete previously enqueued evaluations. Thus the longTimeout flag is not very
+     * meaningful, and currently ignored.
+     * Since this is only used for expressions that we have previously successfully evaluated,
+     * these timeouts hsould never trigger.
+     */
+    private static final long NON_MAIN_TIMEOUT = 100000;
+
+    /**
      * Maximum result bit length for unrequested, speculative evaluations.
      * Also used to bound evaluation precision for small non-zero fractions.
      */
@@ -508,7 +518,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                 // ever time out. We evaluate it with a ridiculously long timeout to avoid running
                 // down the battery if something does go wrong. But we only log such timeouts, and
                 // invoke the listener with onCancelled.
-                timeout *= 10;
+                timeout = NON_MAIN_TIMEOUT;
             }
             mTimeoutRunnable = new Runnable() {
                 @Override
@@ -1078,14 +1088,10 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
 
-    private void clearMainPreservingTimeout() {
+    public void clearMain() {
         mMainExpr.mExpr.clear();
         mHasTrigFuncs = false;
         clearMainCache();
-    }
-
-    public void clearMain() {
-        clearMainPreservingTimeout();
         mMainExpr.mLongTimeout = false;
     }
 
@@ -1170,7 +1176,11 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         }
         ExprInfo ei = ensureExprIsCached(index);
         if (ei.mResultString == null || (index == MAIN_INDEX && mChangedValue)) {
-            if ((ei.mEvaluator instanceof AsyncEvaluator)
+            if (index == HISTORY_MAIN_INDEX) {
+                // We don't want to compute a result for HISTORY_MAIN_INDEX that was
+                // not already computed for the main expression. Pretend we timed out.
+                listener.onCancelled(index);
+            } else if ((ei.mEvaluator instanceof AsyncEvaluator)
                     && ((AsyncEvaluator)(ei.mEvaluator)).mRequired) {
                 // Duplicate request; ignore.
             } else {
@@ -1276,9 +1286,6 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     public void restoreInstanceState(DataInput in) {
         mChangedValue = true;
-        // FIXME: per our current discussion, this should also restore expressions that
-        // are referenced by the current expression to avoid database initialization
-        // latency on normal startup.
         try {
             mMainExpr.mDegreeMode = in.readBoolean();
             mMainExpr.mLongTimeout = in.readBoolean();
@@ -1448,7 +1455,6 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * assuming it is already in the database, but may have been lost from the cache.
      */
     public void represerve() {
-        // FIXME: Think about odd races in which other things happened before we get here.
         long resultIndex = getMaxIndex();
         if (mExprs.get(resultIndex) != null) {
             // We actually didn't lose the cache. Nothing to do.
@@ -1498,9 +1504,11 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * diverge, though it may generate errors of various kinds.  E.g.  sqrt(-10^-1000) .
      */
     public void collapse(long index) {
+        final boolean longTimeout = mExprs.get(index).mLongTimeout;
         final CalculatorExpr abbrvExpr = getCollapsedExpr(index);
-        clearMainPreservingTimeout();
+        clearMain();
         mMainExpr.mExpr.append(abbrvExpr);
+        mMainExpr.mLongTimeout = longTimeout;
         mChangedValue = true;
         mHasTrigFuncs = false;  // Degree mode no longer affects expression value.
     }

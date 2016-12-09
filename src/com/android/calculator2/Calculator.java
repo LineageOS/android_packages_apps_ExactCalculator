@@ -203,7 +203,7 @@ public class Calculator extends Activity
             if (memoryIndex != 0) {
                 mEvaluator.appendExpr(mEvaluator.getMemoryIndex());
                 redisplayAfterFormulaChange();
-            }  // FIXME: Avoid the 0 case, e.g. by graying out button when memory is unavailable.
+            }
         }
     };
 
@@ -1235,7 +1235,6 @@ public class Calculator extends Activity
             if (fragment.getTag() == HistoryFragment.CLEAR_DIALOG_TAG) {
                 // TODO: Try to preserve the current, saved, and memory expressions. How should we
                 // handle expressions to which they refer?
-                // FIXME: This should clearly happen on a background thread.
                 mEvaluator.clearEverything();
                 // TODO: It's not clear what we should really do here. This is an initial hack.
                 // May want to make onClearAnimationEnd() private if/when we fix this.
