@@ -77,10 +77,13 @@
     <string name="menu_fraction" msgid="1247477377840252234">"Бөлчөк түрүндө"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"Ачык программа уруксаттамалары"</string>
     <string name="menu_history" msgid="9006222701220105452">"Таржымал"</string>
-    <string name="menu_clear_history" msgid="902038191257404791">"Таржымалды тазалоо"</string>
+    <!-- no translation found for menu_clear_history (2336526604226069572) -->
+    <skip />
     <string name="title_history" msgid="7820912156315181539">"Таржымал"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Жогору чабыттоо"</string>
     <string name="dialog_timeout" msgid="9069768442342329065">"Таймаут"</string>
+    <!-- no translation found for dialog_clear (7137395395908350702) -->
+    <skip />
     <string name="title_current_expression" msgid="2442754548537900591">"Учурдагы туюнтма"</string>
     <string name="no_history" msgid="4331262030447527188">"Таржымалы жок"</string>
 </resources>
