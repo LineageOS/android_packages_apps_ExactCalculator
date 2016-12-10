@@ -72,8 +72,6 @@ class CalculatorExpr {
          * May only be called after getExpr.
          */
         UnifiedReal putResultIfAbsent(long index, UnifiedReal result);
-        // FIXME: Check that long timeouts for embedded expressions are propagated
-        // correctly.
     }
 
     private ArrayList<Token> mExpr;  // The actual representation
