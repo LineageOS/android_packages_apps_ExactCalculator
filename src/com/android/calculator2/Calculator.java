@@ -230,7 +230,7 @@ public class Calculator extends Activity
     private final DragLayout.CloseCallback mCloseCallback = new DragLayout.CloseCallback() {
         @Override
         public void onClose() {
-            removeHistoryFragment(FragmentTransaction.TRANSIT_NONE);
+            removeHistoryFragment();
         }
     };
 
@@ -610,7 +610,7 @@ public class Calculator extends Activity
             if (mDragLayout.isOpen()) {
                 if (!mHistoryFragment.stopActionModeOrContextMenu()) {
                     mDragLayout.setClosed();
-                    removeHistoryFragment(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+                    removeHistoryFragment();
                 }
                 return;
             }
@@ -732,16 +732,13 @@ public class Calculator extends Activity
         }
     }
 
-    private void removeHistoryFragment(int transit) {
+    private void removeHistoryFragment() {
         final FragmentManager manager = getFragmentManager();
         if (manager == null || manager.isDestroyed()) {
             return;
         }
-        manager.beginTransaction()
-                .remove(mHistoryFragment)
-                .setTransition(transit)
-                .commit();
-        manager.executePendingTransactions();
+        manager.popBackStackImmediate(HistoryFragment.TAG,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     /**
