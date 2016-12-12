@@ -29,11 +29,9 @@ import android.util.Log;
 import com.hp.creals.CR;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -526,6 +524,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                     handleTimeout();
                 }
             };
+            mTimeoutHandler.removeCallbacks(mTimeoutRunnable);
             mTimeoutHandler.postDelayed(mTimeoutRunnable, timeout);
         }
 
@@ -1216,17 +1215,17 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     private boolean cancel(ExprInfo expr, boolean quiet) {
         if (expr.mEvaluator != null) {
+            if (quiet) {
+                ((AsyncEvaluator)(expr.mEvaluator)).suppressCancelMessage();
+            }
             // Reevaluation in progress.
-            if (expr.mVal != null) {
+            if (expr.mVal.get() != null) {
                 expr.mEvaluator.cancel(true);
                 expr.mResultStringOffsetReq = expr.mResultStringOffset;
                 // Backgound computation touches only constructive reals.
                 // OK not to wait.
                 expr.mEvaluator = null;
             } else {
-                if (quiet) {
-                    ((AsyncEvaluator)(expr.mEvaluator)).suppressCancelMessage();
-                }
                 expr.mEvaluator.cancel(true);
                 if (expr == mMainExpr) {
                     // The expression is modifiable, and the AsyncTask is reading it.

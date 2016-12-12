@@ -1296,8 +1296,12 @@ public class Calculator extends Activity
     private boolean prepareForHistory() {
         if (mCurrentState == CalculatorState.ANIMATE) {
             throw new AssertionError("onUserInteraction should have ended animation");
-        } else if (mCurrentState == CalculatorState.EVALUATE
-                || mCurrentState == CalculatorState.INIT) {
+        } else if (mCurrentState == CalculatorState.EVALUATE) {
+            // Cancel current evaluation
+            cancelIfEvaluating(true /* quiet */ );
+            setState(CalculatorState.INPUT);
+            return true;
+        } else if (mCurrentState == CalculatorState.INIT) {
             // Easiest to just refuse.  Otherwise we can see a state change
             // while in history mode, which causes all sorts of problems.
             // TODO: Consider other alternatives. If we're just doing the decimal conversion
