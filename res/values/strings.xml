@@ -306,7 +306,7 @@
     <string name="dialog_timeout">Timeout</string>
 
     <!--
-      Message for alert dialog when user is about to clear history and memory. [CHAR_LIMIT=30]
+      Message for alert dialog when user is about to clear history and memory. [CHAR_LIMIT=NONE]
     -->
     <string name="dialog_clear">Clear history and memory?</string>
 
