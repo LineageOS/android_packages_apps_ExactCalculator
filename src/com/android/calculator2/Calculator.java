@@ -34,7 +34,6 @@ import android.animation.PropertyValuesHolder;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -1275,7 +1274,7 @@ public class Calculator extends Activity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_history:
-                showHistoryFragment(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                showHistoryFragment();
                 mDragLayout.setOpen();
                 return true;
             case R.id.menu_leading:
@@ -1305,7 +1304,7 @@ public class Calculator extends Activity
 
     @Override
     public void onStartDraggingOpen() {
-        showHistoryFragment(FragmentTransaction.TRANSIT_NONE);
+        showHistoryFragment();
     }
 
     @Override
@@ -1355,7 +1354,7 @@ public class Calculator extends Activity
         return true;
     }
 
-    private void showHistoryFragment(int transit) {
+    private void showHistoryFragment() {
         final FragmentManager manager = getFragmentManager();
         if (manager == null || manager.isDestroyed()) {
             return;
@@ -1368,7 +1367,6 @@ public class Calculator extends Activity
 
             manager.beginTransaction()
                     .replace(R.id.history_frame, mHistoryFragment, HistoryFragment.TAG)
-                    .setTransition(transit)
                     .addToBackStack(HistoryFragment.TAG)
                     .commit();
             manager.executePendingTransactions();
