@@ -101,7 +101,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                             // append an exponent insteadd of replacing trailing digits.
     private final Object mWidthLock = new Object();
                             // Protects the next five fields.  These fields are only
-                            // Updated by the UI thread, and read accesses by the UI thread
+                            // updated by the UI thread, and read accesses by the UI thread
                             // sometimes do not acquire the lock.
     private int mWidthConstraint = 0;
                             // Our total width in pixels minus space for ellipsis.
@@ -837,7 +837,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * UI thread only.
      */
     public boolean fullTextIsExact() {
-        return !mScrollable || (mMaxCharOffset == getCharOffset(mCurrentPos)
+        return !mScrollable || (getCharOffset(mMaxPos) == getCharOffset(mCurrentPos)
                 && mMaxCharOffset != MAX_RIGHT_SCROLL);
     }
 
@@ -855,9 +855,14 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             return getFullText(false /* withSeparators */);
         }
         // It's reasonable to compute and copy the exact result instead.
-        final int nonNegLsdOffset = Math.max(0, mLsdOffset);
-        final String rawResult = mEvaluator.getResult(mIndex).toStringTruncated(nonNegLsdOffset);
-        final String formattedResult = formatResult(rawResult, nonNegLsdOffset, MAX_COPY_SIZE,
+        int fractionLsdOffset = Math.max(0, mLsdOffset);
+        String rawResult = mEvaluator.getResult(mIndex).toStringTruncated(fractionLsdOffset);
+        if (mLsdOffset <= -1) {
+            // Result has trailing decimal point. Remove it.
+            rawResult = rawResult.substring(0, rawResult.length() - 1);
+            fractionLsdOffset = -1;
+        }
+        final String formattedResult = formatResult(rawResult, fractionLsdOffset, MAX_COPY_SIZE,
                 false, rawResult.charAt(0) == '-', null, true /* forcePrecision */,
                 false /* forceSciNotation */, false /* insertCommas */);
         return KeyMaps.translateResult(formattedResult);

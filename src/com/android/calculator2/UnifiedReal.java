@@ -366,6 +366,7 @@ public class UnifiedReal {
      * Returns a truncated representation of the result.
      * If exactlyTruncatable(), we round correctly towards zero. Otherwise the resulting digit
      * string may occasionally be rounded up instead.
+     * Always includes a decimal point in the result.
      * The result includes n digits to the right of the decimal point.
      * @param n result precision, >= 0
      */
