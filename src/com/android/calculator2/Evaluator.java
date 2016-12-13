@@ -1228,7 +1228,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     private boolean cancel(ExprInfo expr, boolean quiet) {
         if (expr.mEvaluator != null) {
-            if (quiet) {
+            if (quiet && (expr.mEvaluator instanceof AsyncEvaluator)) {
                 ((AsyncEvaluator)(expr.mEvaluator)).suppressCancelMessage();
             }
             // Reevaluation in progress.
