@@ -1062,6 +1062,10 @@ public class UnifiedReal {
         if (definitelyEquals(ZERO)) {
             return ONE;
         }
+        if (definitelyEquals(ONE)) {
+            // Avoid redundant computations, and ensure we recognize all instances as equal.
+            return E;
+        }
         final BoundedRational crExp = getExp(mCrFactor);
         if (crExp != null) {
             if (mRatFactor.signum() < 0) {
