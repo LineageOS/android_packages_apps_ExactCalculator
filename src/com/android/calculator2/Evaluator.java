@@ -267,6 +267,9 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     public static final int INVALID_MSD = Integer.MAX_VALUE;
 
+    // Used to represent an error result. Not displayed.
+    public static final String ERRONEOUS_RESULT = "ERR";
+
     /**
      * An individual CalculatorExpr, together with its evaluation state.
      * Only the main expression may be changed in-place. The HISTORY_MAIN_INDEX expression is
@@ -301,6 +304,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         // We cache the best known decimal result in mResultString.  Whenever that is
         // non-null, it is computed to exactly mResultStringOffset, which is always > 0.
         // Valid only if mResultString is non-null and (for the main expression) !mChangedValue.
+        // ERRONEOUS_RESULT indicates evaluation resulted in an error.
         public String mResultString;
         public int mResultStringOffset = 0;
         // Number of digits to which (possibly incomplete) evaluation has been requested.
@@ -612,6 +616,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                     }
                     mListener.onCancelled(mIndex);
                 } else {
+                    mExprInfo.mResultString = ERRONEOUS_RESULT;
                     mListener.onError(mIndex, result.errorResourceId);
                 }
                 return;
@@ -739,6 +744,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                 // This should only be possible in the extremely rare case of encountering a
                 // domain error while reevaluating or in case of a precision overflow.  We don't
                 // know of a way to get the latter with a plausible amount of user input.
+                mExprInfo.mResultString = ERRONEOUS_RESULT;
                 mListener.onError(mIndex, R.string.error_nan);
             } else {
                 if (result.newResultStringOffset < mExprInfo.mResultStringOffset) {
@@ -758,6 +764,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     /**
      * If necessary, start an evaluation of the expression at the given index to precOffset.
      * If we start an evaluation the listener is notified on completion.
+     * Only called if prior evaluation succeeded.
      */
     private void ensureCachePrec(long index, int precOffset, EvaluationListener listener) {
         ExprInfo ei = mExprs.get(index);
@@ -1152,7 +1159,8 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
             return;
         }
         ExprInfo ei = ensureExprIsCached(index);
-        if (ei.mResultString != null && !(index == MAIN_INDEX && mChangedValue)) {
+        if (ei.mResultString != null && ei.mResultString != ERRONEOUS_RESULT
+                && !(index == MAIN_INDEX && mChangedValue)) {
             // Already done. Just notify.
             notifyImmediately(MAIN_INDEX, mMainExpr, listener, cmi);
             return;
@@ -1178,6 +1186,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
             if (index == HISTORY_MAIN_INDEX) {
                 // We don't want to compute a result for HISTORY_MAIN_INDEX that was
                 // not already computed for the main expression. Pretend we timed out.
+                // The error case doesn't get here.
                 listener.onCancelled(index);
             } else if ((ei.mEvaluator instanceof AsyncEvaluator)
                     && ((AsyncEvaluator)(ei.mEvaluator)).mRequired) {
@@ -1187,6 +1196,10 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                 cancel(ei, true);
                 evaluateResult(index, listener, cmi, true);
             }
+        } else if (ei.mResultString == ERRONEOUS_RESULT) {
+            // Just re-evaluate to generate a new notification.
+            cancel(ei, true);
+            evaluateResult(index, listener, cmi, true);
         } else {
             notifyImmediately(index, ei, listener, cmi);
         }
@@ -1443,7 +1456,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     public long preserve(boolean in_history) {
         ExprInfo ei = copy(MAIN_INDEX, true);
-        if (ei.mResultString == null) {
+        if (ei.mResultString == null || ei.mResultString == ERRONEOUS_RESULT) {
             throw new AssertionError("Preserving unevaluated expression");
         }
         return addToDB(in_history, ei);
@@ -1611,7 +1624,8 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * mExpr is left alone.  Return false if result is unavailable.
      */
     private boolean copyToSaved(long index) {
-        if (mExprs.get(index).mResultString == null) {
+        if (mExprs.get(index).mResultString == null
+                || mExprs.get(index).mResultString == ERRONEOUS_RESULT) {
             return false;
         }
         setSavedIndex((index == MAIN_INDEX) ? preserve(false) : index);
