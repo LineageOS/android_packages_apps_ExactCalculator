@@ -267,7 +267,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     public static final int INVALID_MSD = Integer.MAX_VALUE;
 
-    // Used to represent an error result. Not displayed.
+    // Used to represent an erroneous result or a required evaluation. Not displayed.
     public static final String ERRONEOUS_RESULT = "ERR";
 
     /**
@@ -616,7 +616,9 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                     }
                     mListener.onCancelled(mIndex);
                 } else {
-                    mExprInfo.mResultString = ERRONEOUS_RESULT;
+                    if (mRequired) {
+                        mExprInfo.mResultString = ERRONEOUS_RESULT;
+                    }
                     mListener.onError(mIndex, result.errorResourceId);
                 }
                 return;
