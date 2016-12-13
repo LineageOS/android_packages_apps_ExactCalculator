@@ -77,13 +77,11 @@
     <string name="menu_fraction" msgid="1247477377840252234">"भाग रुपमा उत्तर"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"खुलास्रोत इजाजतपत्रहरू"</string>
     <string name="menu_history" msgid="9006222701220105452">"इतिहास"</string>
-    <!-- no translation found for menu_clear_history (2336526604226069572) -->
-    <skip />
+    <string name="menu_clear_history" msgid="2336526604226069572">"खाली गर्नुहोस्"</string>
     <string name="title_history" msgid="7820912156315181539">"इतिहास"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"माथि नेभिगेसन गर्नुहोस्"</string>
     <string name="dialog_timeout" msgid="9069768442342329065">"टाइमआउट भयो"</string>
-    <!-- no translation found for dialog_clear (7137395395908350702) -->
-    <skip />
+    <string name="dialog_clear" msgid="7137395395908350702">"इतिहास र मेमोरी खाली गर्ने हो?"</string>
     <string name="title_current_expression" msgid="2442754548537900591">"हालको अभिव्यक्ति"</string>
     <string name="no_history" msgid="4331262030447527188">"कुनै इतिहास छैन"</string>
 </resources>
