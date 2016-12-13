@@ -277,6 +277,7 @@ public class Calculator extends Activity
     private View mDeleteButton;
     private View mClearButton;
     private View mEqualButton;
+    private View mMainCalculator;
 
     private TextView mInverseToggle;
     private TextView mModeToggle;
@@ -390,6 +391,7 @@ public class Calculator extends Activity
             }
         });
 
+        mMainCalculator = findViewById(R.id.main_calculator);
         mDisplayView = (CalculatorDisplay) findViewById(R.id.display);
         mModeView = (TextView) findViewById(R.id.mode);
         mFormulaText = (CalculatorFormula) findViewById(R.id.formula);
@@ -463,6 +465,14 @@ public class Calculator extends Activity
         if (mDisplayView.isToolbarVisible()) {
             showAndMaybeHideToolbar();
         }
+        // If HistoryFragment is showing, hide the main Calculator elements from accessibility.
+        // This is because Talkback does not use visibility as a cue for RelativeLayout elements,
+        // and RelativeLayout is the base class of DragLayout.
+        // If we did not do this, it would be possible to traverse to main Calculator elements from
+        // HistoryFragment.
+        mMainCalculator.setImportantForAccessibility(
+                mDragLayout.isOpen() ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                        : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     }
 
     @Override
@@ -734,11 +744,13 @@ public class Calculator extends Activity
 
     private void removeHistoryFragment() {
         final FragmentManager manager = getFragmentManager();
-        if (manager == null || manager.isDestroyed()) {
-            return;
+        if (manager != null && !manager.isDestroyed()) {
+            manager.popBackStackImmediate(HistoryFragment.TAG,
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
-        manager.popBackStackImmediate(HistoryFragment.TAG,
-                FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        // When HistoryFragment is hidden, the main Calculator is important for accessibility again.
+        mMainCalculator.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     }
 
     /**
@@ -1334,6 +1346,10 @@ public class Calculator extends Activity
                     .addToBackStack(HistoryFragment.TAG)
                     .commit();
             manager.executePendingTransactions();
+
+            // When HistoryFragment is visible, hide all descendants of the main Calculator view.
+            mMainCalculator.setImportantForAccessibility(
+                    View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
         }
         // TODO: pass current scroll position of result
     }

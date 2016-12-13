@@ -21,7 +21,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/activity_calculator" />
+    <include
+        android:id="@+id/main_calculator"
+        layout="@layout/activity_calculator" />
 
     <FrameLayout
         android:id="@+id/history_frame"
