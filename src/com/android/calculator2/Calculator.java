@@ -940,6 +940,10 @@ public class Calculator extends Activity
         mResultText.onReevaluate(index);
     }
 
+    public void onMemoryStateChanged() {
+        mFormulaText.onMemoryStateChanged();
+    }
+
     @Override
     public void onTextSizeChanged(final TextView textView, float oldSize) {
         if (mCurrentState != CalculatorState.INPUT) {
@@ -1236,6 +1240,7 @@ public class Calculator extends Activity
                 // TODO: It's not clear what we should really do here. This is an initial hack.
                 // May want to make onClearAnimationEnd() private if/when we fix this.
                 onClearAnimationEnd();
+                onMemoryStateChanged();
                 onBackPressed();
             } else if (fragment.getTag() == Evaluator.TIMEOUT_DIALOG_TAG) {
                 // Timeout extension request.

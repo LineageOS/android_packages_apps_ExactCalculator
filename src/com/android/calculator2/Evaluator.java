@@ -253,7 +253,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     // estimating exponent size for truncating short representation.
     private static final int EXP_COST = 3;
 
-    private final Activity mActivity;
+    private final Calculator mCalculator;
 
     //  A hopefully unique name associated with mSaved.
     private String mSavedName;
@@ -335,12 +335,12 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     Evaluator(Calculator calculator) {
-        mActivity = calculator;
+        mCalculator = calculator;
         setMainExpr(new ExprInfo(new CalculatorExpr(), false));
         mSavedName = "none";
         mTimeoutHandler = new Handler();
 
-        mExprDB = new ExpressionDB(mActivity);
+        mExprDB = new ExpressionDB(mCalculator);
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(calculator);
         mMainExpr.mDegreeMode = mSharedPrefs.getBoolean(KEY_PREF_DEGREE_MODE, false);
         long savedIndex = mSharedPrefs.getLong(KEY_PREF_SAVED_INDEX, 0L);
@@ -406,7 +406,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     private void displayCancelledMessage() {
-        AlertDialogFragment.showMessageDialog(mActivity, 0, R.string.cancelled, 0, null);
+        AlertDialogFragment.showMessageDialog(mCalculator, 0, R.string.cancelled, 0, null);
     }
 
     // Timeout handling.
@@ -455,7 +455,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     private static final int QUICK_MAX_RESULT_BITS = 150000;
 
     private void displayTimeoutMessage(boolean longTimeout) {
-        AlertDialogFragment.showMessageDialog(mActivity, R.string.dialog_timeout,
+        AlertDialogFragment.showMessageDialog(mCalculator, R.string.dialog_timeout,
                 R.string.timeout, longTimeout ? 0 : R.string.ok_remove_timeout,
                 TIMEOUT_DIALOG_TAG);
     }
@@ -1637,6 +1637,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * The expression at index is presumed to have been evaluated.
      */
     public void copyToMemory(long index) {
+        mCalculator.onMemoryStateChanged();
         setMemoryIndex((index == MAIN_INDEX) ? preserve(false) : index);
     }
 
@@ -1865,7 +1866,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     public Spannable getExprAsSpannable(long index) {
-        return getExpr(index).toSpannableStringBuilder(mActivity);
+        return getExpr(index).toSpannableStringBuilder(mCalculator);
     }
 
     /**
