@@ -546,7 +546,7 @@ public class Calculator extends Activity
                 mResultText.setTextColor(
                         ContextCompat.getColor(this, R.color.display_result_text_color));
                 getWindow().setStatusBarColor(
-                        ContextCompat.getColor(this, R.color.calculator_accent_color));
+                        ContextCompat.getColor(this, R.color.calculator_statusbar_color));
             }
 
             invalidateOptionsMenu();
@@ -1114,7 +1114,7 @@ public class Calculator extends Activity
         }
         cancelIfEvaluating(true);
         announceClearedForAccessibility();
-        reveal(mCurrentButton, R.color.calculator_accent_color, new AnimatorListenerAdapter() {
+        reveal(mCurrentButton, R.color.calculator_primary_color, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 onClearAnimationEnd();

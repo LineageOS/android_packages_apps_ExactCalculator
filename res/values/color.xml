@@ -17,8 +17,14 @@
 
 <resources>
 
-    <!-- Default background color for the status bar. -->
+    <!-- Default accent color. -->
     <color name="calculator_accent_color">#0097A7</color>
+
+    <!-- Primary color (Color for the toolbars). -->
+    <color name="calculator_primary_color">#00BCD4</color>
+
+    <!-- Status bar color. -->
+    <color name="calculator_statusbar_color">#0096A9</color>
 
     <!-- Color to indicate an error has occured. -->
     <color name="calculator_error_color">#C2185B</color>
