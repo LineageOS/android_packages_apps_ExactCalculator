@@ -22,6 +22,7 @@
     android:paddingTop="@dimen/history_divider_padding"
     android:clipChildren="false"
     android:clipToPadding="false"
+    android:importantForAccessibility="no"
     android:orientation="vertical">
 
     <View

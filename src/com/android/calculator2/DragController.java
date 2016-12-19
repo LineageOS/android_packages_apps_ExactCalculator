@@ -94,9 +94,17 @@ public final class DragController {
     }
 
     public void animateViews(float yFraction, RecyclerView recyclerView) {
-        final HistoryAdapter.ViewHolder vh = (HistoryAdapter.ViewHolder)
-                recyclerView.findViewHolderForAdapterPosition(0);
-        if (yFraction > 0) {
+        if (mDisplayFormula == null
+                || mDisplayResult == null
+                || mToolbar == null
+                || mEvaluator == null) {
+            // Bail if we aren't yet initialized.
+            return;
+        }
+
+        final HistoryAdapter.ViewHolder vh =
+                (HistoryAdapter.ViewHolder) recyclerView.findViewHolderForAdapterPosition(0);
+        if (yFraction > 0 && vh != null) {
             recyclerView.setVisibility(View.VISIBLE);
         }
         if (vh != null && !EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
@@ -123,40 +131,37 @@ public final class DragController {
                 mAnimationInitialized = true;
             }
 
-            if (mAnimationInitialized) {
-                result.setScaleX(mAnimationController.getResultScale(yFraction));
-                result.setScaleY(mAnimationController.getResultScale(yFraction));
+            result.setScaleX(mAnimationController.getResultScale(yFraction));
+            result.setScaleY(mAnimationController.getResultScale(yFraction));
 
-                formula.setScaleX(mAnimationController.getFormulaScale(yFraction));
-                formula.setScaleY(mAnimationController.getFormulaScale(yFraction));
+            formula.setScaleX(mAnimationController.getFormulaScale(yFraction));
+            formula.setScaleY(mAnimationController.getFormulaScale(yFraction));
 
-                formula.setPivotX(formula.getWidth() - formula.getPaddingEnd());
-                formula.setPivotY(formula.getHeight() - formula.getPaddingBottom());
+            formula.setPivotX(formula.getWidth() - formula.getPaddingEnd());
+            formula.setPivotY(formula.getHeight() - formula.getPaddingBottom());
 
-                result.setPivotX(result.getWidth() - result.getPaddingEnd());
-                result.setPivotY(result.getHeight() - result.getPaddingBottom());
+            result.setPivotX(result.getWidth() - result.getPaddingEnd());
+            result.setPivotY(result.getHeight() - result.getPaddingBottom());
 
-                formula.setTranslationX(mAnimationController.getFormulaTranslationX(yFraction));
-                formula.setTranslationY(mAnimationController.getFormulaTranslationY(yFraction));
+            formula.setTranslationX(mAnimationController.getFormulaTranslationX(yFraction));
+            formula.setTranslationY(mAnimationController.getFormulaTranslationY(yFraction));
 
-                result.setTranslationX(mAnimationController.getResultTranslationX(yFraction));
-                result.setTranslationY(mAnimationController.getResultTranslationY(yFraction));
+            result.setTranslationX(mAnimationController.getResultTranslationX(yFraction));
+            result.setTranslationY(mAnimationController.getResultTranslationY(yFraction));
 
-                formula.setTextColor((int) mColorEvaluator.evaluate(yFraction, mFormulaStartColor,
-                        mFormulaEndColor));
+            formula.setTextColor((int) mColorEvaluator.evaluate(yFraction, mFormulaStartColor,
+                    mFormulaEndColor));
 
-                result.setTextColor((int) mColorEvaluator.evaluate(yFraction, mResultStartColor,
-                        mResultEndColor));
+            result.setTextColor((int) mColorEvaluator.evaluate(yFraction, mResultStartColor,
+                    mResultEndColor));
 
-                date.setTranslationY(mAnimationController.getDateTranslationY(yFraction));
-                divider.setTranslationY(mAnimationController.getDateTranslationY(yFraction));
-            }
+            date.setTranslationY(mAnimationController.getDateTranslationY(yFraction));
+            divider.setTranslationY(mAnimationController.getDateTranslationY(yFraction));
         } else if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
             // There is no current expression but we still need to collect information
             // to translate the other viewholders.
             if (!mAnimationInitialized) {
                 mAnimationController.initializeDisplayHeight();
-
                 mAnimationInitialized = true;
             }
         }
@@ -180,11 +185,8 @@ public final class DragController {
 
     /**
      * Reset all initialized values.
-     * If the DragLayout is closed, set recyclerview to INVISIBLE to avoid flickering.
      */
-    public void initializeAnimation(RecyclerView recyclerView, boolean isResult,
-            boolean oneLine, boolean isOpen) {
-        recyclerView.setVisibility(isOpen ? View.VISIBLE : View.INVISIBLE);
+    public void initializeAnimation(boolean isResult, boolean oneLine) {
         mAnimationInitialized = false;
         initializeController(isResult, oneLine);
     }
@@ -245,7 +247,7 @@ public final class DragController {
 
         public void initializeScales(AlignedTextView formula, CalculatorResult result) {
             // Calculate the scale for the text
-            mFormulaScale = (mDisplayFormula.getTextSize() * 1.0f) / formula.getTextSize();
+            mFormulaScale = mDisplayFormula.getTextSize() / formula.getTextSize();
         }
 
         public void initializeFormulaTranslationY(AlignedTextView formula,
@@ -281,38 +283,37 @@ public final class DragController {
         }
 
         public float getResultTranslationX(float yFraction) {
-            return (mResultTranslationX * yFraction) - mResultTranslationX;
+            return mResultTranslationX * (yFraction - 1f);
         }
 
         public float getResultTranslationY(float yFraction) {
-            return (mResultTranslationY * yFraction) - mResultTranslationY;
+            return mResultTranslationY * (yFraction - 1f);
         }
 
         public float getResultScale(float yFraction) {
-            return 1;
+            return 1f;
         }
 
         public float getFormulaScale(float yFraction) {
-            return mFormulaScale - (mFormulaScale * yFraction) + yFraction;
+            return mFormulaScale + (1f - mFormulaScale) * yFraction;
         }
 
         public float getFormulaTranslationX(float yFraction) {
-            return (mFormulaTranslationX * yFraction) -
-                    mFormulaTranslationX;
+            return mFormulaTranslationX * (yFraction - 1f);
         }
 
         public float getFormulaTranslationY(float yFraction) {
             // Scale linearly between -FormulaTranslationY and 0.
-            return (mFormulaTranslationY * yFraction) - mFormulaTranslationY;
+            return mFormulaTranslationY * (yFraction - 1f);
         }
 
         public float getDateTranslationY(float yFraction) {
             // We also want the date to start out above the visible screen with
             // this distance decreasing as it's pulled down.
             // Account for the scaled formula height.
-            return -mToolbar.getHeight() * (1 - yFraction)
+            return -mToolbar.getHeight() * (1f - yFraction)
                     + getFormulaTranslationY(yFraction)
-                    - mDisplayFormula.getHeight() /getFormulaScale(yFraction) * (1 - yFraction);
+                    - mDisplayFormula.getHeight() /getFormulaScale(yFraction) * (1f - yFraction);
         }
 
         public float getHistoryElementTranslationY(float yFraction) {
@@ -331,8 +332,7 @@ public final class DragController {
         public void initializeScales(AlignedTextView formula, CalculatorResult result) {
             final float textSize = mDisplayResult.getTextSize() * mDisplayResult.getScaleX();
             mResultScale = textSize / result.getTextSize();
-
-            mFormulaScale = 1;
+            mFormulaScale = 1f;
         }
 
         @Override
@@ -392,14 +392,14 @@ public final class DragController {
 
         @Override
         public float getFormulaScale(float yFraction) {
-            return 1;
+            return 1f;
         }
 
         @Override
         public float getDateTranslationY(float yFraction) {
             // We also want the date to start out above the visible screen with
             // this distance decreasing as it's pulled down.
-            return -mToolbar.getHeight() * (1 - yFraction)
+            return -mToolbar.getHeight() * (1f - yFraction)
                     + (mResultTranslationY * yFraction) - mResultTranslationY
                     - mDisplayFormula.getPaddingTop() +
                     (mDisplayFormula.getPaddingTop() * yFraction);
@@ -448,27 +448,27 @@ public final class DragController {
 
         @Override
         public float getResultTranslationX(float yFraction) {
-            return 0;
+            return 0f;
         }
 
         @Override
         public float getResultTranslationY(float yFraction) {
-            return 0;
+            return 0f;
         }
 
         @Override
         public float getFormulaScale(float yFraction) {
-            return 1;
+            return 1f;
         }
 
         @Override
         public float getDateTranslationY(float yFraction) {
-            return 0;
+            return 0f;
         }
 
         @Override
         public float getHistoryElementTranslationY(float yFraction) {
-            return -mDisplayHeight * (1 - yFraction) - mBottomPaddingHeight;
+            return -mDisplayHeight * (1f - yFraction) - mBottomPaddingHeight;
         }
 
         @Override

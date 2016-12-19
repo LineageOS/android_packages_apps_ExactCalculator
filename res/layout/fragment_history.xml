@@ -19,7 +19,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/display_background_color"
     android:clipChildren="false"
     android:orientation="vertical">
 
@@ -40,9 +39,12 @@
         android:id="@+id/history_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/display_background_color"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:paddingBottom="@dimen/history_divider_padding"
+        android:visibility="invisible"
         app:layoutManager="LinearLayoutManager"
         app:reverseLayout="true" />
+
 </LinearLayout>

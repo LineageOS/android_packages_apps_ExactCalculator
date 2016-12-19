@@ -16,6 +16,9 @@
 
 package com.android.calculator2;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -26,18 +29,17 @@ import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class DragLayout extends RelativeLayout {
+public class DragLayout extends ViewGroup {
 
-    private static final String TAG = "DragLayout";
-    private static final double AUTO_OPEN_SPEED_LIMIT = 800.0;
+    private static final double AUTO_OPEN_SPEED_LIMIT = 600.0;
     private static final String KEY_IS_OPEN = "IS_OPEN";
     private static final String KEY_SUPER_STATE = "SUPER_STATE";
 
@@ -51,8 +53,6 @@ public class DragLayout extends RelativeLayout {
     private final Map<Integer, PointF> mLastMotionPoints = new HashMap<>();
     private final Rect mHitRect = new Rect();
 
-    private int mDraggingState = ViewDragHelper.STATE_IDLE;
-    private int mDraggingBorder;
     private int mVerticalRange;
     private boolean mIsOpen;
 
@@ -68,28 +68,30 @@ public class DragLayout extends RelativeLayout {
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-        if (changed) {
-            for (DragCallback c : mDragCallbacks) {
-                c.onLayout(t - b);
-            }
-            if (mIsOpen) {
-                setOpen();
-            } else {
-                setClosed();
-            }
-        }
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        measureChildren(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        int height = 0;
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        int displayHeight = 0;
         for (DragCallback c : mDragCallbacks) {
-            height += c.getDisplayHeight();
+            displayHeight = Math.max(displayHeight, c.getDisplayHeight());
         }
-        mVerticalRange = h - height;
-        super.onSizeChanged(w, h, oldw, oldh);
+        mVerticalRange = getHeight() - displayHeight;
+
+        final int childCount = getChildCount();
+        for (int i = 0; i < childCount; ++i) {
+            final View child = getChildAt(i);
+
+            int top = 0;
+            if (child == mHistoryFrame) {
+                top = mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE
+                        ? child.getTop() : (mIsOpen ? 0 : -mVerticalRange);
+            }
+            child.layout(0, top, child.getMeasuredWidth(), top + child.getMeasuredHeight());
+        }
     }
 
     @Override
@@ -105,6 +107,11 @@ public class DragLayout extends RelativeLayout {
         if (state instanceof Bundle) {
             final Bundle bundle = (Bundle) state;
             mIsOpen = bundle.getBoolean(KEY_IS_OPEN);
+            mHistoryFrame.setVisibility(mIsOpen ? View.VISIBLE : View.INVISIBLE);
+            for (DragCallback c : mDragCallbacks) {
+                c.onInstanceStateRestored(mIsOpen);
+            }
+
             state = bundle.getParcelable(KEY_SUPER_STATE);
         }
         super.onRestoreInstanceState(state);
@@ -179,8 +186,9 @@ public class DragLayout extends RelativeLayout {
     }
 
     public boolean isMoving() {
-        return mDraggingState == ViewDragHelper.STATE_DRAGGING
-                || mDraggingState == ViewDragHelper.STATE_SETTLING;
+        final int draggingState = mDragHelper.getViewDragState();
+        return draggingState == ViewDragHelper.STATE_DRAGGING
+                || draggingState == ViewDragHelper.STATE_SETTLING;
     }
 
     public boolean isOpen() {
@@ -188,14 +196,54 @@ public class DragLayout extends RelativeLayout {
     }
 
     public void setOpen() {
-        mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, mVerticalRange);
-        mHistoryFrame.setVisibility(VISIBLE);
-        mIsOpen = true;
+        if (!mIsOpen) {
+            mIsOpen = true;
+            mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, 0);
+            mHistoryFrame.setVisibility(VISIBLE);
+        }
     }
 
     public void setClosed() {
-        mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, 0);
-        mIsOpen = false;
+        if (mIsOpen) {
+            mIsOpen = false;
+            mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, -mVerticalRange);
+            mHistoryFrame.setVisibility(View.INVISIBLE);
+
+            if (mCloseCallback != null) {
+                mCloseCallback.onClose();
+            }
+        }
+    }
+
+    public Animator createAnimator(final boolean toOpen) {
+        mHistoryFrame.setVisibility(VISIBLE);
+
+        final ValueAnimator animator = ValueAnimator.ofInt(mHistoryFrame.getTop(),
+                toOpen ? 0 : -mVerticalRange);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                final int top = (int) animator.getAnimatedValue();
+                mHistoryFrame.offsetTopAndBottom(top - mHistoryFrame.getTop());
+
+                for (DragCallback c : mDragCallbacks) {
+                    // Top is between [-mVerticalRange, 0].
+                    c.whileDragging(1f + (float) top / mVerticalRange);
+                }
+            }
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                if (toOpen) {
+                    setOpen();
+                } else {
+                    setClosed();
+                }
+            }
+        });
+
+        return animator;
     }
 
     public void setCloseCallback(CloseCallback callback) {
@@ -228,6 +276,9 @@ public class DragLayout extends RelativeLayout {
         // Callback when a drag to open begins.
         void onStartDraggingOpen();
 
+        // Callback in onRestoreInstanceState.
+        void onInstanceStateRestored(boolean isOpen);
+
         // Animate the RecyclerView text.
         void whileDragging(float yFraction);
 
@@ -235,43 +286,26 @@ public class DragLayout extends RelativeLayout {
         boolean shouldCaptureView(View view, int x, int y);
 
         int getDisplayHeight();
-
-        void onLayout(int translation);
     }
 
     public class DragHelperCallback extends ViewDragHelper.Callback {
         @Override
         public void onViewDragStateChanged(int state) {
-            if (state == mDraggingState) {
-                // No change.
-                return;
-            }
-            if ((mDraggingState == ViewDragHelper.STATE_DRAGGING
-                    || mDraggingState == ViewDragHelper.STATE_SETTLING)
-                    && state == ViewDragHelper.STATE_IDLE) {
-                // The view stopped moving.
-                if (mDraggingBorder == 0) {
+            // The view stopped moving.
+            if (state == ViewDragHelper.STATE_IDLE) {
+                if (mDragHelper.getCapturedView().getTop() < -(mVerticalRange / 2)) {
                     setClosed();
-                    mHistoryFrame.setVisibility(GONE);
-                    if (mCloseCallback != null) {
-                        mCloseCallback.onClose();
-                    }
-                } else if (mDraggingBorder == mVerticalRange) {
+                } else {
                     setOpen();
                 }
-            } else if (state == ViewDragHelper.STATE_DRAGGING && !mIsOpen) {
-                onStartDragging();
             }
-            mDraggingState = state;
         }
 
         @Override
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
-            mDraggingBorder = top;
-
-            // Animate RecyclerView text.
             for (DragCallback c : mDragCallbacks) {
-                c.whileDragging(top / (mVerticalRange * 1.0f));
+                // Top is between [-mVerticalRange, 0].
+                c.whileDragging(1f + (float) top / mVerticalRange);
             }
         }
 
@@ -300,27 +334,32 @@ public class DragLayout extends RelativeLayout {
 
         @Override
         public int clampViewPositionVertical(View child, int top, int dy) {
-            final int topBound = getPaddingTop();
-            final int bottomBound = mVerticalRange;
-            return Math.min(Math.max(top, topBound), bottomBound);
+            return Math.max(Math.min(top, 0), -mVerticalRange);
+        }
+
+        @Override
+        public void onViewCaptured(View capturedChild, int activePointerId) {
+            super.onViewCaptured(capturedChild, activePointerId);
+
+            if (!mIsOpen) {
+                mIsOpen = true;
+                onStartDragging();
+            }
         }
 
         @Override
         public void onViewReleased(View releasedChild, float xvel, float yvel) {
-            boolean settleToOpen = false;
-            final float threshold = mVerticalRange / 2;
+            final boolean settleToOpen;
             if (yvel > AUTO_OPEN_SPEED_LIMIT) {
                 // Speed has priority over position.
                 settleToOpen = true;
             } else if (yvel < -AUTO_OPEN_SPEED_LIMIT) {
                 settleToOpen = false;
-            } else if (mDraggingBorder > threshold) {
-                settleToOpen = true;
-            } else if (mDraggingBorder < threshold) {
-                settleToOpen = false;
+            } else {
+                settleToOpen = releasedChild.getTop() > -(mVerticalRange / 2);
             }
 
-            if (mDragHelper.settleCapturedViewAt(0, settleToOpen ? mVerticalRange : 0)) {
+            if (mDragHelper.settleCapturedViewAt(0, settleToOpen ? 0 : -mVerticalRange)) {
                 ViewCompat.postInvalidateOnAnimation(DragLayout.this);
             }
         }

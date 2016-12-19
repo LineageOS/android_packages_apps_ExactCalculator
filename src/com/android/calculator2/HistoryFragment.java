@@ -16,8 +16,9 @@
 
 package com.android.calculator2;
 
+import android.animation.Animator;
 import android.app.Fragment;
-import android.graphics.Color;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -49,7 +50,6 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mAdapter = new HistoryAdapter(mDataSet);
     }
 
@@ -58,6 +58,9 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
             Bundle savedInstanceState) {
         final View view = inflater.inflate(
                 R.layout.fragment_history, container, false /* attachToRoot */);
+
+        mDragLayout = (DragLayout) container.getRootView().findViewById(R.id.drag_layout);
+        mDragLayout.addDragCallback(this);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.history_recycler_view);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -110,10 +113,6 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
         final boolean isResultLayout = activity.isResultLayout();
         final boolean isOneLine = activity.isOneLine();
 
-        mDragLayout = (DragLayout) activity.findViewById(R.id.drag_layout);
-        mDragLayout.removeDragCallback(this);
-        mDragLayout.addDragCallback(this);
-
         if (mEvaluator != null) {
             initializeController(isResultLayout, isOneLine);
 
@@ -135,9 +134,8 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
                 newDataSet.add(null);
             }
             final boolean isEmpty = newDataSet.isEmpty();
-            mRecyclerView.setBackgroundColor(isEmpty
-                    ? ContextCompat.getColor(activity, R.color.empty_history_color)
-                    : Color.TRANSPARENT);
+            mRecyclerView.setBackgroundColor(ContextCompat.getColor(activity,
+                    isEmpty ? R.color.empty_history_color : R.color.display_background_color));
             if (isEmpty) {
                 newDataSet.add(new HistoryItem());
             }
@@ -153,37 +151,43 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
     @Override
     public void onStart() {
         super.onStart();
+
         final Calculator activity = (Calculator) getActivity();
-        // The orientation may have changed.
-        mDragController.initializeAnimation(mRecyclerView,
-                activity.isResultLayout(), activity.isOneLine(), mDragLayout.isOpen());
+        mDragController.initializeAnimation(activity.isResultLayout(), activity.isOneLine());
     }
 
     @Override
-    public void onDestroyView() {
-        final DragLayout dragLayout = (DragLayout) getActivity().findViewById(R.id.drag_layout);
-        if (dragLayout != null) {
-            dragLayout.removeDragCallback(this);
+    public Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
+        if (enter) {
+            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
+                return mDragLayout.createAnimator(true /* toOpen */);
+            } else {
+                return null;
+            }
+        }
+        return mDragLayout.createAnimator(false /* toOpen */);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (mDragLayout != null) {
+            mDragLayout.removeDragCallback(this);
         }
 
         // Note that the view is destroyed when the fragment backstack is popped, so
         // these are essentially called when the DragLayout is closed.
         mEvaluator.cancelNonMain();
-
-        super.onDestroyView();
     }
 
     private void initializeController(boolean isResult, boolean isOneLine) {
         mDragController.setDisplayFormula(
                 (CalculatorFormula) getActivity().findViewById(R.id.formula));
-
         mDragController.setDisplayResult(
                 (CalculatorResult) getActivity().findViewById(R.id.result));
-
         mDragController.setToolbar(getActivity().findViewById(R.id.toolbar));
-
         mDragController.setEvaluator(mEvaluator);
-
         mDragController.initializeController(isResult, isOneLine);
     }
 
@@ -211,25 +215,27 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
     }
 
     @Override
+    public void onInstanceStateRestored(boolean isOpen) {
+        if (isOpen) {
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     public void whileDragging(float yFraction) {
-        mDragController.animateViews(yFraction, mRecyclerView);
+        if (isVisible() || isRemoving()) {
+            mDragController.animateViews(yFraction, mRecyclerView);
+        }
     }
 
     @Override
     public boolean shouldCaptureView(View view, int x, int y) {
-        return view.getId() == R.id.history_frame
-                && mDragLayout.isViewUnder(view, x, y)
-                && !mRecyclerView.canScrollVertically(1 /* scrolling down */);
+        return !mRecyclerView.canScrollVertically(1 /* scrolling down */);
     }
 
     @Override
     public int getDisplayHeight() {
         return 0;
-    }
-
-    @Override
-    public void onLayout(int translation) {
-        // no-op
     }
 
     /* End override DragCallback methods. */
