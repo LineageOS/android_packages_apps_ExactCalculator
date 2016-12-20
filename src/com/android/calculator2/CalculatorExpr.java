@@ -977,7 +977,7 @@ class CalculatorExpr {
      * Is the current expression worth evaluating?
      */
     public boolean hasInterestingOps() {
-        int last = trailingBinaryOpsStart();
+        final int last = trailingBinaryOpsStart();
         int first = 0;
         if (last > first && isOperatorUnchecked(first, R.id.op_sub)) {
             // Leading minus is not by itself interesting.

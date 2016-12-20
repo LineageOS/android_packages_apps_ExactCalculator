@@ -17,6 +17,7 @@
 package com.android.calculator2;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -101,8 +102,9 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     public static Evaluator getInstance(Calculator calculator) {
         if (evaluator == null) {
-            evaluator = new Evaluator(calculator);
+            evaluator = new Evaluator(calculator.getApplicationContext());
         }
+        evaluator.mCalculator = calculator;
         return evaluator;
     }
 
@@ -253,7 +255,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     // estimating exponent size for truncating short representation.
     private static final int EXP_COST = 3;
 
-    private final Calculator mCalculator;
+    private Calculator mCalculator;
 
     //  A hopefully unique name associated with mSaved.
     private String mSavedName;
@@ -334,14 +336,13 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         mExprs.put(MAIN_INDEX, expr);
     }
 
-    Evaluator(Calculator calculator) {
-        mCalculator = calculator;
+    Evaluator(Context context) {
         setMainExpr(new ExprInfo(new CalculatorExpr(), false));
         mSavedName = "none";
         mTimeoutHandler = new Handler();
 
-        mExprDB = new ExpressionDB(mCalculator);
-        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(calculator);
+        mExprDB = new ExpressionDB(context);
+        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         mMainExpr.mDegreeMode = mSharedPrefs.getBoolean(KEY_PREF_DEGREE_MODE, false);
         long savedIndex = mSharedPrefs.getLong(KEY_PREF_SAVED_INDEX, 0L);
         long memoryIndex = mSharedPrefs.getLong(KEY_PREF_MEMORY_INDEX, 0L);
@@ -536,7 +537,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
          * Is a computed result too big for decimal conversion?
          */
         private boolean isTooBig(UnifiedReal res) {
-            int maxBits = mRequired ? getMaxResultBits(mExprInfo.mLongTimeout)
+            final int maxBits = mRequired ? getMaxResultBits(mExprInfo.mLongTimeout)
                     : QUICK_MAX_RESULT_BITS;
             return res.approxWholeNumberBitsGreaterThan(maxBits);
         }
@@ -1194,7 +1195,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                     && ((AsyncEvaluator)(ei.mEvaluator)).mRequired) {
                 // Duplicate request; ignore.
             } else {
-                // Restart evaluator in requested mode, i.e. with longer timeout.
+                // (Re)start evaluator in requested mode, i.e. with longer timeout.
                 cancel(ei, true);
                 evaluateResult(index, listener, cmi, true);
             }

@@ -205,11 +205,8 @@ public class ExpressionDB {
     // initialization.
     private Object mLock = new Object();
 
-    private Activity mActivity;
-
-    public ExpressionDB(Activity activity) {
-        mActivity = activity;
-        mExpressionDBHelper = new ExpressionDBHelper(activity);
+    public ExpressionDB(Context context) {
+        mExpressionDBHelper = new ExpressionDBHelper(context);
         AsyncInitializer initializer = new AsyncInitializer();
         // All calls that create background database accesses are made from the UI thread, and
         // use a SERIAL_EXECUTOR. Thus they execute in order.
