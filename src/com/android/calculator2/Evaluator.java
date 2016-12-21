@@ -1375,6 +1375,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     /**
      * Return an ExprInfo for a copy of the expression with the given index.
      * We remove trailing binary operators in the copy.
+     * mTimeStamp is not copied.
      */
     private ExprInfo copy(long index, boolean copyValue) {
         ExprInfo fromEi = mExprs.get(index);
@@ -1432,6 +1433,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     /**
      * Add the expression described by the argument to the database.
      * Returns the new row id in the database.
+     * Fills in timestamp in ei, if it was not previously set.
      * If in_history is true, add it with a positive index, so it will appear in the history.
      */
     private long addToDB(boolean in_history, ExprInfo ei) {
@@ -1471,15 +1473,11 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     public void represerve() {
         long resultIndex = getMaxIndex();
-        if (mExprs.get(resultIndex) != null) {
-            // We actually didn't lose the cache. Nothing to do.
-            return;
-        }
-        ExprInfo ei = copy(MAIN_INDEX, true);
-        if (resultIndex == MAIN_INDEX) {
-            throw new AssertionError("Should not store main expression");
-        }
-        mExprs.put(resultIndex, ei);
+        // This requires database access only if the local state was preserved, but we
+        // recreated the Evaluator.  That excludes the common cases of device rotation, etc.
+        // TODO: Revisit once we deal with database failures. We could just copy from
+        // MAIN_INDEX instead, but that loses the timestamp.
+        ensureExprIsCached(resultIndex);
     }
 
     /**

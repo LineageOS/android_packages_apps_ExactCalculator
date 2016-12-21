@@ -934,7 +934,8 @@ public class Calculator extends Activity
         mResultText.onEvaluate(index, initDisplayPrec, msd, leastDigPos, truncatedWholeNumber);
         if (mCurrentState != CalculatorState.INPUT) {
             // In EVALUATE, INIT, or INIT_FOR_RESULT state.
-            onResult(mCurrentState == CalculatorState.EVALUATE);
+            onResult(mCurrentState == CalculatorState.EVALUATE /* animate */,
+                     mCurrentState == CalculatorState.INIT_FOR_RESULT /* previously preserved */);
         }
     }
 
@@ -1156,7 +1157,7 @@ public class Calculator extends Activity
     // formula and result displays back at the end of the animation.  We no longer do that,
     // so that we can continue to properly support scrolling of the result.
     // We assume the result already contains the text to be expanded.
-    private void onResult(boolean animate) {
+    private void onResult(boolean animate, boolean resultWasPreserved) {
         // Calculate the textSize that would be used to display the result in the formula.
         // For scrollable results just use the minimum textSize to maximize the number of digits
         // that are visible on screen.
@@ -1188,10 +1189,15 @@ public class Calculator extends Activity
         // Change the result's textColor to match the formula.
         final int formulaTextColor = mFormulaText.getCurrentTextColor();
 
-        if (animate) {
+        if (resultWasPreserved) {
+            // Result was previously addded to history.
+            mEvaluator.represerve();
+        } else {
             // Add current result to history.
             mEvaluator.preserve(true);
+        }
 
+        if (animate) {
             mResultText.announceForAccessibility(getResources().getString(R.string.desc_eq));
             mResultText.announceForAccessibility(mResultText.getText());
             setState(CalculatorState.ANIMATE);
@@ -1222,7 +1228,6 @@ public class Calculator extends Activity
             mResultText.setTranslationY(resultTranslationY);
             mResultText.setTextColor(formulaTextColor);
             mFormulaContainer.setTranslationY(formulaTranslationY);
-            mEvaluator.represerve();
             setState(CalculatorState.RESULT);
         }
     }
