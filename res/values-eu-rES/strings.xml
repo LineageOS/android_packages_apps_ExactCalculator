@@ -82,6 +82,6 @@
     <string name="desc_navigate_up" msgid="6208699569165589623">"Joan gora"</string>
     <string name="dialog_timeout" msgid="9069768442342329065">"Denbora-muga"</string>
     <string name="dialog_clear" msgid="7137395395908350702">"Memoria eta historia garbitu?"</string>
-    <string name="title_current_expression" msgid="2442754548537900591">"Uneko adierazpena"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"Adierazpen hau"</string>
     <string name="no_history" msgid="4331262030447527188">"Hutsik dago historia"</string>
 </resources>
