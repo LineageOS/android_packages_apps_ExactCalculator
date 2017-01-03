@@ -533,7 +533,8 @@ public class ExpressionDB {
             position -= GAP;
         }
         if (position < 0) {
-            throw new AssertionError("Database access out of range");
+            throw new AssertionError("Database access out of range, index = " + index
+                    + " rel. pos. = " + position);
         }
         if (index < 0) {
             // Avoid using mAllCursor to read data that's far away from the current position,
