@@ -496,6 +496,9 @@ public class Calculator extends Activity
         outState.putByteArray(KEY_EVAL_STATE, byteArrayStream.toByteArray());
         outState.putBoolean(KEY_INVERSE_MODE, mInverseToggle.isSelected());
         outState.putBoolean(KEY_SHOW_TOOLBAR, mDisplayView.isToolbarVisible());
+        // We must wait for asynchronous writes to complete, since outState may contain
+        // references to expressions being written.
+        mEvaluator.waitForWrites();
     }
 
     // Set the state, updating delete label and display colors.

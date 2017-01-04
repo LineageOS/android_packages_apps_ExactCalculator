@@ -1890,6 +1890,13 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     /**
+     * Wait for pending writes to the database to complete.
+     */
+    public void waitForWrites() {
+        mExprDB.waitForWrites();
+    }
+
+    /**
      * Destroy the current evaluator, forcing getEvaluator to allocate a new one.
      * This is needed for testing, since Robolectric apparently doesn't let us preserve
      * an open databse across tests. Cf. https://github.com/robolectric/robolectric/issues/1890 .

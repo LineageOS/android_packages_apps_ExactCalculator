@@ -394,6 +394,48 @@ public class ExpressionDB {
         eraser.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
+    // We track the number of outstanding writes to prevent onSaveInstanceState from
+    // completing with in-flight database writes.
+
+    private int mIncompleteWrites = 0;
+    private Object mWriteCountsLock = new Object();  // Protects the preceding field.
+
+    private void writeCompleted() {
+        synchronized(mWriteCountsLock) {
+            if (--mIncompleteWrites == 0) {
+                mWriteCountsLock.notifyAll();
+            }
+        }
+    }
+
+    private void writeStarted() {
+        synchronized(mWriteCountsLock) {
+            ++mIncompleteWrites;
+        }
+    }
+
+    /**
+     * Wait for in-flight writes to complete.
+     * This is not safe to call from one of our background tasks, since the writing
+     * tasks may be waiting for the same underlying thread that we're using, resulting
+     * in deadlock.
+     */
+    public void waitForWrites() {
+        synchronized(mWriteCountsLock) {
+            boolean caught = false;
+            while (mIncompleteWrites != 0) {
+                try {
+                    mWriteCountsLock.wait();
+                } catch (InterruptedException e) {
+                    caught = true;
+                }
+            }
+            if (caught) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
     /**
      * Insert the given row in the database without blocking the UI thread.
      * These tasks must be executed on a serial executor to avoid reordering writes.
@@ -403,6 +445,7 @@ public class ExpressionDB {
         protected Long doInBackground(ContentValues... cvs) {
             long index = cvs[0].getAsLong(ExpressionEntry._ID);
             long result = mExpressionDB.insert(ExpressionEntry.TABLE_NAME, null, cvs[0]);
+            writeCompleted();
             // Return 0 on success, row id on failure.
             if (result == -1) {
                 return index;
@@ -454,6 +497,7 @@ public class ExpressionDB {
                 // to just include values between mMinAccessible and mMaxAccessible.
                 return newIndex;
             }
+            writeStarted();
             ContentValues cvs = data.toContentValues();
             cvs.put(ExpressionEntry._ID, newIndex);
             AsyncWriter awriter = new AsyncWriter();
