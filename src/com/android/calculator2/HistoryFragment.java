@@ -34,40 +34,10 @@ import java.util.ArrayList;
 
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment implements DragLayout.DragCallback {
 
     public static final String TAG = "HistoryFragment";
     public static final String CLEAR_DIALOG_TAG = "clear";
-
-    private final DragLayout.DragCallback mDragCallback =
-            new DragLayout.DragCallback() {
-                @Override
-                public void onStartDraggingOpen() {
-                    // no-op
-                }
-
-                @Override
-                public void whileDragging(float yFraction) {
-                    mDragController.animateViews(yFraction, mRecyclerView);
-                }
-
-                @Override
-                public boolean shouldCaptureView(View view, int x, int y) {
-                    return view.getId() == R.id.history_frame
-                            && mDragLayout.isViewUnder(view, x, y)
-                            && !mRecyclerView.canScrollVertically(1 /* scrolling down */);
-                }
-
-                @Override
-                public int getDisplayHeight() {
-                    return 0;
-                }
-
-                @Override
-                public void onLayout(int translation) {
-                    // no-op
-                }
-            };
 
     private final DragController mDragController = new DragController();
 
@@ -143,8 +113,8 @@ public class HistoryFragment extends Fragment {
         final boolean isResultLayout = activity.isResultLayout();
 
         mDragLayout = (DragLayout) activity.findViewById(R.id.drag_layout);
-        mDragLayout.removeDragCallback(mDragCallback);
-        mDragLayout.addDragCallback(mDragCallback);
+        mDragLayout.removeDragCallback(this);
+        mDragLayout.addDragCallback(this);
 
         if (mEvaluator != null) {
             initializeController(isResultLayout);
@@ -209,7 +179,7 @@ public class HistoryFragment extends Fragment {
     public void onDestroyView() {
         final DragLayout dragLayout = (DragLayout) getActivity().findViewById(R.id.drag_layout);
         if (dragLayout != null) {
-            dragLayout.removeDragCallback(mDragCallback);
+            dragLayout.removeDragCallback(this);
         }
 
         // Note that the view is destroyed when the fragment backstack is popped, so
@@ -248,4 +218,35 @@ public class HistoryFragment extends Fragment {
         }
         return false;
     }
+
+    /* Begin override DragCallback methods. */
+
+    @Override
+    public void onStartDraggingOpen() {
+        // no-op
+    }
+
+    @Override
+    public void whileDragging(float yFraction) {
+        mDragController.animateViews(yFraction, mRecyclerView);
+    }
+
+    @Override
+    public boolean shouldCaptureView(View view, int x, int y) {
+        return view.getId() == R.id.history_frame
+                && mDragLayout.isViewUnder(view, x, y)
+                && !mRecyclerView.canScrollVertically(1 /* scrolling down */);
+    }
+
+    @Override
+    public int getDisplayHeight() {
+        return 0;
+    }
+
+    @Override
+    public void onLayout(int translation) {
+        // no-op
+    }
+
+    /* End override DragCallback methods. */
 }

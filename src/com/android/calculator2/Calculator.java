@@ -87,7 +87,8 @@ import static com.android.calculator2.CalculatorFormula.OnFormulaContextMenuClic
 
 public class Calculator extends Activity
         implements OnTextSizeChangeListener, OnLongClickListener,
-        AlertDialogFragment.OnClickListener, Evaluator.EvaluationListener /* for main result */ {
+        AlertDialogFragment.OnClickListener, Evaluator.EvaluationListener /* for main result */,
+        DragLayout.CloseCallback, DragLayout.DragCallback {
 
     private static final String TAG = "Calculator";
     /**
@@ -240,41 +241,6 @@ public class Calculator extends Activity
                 observer.removeOnPreDrawListener(mPreDrawListener);
                 observer.addOnPreDrawListener(mPreDrawListener);
             }
-        }
-    };
-
-    private final DragLayout.CloseCallback mCloseCallback = new DragLayout.CloseCallback() {
-        @Override
-        public void onClose() {
-            removeHistoryFragment();
-        }
-    };
-
-    private final DragLayout.DragCallback mDragCallback = new DragLayout.DragCallback() {
-        @Override
-        public void onStartDraggingOpen() {
-            showHistoryFragment(FragmentTransaction.TRANSIT_NONE);
-        }
-
-        @Override
-        public void whileDragging(float yFraction) {
-            // no-op
-        }
-
-        @Override
-        public boolean shouldCaptureView(View view, int x, int y) {
-            return mDragLayout.isMoving()
-                    || mDragLayout.isOpen()
-                    || mDragLayout.isViewUnder(mDisplayView, x, y);
-        }
-
-        @Override
-        public int getDisplayHeight() {
-            return mDisplayView.getMeasuredHeight();
-        }
-
-        public void onLayout(int translation) {
-            mHistoryFrame.setTranslationY(translation + mDisplayView.getBottom());
         }
     };
 
@@ -452,9 +418,9 @@ public class Calculator extends Activity
         };
 
         mDragLayout = (DragLayout) findViewById(R.id.drag_layout);
-        mDragLayout.removeDragCallback(mDragCallback);
-        mDragLayout.addDragCallback(mDragCallback);
-        mDragLayout.setCloseCallback(mCloseCallback);
+        mDragLayout.removeDragCallback(this);
+        mDragLayout.addDragCallback(this);
+        mDragLayout.setCloseCallback(this);
 
         mHistoryFrame = (FrameLayout) findViewById(R.id.history_frame);
 
@@ -584,7 +550,7 @@ public class Calculator extends Activity
 
     @Override
     protected void onDestroy() {
-        mDragLayout.removeDragCallback(mDragCallback);
+        mDragLayout.removeDragCallback(this);
         super.onDestroy();
     }
 
@@ -1325,6 +1291,46 @@ public class Calculator extends Activity
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    /* Begin override CloseCallback method. */
+
+    @Override
+    public void onClose() {
+        removeHistoryFragment();
+    }
+
+    /* End override CloseCallback method. */
+
+    /* Begin override DragCallback methods */
+
+    @Override
+    public void onStartDraggingOpen() {
+        showHistoryFragment(FragmentTransaction.TRANSIT_NONE);
+    }
+
+    @Override
+    public void whileDragging(float yFraction) {
+        // no-op
+    }
+
+    @Override
+    public boolean shouldCaptureView(View view, int x, int y) {
+        return mDragLayout.isMoving()
+                || mDragLayout.isOpen()
+                || mDragLayout.isViewUnder(mDisplayView, x, y);
+    }
+
+    @Override
+    public int getDisplayHeight() {
+        return mDisplayView.getMeasuredHeight();
+    }
+
+    @Override
+    public void onLayout(int translation) {
+        mHistoryFrame.setTranslationY(translation + mDisplayView.getBottom());
+    }
+
+    /* End override DragCallback methods */
 
     /**
      * Change evaluation state to one that's friendly to the history fragment.
