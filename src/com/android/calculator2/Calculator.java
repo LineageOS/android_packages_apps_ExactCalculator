@@ -297,7 +297,7 @@ public class Calculator extends Activity
     private ForegroundColorSpan mUnprocessedColorSpan = new ForegroundColorSpan(Color.RED);
 
     // Whether the display is one line.
-    private boolean mOneLine;
+    private boolean mIsOneLine;
 
     private HistoryFragment mHistoryFragment = new HistoryFragment();
 
@@ -415,7 +415,7 @@ public class Calculator extends Activity
         mInverseToggle = (TextView) findViewById(R.id.toggle_inv);
         mModeToggle = (TextView) findViewById(R.id.toggle_mode);
 
-        mOneLine = mResultText.getVisibility() == View.INVISIBLE;
+        mIsOneLine = mResultText.getVisibility() == View.INVISIBLE;
 
         mInvertibleButtons = new View[] {
                 findViewById(R.id.fun_sin),
@@ -519,7 +519,7 @@ public class Calculator extends Activity
                 mClearButton.setVisibility(View.GONE);
             }
 
-            if (mOneLine) {
+            if (mIsOneLine) {
                 if (mCurrentState == CalculatorState.RESULT
                         || mCurrentState == CalculatorState.EVALUATE
                         || mCurrentState == CalculatorState.ANIMATE) {
@@ -560,6 +560,10 @@ public class Calculator extends Activity
         // Note that ERROR has INPUT, not RESULT layout.
         return mCurrentState == CalculatorState.INIT_FOR_RESULT
                 || mCurrentState == CalculatorState.RESULT;
+    }
+
+    public boolean isOneLine() {
+        return mIsOneLine;
     }
 
     @Override
@@ -1179,7 +1183,7 @@ public class Calculator extends Activity
         final float resultTranslationY = (mFormulaContainer.getBottom() - mResultText.getBottom())
                 - (mFormulaText.getPaddingBottom() - mResultText.getPaddingBottom());
         float formulaTranslationY = -mFormulaContainer.getBottom();
-        if (mOneLine) {
+        if (mIsOneLine) {
             // Position the result text.
             mResultText.setY(mResultText.getBottom());
             formulaTranslationY = -(findViewById(R.id.toolbar).getBottom()

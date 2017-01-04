@@ -141,6 +141,7 @@ public class HistoryFragment extends Fragment {
         mAdapter.setEvaluator(Evaluator.getInstance(activity));
 
         final boolean isResultLayout = activity.isResultLayout();
+        final boolean isOneLine = activity.isOneLine();
 
         mDragLayout = (DragLayout) activity.findViewById(R.id.drag_layout);
         mDragLayout.removeDragCallback(mDragCallback);
@@ -149,7 +150,7 @@ public class HistoryFragment extends Fragment {
         mEvaluator = Evaluator.getInstance(activity);
 
         if (mEvaluator != null) {
-            initializeController(isResultLayout);
+            initializeController(isResultLayout, isOneLine);
 
             final long maxIndex = mEvaluator.getMaxIndex();
 
@@ -178,6 +179,7 @@ public class HistoryFragment extends Fragment {
             mDataSet = newDataSet;
             mAdapter.setDataSet(mDataSet);
             mAdapter.setIsResultLayout(isResultLayout);
+            mAdapter.setIsOneLine(activity.isOneLine());
         }
 
         mAdapter.notifyDataSetChanged();
@@ -186,10 +188,10 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
+        final Calculator activity = (Calculator) getActivity();
         // The orientation may have changed.
         mDragController.initializeAnimation(mRecyclerView,
-                ((Calculator) getActivity()).isResultLayout(), mDragLayout.isOpen());
+                activity.isResultLayout(), activity.isOneLine(), mDragLayout.isOpen());
     }
 
     @Override
@@ -221,7 +223,7 @@ public class HistoryFragment extends Fragment {
         super.onDestroyView();
     }
 
-    private void initializeController(boolean isResult) {
+    private void initializeController(boolean isResult, boolean isOneLine) {
         mDragController.setDisplayFormula(
                 (CalculatorFormula) getActivity().findViewById(R.id.formula));
 
@@ -232,7 +234,7 @@ public class HistoryFragment extends Fragment {
 
         mDragController.setEvaluator(mEvaluator);
 
-        mDragController.initializeController(isResult);
+        mDragController.initializeController(isResult, isOneLine);
     }
 
     public boolean stopActionModeOrContextMenu() {

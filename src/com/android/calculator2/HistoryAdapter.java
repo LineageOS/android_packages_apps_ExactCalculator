@@ -43,6 +43,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private List<HistoryItem> mDataSet;
 
     private boolean mIsResultLayout;
+    private boolean mIsOneLine;
 
     public HistoryAdapter(ArrayList<HistoryItem> dataSet) {
         mDataSet = dataSet;
@@ -75,6 +76,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.mResult.setEvaluator(mEvaluator, item.getEvaluatorIndex());
         if (item.getEvaluatorIndex() == Evaluator.HISTORY_MAIN_INDEX) {
             holder.mDate.setText(R.string.title_current_expression);
+            holder.mResult.setVisibility(mIsOneLine ? View.GONE : View.VISIBLE);
         } else {
             // If the previous item occurred on the same date, the current item does not need
             // a date header.
@@ -127,6 +129,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     public void setIsResultLayout(boolean isResult) {
         mIsResultLayout = isResult;
+    }
+
+    public void setIsOneLine(boolean isOneLine) {
+        mIsOneLine = isOneLine;
     }
 
     public void setEvaluator(Evaluator evaluator) {
