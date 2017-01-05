@@ -137,16 +137,14 @@ public class HistoryFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         final Calculator activity = (Calculator) getActivity();
-
-        mAdapter.setEvaluator(Evaluator.getInstance(activity));
+        mEvaluator = Evaluator.getInstance(activity);
+        mAdapter.setEvaluator(mEvaluator);
 
         final boolean isResultLayout = activity.isResultLayout();
 
         mDragLayout = (DragLayout) activity.findViewById(R.id.drag_layout);
         mDragLayout.removeDragCallback(mDragCallback);
         mDragLayout.addDragCallback(mDragCallback);
-
-        mEvaluator = Evaluator.getInstance(activity);
 
         if (mEvaluator != null) {
             initializeController(isResultLayout);

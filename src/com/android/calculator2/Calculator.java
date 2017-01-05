@@ -44,6 +44,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
@@ -166,7 +167,22 @@ public class Calculator extends Activity
         }
     };
 
-    public final OnDisplayMemoryOperationsListener mOnDisplayMemoryOperationsListener =
+    private final Evaluator.Callback mEvaluatorCallback = new Evaluator.Callback() {
+        @Override
+        public void onMemoryStateChanged() {
+            mFormulaText.onMemoryStateChanged();
+        }
+
+        @Override
+        public void showMessageDialog(@StringRes int title, @StringRes int message,
+                @StringRes int positiveButtonLabel, String tag) {
+            AlertDialogFragment.showMessageDialog(Calculator.this, title, message,
+                    positiveButtonLabel, tag);
+
+        }
+    };
+
+    private final OnDisplayMemoryOperationsListener mOnDisplayMemoryOperationsListener =
             new OnDisplayMemoryOperationsListener() {
         @Override
         public boolean shouldDisplayMemory() {
@@ -174,7 +190,7 @@ public class Calculator extends Activity
         }
     };
 
-    public final OnFormulaContextMenuClickListener mOnFormulaContextMenuClickListener =
+    private final OnFormulaContextMenuClickListener mOnFormulaContextMenuClickListener =
             new OnFormulaContextMenuClickListener() {
         @Override
         public boolean onPaste(ClipData clip) {
@@ -398,6 +414,7 @@ public class Calculator extends Activity
         mResultText = (CalculatorResult) findViewById(R.id.result);
         mFormulaContainer = (HorizontalScrollView) findViewById(R.id.formula_container);
         mEvaluator = Evaluator.getInstance(this);
+        mEvaluator.setCallback(mEvaluatorCallback);
         mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
         KeyMaps.setActivity(this);
 
@@ -950,14 +967,9 @@ public class Calculator extends Activity
     }
 
     // Reevaluation completed; ask result to redisplay current value.
-    public void onReevaluate(long index)
-    {
+    public void onReevaluate(long index) {
         // Index is Evaluator.MAIN_INDEX.
         mResultText.onReevaluate(index);
-    }
-
-    public void onMemoryStateChanged() {
-        mFormulaText.onMemoryStateChanged();
     }
 
     @Override
@@ -1253,16 +1265,16 @@ public class Calculator extends Activity
     @Override
     public void onClick(AlertDialogFragment fragment, int which) {
         if (which == DialogInterface.BUTTON_POSITIVE) {
-            if (fragment.getTag() == HistoryFragment.CLEAR_DIALOG_TAG) {
+            if (HistoryFragment.CLEAR_DIALOG_TAG.equals(fragment.getTag())) {
                 // TODO: Try to preserve the current, saved, and memory expressions. How should we
                 // handle expressions to which they refer?
                 mEvaluator.clearEverything();
                 // TODO: It's not clear what we should really do here. This is an initial hack.
                 // May want to make onClearAnimationEnd() private if/when we fix this.
                 onClearAnimationEnd();
-                onMemoryStateChanged();
+                mEvaluatorCallback.onMemoryStateChanged();
                 onBackPressed();
-            } else if (fragment.getTag() == Evaluator.TIMEOUT_DIALOG_TAG) {
+            } else if (Evaluator.TIMEOUT_DIALOG_TAG.equals(fragment.getTag())) {
                 // Timeout extension request.
                 mEvaluator.setLongTimeout();
             } else {

@@ -55,9 +55,9 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
     private final ClipboardManager mClipboardManager;
 
     private int mWidthConstraint = -1;
-    protected ActionMode mActionMode;
+    private ActionMode mActionMode;
     private ActionMode.Callback mPasteActionModeCallback;
-    protected ContextMenu mContextMenu;
+    private ContextMenu mContextMenu;
     private OnTextSizeChangeListener mOnTextSizeChangeListener;
     private OnFormulaContextMenuClickListener mOnContextMenuClickListener;
     private Calculator.OnDisplayMemoryOperationsListener mOnDisplayMemoryOperationsListener;
@@ -182,20 +182,6 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
         }
 
         return lastFitTextSize;
-    }
-
-    private static boolean startsWith(CharSequence whole, CharSequence prefix) {
-        int wholeLen = whole.length();
-        int prefixLen = prefix.length();
-        if (prefixLen > wholeLen) {
-            return false;
-        }
-        for (int i = 0; i < prefixLen; ++i) {
-            if (prefix.charAt(i) != whole.charAt(i)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
@@ -377,7 +363,7 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
     }
 
     private boolean isMemoryEnabled() {
-        return !(mOnDisplayMemoryOperationsListener == null || mOnContextMenuClickListener == null)
+        return mOnDisplayMemoryOperationsListener != null
                 && mOnDisplayMemoryOperationsListener.shouldDisplayMemory();
     }
 
