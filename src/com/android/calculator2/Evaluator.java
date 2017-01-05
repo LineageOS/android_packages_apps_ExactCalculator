@@ -16,13 +16,13 @@
 
 package com.android.calculator2;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 import android.text.Spannable;
 import android.util.Log;
@@ -100,11 +100,10 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     public static String TIMEOUT_DIALOG_TAG = "timeout";
 
-    public static Evaluator getInstance(Calculator calculator) {
+    public static Evaluator getInstance(Context context) {
         if (evaluator == null) {
-            evaluator = new Evaluator(calculator.getApplicationContext());
+            evaluator = new Evaluator(context.getApplicationContext());
         }
-        evaluator.mCalculator = calculator;
         return evaluator;
     }
 
@@ -255,7 +254,11 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     // estimating exponent size for truncating short representation.
     private static final int EXP_COST = 3;
 
-    private Calculator mCalculator;
+    // Listener that reports changes to the state (empty/filled) of memory. Protected for testing.
+    private Callback mCallback;
+
+    // Context for database helper.
+    private Context mContext;
 
     //  A hopefully unique name associated with mSaved.
     private String mSavedName;
@@ -270,7 +273,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     public static final int INVALID_MSD = Integer.MAX_VALUE;
 
     // Used to represent an erroneous result or a required evaluation. Not displayed.
-    public static final String ERRONEOUS_RESULT = "ERR";
+    private static final String ERRONEOUS_RESULT = "ERR";
 
     /**
      * An individual CalculatorExpr, together with its evaluation state.
@@ -337,6 +340,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     Evaluator(Context context) {
+        mContext = context;
         setMainExpr(new ExprInfo(new CalculatorExpr(), false));
         mSavedName = "none";
         mTimeoutHandler = new Handler();
@@ -378,6 +382,14 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     /**
+     * Set the Callback for showing dialogs and notifying the UI about memory state changes.
+     * @param callback
+     */
+    public void setCallback(Callback callback) {
+        mCallback = callback;
+    }
+
+    /**
      * Result of initial asynchronous result computation.
      * Represents either an error or a result computed to an initial evaluation precision.
      */
@@ -407,7 +419,9 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     private void displayCancelledMessage() {
-        AlertDialogFragment.showMessageDialog(mCalculator, 0, R.string.cancelled, 0, null);
+        if (mCallback != null) {
+            mCallback.showMessageDialog(0, R.string.cancelled, 0, null);
+        }
     }
 
     // Timeout handling.
@@ -456,9 +470,10 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     private static final int QUICK_MAX_RESULT_BITS = 150000;
 
     private void displayTimeoutMessage(boolean longTimeout) {
-        AlertDialogFragment.showMessageDialog(mCalculator, R.string.dialog_timeout,
-                R.string.timeout, longTimeout ? 0 : R.string.ok_remove_timeout,
-                TIMEOUT_DIALOG_TAG);
+        if (mCallback != null) {
+            mCallback.showMessageDialog(R.string.dialog_timeout, R.string.timeout,
+                    longTimeout ? 0 : R.string.ok_remove_timeout, TIMEOUT_DIALOG_TAG);
+        }
     }
 
     public void setLongTimeout() {
@@ -1592,6 +1607,10 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         mSharedPrefs.edit()
                 .putLong(KEY_PREF_MEMORY_INDEX, index)
                 .apply();
+
+        if (mCallback != null) {
+            mCallback.onMemoryStateChanged();
+        }
     }
 
     /**
@@ -1638,7 +1657,6 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * The expression at index is presumed to have been evaluated.
      */
     public void copyToMemory(long index) {
-        mCalculator.onMemoryStateChanged();
         setMemoryIndex((index == MAIN_INDEX) ? preserve(false) : index);
     }
 
@@ -1867,7 +1885,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     public Spannable getExprAsSpannable(long index) {
-        return getExpr(index).toSpannableStringBuilder(mCalculator);
+        return getExpr(index).toSpannableStringBuilder(mContext);
     }
 
     /**
@@ -1904,5 +1922,11 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     public void destroyEvaluator() {
         mExprDB.close();
         evaluator = null;
+    }
+
+    public interface Callback {
+        void onMemoryStateChanged();
+        void showMessageDialog(@StringRes int title, @StringRes int message,
+                @StringRes int positiveButtonLabel, String tag);
     }
 }
