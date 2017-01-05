@@ -27,7 +27,7 @@
     <string name="desc_const_e" msgid="1889187337970539507">"ইউলার সংখ্যা"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"পাই"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"পয়েন্ট"</string>
-    <string name="desc_lparen" msgid="8688758170211924916">"বাম লঘুবন্ধনী"</string>
+    <string name="desc_lparen" msgid="8688758170211924916">"বাঁ লঘুবন্ধনী"</string>
     <string name="desc_rparen" msgid="7920608385146151731">"ডান লঘুবন্ধনী"</string>
     <string name="desc_fun_cos" msgid="3787913784504974731">"কোসাইন"</string>
     <string name="desc_fun_ln" msgid="2505119732546227166">"স্বাভাবিক লগারিদম"</string>
