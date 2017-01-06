@@ -56,6 +56,8 @@ public final class DragController {
 
     private boolean mAnimationInitialized;
 
+    private boolean mOneLine;
+
     private AnimationController mAnimationController;
 
     private Evaluator mEvaluator;
@@ -64,7 +66,8 @@ public final class DragController {
         mEvaluator = evaluator;
     }
 
-    public void initializeController(boolean isResult) {
+    public void initializeController(boolean isResult, boolean oneLine) {
+        mOneLine = oneLine;
         if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
             // Empty display
             mAnimationController = new EmptyAnimationController();
@@ -179,10 +182,11 @@ public final class DragController {
      * Reset all initialized values.
      * If the DragLayout is closed, set recyclerview to INVISIBLE to avoid flickering.
      */
-    public void initializeAnimation(RecyclerView recyclerView, boolean isResult, boolean isOpen) {
+    public void initializeAnimation(RecyclerView recyclerView, boolean isResult,
+            boolean oneLine, boolean isOpen) {
         recyclerView.setVisibility(isOpen ? View.VISIBLE : View.INVISIBLE);
         mAnimationInitialized = false;
-        initializeController(isResult);
+        initializeController(isResult, oneLine);
     }
 
     public interface AnimateTextInterface {
@@ -246,13 +250,19 @@ public final class DragController {
 
         public void initializeFormulaTranslationY(AlignedTextView formula,
                 CalculatorResult result) {
-            // Baseline of formula moves by the difference in formula bottom padding and the
-            // difference in result height.
-            mFormulaTranslationY =
-                    mDisplayFormula.getPaddingBottom() - formula.getPaddingBottom()
-                            + mDisplayResult.getHeight() - result.getHeight()
-                            - mBottomPaddingHeight;
-
+            if (mOneLine) {
+                // Disregard result since we set it to GONE in the one-line case.
+                mFormulaTranslationY =
+                        mDisplayFormula.getPaddingBottom() - formula.getPaddingBottom()
+                        - mBottomPaddingHeight;
+            } else {
+                // Baseline of formula moves by the difference in formula bottom padding and the
+                // difference in result height.
+                mFormulaTranslationY =
+                        mDisplayFormula.getPaddingBottom() - formula.getPaddingBottom()
+                                + mDisplayResult.getHeight() - result.getHeight()
+                                - mBottomPaddingHeight;
+            }
         }
 
         public void initializeFormulaTranslationX(AlignedTextView formula) {

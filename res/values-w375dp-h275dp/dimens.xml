@@ -18,7 +18,7 @@
 <resources>
     <!-- Dimens for display formula. -->
     <dimen name="formula_padding_top">0dip</dimen>
-    <dimen name="formula_padding_bottom">0dip</dimen>
+    <dimen name="formula_padding_bottom">8dip</dimen>
     <dimen name="formula_padding_start">16dip</dimen>
     <dimen name="formula_padding_end">16dip</dimen>
     <dimen name="formula_min_textsize">28dip</dimen>
@@ -27,7 +27,7 @@
 
     <!-- Dimens for display result. -->
     <dimen name="result_padding_top">0dip</dimen>
-    <dimen name="result_padding_bottom">0dip</dimen>
+    <dimen name="result_padding_bottom">8dip</dimen>
     <dimen name="result_padding_start">16dip</dimen>
     <dimen name="result_padding_end">16dip</dimen>
     <dimen name="result_textsize">28dip</dimen>
