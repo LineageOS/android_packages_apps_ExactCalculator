@@ -190,10 +190,12 @@ public class DragLayout extends RelativeLayout {
     public void setOpen() {
         mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, mVerticalRange);
         mHistoryFrame.setVisibility(VISIBLE);
+        mIsOpen = true;
     }
 
     public void setClosed() {
         mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, 0);
+        mIsOpen = false;
     }
 
     public void setCloseCallback(CloseCallback callback) {
@@ -250,14 +252,12 @@ public class DragLayout extends RelativeLayout {
                 // The view stopped moving.
                 if (mDraggingBorder == 0) {
                     setClosed();
-                    mIsOpen = false;
                     mHistoryFrame.setVisibility(GONE);
                     if (mCloseCallback != null) {
                         mCloseCallback.onClose();
                     }
                 } else if (mDraggingBorder == mVerticalRange) {
                     setOpen();
-                    mIsOpen = true;
                 }
             } else if (state == ViewDragHelper.STATE_DRAGGING && !mIsOpen) {
                 onStartDragging();
