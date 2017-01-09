@@ -87,8 +87,12 @@ public class DragLayout extends ViewGroup {
 
             int top = 0;
             if (child == mHistoryFrame) {
-                top = mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE
-                        ? child.getTop() : (mIsOpen ? 0 : -mVerticalRange);
+                if (mDragHelper.getCapturedView() == mHistoryFrame
+                        && mDragHelper.getViewDragState() != ViewDragHelper.STATE_IDLE) {
+                    top = child.getTop();
+                } else {
+                    top = mIsOpen ? 0 : -mVerticalRange;
+                }
             }
             child.layout(0, top, child.getMeasuredWidth(), top + child.getMeasuredHeight());
         }
@@ -195,18 +199,9 @@ public class DragLayout extends ViewGroup {
         return mIsOpen;
     }
 
-    public void setOpen() {
-        if (!mIsOpen) {
-            mIsOpen = true;
-            mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, 0);
-            mHistoryFrame.setVisibility(VISIBLE);
-        }
-    }
-
-    public void setClosed() {
+    private void setClosed() {
         if (mIsOpen) {
             mIsOpen = false;
-            mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, -mVerticalRange);
             mHistoryFrame.setVisibility(View.INVISIBLE);
 
             if (mCloseCallback != null) {
@@ -215,7 +210,12 @@ public class DragLayout extends ViewGroup {
         }
     }
 
-    public Animator createAnimator(final boolean toOpen) {
+    public Animator createAnimator(boolean toOpen) {
+        if (mIsOpen == toOpen) {
+            return null;
+        }
+
+        mIsOpen = true;
         mHistoryFrame.setVisibility(VISIBLE);
 
         final ValueAnimator animator = ValueAnimator.ofInt(mHistoryFrame.getTop(),
@@ -232,16 +232,14 @@ public class DragLayout extends ViewGroup {
                 }
             }
         });
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                if (toOpen) {
-                    setOpen();
-                } else {
+        if (!toOpen) {
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animator) {
                     setClosed();
                 }
-            }
-        });
+            });
+        }
 
         return animator;
     }
@@ -292,12 +290,9 @@ public class DragLayout extends ViewGroup {
         @Override
         public void onViewDragStateChanged(int state) {
             // The view stopped moving.
-            if (state == ViewDragHelper.STATE_IDLE) {
-                if (mDragHelper.getCapturedView().getTop() < -(mVerticalRange / 2)) {
-                    setClosed();
-                } else {
-                    setOpen();
-                }
+            if (state == ViewDragHelper.STATE_IDLE
+                    && mDragHelper.getCapturedView().getTop() < -(mVerticalRange / 2)) {
+                setClosed();
             }
         }
 
