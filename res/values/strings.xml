@@ -137,7 +137,7 @@
     <!-- Item on Result context menu, which subtracts the current result from the number in memory.
       [CHAR_LIMIT=2]
       -->
-    <string name="memory_subtract" translatable="false">M-</string>
+    <string name="memory_subtract" translatable="false">M\u2212</string>
     <!-- Item on Result context menu, which adds the current result to the number in memory.
       [CHAR_LIMIT=2]
       -->
