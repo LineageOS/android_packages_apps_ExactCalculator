@@ -47,6 +47,8 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
 
     private ArrayList<HistoryItem> mDataSet = new ArrayList<>();
 
+    private boolean mIsDisplayEmpty;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,13 +115,19 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
         final boolean isResultLayout = activity.isResultLayout();
         final boolean isOneLine = activity.isOneLine();
 
-        initializeController(isResultLayout, isOneLine);
+        // Snapshot display state here. For the rest of the lifecycle of this current
+        // HistoryFragment, this is what we will consider the display state.
+        // In rare cases, the display state can change after our adapter is initialized.
+        final CalculatorExpr mainExpr = mEvaluator.getExpr(Evaluator.MAIN_INDEX);
+        mIsDisplayEmpty = mainExpr == null || mainExpr.isEmpty();
+
+        initializeController(isResultLayout, isOneLine, mIsDisplayEmpty);
 
         final long maxIndex = mEvaluator.getMaxIndex();
 
         final ArrayList<HistoryItem> newDataSet = new ArrayList<>();
 
-        if (!EvaluatorStateUtils.isDisplayEmpty(mEvaluator) && !isResultLayout) {
+        if (!mIsDisplayEmpty && !isResultLayout) {
             // Add the current expression as the first element in the list (the layout is
             // reversed and we want the current expression to be the last one in the
             // RecyclerView).
@@ -142,7 +150,7 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
         mAdapter.setDataSet(mDataSet);
         mAdapter.setIsResultLayout(isResultLayout);
         mAdapter.setIsOneLine(activity.isOneLine());
-
+        mAdapter.setIsDisplayEmpty(mIsDisplayEmpty);
         mAdapter.notifyDataSetChanged();
     }
 
@@ -151,7 +159,8 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
         super.onStart();
 
         final Calculator activity = (Calculator) getActivity();
-        mDragController.initializeAnimation(activity.isResultLayout(), activity.isOneLine());
+        mDragController.initializeAnimation(activity.isResultLayout(), activity.isOneLine(), 
+                mIsDisplayEmpty);
     }
 
     @Override
@@ -181,14 +190,14 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
         }
     }
 
-    private void initializeController(boolean isResult, boolean isOneLine) {
+    private void initializeController(boolean isResult, boolean isOneLine, boolean isDisplayEmpty) {
         mDragController.setDisplayFormula(
                 (CalculatorFormula) getActivity().findViewById(R.id.formula));
         mDragController.setDisplayResult(
                 (CalculatorResult) getActivity().findViewById(R.id.result));
         mDragController.setToolbar(getActivity().findViewById(R.id.toolbar));
         mDragController.setEvaluator(mEvaluator);
-        mDragController.initializeController(isResult, isOneLine);
+        mDragController.initializeController(isResult, isOneLine, isDisplayEmpty);
     }
 
     public boolean stopActionModeOrContextMenu() {
