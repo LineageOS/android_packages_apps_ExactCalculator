@@ -1175,7 +1175,7 @@ public class Calculator extends Activity
             mEvaluator.represerve();
         } else {
             // Add current result to history.
-            mEvaluator.preserve(true);
+            mEvaluator.preserve(Evaluator.MAIN_INDEX, true);
         }
 
         if (animate) {

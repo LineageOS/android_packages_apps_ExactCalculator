@@ -352,10 +352,10 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         mMainExpr.mDegreeMode = mSharedPrefs.getBoolean(KEY_PREF_DEGREE_MODE, false);
         long savedIndex = mSharedPrefs.getLong(KEY_PREF_SAVED_INDEX, 0L);
         long memoryIndex = mSharedPrefs.getLong(KEY_PREF_MEMORY_INDEX, 0L);
-        if (savedIndex != 0) {
+        if (savedIndex != 0 && savedIndex != -1 /* Recover from old corruption */) {
             setSavedIndexWhenEvaluated(savedIndex);
         }
-        if (memoryIndex != 0) {
+        if (memoryIndex != 0 && memoryIndex != -1) {
             setMemoryIndexWhenEvaluated(memoryIndex, false /* no need to persist again */);
         }
         mSavedName = mSharedPrefs.getString(KEY_PREF_SAVED_NAME, "none");
@@ -389,6 +389,13 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     public void setCallback(Callback callback) {
         mCallback = callback;
+    }
+
+    /**
+     * Does the expression index refer to a transient and mutable expression?
+     */
+    private boolean isMutableIndex(long index) {
+        return index == MAIN_INDEX || index == HISTORY_MAIN_INDEX;
     }
 
     /**
@@ -1416,35 +1423,37 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * index1 should correspond to an immutable expression, and should thus NOT
      * be MAIN_INDEX. Index2 may be MAIN_INDEX. Both expressions are presumed
      * to have been evaluated.  The result is unevaluated.
+     * Can return null if evaluation resulted in an error (a very unlikely case).
      */
     private ExprInfo sum(long index1, long index2) {
-        ExprInfo expr1 = mExprs.get(index1);
-        ExprInfo expr2 = mExprs.get(index2);
-        // TODO: Consider not collapsing expr2, to save database space.
-        // Note that this is a bit tricky, since our expressions can contain unbalanced lparens.
-        CalculatorExpr result = new CalculatorExpr();
-        result.append(getCollapsedExpr(index1));
-        result.add(R.id.op_add);
-        result.append(getCollapsedExpr(index2));
-        ExprInfo resultEi = new ExprInfo(result, false /* dont care about degrees/radians */);
-        resultEi.mLongTimeout = expr1.mLongTimeout || expr2.mLongTimeout;
-        return resultEi;
+        return generalized_sum(index1, index2, R.id.op_add);
     }
 
     /**
      * Return an ExprInfo corresponding to the subtraction of the value at the subtrahend index
      * from value at the minuend index (minuend - subtrahend = result). Both are presumed to have
-     * been previously evaluated. The result is unevaluated.
+     * been previously evaluated. The result is unevaluated. Can return null.
      */
     private ExprInfo difference(long minuendIndex, long subtrahendIndex) {
-        final CalculatorExpr resultExpr = new CalculatorExpr();
-        resultExpr.append(getCollapsedExpr(minuendIndex));
-        resultExpr.add(R.id.op_sub);
-        resultExpr.append(getCollapsedExpr(subtrahendIndex));
-        final ExprInfo result = new ExprInfo(resultExpr, false /* angular measure irrelevant */);
-        result.mLongTimeout = mExprs.get(minuendIndex).mLongTimeout
-                || mExprs.get(subtrahendIndex).mLongTimeout;
-        return result;
+        return generalized_sum(minuendIndex, subtrahendIndex, R.id.op_sub);
+    }
+
+    private ExprInfo generalized_sum(long index1, long index2, int op) {
+        // TODO: Consider not collapsing expr2, to save database space.
+        // Note that this is a bit tricky, since our expressions can contain unbalanced lparens.
+        CalculatorExpr result = new CalculatorExpr();
+        CalculatorExpr collapsed1 = getCollapsedExpr(index1);
+        CalculatorExpr collapsed2 = getCollapsedExpr(index2);
+        if (collapsed1 == null || collapsed2 == null) {
+            return null;
+        }
+        result.append(collapsed1);
+        result.add(op);
+        result.append(collapsed2);
+        ExprInfo resultEi = new ExprInfo(result, false /* dont care about degrees/radians */);
+        resultEi.mLongTimeout = mExprs.get(index1).mLongTimeout
+                || mExprs.get(index2).mLongTimeout;
+        return resultEi;
     }
 
     /**
@@ -1471,13 +1480,14 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
     }
 
     /**
-     * Preserve a copy of the current main expression at a new index.
+     * Preserve a copy of the expression at old_index at a new index.
+     * This is useful only of old_index is MAIN_INDEX or HISTORY_MAIN_INDEX.
      * This assumes that initial evaluation completed suceessfully.
      * @param in_history use a positive index so the result appears in the history.
      * @return the new index
      */
-    public long preserve(boolean in_history) {
-        ExprInfo ei = copy(MAIN_INDEX, true);
+    public long preserve(long old_index, boolean in_history) {
+        ExprInfo ei = copy(old_index, true);
         if (ei.mResultString == null || ei.mResultString == ERRONEOUS_RESULT) {
             throw new AssertionError("Preserving unevaluated expression");
         }
@@ -1516,9 +1526,14 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * expression has been completed.
      */
     private CalculatorExpr getCollapsedExpr(long index) {
-        long real_index = (index == MAIN_INDEX) ? preserve(false) : index;
+        long real_index = isMutableIndex(index) ? preserve(index, false) : index;
         final ExprInfo ei = mExprs.get(real_index);
         final String rs = ei.mResultString;
+        // An error can occur here only under extremely unlikely conditions.
+        // Check anyway, and just refuse.
+        if (ei.mResultString == ERRONEOUS_RESULT) {
+            return null;
+        }
         final int dotIndex = rs.indexOf('.');
         final int leastDigOffset = getLsdOffset(ei.mVal.get(), rs, dotIndex);
         return ei.mExpr.abbreviate(real_index,
@@ -1650,7 +1665,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                 || mExprs.get(index).mResultString == ERRONEOUS_RESULT) {
             return false;
         }
-        setSavedIndex((index == MAIN_INDEX) ? preserve(false) : index);
+        setSavedIndex(isMutableIndex(index) ? preserve(index, false) : index);
         return true;
     }
 
@@ -1659,7 +1674,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * The expression at index is presumed to have been evaluated.
      */
     public void copyToMemory(long index) {
-        setMemoryIndex((index == MAIN_INDEX) ? preserve(false) : index);
+        setMemoryIndex(isMutableIndex(index) ? preserve(index, false) : index);
     }
 
     /**
@@ -1668,9 +1683,11 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     public void addToMemory(long index) {
         ExprInfo newEi = sum(mMemoryIndex, index);
-        long newIndex = addToDB(false, newEi);
-        mMemoryIndex = 0;  // Invalidate while we're evaluating.
-        setMemoryIndexWhenEvaluated(newIndex, true /* persist */);
+        if (newEi != null) {
+            long newIndex = addToDB(false, newEi);
+            mMemoryIndex = 0;  // Invalidate while we're evaluating.
+            setMemoryIndexWhenEvaluated(newIndex, true /* persist */);
+        }
     }
 
     /**
@@ -1679,9 +1696,11 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      */
     public void subtractFromMemory(long index) {
         ExprInfo newEi = difference(mMemoryIndex, index);
-        long newIndex = addToDB(false, newEi);
-        mMemoryIndex = 0;  // Invalidate while we're evaluating.
-        setMemoryIndexWhenEvaluated(newIndex, true /* persist */);
+        if (newEi != null) {
+            long newIndex = addToDB(false, newEi);
+            mMemoryIndex = 0;  // Invalidate while we're evaluating.
+            setMemoryIndexWhenEvaluated(newIndex, true /* persist */);
+        }
     }
 
     /**
@@ -1732,9 +1751,13 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
      * Append the expression at index as a pre-evaluated expression to the main expression.
      */
     public void appendExpr(long index) {
+        ExprInfo ei = mExprs.get(index);
         mChangedValue = true;
-        mMainExpr.mLongTimeout |= mExprs.get(index).mLongTimeout;
-        mMainExpr.mExpr.append(getCollapsedExpr(index));
+        mMainExpr.mLongTimeout |= ei.mLongTimeout;
+        CalculatorExpr collapsed = getCollapsedExpr(index);
+        if (collapsed != null) {
+            mMainExpr.mExpr.append(getCollapsedExpr(index));
+        }
     }
 
     /**

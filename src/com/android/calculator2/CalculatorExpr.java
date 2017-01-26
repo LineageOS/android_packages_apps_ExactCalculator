@@ -373,7 +373,16 @@ class CalculatorExpr {
             case CONSTANT:
                 return new Constant(in);
             case PRE_EVAL:
-                return new PreEval(in);
+                PreEval pe = new PreEval(in);
+                if (pe.mIndex == -1) {
+                    // Database corrupted by earlier bug.
+                    // Return a conspicuously wrong placeholder that won't lead to a crash.
+                    Constant result = new Constant();
+                    result.add(R.id.dec_point);
+                    return result;
+                } else {
+                    return pe;
+                }
             default: throw new IOException("Bad save file format");
             }
         } else {
