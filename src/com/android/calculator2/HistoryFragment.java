@@ -176,9 +176,11 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
             mDragLayout.removeDragCallback(this);
         }
 
-        // Note that the view is destroyed when the fragment backstack is popped, so
-        // these are essentially called when the DragLayout is closed.
-        mEvaluator.cancelNonMain();
+        if (mEvaluator != null) {
+            // Note that the view is destroyed when the fragment backstack is popped, so
+            // these are essentially called when the DragLayout is closed.
+            mEvaluator.cancelNonMain();
+        }
     }
 
     private void initializeController(boolean isResult, boolean isOneLine) {
