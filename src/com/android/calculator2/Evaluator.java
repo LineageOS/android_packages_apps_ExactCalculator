@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 import android.text.Spannable;
@@ -100,6 +101,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
 
     public static String TIMEOUT_DIALOG_TAG = "timeout";
 
+    @NonNull
     public static Evaluator getInstance(Context context) {
         if (evaluator == null) {
             evaluator = new Evaluator(context.getApplicationContext());

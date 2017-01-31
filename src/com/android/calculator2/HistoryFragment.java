@@ -113,37 +113,35 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
         final boolean isResultLayout = activity.isResultLayout();
         final boolean isOneLine = activity.isOneLine();
 
-        if (mEvaluator != null) {
-            initializeController(isResultLayout, isOneLine);
+        initializeController(isResultLayout, isOneLine);
 
-            final long maxIndex = mEvaluator.getMaxIndex();
+        final long maxIndex = mEvaluator.getMaxIndex();
 
-            final ArrayList<HistoryItem> newDataSet = new ArrayList<>();
+        final ArrayList<HistoryItem> newDataSet = new ArrayList<>();
 
-            if (!EvaluatorStateUtils.isDisplayEmpty(mEvaluator) && !isResultLayout) {
-                // Add the current expression as the first element in the list (the layout is
-                // reversed and we want the current expression to be the last one in the
-                // RecyclerView).
-                // If we are in the result state, the result will animate to the last history
-                // element in the list and there will be no "Current Expression."
-                mEvaluator.copyMainToHistory();
-                newDataSet.add(new HistoryItem(Evaluator.HISTORY_MAIN_INDEX,
-                        System.currentTimeMillis(), mEvaluator.getExprAsSpannable(0)));
-            }
-            for (long i = 0; i < maxIndex; ++i) {
-                newDataSet.add(null);
-            }
-            final boolean isEmpty = newDataSet.isEmpty();
-            mRecyclerView.setBackgroundColor(ContextCompat.getColor(activity,
-                    isEmpty ? R.color.empty_history_color : R.color.display_background_color));
-            if (isEmpty) {
-                newDataSet.add(new HistoryItem());
-            }
-            mDataSet = newDataSet;
-            mAdapter.setDataSet(mDataSet);
-            mAdapter.setIsResultLayout(isResultLayout);
-            mAdapter.setIsOneLine(activity.isOneLine());
+        if (!EvaluatorStateUtils.isDisplayEmpty(mEvaluator) && !isResultLayout) {
+            // Add the current expression as the first element in the list (the layout is
+            // reversed and we want the current expression to be the last one in the
+            // RecyclerView).
+            // If we are in the result state, the result will animate to the last history
+            // element in the list and there will be no "Current Expression."
+            mEvaluator.copyMainToHistory();
+            newDataSet.add(new HistoryItem(Evaluator.HISTORY_MAIN_INDEX,
+                    System.currentTimeMillis(), mEvaluator.getExprAsSpannable(0)));
         }
+        for (long i = 0; i < maxIndex; ++i) {
+            newDataSet.add(null);
+        }
+        final boolean isEmpty = newDataSet.isEmpty();
+        mRecyclerView.setBackgroundColor(ContextCompat.getColor(activity,
+                isEmpty ? R.color.empty_history_color : R.color.display_background_color));
+        if (isEmpty) {
+            newDataSet.add(new HistoryItem());
+        }
+        mDataSet = newDataSet;
+        mAdapter.setDataSet(mDataSet);
+        mAdapter.setIsResultLayout(isResultLayout);
+        mAdapter.setIsOneLine(activity.isOneLine());
 
         mAdapter.notifyDataSetChanged();
     }
