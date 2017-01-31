@@ -25,4 +25,20 @@
     <dimen name="history_item_text_padding_top">8dip</dimen>
     <dimen name="history_item_text_padding_bottom">16dip</dimen>
 
+    <!-- Dimens for display formula. -->
+    <dimen name="formula_padding_top">0dip</dimen>
+    <dimen name="formula_padding_bottom">8dip</dimen>
+    <dimen name="formula_padding_start">16dip</dimen>
+    <dimen name="formula_padding_end">16dip</dimen>
+    <dimen name="formula_min_textsize">28dip</dimen>
+    <dimen name="formula_max_textsize">28dip</dimen>
+    <dimen name="formula_step_textsize">8dip</dimen>
+
+    <!-- Dimens for display result. -->
+    <dimen name="result_padding_top">0dip</dimen>
+    <dimen name="result_padding_bottom">8dip</dimen>
+    <dimen name="result_padding_start">16dip</dimen>
+    <dimen name="result_padding_end">16dip</dimen>
+    <dimen name="result_textsize">28dip</dimen>
+
 </resources>
