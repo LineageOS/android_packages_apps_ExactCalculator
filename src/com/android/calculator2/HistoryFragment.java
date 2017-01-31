@@ -159,7 +159,7 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
         super.onStart();
 
         final Calculator activity = (Calculator) getActivity();
-        mDragController.initializeAnimation(activity.isResultLayout(), activity.isOneLine(), 
+        mDragController.initializeAnimation(activity.isResultLayout(), activity.isOneLine(),
                 mIsDisplayEmpty);
     }
 

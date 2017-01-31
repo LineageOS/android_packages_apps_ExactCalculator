@@ -164,7 +164,17 @@ public class DragLayout extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // Workaround: do not process the error case where multi-touch would cause a crash.
+        if (event.getActionMasked() == MotionEvent.ACTION_MOVE
+                && mDragHelper.getViewDragState() == ViewDragHelper.STATE_DRAGGING
+                && mDragHelper.getActivePointerId() != ViewDragHelper.INVALID_POINTER
+                && event.findPointerIndex(mDragHelper.getActivePointerId()) == -1) {
+            mDragHelper.cancel();
+            return false;
+        }
+
         saveLastMotion(event);
+
         mDragHelper.processTouchEvent(event);
         return true;
     }
