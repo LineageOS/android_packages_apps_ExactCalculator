@@ -731,8 +731,7 @@ public class Calculator extends Activity
     private void removeHistoryFragment() {
         final FragmentManager manager = getFragmentManager();
         if (manager != null && !manager.isDestroyed()) {
-            manager.popBackStackImmediate(HistoryFragment.TAG,
-                    FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            manager.popBackStack(HistoryFragment.TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
 
         // When HistoryFragment is hidden, the main Calculator is important for accessibility again.
