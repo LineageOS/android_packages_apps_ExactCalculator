@@ -64,8 +64,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     private boolean mScrollable = false;
                             // A scrollable result is currently displayed.
     private boolean mValid = false;
-                            // The result holds something valid; either a a number or an error
-                            // message.
+                            // The result holds a valid number (not an error message).
     // A suffix of "Pos" denotes a pixel offset.  Zero represents a scroll position
     // in which the decimal point is just barely visible on the right of the display.
     private int mCurrentPos;// Position of right of display relative to decimal point, in pixels.
@@ -596,7 +595,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     @Override
     public void onError(long index, int resourceId) {
         mStoreToMemoryRequested = false;
-        mValid = true;
+        mValid = false;
         setLongClickable(false);
         mScrollable = false;
         final String msg = getContext().getString(resourceId);
