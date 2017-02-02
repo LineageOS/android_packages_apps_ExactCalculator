@@ -1531,7 +1531,9 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         final String rs = ei.mResultString;
         // An error can occur here only under extremely unlikely conditions.
         // Check anyway, and just refuse.
-        if (ei.mResultString == ERRONEOUS_RESULT) {
+        // rs *should* never be null, but it happens. Check as a workaround to protect against
+        // crashes until we find the root cause (b/34801142)
+        if (rs == ERRONEOUS_RESULT || rs == null) {
             return null;
         }
         final int dotIndex = rs.indexOf('.');
