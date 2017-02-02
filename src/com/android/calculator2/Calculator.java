@@ -1264,8 +1264,12 @@ public class Calculator extends Activity
         menu.findItem(R.id.menu_leading).setVisible(mCurrentState == CalculatorState.RESULT);
 
         // Show the fraction option when displaying a rational result.
-        menu.findItem(R.id.menu_fraction).setVisible(mCurrentState == CalculatorState.RESULT
-                && mEvaluator.getResult(Evaluator.MAIN_INDEX).exactlyDisplayable());
+        boolean visible = mCurrentState == CalculatorState.RESULT;
+        final UnifiedReal mainResult = mEvaluator.getResult(Evaluator.MAIN_INDEX);
+        // mainResult should never be null, but it happens. Check as a workaround to protect
+        // against crashes until we find the root cause (b/34763650).
+        visible &= mainResult != null && mainResult.exactlyDisplayable();
+        menu.findItem(R.id.menu_fraction).setVisible(visible);
 
         return true;
     }
