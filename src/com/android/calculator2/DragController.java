@@ -57,6 +57,7 @@ public final class DragController {
     private boolean mAnimationInitialized;
 
     private boolean mOneLine;
+    private boolean mIsDisplayEmpty;
 
     private AnimationController mAnimationController;
 
@@ -66,9 +67,10 @@ public final class DragController {
         mEvaluator = evaluator;
     }
 
-    public void initializeController(boolean isResult, boolean oneLine) {
+    public void initializeController(boolean isResult, boolean oneLine, boolean isDisplayEmpty) {
         mOneLine = oneLine;
-        if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
+        mIsDisplayEmpty = isDisplayEmpty;
+        if (mIsDisplayEmpty) {
             // Empty display
             mAnimationController = new EmptyAnimationController();
         } else if (isResult) {
@@ -107,7 +109,8 @@ public final class DragController {
         if (yFraction > 0 && vh != null) {
             recyclerView.setVisibility(View.VISIBLE);
         }
-        if (vh != null && !EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
+        if (vh != null && !mIsDisplayEmpty
+                && vh.getItemViewType() == HistoryAdapter.HISTORY_VIEW_TYPE) {
             final AlignedTextView formula = vh.getFormula();
             final CalculatorResult result = vh.getResult();
             final TextView date = vh.getDate();
@@ -157,7 +160,7 @@ public final class DragController {
 
             date.setTranslationY(mAnimationController.getDateTranslationY(yFraction));
             divider.setTranslationY(mAnimationController.getDateTranslationY(yFraction));
-        } else if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator)) {
+        } else if (mIsDisplayEmpty) {
             // There is no current expression but we still need to collect information
             // to translate the other viewholders.
             if (!mAnimationInitialized) {
@@ -186,9 +189,9 @@ public final class DragController {
     /**
      * Reset all initialized values.
      */
-    public void initializeAnimation(boolean isResult, boolean oneLine) {
+    public void initializeAnimation(boolean isResult, boolean oneLine, boolean isDisplayEmpty) {
         mAnimationInitialized = false;
-        initializeController(isResult, oneLine);
+        initializeController(isResult, oneLine, isDisplayEmpty);
     }
 
     public interface AnimateTextInterface {

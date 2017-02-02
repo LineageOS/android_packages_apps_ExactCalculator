@@ -34,7 +34,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private static final String TAG = "HistoryAdapter";
 
     private static final int EMPTY_VIEW_TYPE = 0;
-    private static final int HISTORY_VIEW_TYPE = 1;
+    public static final int HISTORY_VIEW_TYPE = 1;
 
     private Evaluator mEvaluator;
 
@@ -44,6 +44,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     private boolean mIsResultLayout;
     private boolean mIsOneLine;
+    private boolean mIsDisplayEmpty;
 
     public HistoryAdapter(ArrayList<HistoryItem> dataSet) {
         mDataSet = dataSet;
@@ -135,12 +136,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         mIsOneLine = isOneLine;
     }
 
+    public void setIsDisplayEmpty(boolean isDisplayEmpty) {
+        mIsDisplayEmpty = isDisplayEmpty;
+    }
+
     public void setEvaluator(Evaluator evaluator) {
         mEvaluator = evaluator;
     }
 
     private int getEvaluatorIndex(int position) {
-        if (EvaluatorStateUtils.isDisplayEmpty(mEvaluator) || mIsResultLayout) {
+        if (mIsDisplayEmpty || mIsResultLayout) {
             return (int) (mEvaluator.getMaxIndex() - position);
         } else {
             // Account for the additional "Current Expression" with the +1.
