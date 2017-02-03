@@ -744,6 +744,10 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                         ++exponent;
                     }
                 }
+                if (dropDigits >= result.length() - 1) {
+                    // Display too small to show meaningful result.
+                    return KeyMaps.ELLIPSIS + "E" + KeyMaps.ELLIPSIS;
+                }
                 result = result.substring(0, result.length() - dropDigits);
                 if (lastDisplayedOffset != null) {
                     lastDisplayedOffset[0] -= dropDigits;
@@ -918,11 +922,15 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     }
 
     public void redisplay() {
+        int maxChars = getMaxChars();
+        if (maxChars < 4) {
+            // Display currently too small to display a reasonable result. Punt to avoid crash.
+            return;
+        }
         if (mScroller.isFinished() && length() > 0) {
             setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
         }
         int currentCharOffset = getCharOffset(mCurrentPos);
-        int maxChars = getMaxChars();
         int lastDisplayedOffset[] = new int[1];
         String result = getFormattedResult(currentCharOffset, maxChars, lastDisplayedOffset,
                 mAppendExponent /* forcePrecision; preserve entire result */,

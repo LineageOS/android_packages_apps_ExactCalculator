@@ -574,6 +574,10 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                 if (res == null) {
                     try {
                         res = mExprInfo.mExpr.eval(mDm, Evaluator.this);
+                        if (isCancelled()) {
+                            // TODO: This remains very slightly racey. Fix this.
+                            throw new CR.AbortedException();
+                        }
                         res = putResultIfAbsent(mIndex, res);
                     } catch (StackOverflowError e) {
                         // Absurdly large integer exponents can cause this. There might be other
