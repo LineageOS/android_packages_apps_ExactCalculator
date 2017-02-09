@@ -222,34 +222,20 @@ public class DragLayout extends ViewGroup {
 
     public Animator createAnimator(boolean toOpen) {
         if (mIsOpen == toOpen) {
-            return null;
+            return ValueAnimator.ofFloat(0f, 1f).setDuration(0L);
         }
 
-        mIsOpen = true;
+        mIsOpen = toOpen;
         mHistoryFrame.setVisibility(VISIBLE);
 
-        final ValueAnimator animator = ValueAnimator.ofInt(mHistoryFrame.getTop(),
-                toOpen ? 0 : -mVerticalRange);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
+        animator.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                final int top = (int) animator.getAnimatedValue();
-                mHistoryFrame.offsetTopAndBottom(top - mHistoryFrame.getTop());
-
-                for (DragCallback c : mDragCallbacks) {
-                    // Top is between [-mVerticalRange, 0].
-                    c.whileDragging(1f + (float) top / mVerticalRange);
-                }
+            public void onAnimationStart(Animator animation) {
+                mDragHelper.cancel();
+                mDragHelper.smoothSlideViewTo(mHistoryFrame, 0, mIsOpen ? 0 : -mVerticalRange);
             }
         });
-        if (!toOpen) {
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    setClosed();
-                }
-            });
-        }
 
         return animator;
     }
