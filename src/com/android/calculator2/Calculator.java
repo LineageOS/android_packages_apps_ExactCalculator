@@ -918,9 +918,10 @@ public class Calculator extends Activity
 
         mResultText.onEvaluate(index, initDisplayPrec, msd, leastDigPos, truncatedWholeNumber);
         if (mCurrentState != CalculatorState.INPUT) {
-            // In EVALUATE, INIT, or INIT_FOR_RESULT state.
+            // In EVALUATE, INIT, RESULT, or INIT_FOR_RESULT state.
             onResult(mCurrentState == CalculatorState.EVALUATE /* animate */,
-                     mCurrentState == CalculatorState.INIT_FOR_RESULT /* previously preserved */);
+                     mCurrentState == CalculatorState.INIT_FOR_RESULT
+                    || mCurrentState == CalculatorState.RESULT /* previously preserved */);
         }
     }
 
