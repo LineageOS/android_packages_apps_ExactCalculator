@@ -33,6 +33,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ClipData;
@@ -1279,7 +1280,7 @@ public class Calculator extends Activity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_history:
-                showHistoryFragment(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                showHistoryFragment();
                 return true;
             case R.id.menu_leading:
                 displayFull();
@@ -1308,7 +1309,7 @@ public class Calculator extends Activity
 
     public void onStartDraggingOpen() {
         mDisplayView.hideToolbar();
-        showHistoryFragment(FragmentTransaction.TRANSIT_NONE);
+        showHistoryFragment();
     }
 
     @Override
@@ -1360,10 +1361,11 @@ public class Calculator extends Activity
         if (manager == null || manager.isDestroyed()) {
             return null;
         }
-        return (HistoryFragment) manager.findFragmentByTag(HistoryFragment.TAG);
+        final Fragment fragment = manager.findFragmentByTag(HistoryFragment.TAG);
+        return fragment == null || fragment.isRemoving() ? null : (HistoryFragment) fragment;
     }
 
-    private void showHistoryFragment(int transit) {
+    private void showHistoryFragment() {
         final FragmentManager manager = getFragmentManager();
         if (manager == null || manager.isDestroyed()) {
             return;
@@ -1376,7 +1378,7 @@ public class Calculator extends Activity
         stopActionModeOrContextMenu();
         manager.beginTransaction()
                 .replace(R.id.history_frame, new HistoryFragment(), HistoryFragment.TAG)
-                .setTransition(transit)
+                .setTransition(FragmentTransaction.TRANSIT_NONE)
                 .addToBackStack(HistoryFragment.TAG)
                 .commit();
 

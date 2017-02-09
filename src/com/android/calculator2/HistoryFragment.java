@@ -18,7 +18,6 @@ package com.android.calculator2;
 
 import android.animation.Animator;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -165,14 +164,7 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
 
     @Override
     public Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
-        if (enter) {
-            if (transit == FragmentTransaction.TRANSIT_FRAGMENT_OPEN) {
-                return mDragLayout.createAnimator(true /* toOpen */);
-            } else {
-                return null;
-            }
-        }
-        return mDragLayout.createAnimator(false /* toOpen */);
+        return mDragLayout.createAnimator(enter);
     }
 
     @Override
