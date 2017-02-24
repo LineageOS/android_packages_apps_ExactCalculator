@@ -19,7 +19,10 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:id="@+id/memory_recall"
+          android:title="@string/memory_recall"/>
+
     <item android:id="@+id/menu_paste"
-        android:title="@android:string/paste"/>
+          android:title="@android:string/paste"/>
 
 </menu>
