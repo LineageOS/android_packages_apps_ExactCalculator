@@ -33,17 +33,14 @@
         android:overScrollMode="never"
         android:scrollbars="none">
 
-       <com.android.calculator2.CalculatorText
+       <com.android.calculator2.CalculatorFormula
             android:id="@+id/formula"
             style="@style/DisplayTextStyle.Formula"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="bottom|end"
             android:ellipsize="none"
-            android:longClickable="true"
-            android:singleLine="true"
-            android:textColor="@color/display_formula_text_color"
-            android:textIsSelectable="false" />
+            android:maxLines="1"
+            android:textColor="@color/display_formula_text_color" />
 
     </com.android.calculator2.CalculatorScrollView>
 

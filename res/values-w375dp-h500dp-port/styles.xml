@@ -17,24 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="DisplayTextStyle.Formula">
-        <item name="android:paddingTop">16dip</item>
-        <item name="android:paddingBottom">28dip</item>
-        <item name="android:paddingStart">16dip</item>
-        <item name="android:paddingEnd">16dip</item>
-        <item name="minTextSize">42dip</item>
-        <item name="maxTextSize">74dip</item>
-        <item name="stepTextSize">8dip</item>
-    </style>
-
-    <style name="DisplayTextStyle.Result">
-        <item name="android:paddingTop">16dip</item>
-        <item name="android:paddingBottom">42dip</item>
-        <item name="android:paddingStart">16dip</item>
-        <item name="android:paddingEnd">16dip</item>
-        <item name="android:textSize">42dip</item>
-    </style>
-
     <style name="PadButtonStyle.Advanced">
         <item name="android:background">@drawable/pad_button_advanced_background</item>
         <item name="android:textColor">@color/pad_button_advanced_text_color</item>

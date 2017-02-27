@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -186,48 +187,66 @@ public class CalculatorPadViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        // Always intercept touch events when a11y focused since otherwise they will be
-        // incorrectly offset by a11y before being dispatched to children.
-        boolean shouldIntercept = isAccessibilityFocused() || super.onInterceptTouchEvent(ev);
+        try {
+            // Always intercept touch events when a11y focused since otherwise they will be
+            // incorrectly offset by a11y before being dispatched to children.
+            if (isAccessibilityFocused() || super.onInterceptTouchEvent(ev)) {
+                return true;
+            }
 
-        // Only allow the current item to receive touch events.
-        if (!shouldIntercept && ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            final int x = (int) ev.getX() + getScrollX();
-            final int y = (int) ev.getY() + getScrollY();
+            // Only allow the current item to receive touch events.
+            final int action = ev.getActionMasked();
+            if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+                // If a child is a11y focused then we must always intercept the touch event
+                // since it will be incorrectly offset by a11y.
+                final int childCount = getChildCount();
+                for (int childIndex = childCount - 1; childIndex >= 0; --childIndex) {
+                    if (getChildAt(childIndex).isAccessibilityFocused()) {
+                        mClickedItemIndex = childIndex;
+                        return true;
+                    }
+                }
 
-            // Reset the previously clicked item index.
-            mClickedItemIndex = -1;
+                if (action == MotionEvent.ACTION_DOWN) {
+                    mClickedItemIndex = -1;
+                }
 
-            final int childCount = getChildCount();
-            for (int i = childCount - 1; i >= 0; --i) {
-                final int childIndex = getChildDrawingOrder(childCount, i);
-                final View child = getChildAt(childIndex);
-                if (child.isAccessibilityFocused()) {
-                    // If a child is a11y focused then we must always intercept the touch event
-                    // since it will be incorrectly offset by a11y.
-                    shouldIntercept = true;
-                    mClickedItemIndex = childIndex;
-                    break;
-                } else if (mClickedItemIndex == -1
-                        && child.getVisibility() == VISIBLE
-                        && x >= child.getLeft() && x < child.getRight()
-                        && y >= child.getTop() && y < child.getBottom()) {
-                    shouldIntercept = childIndex != getCurrentItem();
-                    mClickedItemIndex = childIndex;
-                    // continue; since another child may be a11y focused.
+                // Otherwise if touch is on a non-current item then intercept.
+                final int actionIndex = ev.getActionIndex();
+                final float x = ev.getX(actionIndex) + getScrollX();
+                final float y = ev.getY(actionIndex) + getScrollY();
+                for (int i = childCount - 1; i >= 0; --i) {
+                    final int childIndex = getChildDrawingOrder(childCount, i);
+                    final View child = getChildAt(childIndex);
+                    if (child.getVisibility() == VISIBLE
+                            && x >= child.getLeft() && x < child.getRight()
+                            && y >= child.getTop() && y < child.getBottom()) {
+                        if (action == MotionEvent.ACTION_DOWN) {
+                            mClickedItemIndex = childIndex;
+                        }
+                        return childIndex != getCurrentItem();
+                    }
                 }
             }
-        }
 
-        return shouldIntercept;
+            return false;
+        } catch (IllegalArgumentException e) {
+            Log.e("Calculator", "Error intercepting touch event", e);
+            return false;
+        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        // Allow both the gesture detector and super to handle the touch event so they both see
-        // the full sequence of events. This should be safe since the gesture detector only
-        // handle clicks and super only handles swipes.
-        mGestureDetector.onTouchEvent(ev);
-        return super.onTouchEvent(ev);
+        try {
+            // Allow both the gesture detector and super to handle the touch event so they both see
+            // the full sequence of events. This should be safe since the gesture detector only
+            // handle clicks and super only handles swipes.
+            mGestureDetector.onTouchEvent(ev);
+            return super.onTouchEvent(ev);
+        } catch (IllegalArgumentException e) {
+            Log.e("Calculator", "Error processing touch event", e);
+            return false;
+        }
     }
 }

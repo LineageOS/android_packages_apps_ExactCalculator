@@ -191,7 +191,12 @@ public class CalculatorDisplay extends LinearLayout
      */
     public void hideToolbar() {
         if (!getForceToolbarVisible()) {
-            post(mHideToolbarRunnable);
+            removeCallbacks(mHideToolbarRunnable);
+            mHideToolbarRunnable.run();
         }
+    }
+
+    public boolean isToolbarVisible() {
+        return mToolbar.getVisibility() == View.VISIBLE;
     }
 }
