@@ -21,16 +21,16 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.TtsSpan;
-import android.text.style.TtsSpan.TextBuilder;
-import android.util.Log;
 
-import java.math.BigInteger;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * A mathematical expression represented as a sequence of "tokens".
@@ -47,6 +47,33 @@ import java.util.IdentityHashMap;
  * when reading it back in.
  */
 class CalculatorExpr {
+    /**
+     * An interface for resolving expression indices in embedded subexpressions to
+     * the associated CalculatorExpr, and associating a UnifiedReal result with it.
+     * All methods are thread-safe in the strong sense; they may be called asynchronously
+     * at any time from any thread.
+     */
+    public interface ExprResolver {
+        /*
+         * Retrieve the expression corresponding to index.
+         */
+        CalculatorExpr getExpr(long index);
+        /*
+         * Retrieve the degree mode associated with the expression at index i.
+         */
+        boolean getDegreeMode(long index);
+        /*
+         * Retrieve the stored result for the expression at index, or return null.
+         */
+        UnifiedReal getResult(long index);
+        /*
+         * Atomically test for an existing result, and set it if there was none.
+         * Return the prior result if there was one, or the new one if there was not.
+         * May only be called after getExpr.
+         */
+        UnifiedReal putResultIfAbsent(long index, UnifiedReal result);
+    }
+
     private ArrayList<Token> mExpr;  // The actual representation
                                      // as a list of tokens.  Constant
                                      // tokens are always nonempty.
@@ -60,7 +87,9 @@ class CalculatorExpr {
         abstract TokenKind kind();
 
         /**
-         * Write kind as Byte followed by data needed by subclass constructor.
+         * Write token as either a very small Byte containing the TokenKind,
+         * followed by data needed by subclass constructor,
+         * or as a byte >= 0x20 directly describing the OPERATOR token.
          */
         abstract void write(DataOutput out) throws IOException;
 
@@ -77,17 +106,17 @@ class CalculatorExpr {
      * Representation of an operator token
      */
     private static class Operator extends Token {
+        // TODO: rename id.
         public final int id; // We use the button resource id
         Operator(int resId) {
             id = resId;
         }
-        Operator(DataInput in) throws IOException {
-            id = in.readInt();
+        Operator(byte op) throws IOException {
+            id = KeyMaps.fromByte(op);
         }
         @Override
         void write(DataOutput out) throws IOException {
-            out.writeByte(TokenKind.OPERATOR.ordinal());
-            out.writeInt(id);
+            out.writeByte(KeyMaps.toByte(id));
         }
         @Override
         public CharSequence toCharSequence(Context context) {
@@ -114,28 +143,44 @@ class CalculatorExpr {
         private String mWhole;  // String preceding decimal point.
         private String mFraction; // String after decimal point.
         private int mExponent;  // Explicit exponent, only generated through addExponent.
+        private static int SAW_DECIMAL = 0x1;
+        private static int HAS_EXPONENT = 0x2;
 
         Constant() {
             mWhole = "";
             mFraction = "";
-            mSawDecimal = false;
-            mExponent = 0;
+            // mSawDecimal = false;
+            // mExponent = 0;
         };
 
         Constant(DataInput in) throws IOException {
             mWhole = in.readUTF();
-            mSawDecimal = in.readBoolean();
-            mFraction = in.readUTF();
-            mExponent = in.readInt();
+            byte flags = in.readByte();
+            if ((flags & SAW_DECIMAL) != 0) {
+                mSawDecimal = true;
+                mFraction = in.readUTF();
+            } else {
+                // mSawDecimal = false;
+                mFraction = "";
+            }
+            if ((flags & HAS_EXPONENT) != 0) {
+                mExponent = in.readInt();
+            }
         }
 
         @Override
         void write(DataOutput out) throws IOException {
+            byte flags = (byte)((mSawDecimal ? SAW_DECIMAL : 0)
+                    | (mExponent != 0 ? HAS_EXPONENT : 0));
             out.writeByte(TokenKind.CONSTANT.ordinal());
             out.writeUTF(mWhole);
-            out.writeBoolean(mSawDecimal);
-            out.writeUTF(mFraction);
-            out.writeInt(mExponent);
+            out.writeByte(flags);
+            if (mSawDecimal) {
+                out.writeUTF(mFraction);
+            }
+            if (mExponent != 0) {
+                out.writeInt(mExponent);
+            }
         }
 
         // Given a button press, append corresponding digit.
@@ -266,105 +311,43 @@ class CalculatorExpr {
         }
     }
 
-    // Hash maps used to detect duplicate subexpressions when we write out CalculatorExprs and
-    // read them back in.
-    private static final ThreadLocal<IdentityHashMap<UnifiedReal, Integer>>outMap =
-            new ThreadLocal<IdentityHashMap<UnifiedReal, Integer>>();
-        // Maps expressions to indices on output
-    private static final ThreadLocal<HashMap<Integer, PreEval>>inMap =
-            new ThreadLocal<HashMap<Integer, PreEval>>();
-        // Maps expressions to indices on output
-    private static final ThreadLocal<Integer> exprIndex = new ThreadLocal<Integer>();
-
-    /**
-     * Prepare for expression output.
-     * Initializes map that will lbe used to avoid duplicating shared subexpressions.
-     * This avoids a potential exponential blow-up in the expression size.
-     */
-    public static void initExprOutput() {
-        outMap.set(new IdentityHashMap<UnifiedReal, Integer>());
-        exprIndex.set(Integer.valueOf(0));
-    }
-
-    /**
-     * Prepare for expression input.
-     * Initializes map that will be used to reconstruct shared subexpressions.
-     */
-    public static void initExprInput() {
-        inMap.set(new HashMap<Integer, PreEval>());
-    }
-
     /**
      * The "token" class for previously evaluated subexpressions.
      * We treat previously evaluated subexpressions as tokens.  These are inserted when we either
      * continue an expression after evaluating some of it, or copy an expression and paste it back
      * in.
+     * This only contains enough information to allow us to display the expression in a
+     * formula, or reevaluate the expression with the aid of an ExprResolver; we no longer
+     * cache the result. The expression corresponding to the index can be obtained through
+     * the ExprResolver, which looks it up in a subexpression database.
      * The representation includes a UnifiedReal value.  In order to
      * support saving and restoring, we also include the underlying expression itself, and the
      * context (currently just degree mode) used to evaluate it.  The short string representation
      * is also stored in order to avoid potentially expensive recomputation in the UI thread.
      */
     private static class PreEval extends Token {
-        public final UnifiedReal value;
-        private final CalculatorExpr mExpr;
-        private final EvalContext mContext;
+        public final long mIndex;
         private final String mShortRep;  // Not internationalized.
-        PreEval(UnifiedReal val, CalculatorExpr expr, EvalContext ec, String shortRep) {
-            value = val;
-            mExpr = expr;
-            mContext = ec;
+        PreEval(long index, String shortRep) {
+            mIndex = index;
             mShortRep = shortRep;
         }
-        // In writing out PreEvals, we are careful to avoid writing out duplicates.  We conclude
-        // that two expressions are duplicates if they have the same UnifiedReal value.  This
-        // avoids a potential exponential blow up in certain off cases and redundant evaluation
-        // after reading them back in.  The parameter hash map maps expressions we've seen
-        // before to their index.
         @Override
+        // This writes out only a shallow representation of the result, without
+        // information about subexpressions. To write out a deep representation, we
+        // find referenced subexpressions, and iteratively write those as well.
         public void write(DataOutput out) throws IOException {
             out.writeByte(TokenKind.PRE_EVAL.ordinal());
-            Integer index = outMap.get().get(value);
-            if (index == null) {
-                int nextIndex = exprIndex.get() + 1;
-                exprIndex.set(nextIndex);
-                outMap.get().put(value, nextIndex);
-                out.writeInt(nextIndex);
-                mExpr.write(out);
-                mContext.write(out);
-                out.writeUTF(mShortRep);
-            } else {
-                // Just write out the index
-                out.writeInt(index);
+            if (mIndex > Integer.MAX_VALUE || mIndex < Integer.MIN_VALUE) {
+                // This would be millions of expressions per day for the life of the device.
+                throw new AssertionError("Expression index too big");
             }
+            out.writeInt((int)mIndex);
+            out.writeUTF(mShortRep);
         }
         PreEval(DataInput in) throws IOException {
-            int index = in.readInt();
-            PreEval prev = inMap.get().get(index);
-            if (prev == null) {
-                mExpr = new CalculatorExpr(in);
-                mContext = new EvalContext(in, mExpr.mExpr.size());
-                // Recompute other fields We currently do this in the UI thread, but we only
-                // create PreEval expressions that were previously successfully evaluated, and
-                // thus don't diverge.  We also only evaluate to a constructive real, which
-                // involves substantial work only in fairly contrived circumstances.
-                // TODO: Deal better with slow evaluations.
-                EvalRet res = null;
-                try {
-                    res = mExpr.evalExpr(0, mContext);
-                } catch (SyntaxException e) {
-                    // Should be impossible, since we only write out
-                    // expressions that can be evaluated.
-                    Log.e("Calculator", "Unexpected syntax exception" + e);
-                }
-                value = res.val;
-                mShortRep = in.readUTF();
-                inMap.get().put(index, this);
-            } else {
-                value = prev.value;
-                mExpr = prev.mExpr;
-                mContext = prev.mContext;
-                mShortRep = prev.mShortRep;
-            }
+            mIndex = in.readInt();
+            mShortRep = in.readUTF();
         }
         @Override
         public CharSequence toCharSequence(Context context) {
@@ -383,15 +366,27 @@ class CalculatorExpr {
      * Read token from in.
      */
     public static Token newToken(DataInput in) throws IOException {
-        TokenKind kind = tokenKindValues[in.readByte()];
-        switch(kind) {
-        case CONSTANT:
-            return new Constant(in);
-        case OPERATOR:
-            return new Operator(in);
-        case PRE_EVAL:
-            return new PreEval(in);
-        default: throw new IOException("Bad save file format");
+        byte kindByte = in.readByte();
+        if (kindByte < 0x20) {
+            TokenKind kind = tokenKindValues[kindByte];
+            switch(kind) {
+            case CONSTANT:
+                return new Constant(in);
+            case PRE_EVAL:
+                PreEval pe = new PreEval(in);
+                if (pe.mIndex == -1) {
+                    // Database corrupted by earlier bug.
+                    // Return a conspicuously wrong placeholder that won't lead to a crash.
+                    Constant result = new Constant();
+                    result.add(R.id.dec_point);
+                    return result;
+                } else {
+                    return pe;
+                }
+            default: throw new IOException("Bad save file format");
+            }
+        } else {
+            return new Operator(kindByte);
         }
     }
 
@@ -426,6 +421,21 @@ class CalculatorExpr {
     }
 
     /**
+     * Use write() above to generate a byte array containing a serialized representation of
+     * this expression.
+     */
+    public byte[] toBytes() {
+        ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+        try (DataOutputStream out = new DataOutputStream(byteArrayStream)) {
+            write(out);
+        } catch (IOException e) {
+            // Impossible; No IO involved.
+            throw new AssertionError("Impossible IO exception", e);
+        }
+        return byteArrayStream.toByteArray();
+    }
+
+    /**
      * Does this expression end with a numeric constant?
      * As opposed to an operator or preevaluated expression.
      */
@@ -441,7 +451,7 @@ class CalculatorExpr {
     /**
      * Does this expression end with a binary operator?
      */
-    private boolean hasTrailingBinary() {
+    boolean hasTrailingBinary() {
         int s = mExpr.size();
         if (s == 0) return false;
         Token t = mExpr.get(s-1);
@@ -591,7 +601,7 @@ class CalculatorExpr {
      */
     public Object clone() {
         CalculatorExpr result = new CalculatorExpr();
-        for (Token t: mExpr) {
+        for (Token t : mExpr) {
             if (t instanceof Constant) {
                 result.mExpr.add((Token)(((Constant)t).clone()));
             } else {
@@ -612,14 +622,13 @@ class CalculatorExpr {
     /**
      * Return a new expression consisting of a single token representing the current pre-evaluated
      * expression.
-     * The caller supplies the value, degree mode, and short string representation, which must
-     * have been previously computed.  Thus this is guaranteed to terminate reasonably quickly.
+     * The caller supplies the expression index and short string representation.
+     * The expression must have been previously evaluated.
      */
-    public CalculatorExpr abbreviate(UnifiedReal val, boolean dm, String sr) {
+    public CalculatorExpr abbreviate(long index, String sr) {
         CalculatorExpr result = new CalculatorExpr();
         @SuppressWarnings("unchecked")
-        Token t = new PreEval(val, new CalculatorExpr((ArrayList<Token>) mExpr.clone()),
-                new EvalContext(dm, mExpr.size()), sr);
+        Token t = new PreEval(index, sr);
         result.mExpr.add(t);
         return result;
     }
@@ -644,14 +653,17 @@ class CalculatorExpr {
     private static class EvalContext {
         public final int mPrefixLength; // Length of prefix to evaluate. Not explicitly saved.
         public final boolean mDegreeMode;
+        public final ExprResolver mExprResolver;  // Reconstructed, not saved.
         // If we add any other kinds of evaluation modes, they go here.
-        EvalContext(boolean degreeMode, int len) {
+        EvalContext(boolean degreeMode, int len, ExprResolver er) {
             mDegreeMode = degreeMode;
             mPrefixLength = len;
+            mExprResolver = er;
         }
-        EvalContext(DataInput in, int len) throws IOException {
+        EvalContext(DataInput in, int len, ExprResolver er) throws IOException {
             mDegreeMode = in.readBoolean();
             mPrefixLength = len;
+            mExprResolver = er;
         }
         void write(DataOutput out) throws IOException {
             out.writeBoolean(mDegreeMode);
@@ -714,8 +726,14 @@ class CalculatorExpr {
             return new EvalRet(i+1,new UnifiedReal(c.toRational()));
         }
         if (t instanceof PreEval) {
-            final PreEval p = (PreEval)t;
-            return new EvalRet(i+1, p.value);
+            final long index = ((PreEval)t).mIndex;
+            UnifiedReal res = ec.mExprResolver.getResult(index);
+            if (res == null) {
+                // We try to minimize this recursive evaluation case, but currently don't
+                // completely avoid it.
+                res = nestedEval(index, ec.mExprResolver);
+            }
+            return new EvalRet(i+1, res);
         }
         EvalRet argVal;
         switch(((Operator)(t)).id) {
@@ -968,7 +986,7 @@ class CalculatorExpr {
      * Is the current expression worth evaluating?
      */
     public boolean hasInterestingOps() {
-        int last = trailingBinaryOpsStart();
+        final int last = trailingBinaryOpsStart();
         int first = 0;
         if (last > first && isOperatorUnchecked(first, R.id.op_sub)) {
             // Leading minus is not by itself interesting.
@@ -988,7 +1006,7 @@ class CalculatorExpr {
      * Does the expression contain trig operations?
      */
     public boolean hasTrigFuncs() {
-        for (Token t: mExpr) {
+        for (Token t : mExpr) {
             if (t instanceof Operator) {
                 Operator o = (Operator)t;
                 if (KeyMaps.isTrigFunc(o.id)) {
@@ -1000,6 +1018,58 @@ class CalculatorExpr {
     }
 
     /**
+     * Add the indices of unevaluated PreEval expressions embedded in the current expression to
+     * argument.  This includes only directly referenced expressions e, not those indirectly
+     * referenced by e. If the index was already present, it is not added. If the argument
+     * contained no duplicates, the result will not either. New indices are added to the end of
+     * the list.
+     */
+    private void addReferencedExprs(ArrayList<Long> list, ExprResolver er) {
+        for (Token t : mExpr) {
+            if (t instanceof PreEval) {
+                Long index = ((PreEval) t).mIndex;
+                if (er.getResult(index) == null && !list.contains(index)) {
+                    list.add(index);
+                }
+            }
+        }
+    }
+
+    /**
+     * Return a list of unevaluated expressions transitively referenced by the current one.
+     * All expressions in the resulting list will have had er.getExpr() called on them.
+     * The resulting list is ordered such that evaluating expressions in list order
+     * should trigger few recursive evaluations.
+     */
+    public ArrayList<Long> getTransitivelyReferencedExprs(ExprResolver er) {
+        // We could avoid triggering any recursive evaluations by actually building the
+        // dependency graph and topologically sorting it. Note that sorting by index works
+        // for positive and negative indices separately, but not their union. Currently we
+        // just settle for reverse breadth-first-search order, which handles the common case
+        // of simple dependency chains well.
+        ArrayList<Long> list = new ArrayList<Long>();
+        int scanned = 0;  // We've added expressions referenced by [0, scanned) to the list
+        addReferencedExprs(list, er);
+        while (scanned != list.size()) {
+            er.getExpr(list.get(scanned++)).addReferencedExprs(list, er);
+        }
+        Collections.reverse(list);
+        return list;
+    }
+
+    /**
+     * Evaluate the expression at the given index to a UnifiedReal.
+     * Both saves and returns the result.
+     */
+    UnifiedReal nestedEval(long index, ExprResolver er) throws SyntaxException {
+        CalculatorExpr nestedExpr = er.getExpr(index);
+        EvalContext newEc = new EvalContext(er.getDegreeMode(index),
+                nestedExpr.trailingBinaryOpsStart(), er);
+        EvalRet new_res = nestedExpr.evalExpr(0, newEc);
+        return er.putResultIfAbsent(index, new_res.val);
+    }
+
+    /**
      * Evaluate the expression excluding trailing binary operators.
      * Errors result in exceptions, most of which are unchecked.  Should not be called
      * concurrently with modification of the expression.  May take a very long time; avoid calling
@@ -1007,17 +1077,26 @@ class CalculatorExpr {
      *
      * @param degreeMode use degrees rather than radians
      */
-    UnifiedReal eval(boolean degreeMode) throws SyntaxException
+    UnifiedReal eval(boolean degreeMode, ExprResolver er) throws SyntaxException
                         // And unchecked exceptions thrown by UnifiedReal, CR,
                         // and BoundedRational.
     {
+        // First evaluate all indirectly referenced expressions in increasing index order.
+        // This ensures that subsequent evaluation never encounters an embedded PreEval
+        // expression that has not been previously evaluated.
+        // We could do the embedded evaluations recursively, but that risks running out of
+        // stack space.
+        ArrayList<Long> referenced = getTransitivelyReferencedExprs(er);
+        for (long index : referenced) {
+            nestedEval(index, er);
+        }
         try {
             // We currently never include trailing binary operators, but include other trailing
             // operators.  Thus we usually, but not always, display results for prefixes of valid
             // expressions, and don't generate an error where we previously displayed an instant
             // result.  This reflects the Android L design.
             int prefixLen = trailingBinaryOpsStart();
-            EvalContext ec = new EvalContext(degreeMode, prefixLen);
+            EvalContext ec = new EvalContext(degreeMode, prefixLen, er);
             EvalRet res = evalExpr(0, ec);
             if (res.pos != prefixLen) {
                 throw new SyntaxException("Failed to parse full expression");
@@ -1031,7 +1110,7 @@ class CalculatorExpr {
     // Produce a string representation of the expression itself
     SpannableStringBuilder toSpannableStringBuilder(Context context) {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
-        for (Token t: mExpr) {
+        for (Token t : mExpr) {
             ssb.append(t.toCharSequence(context));
         }
         return ssb;

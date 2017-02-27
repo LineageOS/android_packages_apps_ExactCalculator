@@ -23,6 +23,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
+import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.os.BuildCompat;
 import android.text.Layout;
@@ -42,23 +43,28 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.OverScroller;
 import android.widget.Toast;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 // A text widget that is "infinitely" scrollable to the right,
 // and obtains the text to display via a callback to Logic.
-public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenuItemClickListener {
+public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenuItemClickListener,
+        Evaluator.EvaluationListener, Evaluator.CharMetricsInfo {
     static final int MAX_RIGHT_SCROLL = 10000000;
     static final int INVALID = MAX_RIGHT_SCROLL + 10000;
         // A larger value is unlikely to avoid running out of space
     final OverScroller mScroller;
     final GestureDetector mGestureDetector;
+    private long mIndex;  // Index of expression we are displaying.
     private Evaluator mEvaluator;
     private boolean mScrollable = false;
                             // A scrollable result is currently displayed.
     private boolean mValid = false;
-                            // The result holds something valid; either a a number or an error
-                            // message.
+                            // The result holds a valid number (not an error message).
     // A suffix of "Pos" denotes a pixel offset.  Zero represents a scroll position
     // in which the decimal point is just barely visible on the right of the display.
     private int mCurrentPos;// Position of right of display relative to decimal point, in pixels.
@@ -94,10 +100,11 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                             // append an exponent insteadd of replacing trailing digits.
     private final Object mWidthLock = new Object();
                             // Protects the next five fields.  These fields are only
-                            // Updated by the UI thread, and read accesses by the UI thread
+                            // updated by the UI thread, and read accesses by the UI thread
                             // sometimes do not acquire the lock.
-    private int mWidthConstraint = -1;
+    private int mWidthConstraint = 0;
                             // Our total width in pixels minus space for ellipsis.
+                            // 0 ==> uninitialized.
     private float mCharWidth = 1;
                             // Maximum character width. For now we pretend that all characters
                             // have this width.
@@ -111,8 +118,16 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     private float mNoEllipsisCredit;
                             // Fraction of digit width saved by both replacing ellipsis with digit
                             // and avoiding scientific notation.
-    private static final int MAX_WIDTH = 100;
-                            // Maximum number of digits displayed.
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SHOULD_REQUIRE, SHOULD_EVALUATE, SHOULD_NOT_EVALUATE})
+    public @interface EvaluationRequest {}
+    public static final int SHOULD_REQUIRE = 2;
+    public static final int SHOULD_EVALUATE = 1;
+    public static final int SHOULD_NOT_EVALUATE = 0;
+    @EvaluationRequest private int mEvaluationRequest = SHOULD_REQUIRE;
+                            // Should we evaluate when layout completes, and how?
+    private Evaluator.EvaluationListener mEvaluationListener = this;
+                            // Listener to use if/when evaluation is requested.
     public static final int MAX_LEADING_ZEROES = 6;
                             // Maximum number of leading zeroes after decimal point before we
                             // switch to scientific notation with negative exponent.
@@ -138,6 +153,9 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     private ActionMode.Callback mCopyActionModeCallback;
     private ContextMenu mContextMenu;
 
+    // The user requested that the result currently being evaluated should be stored to "memory".
+    private boolean mStoreToMemoryRequested = false;
+
     public CalculatorResult(Context context, AttributeSet attrs) {
         super(context, attrs);
         mScroller = new OverScroller(context);
@@ -151,8 +169,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                     return true;
                 }
                 @Override
-                public boolean onFling(MotionEvent e1, MotionEvent e2,
-                                       float velocityX, float velocityY) {
+                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                        float velocityY) {
                     if (!mScroller.isFinished()) {
                         mCurrentPos = mScroller.getFinalX();
                     }
@@ -167,8 +185,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                     return true;
                 }
                 @Override
-                public boolean onScroll(MotionEvent e1, MotionEvent e2,
-                                        float distanceX, float distanceY) {
+                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+                        float distanceY) {
                     int distance = (int)distanceX;
                     if (!mScroller.isFinished()) {
                         mCurrentPos = mScroller.getFinalX();
@@ -195,9 +213,33 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                     }
                 }
             });
+
+        final int slop = ViewConfiguration.get(context).getScaledTouchSlop();
         setOnTouchListener(new View.OnTouchListener() {
+
+            // Used to determine whether a touch event should be intercepted.
+            private float mInitialDownX;
+            private float mInitialDownY;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                final int action = event.getActionMasked();
+
+                final float x = event.getX();
+                final float y = event.getY();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        mInitialDownX = x;
+                        mInitialDownY = y;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        final float deltaX = Math.abs(x - mInitialDownX);
+                        final float deltaY = Math.abs(y - mInitialDownY);
+                        if (deltaX > slop && deltaX > deltaY) {
+                            // Prevent the DragLayout from intercepting horizontal scrolls.
+                            getParent().requestDisallowInterceptTouchEvent(true);
+                        }
+                }
                 return mGestureDetector.onTouchEvent(event);
             }
         });
@@ -209,10 +251,14 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         }
 
         setCursorVisible(false);
+        setLongClickable(false);
+        setContentDescription(context.getString(R.string.desc_result));
     }
 
-    void setEvaluator(Evaluator evaluator) {
+    void setEvaluator(Evaluator evaluator, long index) {
         mEvaluator = evaluator;
+        mIndex = index;
+        requestLayout();
     }
 
     // Compute maximum digit width the hard way.
@@ -233,6 +279,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (!isLaidOut()) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             // Set a minimum height so scaled error messages won't affect our layout.
             setMinimumHeight(getLineHeight() + getCompoundPaddingBottom()
                     + getCompoundPaddingTop());
@@ -298,12 +345,34 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        if (mEvaluator != null && mEvaluationRequest != SHOULD_NOT_EVALUATE) {
+            final CalculatorExpr expr = mEvaluator.getExpr(mIndex);
+            if (expr != null && expr.hasInterestingOps()) {
+                if (mEvaluationRequest == SHOULD_REQUIRE) {
+                    mEvaluator.requireResult(mIndex, mEvaluationListener, this);
+                } else {
+                    mEvaluator.evaluateAndNotify(mIndex, mEvaluationListener, this);
+                }
+            }
+        }
+    }
+
     /**
-     * Return the number of additional digit widths required to add digit separators to
-     * the supplied string prefix.
-     * The string prefix is assumed to represent a whole number, after skipping leading non-digits.
-     * Callable from non-UI thread.
+     * Specify whether we should evaluate result on layout.
+     * @param should one of SHOULD_REQUIRE, SHOULD_EVALUATE, SHOULD_NOT_EVALUATE
      */
+    public void setShouldEvaluateResult(@EvaluationRequest int request,
+            Evaluator.EvaluationListener listener) {
+        mEvaluationListener = listener;
+        mEvaluationRequest = request;
+    }
+
+    // From Evaluator.CharMetricsInfo.
+    @Override
     public float separatorChars(String s, int len) {
         int start = 0;
         while (start < len && !Character.isDigit(s.charAt(start))) {
@@ -320,20 +389,16 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         }
     }
 
-    /**
-     * Return extra width credit for absence of ellipsis, as fraction of a digit width.
-     * May be called by non-UI thread.
-     */
+    // From Evaluator.CharMetricsInfo.
+    @Override
     public float getNoEllipsisCredit() {
         synchronized(mWidthLock) {
             return mNoEllipsisCredit;
         }
     }
 
-    /**
-     * Return extra width credit for presence of a decimal point, as fraction of a digit width.
-     * May be called by non-UI thread.
-     */
+    // From Evaluator.CharMetricsInfo.
+    @Override
     public float getDecimalCredit() {
         synchronized(mWidthLock) {
             return mDecimalCredit;
@@ -353,6 +418,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * Initiate display of a new result.
      * Only called from UI thread.
      * The parameters specify various properties of the result.
+     * @param index Index of expression that was just evaluated. Currently ignored, since we only
+     *            expect notification for the expression result being displayed.
      * @param initPrec Initial display precision computed by evaluator. (1 = tenths digit)
      * @param msd Position of most significant digit.  Offset from left of string.
                   Evaluator.INVALID_MSD if unknown.
@@ -361,9 +428,44 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * @param truncatedWholePart Result up to but not including decimal point.
                                  Currently we only use the length.
      */
-    void displayResult(int initPrec, int msd, int leastDigPos, String truncatedWholePart) {
+    @Override
+    public void onEvaluate(long index, int initPrec, int msd, int leastDigPos,
+            String truncatedWholePart) {
         initPositions(initPrec, msd, leastDigPos, truncatedWholePart);
+
+        if (mStoreToMemoryRequested) {
+            mEvaluator.copyToMemory(index);
+            mStoreToMemoryRequested = false;
+        }
         redisplay();
+    }
+
+    /**
+     * Store the result for this index if it is available.
+     * If it is unavailable, set mStoreToMemoryRequested to indicate that we should store
+     * when evaluation is complete.
+     */
+    public void onMemoryStore() {
+        if (mEvaluator.hasResult(mIndex)) {
+            mEvaluator.copyToMemory(mIndex);
+        } else {
+            mStoreToMemoryRequested = true;
+            mEvaluator.requireResult(mIndex, this /* listener */, this /* CharMetricsInfo */);
+        }
+    }
+
+    /**
+     * Add the result to the value currently in memory.
+     */
+    public void onMemoryAdd() {
+        mEvaluator.addToMemory(mIndex);
+    }
+
+    /**
+     * Subtract the result from the value currently in memory.
+     */
+    public void onMemorySubtract() {
+        mEvaluator.subtractFromMemory(mIndex);
     }
 
     /**
@@ -490,8 +592,11 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * Display error message indicated by resourceId.
      * UI thread only.
      */
-    void displayError(int resourceId) {
-        mValid = true;
+    @Override
+    public void onError(long index, int resourceId) {
+        mStoreToMemoryRequested = false;
+        mValid = false;
+        setLongClickable(false);
         mScrollable = false;
         final String msg = getContext().getString(resourceId);
         final float measuredWidth = Layout.getDesiredWidth(msg, getPaint());
@@ -639,6 +744,10 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                         ++exponent;
                     }
                 }
+                if (dropDigits >= result.length() - 1) {
+                    // Display too small to show meaningful result.
+                    return KeyMaps.ELLIPSIS + "E" + KeyMaps.ELLIPSIS;
+                }
                 result = result.substring(0, result.length() - dropDigits);
                 if (lastDisplayedOffset != null) {
                     lastDisplayedOffset[0] -= dropDigits;
@@ -709,8 +818,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         final boolean truncated[] = new boolean[1];
         final boolean negative[] = new boolean[1];
         final int requestedPrecOffset[] = {precOffset};
-        final String rawResult = mEvaluator.getString(requestedPrecOffset, mMaxCharOffset,
-                maxSize, truncated, negative);
+        final String rawResult = mEvaluator.getString(mIndex, requestedPrecOffset, mMaxCharOffset,
+                maxSize, truncated, negative, this);
         return formatResult(rawResult, requestedPrecOffset[0], maxSize, truncated[0], negative[0],
                 lastDisplayedOffset, forcePrecision, forceSciNotation, insertCommas);
    }
@@ -731,7 +840,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * UI thread only.
      */
     public boolean fullTextIsExact() {
-        return !mScrollable || (mMaxCharOffset == getCharOffset(mCurrentPos)
+        return !mScrollable || (getCharOffset(mMaxPos) == getCharOffset(mCurrentPos)
                 && mMaxCharOffset != MAX_RIGHT_SCROLL);
     }
 
@@ -749,9 +858,14 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             return getFullText(false /* withSeparators */);
         }
         // It's reasonable to compute and copy the exact result instead.
-        final int nonNegLsdOffset = Math.max(0, mLsdOffset);
-        final String rawResult = mEvaluator.getResult().toStringTruncated(nonNegLsdOffset);
-        final String formattedResult = formatResult(rawResult, nonNegLsdOffset, MAX_COPY_SIZE,
+        int fractionLsdOffset = Math.max(0, mLsdOffset);
+        String rawResult = mEvaluator.getResult(mIndex).toStringTruncated(fractionLsdOffset);
+        if (mLsdOffset <= -1) {
+            // Result has trailing decimal point. Remove it.
+            rawResult = rawResult.substring(0, rawResult.length() - 1);
+            fractionLsdOffset = -1;
+        }
+        final String formattedResult = formatResult(rawResult, fractionLsdOffset, MAX_COPY_SIZE,
                 false, rawResult.charAt(0) == '-', null, true /* forcePrecision */,
                 false /* forceSciNotation */, false /* insertCommas */);
         return KeyMaps.translateResult(formattedResult);
@@ -759,20 +873,14 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
 
     /**
      * Return the maximum number of characters that will fit in the result display.
-     * May be called asynchronously from non-UI thread.
+     * May be called asynchronously from non-UI thread. From Evaluator.CharMetricsInfo.
+     * Returns zero if measurement hasn't completed.
      */
-    int getMaxChars() {
+    @Override
+    public int getMaxChars() {
         int result;
         synchronized(mWidthLock) {
-            result = (int) Math.floor(mWidthConstraint / mCharWidth);
-            // We can apparently finish evaluating before onMeasure in CalculatorText has been
-            // called, in which case we get 0 or -1 as the width constraint.
-        }
-        if (result <= 0) {
-            // Return something conservatively big, to force sufficient evaluation.
-            return MAX_WIDTH;
-        } else {
-            return result;
+            return (int) Math.floor(mWidthConstraint / mCharWidth);
         }
     }
 
@@ -795,15 +903,34 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         mValid = false;
         mScrollable = false;
         setText("");
+        setLongClickable(false);
+    }
+
+    @Override
+    public void onCancelled(long index) {
+        clear();
+        mStoreToMemoryRequested = false;
     }
 
     /**
      * Refresh display.
-     * Only called in UI thread.
+     * Only called in UI thread. Index argument is currently ignored.
      */
-    void redisplay() {
-        int currentCharOffset = getCharOffset(mCurrentPos);
+    @Override
+    public void onReevaluate(long index) {
+        redisplay();
+    }
+
+    public void redisplay() {
         int maxChars = getMaxChars();
+        if (maxChars < 4) {
+            // Display currently too small to display a reasonable result. Punt to avoid crash.
+            return;
+        }
+        if (mScroller.isFinished() && length() > 0) {
+            setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
+        }
+        int currentCharOffset = getCharOffset(mCurrentPos);
         int lastDisplayedOffset[] = new int[1];
         String result = getFormattedResult(currentCharOffset, maxChars, lastDisplayedOffset,
                 mAppendExponent /* forcePrecision; preserve entire result */,
@@ -823,25 +950,49 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         }
         mLastDisplayedOffset = lastDisplayedOffset[0];
         mValid = true;
+        setLongClickable(true);
+    }
+
+    @Override
+    protected void onTextChanged(java.lang.CharSequence text, int start, int lengthBefore,
+            int lengthAfter) {
+        super.onTextChanged(text, start, lengthBefore, lengthAfter);
+
+        if (!mScrollable || mScroller.isFinished()) {
+            if (lengthBefore == 0 && lengthAfter > 0) {
+                setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
+                setContentDescription(null);
+            } else if (lengthBefore > 0 && lengthAfter == 0) {
+                setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_NONE);
+                setContentDescription(getContext().getString(R.string.desc_result));
+            }
+        }
     }
 
     @Override
     public void computeScroll() {
-        if (!mScrollable) return;
+        if (!mScrollable) {
+            return;
+        }
+
         if (mScroller.computeScrollOffset()) {
             mCurrentPos = mScroller.getCurrX();
             if (getCharOffset(mCurrentPos) != getCharOffset(mLastPos)) {
                 mLastPos = mCurrentPos;
                 redisplay();
             }
-            if (!mScroller.isFinished()) {
+        }
+
+        if (!mScroller.isFinished()) {
                 postInvalidateOnAnimation();
-            }
+                setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_NONE);
+        } else if (length() > 0){
+            setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
         }
     }
 
     /**
-     * Use ActionMode for copy support on M and higher.
+     * Use ActionMode for copy/memory support on M and higher.
      */
     @TargetApi(Build.VERSION_CODES.M)
     private void setupActionMode() {
@@ -850,7 +1001,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 final MenuInflater inflater = mode.getMenuInflater();
-                return createCopyMenu(inflater, menu);
+                return createContextMenu(inflater, menu);
             }
 
             @Override
@@ -916,7 +1067,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     }
 
     /**
-     * Use ContextMenu for copy support on L and lower.
+     * Use ContextMenu for copy/memory support on L and lower.
      */
     private void setupContextMenu() {
         setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
@@ -924,9 +1075,9 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             public void onCreateContextMenu(ContextMenu contextMenu, View view,
                     ContextMenu.ContextMenuInfo contextMenuInfo) {
                 final MenuInflater inflater = new MenuInflater(getContext());
-                createCopyMenu(inflater, contextMenu);
+                createContextMenu(inflater, contextMenu);
                 mContextMenu = contextMenu;
-                for(int i = 0; i < contextMenu.size(); i ++) {
+                for (int i = 0; i < contextMenu.size(); i ++) {
                     contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorResult.this);
                 }
             }
@@ -942,8 +1093,13 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         });
     }
 
-    private boolean createCopyMenu(MenuInflater inflater, Menu menu) {
-        inflater.inflate(R.menu.copy, menu);
+    private boolean createContextMenu(MenuInflater inflater, Menu menu) {
+        inflater.inflate(R.menu.menu_result, menu);
+        final boolean displayMemory = mEvaluator.getMemoryIndex() != 0;
+        final MenuItem memoryAddItem = menu.findItem(R.id.memory_add);
+        final MenuItem memorySubtractItem = menu.findItem(R.id.memory_subtract);
+        memoryAddItem.setEnabled(displayMemory);
+        memorySubtractItem.setEnabled(displayMemory);
         highlightResult();
         return true;
     }
@@ -983,7 +1139,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                 (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         // We include a tag URI, to allow us to recognize our own results and handle them
         // specially.
-        ClipData.Item newItem = new ClipData.Item(text, null, mEvaluator.capture());
+        ClipData.Item newItem = new ClipData.Item(text, null, mEvaluator.capture(mIndex));
         String[] mimeTypes = new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN};
         ClipData cd = new ClipData("calculator result", mimeTypes, newItem);
         clipboard.setPrimaryClip(cd);
@@ -993,8 +1149,17 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.memory_add:
+                onMemoryAdd();
+                return true;
+            case R.id.memory_subtract:
+                onMemorySubtract();
+                return true;
+            case R.id.memory_store:
+                onMemoryStore();
+                return true;
             case R.id.menu_copy:
-                if (mEvaluator.reevaluationInProgress()) {
+                if (mEvaluator.evaluationInProgress(mIndex)) {
                     // Refuse to copy placeholder characters.
                     return false;
                 } else {
@@ -1005,5 +1170,11 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             default:
                 return false;
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        stopActionModeOrContextMenu();
+        super.onDetachedFromWindow();
     }
 }

@@ -366,6 +366,7 @@ public class UnifiedReal {
      * Returns a truncated representation of the result.
      * If exactlyTruncatable(), we round correctly towards zero. Otherwise the resulting digit
      * string may occasionally be rounded up instead.
+     * Always includes a decimal point in the result.
      * The result includes n digits to the right of the decimal point.
      * @param n result precision, >= 0
      */
@@ -512,6 +513,7 @@ public class UnifiedReal {
 
     /**
      * Returns true if values are definitely known not to be equal, false in all other cases.
+     * Performs no approximate evaluation.
      */
     public boolean definitelyNotEquals(UnifiedReal u) {
         boolean isNamed = isNamed(mCrFactor);
@@ -539,6 +541,10 @@ public class UnifiedReal {
         return mRatFactor.signum() == 0;
     }
 
+    /**
+     * Can this number be determined to be definitely nonzero without performing approximate
+     * evaluation?
+     */
     public boolean definitelyNonZero() {
         return isNamed(mCrFactor) && mRatFactor.signum() != 0;
     }
@@ -861,7 +867,27 @@ public class UnifiedReal {
     private static final BigInteger BIG_TWO = BigInteger.valueOf(2);
 
     /**
+     * Compute an integral power of a constrive real, using the standard recursive algorithm.
+     * exp is known to be positive.
+     */
+    private static CR recursivePow(CR base, BigInteger exp) {
+        if (exp.equals(BigInteger.ONE)) {
+            return base;
+        }
+        if (exp.and(BigInteger.ONE).intValue() == 1) {
+            return base.multiply(recursivePow(base, exp.subtract(BigInteger.ONE)));
+        }
+        CR tmp = recursivePow(base, exp.shiftRight(1));
+        if (Thread.interrupted()) {
+            throw new CR.AbortedException();
+        }
+        return tmp.multiply(tmp);
+    }
+
+    /**
      * Compute an integral power of this.
+     * This recurses roughly as deeply as the number of bits in the exponent, and can, in
+     * ridiculous cases, result in a stack overflow.
      */
     private UnifiedReal pow(BigInteger exp) {
         if (exp.signum() < 0) {
@@ -894,7 +920,17 @@ public class UnifiedReal {
                 }
             }
         }
-        return new UnifiedReal(crValue().ln().multiply(CR.valueOf(exp)).exp());
+        if (signum(DEFAULT_COMPARE_TOLERANCE) > 0) {
+            // Safe to take the log. This avoids deep recursion for huge exponents, which
+            // may actually make sense here.
+            return new UnifiedReal(crValue().ln().multiply(CR.valueOf(exp)).exp());
+        } else {
+            // Possibly negative base with integer exponent. Use a recursive computation.
+            // (Another possible option would be to use the absolute value of the base, and then
+            // adjust the sign at the end.  But that would have to be done in the CR
+            // implementation.)
+            return new UnifiedReal(recursivePow(crValue(), exp));
+        }
     }
 
     public UnifiedReal pow(UnifiedReal expon) {
@@ -1026,6 +1062,10 @@ public class UnifiedReal {
     public UnifiedReal exp() {
         if (definitelyEquals(ZERO)) {
             return ONE;
+        }
+        if (definitelyEquals(ONE)) {
+            // Avoid redundant computations, and ensure we recognize all instances as equal.
+            return E;
         }
         final BoundedRational crExp = getExp(mCrFactor);
         if (crExp != null) {
