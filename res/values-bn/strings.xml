@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"বিপরীত ক্রিয়াকলাপ দেখান"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"বিপরীত ক্রিয়াকলাপ লুকান"</string>
     <string name="desc_formula" msgid="8056588859637585007">"কোনো সূত্র নেই"</string>
+    <string name="desc_result" msgid="1794073190203126821">"কোনো ফলাফল নেই"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"নম্বর এবং মৌলিক ক্রিয়াকলাপ"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"উন্নত ক্রিয়াকলাপ"</string>
     <string name="error_nan" msgid="5674077944929888710">"একটি সংখ্যা নয়"</string>
@@ -66,8 +67,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"অসীম?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0 দিয়ে শেয়ার করা যাবে না"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"পাঠ্য প্রতিলিপি হয়েছে"</string>
-    <string name="cancelled" msgid="1618889609742874632">"গুনতি বাতিল করা হয়েছে"</string>
-    <string name="timeout" msgid="802690170415591535">"সময় শেষ হয়েছে। মূল্য অসীম বা অনির্ধারিত হতে পারে।"</string>
+    <string name="cancelled" msgid="2207323593183640994">"গণনা করা বাতিল করা হয়েছে৷"</string>
+    <string name="timeout" msgid="5461892570729418573">"মূল্য অসীম বা অনির্ধারিত হতে পারে।"</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"দীর্ঘক্ষণ সময় সমাপ্ত ব্যবহার করুন"</string>
     <string name="dismiss" msgid="7872443888515066216">"খারিজ করুন"</string>
     <string name="exact" msgid="2597237880041789948">"(যথাযথ)"</string>
@@ -75,4 +76,12 @@
     <string name="menu_leading" msgid="2338520833272667740">"লিডিং সংখ্যায় উত্তর"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"ভগ্নাংশ হিসাবে উত্তর"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"মুক্ত উৎস লাইসেন্সগুলি"</string>
+    <string name="menu_history" msgid="9006222701220105452">"ইতিহাস"</string>
+    <string name="menu_clear_history" msgid="2336526604226069572">"সাফ করুন"</string>
+    <string name="title_history" msgid="7820912156315181539">"ইতিহাস"</string>
+    <string name="desc_navigate_up" msgid="6208699569165589623">"উপরে নেভিগেট করুন"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"সময় সমাপ্ত"</string>
+    <string name="dialog_clear" msgid="7137395395908350702">"ইতিহাস এবং মেমরি সাফ করবেন?"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"বর্তমান এক্সপ্রেশন"</string>
+    <string name="no_history" msgid="4331262030447527188">"কোনো ইতিহাস নেই"</string>
 </resources>

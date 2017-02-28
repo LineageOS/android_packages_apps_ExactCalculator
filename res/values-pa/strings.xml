@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"ਉਲਟੇ ਫੰਕਸ਼ਨ ਦਿਖਾਓ"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ਉਲਟੇ ਫੰਕਸ਼ਨ ਲੁਕਾਓ"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ਕੋਈ ਫ਼ਾਰਮੂਲਾ ਨਹੀਂ"</string>
+    <string name="desc_result" msgid="1794073190203126821">"ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"ਨੰਬਰ ਅਤੇ ਮੂਲ ਆਪਰੇਸ਼ਨ"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"ਉੱਨਤ ਆਪਰੇਸ਼ਨ"</string>
     <string name="error_nan" msgid="5674077944929888710">"ਇੱਕ ਸੰਖਿਆ ਨਹੀਂ"</string>
@@ -66,8 +67,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"ਅਨੰਤ?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0 ਨਾਲ ਭਾਗ ਨਹੀਂ ਹੋ ਸਕਦੀ"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"ਟੈਕਸਟ ਕਾਪੀ ਕੀਤਾ"</string>
-    <string name="cancelled" msgid="1618889609742874632">"ਗਿਣਤੀ ਰੱਦ ਹੋ ਗਈ"</string>
-    <string name="timeout" msgid="802690170415591535">"ਸਮਾਂ ਸਮਾਪਤ ਹੋਇਆ। ਵੈਲਯੂ ਅਨੰਤ ਜਾਂ ਅਨਿਸ਼ਚਿਤ ਹੋ ਸਕਦੀ ਹੈ।"</string>
+    <string name="cancelled" msgid="2207323593183640994">"ਗਿਣਤੀ ਰੱਦ ਕੀਤੀ ਗਈ।"</string>
+    <string name="timeout" msgid="5461892570729418573">"ਮੁੱਲ ਅਣਗਿਣਤ ਜਾਂ ਅਪਰਿਭਾਸ਼ਤ ਹੋ ਸਕਦਾ ਹੈ।"</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"ਲੰਮੇ ਟਾਈਮਆਉਟ ਵਰਤੋ"</string>
     <string name="dismiss" msgid="7872443888515066216">"ਖਾਰਜ ਕਰੋ"</string>
     <string name="exact" msgid="2597237880041789948">"(ਬਿਲਕੁਲ)"</string>
@@ -75,4 +76,12 @@
     <string name="menu_leading" msgid="2338520833272667740">"ਮੋਹਰੀ ਅੰਕਾਂ ਦੇ ਨਾਲ ਜਵਾਬ ਦਿਓ"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"ਭਾਗਅੰਸ਼ ਦੇ ਰੂਪ ਵਿੱਚ ਜਵਾਬ ਦਿਓ"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"ਖੁੱਲ੍ਹਾ ਸਰੋਤ ਲਾਇਸੰਸ"</string>
+    <string name="menu_history" msgid="9006222701220105452">"ਇਤਿਹਾਸ"</string>
+    <string name="menu_clear_history" msgid="2336526604226069572">"ਕਲੀਅਰ ਕਰੋ"</string>
+    <string name="title_history" msgid="7820912156315181539">"ਇਤਿਹਾਸ"</string>
+    <string name="desc_navigate_up" msgid="6208699569165589623">"ਉੱਪਰ ਆਵਾਗੌਣ ਕਰੋ"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"ਸਮਾਂ ਸਮਾਪਤ"</string>
+    <string name="dialog_clear" msgid="7137395395908350702">"ਇਤਿਹਾਸ ਅਤੇ ਮੈਮੋਰੀ ਕਲੀਅਰ ਕਰਨੀ ਹੈ?"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"ਮੌਜੂਦਾ ਸਮੀਕਰਨ"</string>
+    <string name="no_history" msgid="4331262030447527188">"ਕੋਈ ਇਤਿਹਾਸ ਨਹੀਂ"</string>
 </resources>

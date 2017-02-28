@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"əks funksiyaları göstərin"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"əks funksiyaları gizlədin"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Düstur yoxdur"</string>
+    <string name="desc_result" msgid="1794073190203126821">"Nəticə yoxdur"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"Nömrələr və əsas əməliyyatlar"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"Qabaqcıl əməliyyatlar"</string>
     <string name="error_nan" msgid="5674077944929888710">"Rəqəm deyil"</string>
@@ -66,8 +67,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"Sonsuzluq?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0-a bölmək olmaz"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"Mətn kopyalandı"</string>
-    <string name="cancelled" msgid="1618889609742874632">"Hesablama ləğv edildi"</string>
-    <string name="timeout" msgid="802690170415591535">"Vaxt keçdi. Dəyər sonzu və ya bəlirlənməmiş ola bilər."</string>
+    <string name="cancelled" msgid="2207323593183640994">"Hesablama ləğv edildi."</string>
+    <string name="timeout" msgid="5461892570729418573">"Dəyər sonsuz və ya təyin olunmamış ola bilər."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Daha uzun taymaut istifadə edin"</string>
     <string name="dismiss" msgid="7872443888515066216">"Rədd edin"</string>
     <string name="exact" msgid="2597237880041789948">"(dəqiq)"</string>
@@ -75,4 +76,12 @@
     <string name="menu_leading" msgid="2338520833272667740">"Aparıcı rəqəmlər ilə cavablandırın"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"Kəsr kimi cavab verin"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"Açıq mənbə lisenziyaları"</string>
+    <string name="menu_history" msgid="9006222701220105452">"Tarixçə"</string>
+    <string name="menu_clear_history" msgid="2336526604226069572">"Təmizləyin"</string>
+    <string name="title_history" msgid="7820912156315181539">"Tarixçə"</string>
+    <string name="desc_navigate_up" msgid="6208699569165589623">"Yuxarı gedin"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"Zaman aşımı"</string>
+    <string name="dialog_clear" msgid="7137395395908350702">"Tarixçə və yaddaş təmizlənsin?"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"Cari İfadə"</string>
+    <string name="no_history" msgid="4331262030447527188">"Tarixçə Yoxdur"</string>
 </resources>
