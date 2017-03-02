@@ -17,7 +17,6 @@
   -->
 <resources>
   <!-- Name of the application. [CHAR_LIMIT=NONE] -->
-  <string name="app_name">Calculadora</string>
   <!-- Constant for Euler's number (i.e. "2.7182…"). [CHAR_LIMIT=1] -->
   <!-- Constant for pi (i.e. "3.1415…"). [CHAR_LIMIT=1] -->
   <!-- Left parenthesis (e.g. "log(", "2 × (3 - 1)". [CHAR_LIMIT=1] -->
@@ -30,7 +29,6 @@
 
       [CHAR_LIMIT=1]
       -->
-  <string name="dec_point">,</string>
   <!-- Decimal representation of zero (e.g. "0", "10", "1.0", "1e0"). [CHAR_LIMIT=1] -->
   <!-- Decimal representation of one (e.g. "1", "11", "1.1", "1e1"). [CHAR_LIMIT=1] -->
   <!-- Decimal representation of two (e.g. "2", "22", "2.2", "2e2"). [CHAR_LIMIT=1] -->
@@ -66,104 +64,62 @@
       -->
   <!-- Abbrev. name of exponential function in formula.  -->
   <!-- Abbrev. name of degree mode [CHAR_LIMIT=4] -->
-  <string name="mode_deg">º</string>
   <!-- Abbrev. name of radian mode. [CHAR_LIMIT=4] -->
-  <string name="mode_rad">rad</string>
   <!-- Equals button (e.g. "1 + 2 = ?"). [CHAR_LIMIT=1] -->
   <!-- Clear button to clear the currently entered expression. [CHAR_LIMIT=4] -->
-  <string name="clr">clr</string>
   <!--
       Announced when all characters are removed from Formula, e.g. after clear. [CHAR_LIMIT=NONE]
       -->
-  <string name="cleared">llimpiaos</string>
   <!-- Delete button to remove last entered token. [CHAR_LIMIT=4] -->
-  <string name="del">del</string>
   <!-- Toggle button to show/hide inverse functions. [CHAR_LIMIT=4] -->
   <!-- Content description for 'e' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_const_e">númberu d\'Euler</string>
   <!-- Content description for 'π' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_const_pi">pi</string>
   <!-- Content description for '.' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_dec_point">punto</string>
   <!-- Content description for '(' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_lparen">paréntesis d\'apertura</string>
   <!-- Content description for ')' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_rparen">paréntesis de zarru</string>
   <!-- Content description for 'cos' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_fun_cos">cosenu</string>
   <!-- Content description for 'ln' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_fun_ln">logaritmu natural</string>
   <!-- Content description for 'log' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_fun_log">logaritmu</string>
   <!-- Content description for 'sin' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_fun_sin">senu</string>
   <!-- Content description for 'tan' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_fun_tan">tanxente</string>
   <!-- Content description for 'arccos' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_fun_arccos">cosenu inversu</string>
   <!-- Content description for 'arcsin' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_fun_arcsin">senu inversu</string>
   <!-- Content description for 'arctan' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_fun_arctan">taxente inversa</string>
   <!--
       Content description for 10^ button. This button is used to raise 10 to the subsequently
       entered power. E.g. <10^>3 would yield 1000.
       [CHAR_LIMIT=NONE]
       -->
-  <string name="desc_fun_10pow">diez a la potencia de</string>
   <!-- Content description for e^ (exponential function) button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_fun_exp">función esponencial</string>
   <!--
       Content description for ^2 button. This button is used to square the previously entered
       number. E.g. 3<^2> would yield 9.
       [CHAR_LIMIT=NONE]
       -->
-  <string name="desc_op_sqr">al cuadráu</string>
   <!-- Content description for '+' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_op_add">más</string>
   <!-- Content description for '÷' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_op_div">división</string>
   <!-- Content description for '!' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_op_fact">factorial</string>
   <!-- Content description for '×' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_op_mul">multiplicar</string>
   <!-- Content description for '%' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_op_pct">porcentaxe</string>
   <!-- Content description for '^' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_op_pow">potencia</string>
   <!-- Content description for '√' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_op_sqrt">raíz cuadrada</string>
   <!-- Content description for '-' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_op_sub">menos</string>
   <!-- Content description for degree mode. [CHAR_LIMIT=NONE] -->
-  <string name="desc_mode_deg">mou de graos</string>
   <!-- Content description for radian mode. [CHAR_LIMIT=NONE] -->
-  <string name="desc_mode_rad">mou de radianes</string>
   <!-- Content description for switch to degree button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_switch_deg">camudar a graos</string>
   <!-- Content description for switch to radian button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_switch_rad">camudar a radianes</string>
   <!-- Content description for '=' button. [CHAR_LIMIT=NONE] -->
-  <string name="desc_eq">igual a</string>
   <!-- Content description for "clr" button. Deletes entire formula. [CHAR_LIMIT=NONE] -->
-  <string name="desc_clr">llimpiar</string>
   <!--
       Content description for "del" button. Deletes single character. Should differ
       from desc_clr. [CHAR_LIMIT=NONE]
       -->
-  <string name="desc_del">suprimir</string>
   <!-- Content description for "inv" button to show inverse functions. [CHAR_LIMIT=NONE] -->
-  <string name="desc_inv_off">amosar funciones inverses</string>
   <!-- Content description for "inv" button to hide inverse functions. [CHAR_LIMIT=NONE] -->
-  <string name="desc_inv_on">anubrir funciones inverses</string>
   <!-- Error displayed when expression evaluates to an undefined result. [CHAR_LIMIT=20] -->
-  <string name="error_nan">Nun ye un númberu</string>
   <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=20] -->
-  <string name="error_syntax">Espresión incorreuta</string>
   <!-- Error displayed when evaluation is manually aborted. [CHAR_LIMIT=20] -->
-  <string name="error_aborted">Encaboxada</string>
   <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=20] -->
-  <string name="error_overflow">¿Infinitu?</string>
   <!--
       Error displayed when division by zero is detected.
 
@@ -172,13 +128,9 @@
 
       [CHAR_LIMIT=20]
       -->
-  <string name="error_zero_divide">Nun pue dividise por 0</string>
   <!-- Toast shown when text is copied to the clipboard. [CHAR_LIMIT=40] -->
-  <string name="text_copied_toast">Copióse\'l testu</string>
   <!-- Dialog message when a computation is cancelled by the user. [CHAR_LIMIT=NONE] -->
-  <string name="cancelled">Encaboxóse\'l cálculu</string>
   <!-- Dialog message when a computation times out. [CHAR_LIMIT=NONE] -->
-  <string name="timeout">Escosó\'l tiempu d\'espera. El valor pue ser infinitu o indefiníu</string>
   <!--
       Button label to allow future computations with a longer timeout.
 
@@ -188,17 +140,10 @@
 
       [CHAR_LIMIT=40]
       -->
-  <string name="ok_remove_timeout">Usar tiempos d\'espera más llargos</string>
   <!-- Button label to dismiss informative text message. [CHAR_LIMIT=40] -->
-  <string name="dismiss">Inorar</string>
   <!-- Appended indicator (for "leading" display) that result is exact. [CHAR_LIMIT=NONE] -->
-  <string name="exact">(exautu)</string>
   <!-- Indicator (for "leading" display) that result is inexact. [CHAR_LIMIT=NONE] -->
-  <string name="approximate">(±1 nel postrer díxitu)</string>
   <!-- Menu option to display result including leading digits. [CHAR_LIMIT=40] -->
-  <string name="menu_leading">Rempuesta con díxitos más significativos</string>
   <!-- Menu option to display result as fraction. [CHAR_LIMIT=40] -->
-  <string name="menu_fraction">Rempuesta como fraición</string>
   <!-- Menu option to view the app's open source licenses. [CHAR_LIMIT=40] -->
-  <string name="menu_licenses">Llicencies de códigu abiertu</string>
 </resources>
