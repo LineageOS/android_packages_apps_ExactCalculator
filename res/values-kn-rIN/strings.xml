@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"ವಿಲೋಮ ಫಂಕ್ಷನ್‌ಗಳನ್ನು ತೋರಿಸು"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ವಿಲೋಮ ಫಂಕ್ಷನ್‌ಗಳನ್ನು ಮರೆಮಾಡು"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ಯಾವುದೇ ಫಾರ್ಮುಲಾ ಇಲ್ಲ"</string>
+    <string name="desc_result" msgid="1794073190203126821">"ಯಾವುದೇ ಫಲಿತಾಂಶವಿಲ್ಲ"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"ಸಂಖ್ಯೆಗಳು ಮತ್ತು ಮೂಲ ಕಾರ್ಯಾಚರಣೆಗಳು"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"ಸುಧಾರಿತ ಕಾರ್ಯಾಚರಣೆಗಳು"</string>
     <string name="error_nan" msgid="5674077944929888710">"ಸಂಖ್ಯೆಯಲ್ಲ"</string>
@@ -66,13 +67,21 @@
     <string name="error_overflow" msgid="7800547394563434764">"ಅಪರಿಮಿತ?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0 ನಿಂದ ಭಾಗಿಸಲಸಾಧ್ಯ"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"ಪಠ್ಯವನ್ನು ನಕಲಿಸಲಾಗಿದೆ"</string>
-    <string name="cancelled" msgid="1618889609742874632">"ಎಣಿಕೆ ರದ್ದು ಮಾಡಲಾಗಿದೆ"</string>
-    <string name="timeout" msgid="802690170415591535">"ಸಮಯ ಮೀರಿದೆ. ಮೌಲ್ಯವು ಅಪರಿಮಿತ ಅಥವಾ ಬಣ್ಣಿಸಲು ಸಾಧ್ಯವಾಗದೆ ಇರಬಹುದು."</string>
+    <string name="cancelled" msgid="2207323593183640994">"ಎಣಿಕೆ ರದ್ದು ಮಾಡಲಾಗಿದೆ."</string>
+    <string name="timeout" msgid="5461892570729418573">"ಮೌಲ್ಯವು ಅಪರಿಮಿತ ಅಥವಾ ಬಣ್ಣಿಸಲು ಸಾಧ್ಯವಾಗದೆ ಇರಬಹುದು."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"ದೀರ್ಘ ಅವಧಿ ಮೀರುವಿಕೆಗಳನ್ನು ಬಳಸಿ"</string>
     <string name="dismiss" msgid="7872443888515066216">"ವಜಾಗೊಳಿಸು"</string>
     <string name="exact" msgid="2597237880041789948">"(ನಿಖರ)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 ಕೊನೆಯ ಅಂಕಿಯಲ್ಲಿ)"</string>
-    <string name="menu_leading" msgid="2338520833272667740">"ಮೊದಲ ಅಂಕೆ ಜೊತೆ ಉತ್ತರಿಸು"</string>
-    <string name="menu_fraction" msgid="1247477377840252234">"ಭಾಗದಂತೆ ಉತ್ತರಿಸು"</string>
+    <string name="menu_leading" msgid="2338520833272667740">"ಮೊದಲ ಅಂಕೆ ಜೊತೆ ಉತ್ತರಿಸಿ"</string>
+    <string name="menu_fraction" msgid="1247477377840252234">"ಭಾಗದಂತೆ ಉತ್ತರಿಸಿ"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"ಮುಕ್ತ ಮೂಲ ಪರವಾನಗಿಗಳು"</string>
+    <string name="menu_history" msgid="9006222701220105452">"ಇತಿಹಾಸ"</string>
+    <string name="menu_clear_history" msgid="2336526604226069572">"ತೆರವುಗೊಳಿಸಿ"</string>
+    <string name="title_history" msgid="7820912156315181539">"ಇತಿಹಾಸ"</string>
+    <string name="desc_navigate_up" msgid="6208699569165589623">"ಮೇಲಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"ಅವಧಿ ಮೀರಿದೆ"</string>
+    <string name="dialog_clear" msgid="7137395395908350702">"ಇತಿಹಾಸ ಮತ್ತು ಮೆಮೊರಿಯನ್ನು ತೆರವುಗೊಳಿಸುವುದೇ?"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"ಪ್ರಸ್ತುತ ಅಭಿವ್ಯಕ್ತಿ"</string>
+    <string name="no_history" msgid="4331262030447527188">"ಯಾವುದೇ ಇತಿಹಾಸವಿಲ್ಲ"</string>
 </resources>

@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"معکوس فنکشنز دکھائیں"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"معکوس فنکشنز چھپائیں"</string>
     <string name="desc_formula" msgid="8056588859637585007">"کوئی فارمولہ نہیں"</string>
+    <string name="desc_result" msgid="1794073190203126821">"کوئی نتیجہ نہیں ہے"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"اعداد اور بنیادی کاروائیاں"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"اعلی کاروا‏ئیاں"</string>
     <string name="error_nan" msgid="5674077944929888710">"نمبر نہیں ہے"</string>
@@ -66,8 +67,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"لا محدود؟"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0 سے تقسیم نہیں کر سکتے"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"متن کاپی ہوگیا"</string>
-    <string name="cancelled" msgid="1618889609742874632">"حساب منسوخ کر دیا گیا"</string>
-    <string name="timeout" msgid="802690170415591535">"وقت ختم ہوگیا۔ قدر شاید لامحدود یا غیر واضح ہے۔"</string>
+    <string name="cancelled" msgid="2207323593183640994">"حساب منسوخ ہو گیا۔"</string>
+    <string name="timeout" msgid="5461892570729418573">"قدر شاید لامحدود یا غیر واضح ہے۔"</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"طویل ٹائم آؤٹس استعمال کریں"</string>
     <string name="dismiss" msgid="7872443888515066216">"برخاست کریں"</string>
     <string name="exact" msgid="2597237880041789948">"(عین مطابق)"</string>
@@ -75,4 +76,12 @@
     <string name="menu_leading" msgid="2338520833272667740">"شروعاتی ہندسوں سے جواب دیں"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"بطور فریکشن جواب دیں"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"اوپن سورس لائسنسز"</string>
+    <string name="menu_history" msgid="9006222701220105452">"سرگزشت"</string>
+    <string name="menu_clear_history" msgid="2336526604226069572">"صاف کریں"</string>
+    <string name="title_history" msgid="7820912156315181539">"سرگزشت"</string>
+    <string name="desc_navigate_up" msgid="6208699569165589623">"اوپر نیویگیٹ کریں"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"ٹائم آؤٹ"</string>
+    <string name="dialog_clear" msgid="7137395395908350702">"سرگزشت اور میموری صاف کریں؟"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"موجودہ ایکسپریشن"</string>
+    <string name="no_history" msgid="4331262030447527188">"کوئی تاریخ نہیں"</string>
 </resources>

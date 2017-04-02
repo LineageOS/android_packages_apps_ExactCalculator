@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"ပြောင်းပြန်ဆောင်ရွက်ချက်များ ပြပါ"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"ပြောင်းပြန်ဆောင်ရွက်ချက်များ ဖျောက်ထားရန်"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ဖော်မြူလာမရှိပါ"</string>
+    <string name="desc_result" msgid="1794073190203126821">"ရလဒ်မရှိပါ"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"နံပါတ်နှင့် အခြေခံလုပ်ငန်းများ"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"အဆင့်မြင့် လုပ်ငန်းများ"</string>
     <string name="error_nan" msgid="5674077944929888710">"ဂဏန်း မဟုတ်"</string>
@@ -66,8 +67,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"အဆုံးမရှိ ပါသလား?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0 ဖြင့်စား၍မရပါ"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"စာသားကူးယူပြီး"</string>
-    <string name="cancelled" msgid="1618889609742874632">"တွက်ချက်ခြင်း ပယ်ဖျက်လိုက်ပါပြီ"</string>
-    <string name="timeout" msgid="802690170415591535">"အချိန်ကုန်သွားပါပြီ။ တန်ဖိုးသည် အဆုံးမရှိ သို့မဟုတ် မသတ်မှတ်ခြင်း ဖြစ်နိုင်ပါသည်။"</string>
+    <string name="cancelled" msgid="2207323593183640994">"တွက်ချက်ခြင်းကို ပယ်ဖျက်လိုက်ပါပြီ။"</string>
+    <string name="timeout" msgid="5461892570729418573">"အချက်အလက်သည် အကန့်အသတ်မရှိ သို့မဟုတ် သတ်မှတ်ခြင်းမရှိ ဖြစ်နိုင်ပါသည်။"</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"အချိန်ကုန်ခြင်း ပိုမိုကြာမြင့်သည်ကို အသုံးပြုရန်"</string>
     <string name="dismiss" msgid="7872443888515066216">"ပယ်ရန်"</string>
     <string name="exact" msgid="2597237880041789948">"(အတိအကျ)"</string>
@@ -75,4 +76,12 @@
     <string name="menu_leading" msgid="2338520833272667740">"ဦးဆောင်ဂဏန်းနှင့်ဖြေ"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"အပိုင်းကဏန်းအဖြစ် အဖြေ"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"အခမဲ့ ရင်းမြစ် လိုင်စင်များ"</string>
+    <string name="menu_history" msgid="9006222701220105452">"မှတ်တမ်း"</string>
+    <string name="menu_clear_history" msgid="2336526604226069572">"ရှင်းလင်းရန်"</string>
+    <string name="title_history" msgid="7820912156315181539">"မှတ်တမ်း"</string>
+    <string name="desc_navigate_up" msgid="6208699569165589623">"အပေါ်သို့ သွားရန်"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"သတ်မှတ်ချိန် ကုန်သွားပါပြီ"</string>
+    <string name="dialog_clear" msgid="7137395395908350702">"မှတ်တမ်းနှင့်မှတ်ဉာဏ်ရှင်းမလား"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"လက်ရှိ ဖော်ပြချက်"</string>
+    <string name="no_history" msgid="4331262030447527188">"မှတ်တမ်းမရှိပါ"</string>
 </resources>

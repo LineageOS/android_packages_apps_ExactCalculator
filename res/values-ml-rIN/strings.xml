@@ -17,7 +17,7 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name" msgid="1756503303878374382">"കാൽക്കുലേ."</string>
+    <string name="app_name" msgid="1756503303878374382">"കാൽക്കുലേറ്റർ"</string>
     <string name="dec_point" msgid="8920102493070918054">"."</string>
     <string name="mode_deg" msgid="1146123354434332479">"ഡിഗ്രി"</string>
     <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
@@ -58,6 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"വിപരീത പ്രവർത്തനങ്ങൾ കാണിക്കുക"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"വിപരീത പ്രവർത്തനങ്ങൾ മറയ്‌ക്കുക"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ഫോർമുലയില്ല"</string>
+    <string name="desc_result" msgid="1794073190203126821">"ഫലമൊന്നും ഇല്ല"</string>
     <string name="desc_num_pad" msgid="515720457459745571">"നമ്പറുകളും അടിസ്ഥാന പ്രവർത്തനങ്ങളും"</string>
     <string name="desc_adv_pad" msgid="3794276256462677914">"വിപുലമായ പ്രവർത്തനങ്ങൾ"</string>
     <string name="error_nan" msgid="5674077944929888710">"സംഖ്യയല്ല"</string>
@@ -66,8 +67,8 @@
     <string name="error_overflow" msgid="7800547394563434764">"അനന്തസംഖ്യയാണോ?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0 കൊണ്ട് വിഭജിക്കാനാവില്ല"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"ടെക്‌സ്റ്റ് പകർത്തി"</string>
-    <string name="cancelled" msgid="1618889609742874632">"കമ്പ്യൂട്ടേഷൻ റദ്ദാക്കി"</string>
-    <string name="timeout" msgid="802690170415591535">"കാലഹരണപ്പെട്ടു. മൂല്യം അനന്തമായതോ നിർവ്വചിക്കാനാകാത്തതോ ആകാം."</string>
+    <string name="cancelled" msgid="2207323593183640994">"കമ്പ്യൂട്ടേഷൻ റദ്ദാക്കി."</string>
+    <string name="timeout" msgid="5461892570729418573">"മൂല്യം അനന്തമായതോ നിർവ്വചിക്കാനാകാത്തതോ ആകാം."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"ദൈർഘ്യമേറിയ കാലഹരണപ്പെടൽ സമയം ഉപയോഗിക്കുക"</string>
     <string name="dismiss" msgid="7872443888515066216">"നിരസിക്കുക"</string>
     <string name="exact" msgid="2597237880041789948">"(കൃത്യമായ)"</string>
@@ -75,4 +76,12 @@
     <string name="menu_leading" msgid="2338520833272667740">"അടുത്തുവരുന്ന അക്കമുപയോഗിച്ച് ഉത്തരംനൽകൂ"</string>
     <string name="menu_fraction" msgid="1247477377840252234">"ഒരു ഭിന്നസംഖ്യയായി ഉത്തരം നൽകുക"</string>
     <string name="menu_licenses" msgid="1890541368064108592">"ഓപ്പൺ സോഴ്‌സ് ലൈസൻസ്"</string>
+    <string name="menu_history" msgid="9006222701220105452">"ചരിത്രം"</string>
+    <string name="menu_clear_history" msgid="2336526604226069572">"മായ്‌ക്കുക"</string>
+    <string name="title_history" msgid="7820912156315181539">"ചരിത്രം"</string>
+    <string name="desc_navigate_up" msgid="6208699569165589623">"മുകളിലേക്ക് നാവിഗേറ്റ് ചെയ്യുക"</string>
+    <string name="dialog_timeout" msgid="9069768442342329065">"കാലഹരണപ്പെട്ടു"</string>
+    <string name="dialog_clear" msgid="7137395395908350702">"ചരിത്രവും മെമ്മറിയും മായ്ക്കണോ?"</string>
+    <string name="title_current_expression" msgid="2442754548537900591">"നിലവിലെ എക്സ്പ്രഷൻ"</string>
+    <string name="no_history" msgid="4331262030447527188">"ചരിത്രമില്ല"</string>
 </resources>
