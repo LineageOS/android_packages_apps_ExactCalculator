@@ -58,7 +58,7 @@
     <string name="desc_inv_off" msgid="3672218250519616068">"შებრუნებული ფუნქციების ჩვენება"</string>
     <string name="desc_inv_on" msgid="2515675590767677178">"შებრუნებული ფუნქციების დამალვა"</string>
     <string name="error_nan" msgid="5674077944929888710">"არ არის რიცხვი"</string>
-    <string name="error_syntax" msgid="4786987111228645602">"არასწორი ფრაზა"</string>
+    <string name="error_syntax" msgid="4786987111228645602">"არასწორი გამოსახულება"</string>
     <string name="error_aborted" msgid="3402238176316342537">"შეწყვეტილია"</string>
     <string name="error_overflow" msgid="7800547394563434764">"განუსაზღვრელი?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"0-ზე გაყოფა შეუძლებელია"</string>
