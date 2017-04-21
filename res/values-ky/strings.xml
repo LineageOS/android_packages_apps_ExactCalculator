@@ -70,7 +70,7 @@
     <string name="cancelled" msgid="2207323593183640994">"Эсептөө жокко чыгарылды."</string>
     <string name="timeout" msgid="5461892570729418573">"Маани чексиз жана белгисиз болушу мүмкүн."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Күтүү убакытын узартуу"</string>
-    <string name="dismiss" msgid="7872443888515066216">"Этибарга албоо"</string>
+    <string name="dismiss" msgid="7872443888515066216">"Жок"</string>
     <string name="exact" msgid="2597237880041789948">"(так)"</string>
     <string name="approximate" msgid="7117143366610670836">"(акыркы санда ±1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Биринчи сандарды көрсөтүү"</string>
@@ -83,5 +83,5 @@
     <string name="dialog_timeout" msgid="9069768442342329065">"Таймаут"</string>
     <string name="dialog_clear" msgid="7137395395908350702">"Таржымал менен эстутум тазалансынбы?"</string>
     <string name="title_current_expression" msgid="2442754548537900591">"Учурдагы туюнтма"</string>
-    <string name="no_history" msgid="4331262030447527188">"Таржымалы жок"</string>
+    <string name="no_history" msgid="4331262030447527188">"Таржымал жок"</string>
 </resources>

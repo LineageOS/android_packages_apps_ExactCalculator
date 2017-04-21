@@ -81,7 +81,7 @@
     <string name="title_history" msgid="7820912156315181539">"Историја"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Кретање нагоре"</string>
     <string name="dialog_timeout" msgid="9069768442342329065">"Време чекања"</string>
-    <string name="dialog_clear" msgid="7137395395908350702">"Обрисати историју и меморију?"</string>
+    <string name="dialog_clear" msgid="7137395395908350702">"Бришете историју и меморију?"</string>
     <string name="title_current_expression" msgid="2442754548537900591">"Актуелни израз"</string>
     <string name="no_history" msgid="4331262030447527188">"Нема историје"</string>
 </resources>
