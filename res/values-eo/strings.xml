@@ -80,12 +80,15 @@
   <!-- Content description for '(' button. [CHAR_LIMIT=NONE] -->
   <!-- Content description for ')' button. [CHAR_LIMIT=NONE] -->
   <!-- Content description for 'cos' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_cos">kosinuso</string>
   <!-- Content description for 'ln' button. [CHAR_LIMIT=NONE] -->
   <!-- Content description for 'log' button. [CHAR_LIMIT=NONE] -->
   <!-- Content description for 'sin' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_sin">sinuso</string>
   <!-- Content description for 'tan' button. [CHAR_LIMIT=NONE] -->
   <!-- Content description for 'arccos' button. [CHAR_LIMIT=NONE] -->
   <!-- Content description for 'arcsin' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_arcsin">inversa sinuso</string>
   <!-- Content description for 'arctan' button. [CHAR_LIMIT=NONE] -->
   <!--
       Content description for 10^ button. This button is used to raise 10 to the subsequently
