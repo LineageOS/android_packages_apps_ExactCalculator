@@ -81,7 +81,7 @@
     <string name="title_history" msgid="7820912156315181539">"Historial"</string>
     <string name="desc_navigate_up" msgid="6208699569165589623">"Navega cap a dalt"</string>
     <string name="dialog_timeout" msgid="9069768442342329065">"S\'ha esgotat el temps d\'espera"</string>
-    <string name="dialog_clear" msgid="7137395395908350702">"Estàs segur que vols esborrar l\'historial i la memòria?"</string>
+    <string name="dialog_clear" msgid="7137395395908350702">"Confirmes que vols esborrar l\'historial i la memòria?"</string>
     <string name="title_current_expression" msgid="2442754548537900591">"Expressió actual"</string>
-    <string name="no_history" msgid="4331262030447527188">"No hi ha historial"</string>
+    <string name="no_history" msgid="4331262030447527188">"Sense historial"</string>
 </resources>
