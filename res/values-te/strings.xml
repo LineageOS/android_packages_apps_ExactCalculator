@@ -70,7 +70,7 @@
     <string name="cancelled" msgid="2207323593183640994">"గణన రద్దు చేసారు."</string>
     <string name="timeout" msgid="5461892570729418573">"విలువ అనంతం లేదా నిర్వచించబడనిది కావచ్చు."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"దీర్ఘకాల సమయ ముగింపులను ఉపయోగించు"</string>
-    <string name="dismiss" msgid="7872443888515066216">"తీసివేయి"</string>
+    <string name="dismiss" msgid="7872443888515066216">"విస్మరించు"</string>
     <string name="exact" msgid="2597237880041789948">"(సరిగ్గా)"</string>
     <string name="approximate" msgid="7117143366610670836">"(చివరి అంకెలో ±1)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"ఆధిక్య అంకెల్లో జవాబివ్వు"</string>
