@@ -83,5 +83,5 @@
     <string name="dialog_timeout" msgid="9069768442342329065">"Timeout"</string>
     <string name="dialog_clear" msgid="7137395395908350702">"Clear history and memory?"</string>
     <string name="title_current_expression" msgid="2442754548537900591">"Current Expression"</string>
-    <string name="no_history" msgid="4331262030447527188">"No History"</string>
+    <string name="no_history" msgid="4331262030447527188">"No history"</string>
 </resources>
