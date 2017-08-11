@@ -65,7 +65,7 @@
     </style>
 
     <style name="PadLayoutStyle.Advanced">
-        <item name="android:elevation">4dip</item>
+        <item name="android:elevation">@dimen/pad_elevation</item>
         <item name="android:paddingTop">12dip</item>
         <item name="android:paddingBottom">20dip</item>
         <item name="android:paddingStart">20dip</item>
