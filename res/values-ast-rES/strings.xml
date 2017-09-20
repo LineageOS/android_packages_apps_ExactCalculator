@@ -17,7 +17,6 @@
   -->
 <resources>
   <!-- Name of the application. [CHAR_LIMIT=NONE] -->
-  <string name="app_name">Calculadora</string>
   <!-- Constant for Euler's number (i.e. "2.7182…"). [CHAR_LIMIT=1] -->
   <!-- Constant for pi (i.e. "3.1415…"). [CHAR_LIMIT=1] -->
   <!-- Left parenthesis (e.g. "log(", "2 × (3 - 1)". [CHAR_LIMIT=1] -->
