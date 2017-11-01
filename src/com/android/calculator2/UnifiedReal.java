@@ -1011,6 +1011,9 @@ public class UnifiedReal {
     }
 
     public UnifiedReal ln() {
+        if (mCrFactor == CR_E) {
+            return new UnifiedReal(mRatFactor, CR_ONE).ln().add(ONE);
+        }
         if (isComparable(ZERO)) {
             if (signum() <= 0) {
                 throw new ArithmeticException("log(non-positive)");
