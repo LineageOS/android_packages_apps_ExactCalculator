@@ -17,6 +17,7 @@
   -->
 <resources>
   <!-- Name of the application. [CHAR_LIMIT=NONE] -->
+  <string name="app_name">Calculadora</string>
   <!-- Constant for Euler's number (i.e. "2.7182…"). [CHAR_LIMIT=1] -->
   <!-- Constant for pi (i.e. "3.1415…"). [CHAR_LIMIT=1] -->
   <!-- Left parenthesis (e.g. "log(", "2 × (3 - 1)". [CHAR_LIMIT=1] -->
@@ -29,6 +30,7 @@
 
       [CHAR_LIMIT=1]
       -->
+  <string name="dec_point">,</string>
   <!-- Decimal representation of zero (e.g. "0", "10", "1.0", "1e0"). [CHAR_LIMIT=1] -->
   <!-- Decimal representation of one (e.g. "1", "11", "1.1", "1e1"). [CHAR_LIMIT=1] -->
   <!-- Decimal representation of two (e.g. "2", "22", "2.2", "2e2"). [CHAR_LIMIT=1] -->
@@ -65,6 +67,7 @@
   <!-- Abbrev. name of exponential function in formula.  -->
   <!-- Abbrev. name of degree mode [CHAR_LIMIT=4] -->
   <!-- Abbrev. name of radian mode. [CHAR_LIMIT=4] -->
+  <string name="mode_rad">rad</string>
   <!-- Equals button (e.g. "1 + 2 = ?"). [CHAR_LIMIT=1] -->
   <!-- Clear button to clear the currently entered expression. [CHAR_LIMIT=4] -->
   <!--
