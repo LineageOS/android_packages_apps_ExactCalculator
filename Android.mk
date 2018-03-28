@@ -31,8 +31,8 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 LOCAL_PROGUARD_FLAG_FILES := proguard.flags
 
 LOCAL_STATIC_JAVA_LIBRARIES := cr
-LOCAL_STATIC_ANDROID_LIBRARIES += android-support-v4
-LOCAL_STATIC_ANDROID_LIBRARIES += android-support-v7-gridlayout
-LOCAL_STATIC_ANDROID_LIBRARIES += android-support-v7-recyclerview
+LOCAL_STATIC_ANDROID_LIBRARIES += androidx.legacy_legacy-support-v4
+LOCAL_STATIC_ANDROID_LIBRARIES += androidx.gridlayout_gridlayout
+LOCAL_STATIC_ANDROID_LIBRARIES += androidx.recyclerview_recyclerview
 
 include $(BUILD_PACKAGE)
