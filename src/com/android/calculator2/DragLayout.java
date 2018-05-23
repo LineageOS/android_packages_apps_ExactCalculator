@@ -209,14 +209,11 @@ public class DragLayout extends ViewGroup {
         return mIsOpen;
     }
 
-    private void setClosed() {
-        if (mIsOpen) {
-            mIsOpen = false;
-            mHistoryFrame.setVisibility(View.INVISIBLE);
-
-            if (mCloseCallback != null) {
-                mCloseCallback.onClose();
-            }
+    public void setClosed() {
+        mIsOpen = false;
+        mHistoryFrame.setVisibility(View.INVISIBLE);
+        if (mCloseCallback != null) {
+            mCloseCallback.onClose();
         }
     }
 
@@ -350,7 +347,9 @@ public class DragLayout extends ViewGroup {
                 settleToOpen = releasedChild.getTop() > -(mVerticalRange / 2);
             }
 
-            if (mDragHelper.settleCapturedViewAt(0, settleToOpen ? 0 : -mVerticalRange)) {
+            // If the view is not visible, then settle it closed, not open.
+            if (mDragHelper.settleCapturedViewAt(0, settleToOpen && mIsOpen ? 0
+                    : -mVerticalRange)) {
                 ViewCompat.postInvalidateOnAnimation(DragLayout.this);
             }
         }
