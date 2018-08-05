@@ -17,6 +17,7 @@
   -->
 <resources>
   <!-- Name of the application. [CHAR_LIMIT=NONE] -->
+  <string name="app_name">Cyfrifiannell</string>
   <!-- Constant for Euler's number (i.e. "2.7182…"). [CHAR_LIMIT=1] -->
   <!-- Constant for pi (i.e. "3.1415…"). [CHAR_LIMIT=1] -->
   <!-- Left parenthesis (e.g. "log(", "2 × (3 - 1)". [CHAR_LIMIT=1] -->
@@ -65,13 +66,18 @@
       -->
   <!-- Abbrev. name of exponential function in formula.  -->
   <!-- Abbrev. name of degree mode [CHAR_LIMIT=4] -->
+  <string name="mode_deg">deg</string>
   <!-- Abbrev. name of radian mode. [CHAR_LIMIT=4] -->
+  <string name="mode_rad">rad</string>
   <!-- Equals button (e.g. "1 + 2 = ?"). [CHAR_LIMIT=1] -->
   <!-- Clear button to clear the currently entered expression. [CHAR_LIMIT=4] -->
+  <string name="clr">clr</string>
   <!--
       Announced when all characters are removed from Formula, e.g. after clear. [CHAR_LIMIT=NONE]
       -->
+  <string name="cleared">cliriwyd</string>
   <!-- Delete button to remove last entered token. [CHAR_LIMIT=4] -->
+  <string name="del">del</string>
   <!-- Toggle button to show/hide inverse functions. [CHAR_LIMIT=4] -->
   <!--
       Item on Formula context menu used to paste from the Memory into the edit field. [CHAR_LIMIT=2]
@@ -85,58 +91,94 @@
       [CHAR_LIMIT=2]
       -->
   <!-- Content description for 'e' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_const_e">Rhif Euler</string>
   <!-- Content description for 'π' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_const_pi">pi</string>
   <!-- Content description for '.' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_dec_point">pwynt</string>
   <!-- Content description for '(' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_lparen">cromfach chwith</string>
   <!-- Content description for ')' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_rparen">cromfach dde</string>
   <!-- Content description for 'cos' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_cos">cosine</string>
   <!-- Content description for 'ln' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_ln">logarithm naturiol</string>
   <!-- Content description for 'log' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_log">logarithm</string>
   <!-- Content description for 'sin' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_sin">sine</string>
   <!-- Content description for 'tan' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_tan">tangiad</string>
   <!-- Content description for 'arccos' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_arccos">cosine gwrthdro</string>
   <!-- Content description for 'arcsin' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_arcsin">sine gwrthdro</string>
   <!-- Content description for 'arctan' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_arctan">tangent gwrthdro</string>
   <!--
       Content description for 10^ button. This button is used to raise 10 to the subsequently
       entered power. E.g. <10^>3 would yield 1000.
       [CHAR_LIMIT=NONE]
       -->
   <!-- Content description for e^ (exponential function) button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_fun_exp">ffwythiant esbonyddol</string>
   <!--
       Content description for ^2 button. This button is used to square the previously entered
       number. E.g. 3<^2> would yield 9.
       [CHAR_LIMIT=NONE]
       -->
+  <string name="desc_op_sqr">wedi\'i sgwario</string>
   <!-- Content description for '+' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_op_add">plws</string>
   <!-- Content description for '÷' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_op_div">rhannu</string>
   <!-- Content description for '!' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_op_fact">ffactorol</string>
   <!-- Content description for '×' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_op_mul">lluosi</string>
   <!-- Content description for '%' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_op_pct">y cant</string>
   <!-- Content description for '^' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_op_pow">pŵer</string>
   <!-- Content description for '√' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_op_sqrt">ail isradd</string>
   <!-- Content description for '-' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_op_sub">minws</string>
   <!-- Content description for degree mode. [CHAR_LIMIT=NONE] -->
+  <string name="desc_mode_deg">modd graddau</string>
   <!-- Content description for radian mode. [CHAR_LIMIT=NONE] -->
+  <string name="desc_mode_rad">modd radianau</string>
   <!-- Content description for switch to degree button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_switch_deg">newid i graddau</string>
   <!-- Content description for switch to radian button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_switch_rad">newid i radianau</string>
   <!-- Content description for '=' button. [CHAR_LIMIT=NONE] -->
+  <string name="desc_eq">yn hafal i</string>
   <!-- Content description for "clr" button. Deletes entire formula. [CHAR_LIMIT=NONE] -->
+  <string name="desc_clr">clirio</string>
   <!--
       Content description for "del" button. Deletes single character. Should differ
       from desc_clr. [CHAR_LIMIT=NONE]
       -->
+  <string name="desc_del">dileu</string>
   <!-- Content description for "inv" button to show inverse functions. [CHAR_LIMIT=NONE] -->
+  <string name="desc_inv_off">dangos ffwythiannau gwrthdro</string>
   <!-- Content description for "inv" button to hide inverse functions. [CHAR_LIMIT=NONE] -->
+  <string name="desc_inv_on">cuddio ffwythiannau gwrthdro</string>
   <!-- Content description for formula field when it is empty. [CHAR_LIMIT=NONE] -->
   <!-- Content description for result field when it is empty. [CHAR_LIMIT=NONE] -->
   <!-- Content description for the numeric/operation pad when slide-able. [CHAR_LIMIT=NONE] -->
   <!-- Content description for the advanced pad when slide-able. [CHAR_LIMIT=NONE] -->
   <!-- Content description for the pad pages when slide-able. -->
   <!-- Error displayed when expression evaluates to an undefined result. [CHAR_LIMIT=20] -->
+  <string name="error_nan">Dim yn rhif</string>
   <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=20] -->
+  <string name="error_syntax">Mynegiad gwael</string>
   <!-- Error displayed when evaluation is manually aborted. [CHAR_LIMIT=20] -->
+  <string name="error_aborted">Ataliwyd</string>
   <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=20] -->
+  <string name="error_overflow">Diderfyn?</string>
   <!--
       Error displayed when division by zero is detected.
 
@@ -145,7 +187,9 @@
 
       [CHAR_LIMIT=20]
       -->
+  <string name="error_zero_divide">Meth ei rannu â 0</string>
   <!-- Toast shown when text is copied to the clipboard. [CHAR_LIMIT=40] -->
+  <string name="text_copied_toast">Testun wedi\'i gopïo</string>
   <!-- Dialog message when a computation is cancelled by the user. [CHAR_LIMIT=NONE] -->
   <!-- Dialog message when a computation times out. [CHAR_LIMIT=NONE] -->
   <!--
@@ -157,12 +201,19 @@
 
       [CHAR_LIMIT=40]
       -->
+  <string name="ok_remove_timeout">Caniatáu amser hirach</string>
   <!-- Button label to dismiss informative text message. [CHAR_LIMIT=40] -->
+  <string name="dismiss">Gwrthod</string>
   <!-- Appended indicator (for "leading" display) that result is exact. [CHAR_LIMIT=NONE] -->
+  <string name="exact">(union)</string>
   <!-- Indicator (for "leading" display) that result is inexact. [CHAR_LIMIT=NONE] -->
+  <string name="approximate">(±1 yn digid olaf)</string>
   <!-- Menu option to display result including leading digits. [CHAR_LIMIT=40] -->
+  <string name="menu_leading">Ateb gyda digidau arweiniol</string>
   <!-- Menu option to display result as fraction. [CHAR_LIMIT=40] -->
+  <string name="menu_fraction">Ateb fel ffracsiwn</string>
   <!-- Menu option to view the app's open source licenses. [CHAR_LIMIT=40] -->
+  <string name="menu_licenses">Trwyddedau cod agored</string>
   <!-- Menu option to access calculation history. [CHAR_LIMIT=40] -->
   <!-- Menu option to clear calculation history and memory. [CHAR_LIMIT=40] -->
   <!-- Action bar title in history page. [CHAR_LIMIT=40] -->
