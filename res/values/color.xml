@@ -27,7 +27,7 @@
     <color name="calculator_statusbar_color">#0096A9</color>
 
     <!-- Color to indicate an error has occured. -->
-    <color name="calculator_error_color">#C2185B</color>
+    <color name="calculator_error_color">#ff0000</color>
 
     <!-- Background color of the calculator display. -->
     <color name="display_background_color">#303030</color>
