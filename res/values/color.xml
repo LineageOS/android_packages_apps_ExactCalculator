@@ -30,22 +30,22 @@
     <color name="calculator_error_color">#C2185B</color>
 
     <!-- Background color of the calculator display. -->
-    <color name="display_background_color">#FFF</color>
+    <color name="display_background_color">#303030</color>
 
     <!-- Text color for the formula in the calculator display. -->
-    <color name="display_formula_text_color">#000000</color>
+    <color name="display_formula_text_color">#6cffffff</color>
 
     <!-- Text color for the result in the calculator display. -->
-    <color name="display_result_text_color">#6C000000</color>
+    <color name="display_result_text_color">#6cffffff</color>
 
     <!-- Lighter color for exponent while scrolling. -->
     <color name="display_result_exponent_text_color">#40000000</color>
 
     <!-- Background color for the numeric pad. -->
-    <color name="pad_numeric_background_color">#434343</color>
+    <color name="pad_numeric_background_color">#303030</color>
 
     <!-- Background color for the operator pad. -->
-    <color name="pad_operator_background_color">#636363</color>
+    <color name="pad_operator_background_color">#525252</color>
 
     <!-- Background color for the advanced pad. -->
     <color name="pad_advanced_background_color">#1DE9B6</color>
