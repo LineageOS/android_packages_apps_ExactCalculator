@@ -32,7 +32,7 @@
         android:navigationContentDescription="@string/desc_navigate_up"
         android:navigationIcon="?android:attr/homeAsUpIndicator"
         android:popupTheme="@android:style/ThemeOverlay.Material.Light"
-        android:theme="@android:style/ThemeOverlay.Material.Dark.ActionBar"
+        android:theme="@style/Theme.Toolbar"
         android:title="@string/title_history" />
 
     <androidx.recyclerview.widget.RecyclerView
