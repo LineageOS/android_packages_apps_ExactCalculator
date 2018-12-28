@@ -32,11 +32,11 @@
         app:layout_row="0"
         app:layout_column="0" />
 
-    <Button
+    <ImageButton
         android:id="@+id/del"
-        style="@style/PadButtonStyle.Operator.Text"
+        style="@style/PadButtonStyle.Operator"
         android:contentDescription="@string/desc_del"
-        android:text="@string/del"
+        android:src="@drawable/ic_del"
         app:layout_row="0"
         app:layout_column="1" />
 
