@@ -121,6 +121,7 @@
       entered power. E.g. <10^>3 would yield 1000.
       [CHAR_LIMIT=NONE]
       -->
+    <string name="desc_fun_10pow">deg i\'r pŵer o</string>
     <!-- Content description for e^ (exponential function) button. [CHAR_LIMIT=NONE] -->
     <string name="desc_fun_exp">ffwythiant esbonyddol</string>
     <!--
@@ -167,9 +168,13 @@
     <!-- Content description for "inv" button to hide inverse functions. [CHAR_LIMIT=NONE] -->
     <string name="desc_inv_on">cuddio ffwythiannau gwrthdro</string>
     <!-- Content description for formula field when it is empty. [CHAR_LIMIT=NONE] -->
+    <string name="desc_formula">Dim fformiwla</string>
     <!-- Content description for result field when it is empty. [CHAR_LIMIT=NONE] -->
+    <string name="desc_result">Dim canlyniad</string>
     <!-- Content description for the numeric/operation pad when slide-able. [CHAR_LIMIT=NONE] -->
+    <string name="desc_num_pad">Rhifau a gweithrediadau sylfaenol</string>
     <!-- Content description for the advanced pad when slide-able. [CHAR_LIMIT=NONE] -->
+    <string name="desc_adv_pad">Gweithrediadau uwch</string>
     <!-- Content description for the pad pages when slide-able. -->
     <!-- Error displayed when expression evaluates to an undefined result. [CHAR_LIMIT=20] -->
     <string name="error_nan">Dim yn rhif</string>
@@ -191,7 +196,9 @@
     <!-- Toast shown when text is copied to the clipboard. [CHAR_LIMIT=40] -->
     <string name="text_copied_toast">Testun wedi\'i gopïo</string>
     <!-- Dialog message when a computation is cancelled by the user. [CHAR_LIMIT=NONE] -->
+    <string name="cancelled">Diddymwyd y cyfrifiannu</string>
     <!-- Dialog message when a computation times out. [CHAR_LIMIT=NONE] -->
+    <string name="timeout">Gall fod y gwerth yn ddiddiwedd neu heb ei ddiffinio.</string>
     <!--
       Button label to allow future computations with a longer timeout.
 
@@ -215,13 +222,19 @@
     <!-- Menu option to view the app's open source licenses. [CHAR_LIMIT=40] -->
     <string name="menu_licenses">Trwyddedau cod agored</string>
     <!-- Menu option to access calculation history. [CHAR_LIMIT=40] -->
+    <string name="menu_history">Hanes</string>
     <!-- Menu option to clear calculation history and memory. [CHAR_LIMIT=40] -->
+    <string name="menu_clear_history">Clirio</string>
     <!-- Action bar title in history page. [CHAR_LIMIT=40] -->
+    <string name="title_history">Hanes</string>
     <!-- Action bar navigate up description in history page. [CHAR_LIMIT=40] -->
+    <string name="desc_navigate_up">Llywio i fyny</string>
     <!-- Title for alert dialog when calculation takes too long (timeout). [CHAR_LIMIT=30] -->
     <!--
       Message for alert dialog when user is about to clear history and memory. [CHAR_LIMIT=NONE]
     -->
+    <string name="dialog_clear">Clirio\'r hanes a\'r cof?</string>
     <!-- Title for "current expression" in history page. [CHAR_LIMIT=40] -->
     <!-- Placeholder string when there is no history to be shown. [CHAR_LIMIT=40] -->
+    <string name="no_history">Dim hanes</string>
 </resources>
