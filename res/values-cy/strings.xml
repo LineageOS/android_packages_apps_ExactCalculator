@@ -210,7 +210,7 @@
       -->
     <string name="ok_remove_timeout">Caniatáu amser hirach</string>
     <!-- Button label to dismiss informative text message. [CHAR_LIMIT=40] -->
-    <string name="dismiss">Wfftio</string>
+    <string name="dismiss">Diystyru</string>
     <!-- Appended indicator (for "leading" display) that result is exact. [CHAR_LIMIT=NONE] -->
     <string name="exact">(union)</string>
     <!-- Indicator (for "leading" display) that result is inexact. [CHAR_LIMIT=NONE] -->
@@ -230,11 +230,13 @@
     <!-- Action bar navigate up description in history page. [CHAR_LIMIT=40] -->
     <string name="desc_navigate_up">Llywio i fyny</string>
     <!-- Title for alert dialog when calculation takes too long (timeout). [CHAR_LIMIT=30] -->
+    <string name="dialog_timeout">Terfyn amser</string>
     <!--
       Message for alert dialog when user is about to clear history and memory. [CHAR_LIMIT=NONE]
     -->
     <string name="dialog_clear">Clirio\'r hanes a\'r cof?</string>
     <!-- Title for "current expression" in history page. [CHAR_LIMIT=40] -->
+    <string name="title_current_expression">Mynediad cyfredol</string>
     <!-- Placeholder string when there is no history to be shown. [CHAR_LIMIT=40] -->
     <string name="no_history">Dim hanes</string>
 </resources>

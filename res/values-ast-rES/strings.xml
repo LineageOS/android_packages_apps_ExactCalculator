@@ -66,14 +66,18 @@
       -->
     <!-- Abbrev. name of exponential function in formula.  -->
     <!-- Abbrev. name of degree mode [CHAR_LIMIT=4] -->
+    <string name="mode_deg">º</string>
     <!-- Abbrev. name of radian mode. [CHAR_LIMIT=4] -->
     <string name="mode_rad">rad</string>
     <!-- Equals button (e.g. "1 + 2 = ?"). [CHAR_LIMIT=1] -->
     <!-- Clear button to clear the currently entered expression. [CHAR_LIMIT=4] -->
+    <string name="clr">clr</string>
     <!--
       Announced when all characters are removed from Formula, e.g. after clear. [CHAR_LIMIT=NONE]
       -->
+    <string name="cleared">llimpiaos</string>
     <!-- Delete button to remove last entered token. [CHAR_LIMIT=4] -->
+    <string name="del">del</string>
     <!-- Toggle button to show/hide inverse functions. [CHAR_LIMIT=4] -->
     <!--
       Item on Formula context menu used to paste from the Memory into the edit field. [CHAR_LIMIT=2]
@@ -117,6 +121,7 @@
       entered power. E.g. <10^>3 would yield 1000.
       [CHAR_LIMIT=NONE]
       -->
+    <string name="desc_fun_10pow">diez a la potencia de</string>
     <!-- Content description for e^ (exponential function) button. [CHAR_LIMIT=NONE] -->
     <string name="desc_fun_exp">función esponencial</string>
     <!--
@@ -128,9 +133,11 @@
     <!-- Content description for '+' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_add">más</string>
     <!-- Content description for '÷' button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_op_div">división</string>
     <!-- Content description for '!' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_fact">factorial</string>
     <!-- Content description for '×' button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_op_mul">multiplicar</string>
     <!-- Content description for '%' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_pct">porcentaxe</string>
     <!-- Content description for '^' button. [CHAR_LIMIT=NONE] -->
@@ -140,7 +147,9 @@
     <!-- Content description for '-' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_op_sub">menos</string>
     <!-- Content description for degree mode. [CHAR_LIMIT=NONE] -->
+    <string name="desc_mode_deg">mou de graos</string>
     <!-- Content description for radian mode. [CHAR_LIMIT=NONE] -->
+    <string name="desc_mode_rad">mou de radianes</string>
     <!-- Content description for switch to degree button. [CHAR_LIMIT=NONE] -->
     <string name="desc_switch_deg">camudar a graos</string>
     <!-- Content description for switch to radian button. [CHAR_LIMIT=NONE] -->
@@ -148,12 +157,16 @@
     <!-- Content description for '=' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_eq">igual a</string>
     <!-- Content description for "clr" button. Deletes entire formula. [CHAR_LIMIT=NONE] -->
+    <string name="desc_clr">llimpiar</string>
     <!--
       Content description for "del" button. Deletes single character. Should differ
       from desc_clr. [CHAR_LIMIT=NONE]
       -->
+    <string name="desc_del">suprimir</string>
     <!-- Content description for "inv" button to show inverse functions. [CHAR_LIMIT=NONE] -->
+    <string name="desc_inv_off">amosar funciones inverses</string>
     <!-- Content description for "inv" button to hide inverse functions. [CHAR_LIMIT=NONE] -->
+    <string name="desc_inv_on">anubrir funciones inverses</string>
     <!-- Content description for formula field when it is empty. [CHAR_LIMIT=NONE] -->
     <!-- Content description for result field when it is empty. [CHAR_LIMIT=NONE] -->
     <!-- Content description for the numeric/operation pad when slide-able. [CHAR_LIMIT=NONE] -->
@@ -164,6 +177,7 @@
     <!-- Error displayed when expression contains a syntax error. [CHAR_LIMIT=20] -->
     <string name="error_syntax">Espresión incorreuta</string>
     <!-- Error displayed when evaluation is manually aborted. [CHAR_LIMIT=20] -->
+    <string name="error_aborted">Encaboxada</string>
     <!-- Error displayed when excessive precision is required. [CHAR_LIMIT=20] -->
     <string name="error_overflow">¿Infinitu?</string>
     <!--
@@ -174,7 +188,9 @@
 
       [CHAR_LIMIT=20]
       -->
+    <string name="error_zero_divide">Nun pue dividise por 0</string>
     <!-- Toast shown when text is copied to the clipboard. [CHAR_LIMIT=40] -->
+    <string name="text_copied_toast">Copióse\'l testu</string>
     <!-- Dialog message when a computation is cancelled by the user. [CHAR_LIMIT=NONE] -->
     <string name="cancelled">Encaboxóse\'l cálculu.</string>
     <!-- Dialog message when a computation times out. [CHAR_LIMIT=NONE] -->
@@ -192,9 +208,13 @@
     <!-- Button label to dismiss informative text message. [CHAR_LIMIT=40] -->
     <string name="dismiss">Escartar</string>
     <!-- Appended indicator (for "leading" display) that result is exact. [CHAR_LIMIT=NONE] -->
+    <string name="exact">(exautu)</string>
     <!-- Indicator (for "leading" display) that result is inexact. [CHAR_LIMIT=NONE] -->
+    <string name="approximate">(±1 nel postrer díxitu)</string>
     <!-- Menu option to display result including leading digits. [CHAR_LIMIT=40] -->
+    <string name="menu_leading">Rempuesta con díxitos más significativos</string>
     <!-- Menu option to display result as fraction. [CHAR_LIMIT=40] -->
+    <string name="menu_fraction">Rempuesta como fraición</string>
     <!-- Menu option to view the app's open source licenses. [CHAR_LIMIT=40] -->
     <string name="menu_licenses">Llicencies de códigu abiertu</string>
     <!-- Menu option to access calculation history. [CHAR_LIMIT=40] -->
