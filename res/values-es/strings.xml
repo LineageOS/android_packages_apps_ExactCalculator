@@ -70,7 +70,7 @@
     <string name="cancelled" msgid="2207323593183640994">"Cálculo cancelado."</string>
     <string name="timeout" msgid="5461892570729418573">"Es posible que el valor sea infinito o no esté definido."</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"Utilizar tiempos de espera más largos"</string>
-    <string name="dismiss" msgid="7872443888515066216">"Descartar"</string>
+    <string name="dismiss" msgid="7872443888515066216">"Cerrar"</string>
     <string name="exact" msgid="2597237880041789948">"(exacto)"</string>
     <string name="approximate" msgid="7117143366610670836">"(±1 en el último dígito)"</string>
     <string name="menu_leading" msgid="2338520833272667740">"Responder con dígitos iniciales"</string>
