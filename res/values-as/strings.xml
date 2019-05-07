@@ -22,7 +22,7 @@
     <string name="mode_deg" msgid="1146123354434332479">"ডি."</string>
     <string name="mode_rad" msgid="1434228830085760996">"ৰে."</string>
     <string name="clr" msgid="6730945431543327337">"clr"</string>
-    <string name="cleared" msgid="3952521190281880880">"মচা হ\'ল"</string>
+    <string name="cleared" msgid="3952521190281880880">"মচা হ’ল"</string>
     <string name="del" msgid="5878069000864178910">"del"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"অইলাৰৰ নম্বৰ"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"পাই"</string>
@@ -67,7 +67,7 @@
     <string name="error_overflow" msgid="7800547394563434764">"অসীম?"</string>
     <string name="error_zero_divide" msgid="458040988686661801">"০ৰে হৰণ কৰিব নোৱাৰি"</string>
     <string name="text_copied_toast" msgid="2104264466812485425">"পাঠৰ প্ৰতিলিপি কৰা হৈছে"</string>
-    <string name="cancelled" msgid="2207323593183640994">"গণনা বাতিল কৰা হ\'ল।"</string>
+    <string name="cancelled" msgid="2207323593183640994">"গণনা বাতিল কৰা হ’ল।"</string>
     <string name="timeout" msgid="5461892570729418573">"মান অসীম বা অনিৰ্দিষ্ট হ\'ব পাৰে।"</string>
     <string name="ok_remove_timeout" msgid="8344529153919268011">"গণনাৰ বাবে নিৰ্ধাৰিত কৰা সময় বঢ়াওক"</string>
     <string name="dismiss" msgid="7872443888515066216">"বাতিল কৰক"</string>
