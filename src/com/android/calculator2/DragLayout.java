@@ -20,6 +20,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +54,7 @@ public class DragLayout extends ViewGroup {
 
     private final Map<Integer, PointF> mLastMotionPoints = new HashMap<>();
     private final Rect mHitRect = new Rect();
+    private final List<Rect> mExclusionRects = new ArrayList<>();
 
     private int mVerticalRange;
     private boolean mIsOpen;
@@ -96,6 +99,16 @@ public class DragLayout extends ViewGroup {
             }
             child.layout(0, top, child.getMeasuredWidth(), top + child.getMeasuredHeight());
         }
+
+        if (changed) {
+            updateExclusionRects();
+        }
+    }
+
+    @Override
+    public void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        updateExclusionRects();
     }
 
     @Override
@@ -247,6 +260,11 @@ public class DragLayout extends ViewGroup {
 
     public void removeDragCallback(DragCallback callback) {
         mDragCallbacks.remove(callback);
+    }
+
+    private void updateExclusionRects() {
+        mExclusionRects.add(0, mHitRect);
+        setSystemGestureExclusionRects(mExclusionRects);
     }
 
     /**
