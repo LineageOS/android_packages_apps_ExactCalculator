@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c1a05267_884eeb44",
+        "filename": "src/com/android/calculator2/DragLayout.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1063
+      },
+      "writtenOn": "2019-11-06T05:32:05Z",
+      "side": 1,
+      "message": "Should probably use a temporary list stored as static or member to avoid reallocations.",
+      "revId": "db97a0a13c51e5728a2afcd51f8309c20140697b",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": true
+    }
+  ]
+}
