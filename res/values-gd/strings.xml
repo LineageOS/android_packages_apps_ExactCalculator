@@ -15,10 +15,14 @@
   limitations under the License.
   -->
 <resources>
-    <string name="app_name">Kalkulilo</string>
-    <string name="dec_point">,</string>
-    <string name="desc_fun_cos">kosinuso</string>
-    <string name="desc_fun_sin">sinuso</string>
-    <string name="desc_fun_arcsin">inversa sinuso</string>
-    <string name="desc_del">forigi</string>
+    <string name="app_name">Àireamhair</string>
+    <string name="mode_rad">rèidean</string>
+    <string name="cleared">air fhalamhachadh</string>
+    <string name="desc_op_fact">factarail</string>
+    <string name="desc_op_pct">ceudad</string>
+    <string name="desc_op_sqrt">freumh ceàrnagach</string>
+    <string name="desc_del">sguab às</string>
+    <string name="error_nan">Chan eil seo ’na àireamh</string>
+    <string name="error_aborted">Sguireadh dheth</string>
+    <string name="menu_licenses">Ceadachasan Open Source</string>
 </resources>
