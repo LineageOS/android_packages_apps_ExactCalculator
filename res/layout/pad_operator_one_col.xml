@@ -24,7 +24,7 @@
     app:rowCount="5"
     app:columnCount="1">
 
-    <ImageButton
+    <com.android.calculator2.HapticImageButton
         android:id="@+id/del"
         style="@style/PadButtonStyle.Operator"
         android:contentDescription="@string/desc_del"
