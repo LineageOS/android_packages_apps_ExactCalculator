@@ -116,8 +116,8 @@
 
     <!-- Equals button (e.g. "1 + 2 = ?"). [CHAR_LIMIT=1] -->
     <string name="eq" translatable="false">=</string>
-    <!-- Clear button to clear the currently entered expression. [CHAR_LIMIT=4] -->
-    <string name="clr">clr</string>
+    <!-- Clear button to clear the currently entered expression. [CHAR_LIMIT=1] -->
+    <string name="clr" translatable="false">c</string>
     <!--
       Announced when all characters are removed from Formula, e.g. after clear. [CHAR_LIMIT=NONE]
       -->
