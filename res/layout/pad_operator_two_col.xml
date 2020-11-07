@@ -32,7 +32,7 @@
         app:layout_row="0"
         app:layout_column="0" />
 
-    <ImageButton
+    <com.android.calculator2.HapticImageButton
         android:id="@+id/del"
         style="@style/PadButtonStyle.Operator"
         android:contentDescription="@string/desc_del"
