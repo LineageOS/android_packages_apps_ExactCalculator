@@ -29,6 +29,8 @@ android_app {
         proguard_flags_files: ["proguard.flags"],
     },
 
+    product_specific: true,
+
     static_libs: [
         "cr",
         "androidx.legacy_legacy-support-v4",
