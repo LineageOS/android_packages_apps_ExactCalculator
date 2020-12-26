@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e3b1df0b_fe2a48d4",
+        "filename": "src/com/android/calculator2/HapticImageButton.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 13028
+      },
+      "writtenOn": "2020-12-26T11:29:07Z",
+      "side": 1,
+      "message": "Either need to change/adapt this copyright or maybe explain in commit mrdsage where this was taken from",
+      "revId": "6b14a9a8bb3e2216176a091e7143be67dba659f9",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": true
+    }
+  ]
+}
