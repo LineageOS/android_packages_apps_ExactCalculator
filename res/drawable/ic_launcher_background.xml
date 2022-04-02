@@ -1,0 +1,56 @@
+<!-- Copyright (c) 2022 The LineageOS Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+  <path
+      android:pathData="M0,0h108v108h-108z"
+      android:fillColor="#ffffff"/>
+  <path
+      android:pathData="M42,30L66,30A4,4 0,0 1,70 34L70,74A4,4 0,0 1,66 78L42,78A4,4 0,0 1,38 74L38,34A4,4 0,0 1,42 30z"
+      android:fillColor="#551E22"/>
+  <path
+      android:pathData="M38,34C38,31.791 39.791,30 42,30H66C68.209,30 70,31.791 70,34V46H38V34Z"
+      android:fillColor="#2A3232"/>
+  <path
+      android:pathData="M44,52m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="#AD2F3C"/>
+  <path
+      android:pathData="M44,62m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="#AD2F3C"/>
+  <path
+      android:pathData="M44,72m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="#AD2F3C"/>
+  <path
+      android:pathData="M54,52m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="#AD2F3C"/>
+  <path
+      android:pathData="M54,62m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="#AD2F3C"/>
+  <path
+      android:pathData="M54,72m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="#AD2F3C"/>
+  <path
+      android:pathData="M64,52m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="#AD2F3C"/>
+  <path
+      android:pathData="M64,62m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="#AD2F3C"/>
+  <path
+      android:pathData="M64,72m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0"
+      android:fillColor="#AD2F3C"/>
+</vector>
