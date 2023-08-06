@@ -16,12 +16,13 @@
 
 package com.android.calculator2;
 
-import android.content.res.Resources;
 import android.content.Context;
-import android.app.Activity;
+import android.content.res.Resources;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
@@ -435,13 +436,13 @@ public class KeyMaps {
     /**
      * Activity to use for looking up buttons.
      */
-    private static Activity mActivity;
+    private static AppCompatActivity mActivity;
 
     /**
      * Set acttivity used for looking up button labels.
      * Call only from UI thread.
      */
-    public static void setActivity(Activity a) {
+    public static void setActivity(AppCompatActivity a) {
         mActivity = a;
     }
 

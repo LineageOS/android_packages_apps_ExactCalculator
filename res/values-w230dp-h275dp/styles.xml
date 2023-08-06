@@ -18,13 +18,13 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="PadButtonStyle.Advanced">
-        <item name="android:background">@drawable/pad_button_advanced_background</item>
+        <item name="background">@drawable/pad_button_advanced_background</item>
         <item name="android:textColor">@color/pad_button_advanced_text_color</item>
         <item name="android:textSize">16dip</item>
     </style>
 
     <style name="PadButtonStyle.Advanced.Text">
-        <item name="android:textAllCaps">true</item>
+        <item name="textAllCaps">true</item>
         <item name="android:textSize">14dip</item>
     </style>
 
@@ -41,12 +41,12 @@
     </style>
 
     <style name="PadButtonStyle.Operator.Text">
-        <item name="android:textAllCaps">true</item>
+        <item name="textAllCaps">true</item>
         <item name="android:textSize">14dip</item>
     </style>
 
     <style name="PadLayoutStyle.Advanced">
-        <item name="android:elevation">4dip</item>
+        <item name="elevation">4dip</item>
         <item name="android:paddingTop">2dip</item>
         <item name="android:paddingBottom">8dip</item>
         <item name="android:paddingStart">18dip</item>

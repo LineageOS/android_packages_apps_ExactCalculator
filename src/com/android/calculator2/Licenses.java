@@ -1,11 +1,12 @@
 package com.android.calculator2;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
-public class Licenses extends Activity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class Licenses extends AppCompatActivity {
 
     private static final String LICENSE_URL = "file:///android_asset/licenses.html";
 

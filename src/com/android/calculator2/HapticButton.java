@@ -16,18 +16,18 @@
 
 package com.android.calculator2;
 
-import android.widget.Button;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.HapticFeedbackConstants;
+import android.view.MotionEvent;
+import android.view.View;
+
+import androidx.appcompat.widget.AppCompatButton;
 
 /**
  * A basic Button that vibrates on finger down.
  */
-public class HapticButton extends Button {
+public class HapticButton extends AppCompatButton {
     public HapticButton(Context context) {
         super(context);
         initVibration(context);
@@ -40,11 +40,6 @@ public class HapticButton extends Button {
 
     public HapticButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initVibration(context);
-    }
-
-    public HapticButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         initVibration(context);
     }
 

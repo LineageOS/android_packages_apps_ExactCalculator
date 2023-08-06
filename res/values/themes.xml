@@ -18,8 +18,8 @@
 <resources>
 
     <style name="Theme" parent="@android:style/Theme.Material.Light">
-        <item name="android:colorPrimary">@color/calculator_primary_color</item>
-        <item name="android:colorAccent">@color/calculator_accent_color</item>
+        <item name="colorPrimary">@color/calculator_primary_color</item>
+        <item name="colorAccent">@color/calculator_accent_color</item>
         <item name="android:statusBarColor">@color/calculator_statusbar_color</item>
         <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
         <item name="android:navigationBarColor">@color/navigationBar_color</item>
@@ -29,15 +29,15 @@
     </style>
 
     <style name="Theme.Calculator">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowNoTitle">true</item>
+        <item name="windowNoTitle">true</item>
         <item name="android:layoutDirection">ltr</item>
     </style>
 
     <style name="Theme.Licenses">
-        <item name="android:title">@string/menu_licenses</item>
+        <item name="title">@string/menu_licenses</item>
     </style>
 
 </resources>

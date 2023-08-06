@@ -15,11 +15,11 @@
   limitations under the License.
   -->
 
-<Toolbar
+<androidx.appcompat.widget.Toolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/actionBarSize"
+    android:layout_height="?attr/actionBarSize"
     android:layout_gravity="top">
 
     <TextView
@@ -30,4 +30,4 @@
         android:textAllCaps="true"
         android:textSize="16sp" />
 
-</Toolbar>
+</androidx.appcompat.widget.Toolbar>
