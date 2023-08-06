@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 
 /**
  * A mathematical expression represented as a sequence of "tokens".

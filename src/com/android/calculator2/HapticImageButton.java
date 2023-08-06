@@ -16,17 +16,18 @@
 
 package com.android.calculator2;
 
-import android.widget.ImageButton;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
-import android.view.MotionEvent;
 import android.view.HapticFeedbackConstants;
+import android.view.MotionEvent;
+import android.view.View;
+
+import androidx.appcompat.widget.AppCompatImageButton;
 
 /**
  * A basic ImageButton that vibrates on finger down.
  */
-public class HapticImageButton extends ImageButton {
+public class HapticImageButton extends AppCompatImageButton {
     public HapticImageButton(Context context) {
         super(context);
         initVibration(context);
@@ -39,11 +40,6 @@ public class HapticImageButton extends ImageButton {
 
     public HapticImageButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initVibration(context);
-    }
-
-    public HapticImageButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         initVibration(context);
     }
 

@@ -38,7 +38,6 @@
 
 package com.android.calculator2;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.AbstractWindowedCursor;
@@ -50,7 +49,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.provider.BaseColumns;
 import android.util.Log;
-import android.view.View;
 
 public class ExpressionDB {
     private final boolean CONTINUE_WITH_BAD_DB = false;

@@ -17,16 +17,18 @@
 package com.android.calculator2;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 /**
  * Display a message with a dismiss putton, and optionally a second button.
@@ -61,8 +63,9 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
      * @param positiveButtonLabel label for second button, if any.  If non-null, activity must
      * implement AlertDialogFragment.OnClickListener to respond.
      */
-    public static void showMessageDialog(Activity activity, @StringRes int title,
-            @StringRes int message, @StringRes int positiveButtonLabel, @Nullable String tag) {
+    public static void showMessageDialog(AppCompatActivity activity, @StringRes int title,
+                                         @StringRes int message, @StringRes int positiveButtonLabel,
+                                         @Nullable String tag) {
         showMessageDialog(activity, title != 0 ? activity.getString(title) : null,
                 activity.getString(message),
                 positiveButtonLabel != 0 ? activity.getString(positiveButtonLabel) : null,
@@ -78,10 +81,12 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
      * @param positiveButtonLabel label for second button, if any.  If non-null, activity must
      * implement AlertDialogFragment.OnClickListener to respond.
      */
-    public static void showMessageDialog(Activity activity, @Nullable CharSequence title,
-            CharSequence message, @Nullable CharSequence positiveButtonLabel, @Nullable String tag)
+    public static void showMessageDialog(AppCompatActivity activity, @Nullable CharSequence title,
+                                         CharSequence message,
+                                         @Nullable CharSequence positiveButtonLabel,
+                                         @Nullable String tag)
     {
-        final FragmentManager manager = activity.getFragmentManager();
+        final FragmentManager manager = activity.getSupportFragmentManager();
         if (manager == null || manager.isDestroyed()) {
             return;
         }

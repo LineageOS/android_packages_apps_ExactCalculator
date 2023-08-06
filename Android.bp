@@ -33,7 +33,11 @@ android_app {
 
     static_libs: [
         "cr",
-        "androidx.legacy_legacy-support-v4",
+        "androidx.core_core",
+        "androidx.annotation_annotation",
+        "androidx.appcompat_appcompat",
+        "androidx.customview_customview",
+        "androidx.fragment_fragment",
         "androidx.gridlayout_gridlayout",
         "androidx.recyclerview_recyclerview",
     ],

@@ -16,20 +16,21 @@
 
 package com.android.calculator2;
 
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
+
 import android.animation.Animator;
-import android.app.Fragment;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toolbar;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-
-import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 
 public class HistoryFragment extends Fragment implements DragLayout.DragCallback {
 

@@ -25,17 +25,14 @@
 
 package com.android.calculator2;
 
+import static com.android.calculator2.CalculatorFormula.OnFormulaContextMenuClickListener;
+
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,10 +41,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -70,7 +63,17 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
-import android.widget.Toolbar;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 
 import com.android.calculator2.CalculatorFormula.OnTextSizeChangeListener;
 
@@ -83,9 +86,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.text.DecimalFormatSymbols;
 
-import static com.android.calculator2.CalculatorFormula.OnFormulaContextMenuClickListener;
-
-public class Calculator extends Activity
+public class Calculator extends AppCompatActivity
         implements OnTextSizeChangeListener, OnLongClickListener,
         AlertDialogFragment.OnClickListener, Evaluator.EvaluationListener /* for main result */,
         DragLayout.CloseCallback, DragLayout.DragCallback {
@@ -357,13 +358,13 @@ public class Calculator extends Activity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_calculator_main);
-        setActionBar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         // Hide all default options in the ActionBar.
-        getActionBar().setDisplayOptions(0);
+        getSupportActionBar().setDisplayOptions(0);
 
         // Ensure the toolbar stays visible while the options menu is displayed.
-        getActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
+        getSupportActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
             @Override
             public void onMenuVisibilityChanged(boolean isVisible) {
                 mDisplayView.setForceToolbarVisible(isVisible);
@@ -727,7 +728,7 @@ public class Calculator extends Activity
     }
 
     private void removeHistoryFragment() {
-        final FragmentManager manager = getFragmentManager();
+        final FragmentManager manager = getSupportFragmentManager();
         if (manager != null && !manager.isDestroyed()) {
             manager.popBackStack(HistoryFragment.TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
@@ -1355,7 +1356,7 @@ public class Calculator extends Activity
     }
 
     private HistoryFragment getHistoryFragment() {
-        final FragmentManager manager = getFragmentManager();
+        final FragmentManager manager = getSupportFragmentManager();
         if (manager == null || manager.isDestroyed()) {
             return null;
         }
@@ -1369,7 +1370,7 @@ public class Calculator extends Activity
             return;
         }
 
-        final FragmentManager manager = getFragmentManager();
+        final FragmentManager manager = getSupportFragmentManager();
         if (manager == null || manager.isDestroyed() || !prepareForHistory()) {
             // If the history fragment can not be shown, close the draglayout.
             mDragLayout.setClosed();

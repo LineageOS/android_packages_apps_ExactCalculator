@@ -22,18 +22,18 @@
     android:clipChildren="false"
     android:orientation="vertical">
 
-    <Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/history_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/colorPrimary"
+        android:background="?attr/colorPrimary"
         android:elevation="4dip"
-        android:minHeight="?android:attr/actionBarSize"
+        android:minHeight="?attr/actionBarSize"
         android:navigationContentDescription="@string/desc_navigate_up"
-        android:navigationIcon="?android:attr/homeAsUpIndicator"
-        android:popupTheme="@android:style/ThemeOverlay.Material.Light"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:theme="@style/Theme.Toolbar"
-        android:title="@string/title_history" />
+        app:title="@string/title_history" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/history_recycler_view"
