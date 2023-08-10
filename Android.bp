@@ -40,5 +40,6 @@ android_app {
         "androidx.fragment_fragment",
         "androidx.gridlayout_gridlayout",
         "androidx.recyclerview_recyclerview",
+        "com.google.android.material_material",
     ],
 }

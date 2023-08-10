@@ -22,12 +22,12 @@ import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.appcompat.widget.AppCompatButton;
+import com.google.android.material.button.MaterialButton;
 
 /**
  * A basic Button that vibrates on finger down.
  */
-public class HapticButton extends AppCompatButton {
+public class HapticButton extends MaterialButton {
     public HapticButton(Context context) {
         super(context);
         initVibration(context);
