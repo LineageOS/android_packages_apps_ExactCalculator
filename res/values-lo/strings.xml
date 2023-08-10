@@ -58,8 +58,6 @@
     <string name="desc_inv_on" msgid="2515675590767677178">"ເຊື່ອງ​ຟັງ​ຄ໌​ຊັນ​ທີ່​ຈຸ່ມ​ລົງ"</string>
     <string name="desc_formula" msgid="8056588859637585007">"ບໍ່ມີສູດຄຳນວນ"</string>
     <string name="desc_result" msgid="1794073190203126821">"ບໍ່ມີຜົນການຊອກຫາ"</string>
-    <string name="desc_num_pad" msgid="515720457459745571">"ຄຳສັ່ງພື້ນຖານ ແລະ ຕົວເລກ"</string>
-    <string name="desc_adv_pad" msgid="3794276256462677914">"ຄຳສັ່ງຂັ້ນສູງ"</string>
     <string name="error_nan" msgid="5674077944929888710">"ບໍ່​ແມ່ນ​ໂຕ​ເລກ"</string>
     <string name="error_syntax" msgid="4786987111228645602">"ສຳ​ນວນ​ບໍ່​ດີ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"ລົບ​ລ້າງ"</string>

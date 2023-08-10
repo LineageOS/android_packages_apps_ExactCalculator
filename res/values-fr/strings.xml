@@ -58,8 +58,6 @@
     <string name="desc_inv_on" msgid="2515675590767677178">"masquer les fonctions inverses"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Aucune formule"</string>
     <string name="desc_result" msgid="1794073190203126821">"Aucun résultat"</string>
-    <string name="desc_num_pad" msgid="515720457459745571">"Nombres et opérations de base"</string>
-    <string name="desc_adv_pad" msgid="3794276256462677914">"Opérations avancées"</string>
     <string name="error_nan" msgid="5674077944929888710">"Pas un nombre"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Express. incorr."</string>
     <string name="error_aborted" msgid="3402238176316342537">"Annulée"</string>

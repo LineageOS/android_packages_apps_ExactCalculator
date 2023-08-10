@@ -58,8 +58,6 @@
     <string name="desc_inv_on" msgid="2515675590767677178">"逆関数を表示しない"</string>
     <string name="desc_formula" msgid="8056588859637585007">"数式がありません"</string>
     <string name="desc_result" msgid="1794073190203126821">"該当する結果がありません"</string>
-    <string name="desc_num_pad" msgid="515720457459745571">"数字と基本的な演算"</string>
-    <string name="desc_adv_pad" msgid="3794276256462677914">"高度な演算"</string>
     <string name="error_nan" msgid="5674077944929888710">"数値以外です"</string>
     <string name="error_syntax" msgid="4786987111228645602">"式が無効です"</string>
     <string name="error_aborted" msgid="3402238176316342537">"中止しました"</string>

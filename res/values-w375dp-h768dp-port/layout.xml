@@ -16,7 +16,6 @@
   -->
 
 <resources>
-    <item name="activity_calculator" type="layout">@layout/activity_calculator_tablet_port</item>
     <item name="display" type="layout">@layout/display_two_line</item>
     <item name="pad_advanced" type="layout">@layout/pad_advanced_5x3</item>
     <item name="pad_operator" type="layout">@layout/pad_operator_two_col</item>

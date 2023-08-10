@@ -56,8 +56,6 @@
     <string name="desc_inv_on">cuddio ffwythiannau gwrthdro</string>
     <string name="desc_formula">Dim fformiwla</string>
     <string name="desc_result">Dim canlyniad</string>
-    <string name="desc_num_pad">Rhifau a gweithrediadau sylfaenol</string>
-    <string name="desc_adv_pad">Gweithrediadau uwch</string>
     <string name="error_nan">Dim yn rhif</string>
     <string name="error_syntax">Mynegiad gwael</string>
     <string name="error_aborted">Ataliwyd</string>
