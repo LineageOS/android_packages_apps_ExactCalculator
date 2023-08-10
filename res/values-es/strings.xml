@@ -58,8 +58,6 @@
     <string name="desc_inv_on" msgid="2515675590767677178">"oculta las funciones inversas"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Sin fórmula"</string>
     <string name="desc_result" msgid="1794073190203126821">"Sin resultados"</string>
-    <string name="desc_num_pad" msgid="515720457459745571">"Números y operaciones básicas"</string>
-    <string name="desc_adv_pad" msgid="3794276256462677914">"Operaciones avanzadas"</string>
     <string name="error_nan" msgid="5674077944929888710">"No es un número"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Expresión incorrecta"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Cancelado"</string>

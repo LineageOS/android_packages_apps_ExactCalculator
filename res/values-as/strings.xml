@@ -58,8 +58,6 @@
     <string name="desc_inv_on" msgid="2515675590767677178">"বিপৰীত অপেক্ষক লুকুৱাওক"</string>
     <string name="desc_formula" msgid="8056588859637585007">"কোনো সূত্ৰ নাই"</string>
     <string name="desc_result" msgid="1794073190203126821">"কোনো ফল নাই"</string>
-    <string name="desc_num_pad" msgid="515720457459745571">"সংখ্যাসমূহ আৰু মৌলিক ক্ৰিয়াসমূহ"</string>
-    <string name="desc_adv_pad" msgid="3794276256462677914">"উচ্চখাপৰ ক্ৰিয়াসমূহ"</string>
     <string name="error_nan" msgid="5674077944929888710">"সংখ্যা নহয়"</string>
     <string name="error_syntax" msgid="4786987111228645602">"অসাধু ৰাশি"</string>
     <string name="error_aborted" msgid="3402238176316342537">"ত্যাগ কৰা হৈছে"</string>

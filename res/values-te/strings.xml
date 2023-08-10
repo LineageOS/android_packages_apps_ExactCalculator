@@ -58,8 +58,6 @@
     <string name="desc_inv_on" msgid="2515675590767677178">"విలోమ ఫంక్షన్‌లను దాస్తుంది"</string>
     <string name="desc_formula" msgid="8056588859637585007">"సూత్రం లేదు"</string>
     <string name="desc_result" msgid="1794073190203126821">"ఫలితం ఏదీ లేదు"</string>
-    <string name="desc_num_pad" msgid="515720457459745571">"సంఖ్యలు మరియు ప్రాథమిక చర్యలు"</string>
-    <string name="desc_adv_pad" msgid="3794276256462677914">"అధునాతన చర్యలు"</string>
     <string name="error_nan" msgid="5674077944929888710">"సంఖ్య కాదు"</string>
     <string name="error_syntax" msgid="4786987111228645602">"తప్పు వ్యక్తీకరణ"</string>
     <string name="error_aborted" msgid="3402238176316342537">"రద్దు చేసారు"</string>

@@ -17,9 +17,6 @@
 
 <resources>
 
-    <!-- The margin between the pad pages when displayed using a view pager. -->
-    <dimen name="pad_page_margin">24dip</dimen>
-
     <dimen name="history_divider_padding">14dip</dimen>
 
     <dimen name="history_item_text_padding_top">8dip</dimen>

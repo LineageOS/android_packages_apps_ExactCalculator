@@ -73,7 +73,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.ViewPager;
 
 import com.android.calculator2.CalculatorFormula.OnTextSizeChangeListener;
 
@@ -255,7 +254,6 @@ public class Calculator extends AppCompatActivity
     private HorizontalScrollView mFormulaContainer;
     private DragLayout mDragLayout;
 
-    private ViewPager mPadViewPager;
     private View mDeleteButton;
     private View mClearButton;
     private View mEqualButton;
@@ -382,7 +380,6 @@ public class Calculator extends AppCompatActivity
         mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
         KeyMaps.setActivity(this);
 
-        mPadViewPager = (ViewPager) findViewById(R.id.pad_pager);
         mDeleteButton = findViewById(R.id.del);
         mClearButton = findViewById(R.id.clr);
         final View numberPad = findViewById(R.id.pad_numeric);
@@ -608,14 +605,6 @@ public class Calculator extends AppCompatActivity
                     removeHistoryFragment();
                 }
                 return;
-            }
-            if (mPadViewPager != null && mPadViewPager.getCurrentItem() != 0) {
-                // Select the previous pad.
-                mPadViewPager.setCurrentItem(mPadViewPager.getCurrentItem() - 1);
-            } else {
-                // If the user is currently looking at the first pad (or the pad is not paged),
-                // allow the system to handle the Back button.
-                super.onBackPressed();
             }
         }
     }

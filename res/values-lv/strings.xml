@@ -58,8 +58,6 @@
     <string name="desc_inv_on" msgid="2515675590767677178">"slēpt inversās funkcijas"</string>
     <string name="desc_formula" msgid="8056588859637585007">"Nav formulas"</string>
     <string name="desc_result" msgid="1794073190203126821">"Nav neviena rezultāta"</string>
-    <string name="desc_num_pad" msgid="515720457459745571">"Skaitļi un pamatdarbības"</string>
-    <string name="desc_adv_pad" msgid="3794276256462677914">"Papildu darbības"</string>
     <string name="error_nan" msgid="5674077944929888710">"Nav skaitlis"</string>
     <string name="error_syntax" msgid="4786987111228645602">"Kļūd. izteiksme"</string>
     <string name="error_aborted" msgid="3402238176316342537">"Pārtraukts"</string>
