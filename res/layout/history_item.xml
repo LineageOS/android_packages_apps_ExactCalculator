@@ -42,7 +42,6 @@
         android:paddingStart="@dimen/result_padding_start"
         android:paddingEnd="@dimen/result_padding_end"
         android:text="@string/title_current_expression"
-        android:textColor="?attr/colorAccent"
         android:textSize="14dp" />
 
     <com.android.calculator2.CalculatorScrollView
