@@ -89,8 +89,11 @@
         <item name="android:textSize">16dip</item>
     </style>
 
-    <style name="PadButtonStyle.Numeric.Equals">
-        <item name="android:visibility">visible</item>
+    <style name="PadButtonStyle.Numeric.Image">
+        <item name="iconTint">@color/pad_button_text_color</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconSize">32dp</item>
     </style>
 
     <style name="PadButtonStyle.Operator">
@@ -100,12 +103,6 @@
     <style name="PadButtonStyle.Operator.Text">
         <item name="textAllCaps">true</item>
         <item name="android:textSize">12dip</item>
-    </style>
-
-    <style name="PadButtonStyle.Operator.Image">
-        <item name="iconTint">@color/pad_button_text_color</item>
-        <item name="iconGravity">textStart</item>
-        <item name="iconSize">32dp</item>
     </style>
 
     <style name="PadLayoutStyle">
