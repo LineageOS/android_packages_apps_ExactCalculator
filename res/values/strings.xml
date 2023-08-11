@@ -25,6 +25,8 @@
     <!-- Constant for pi (i.e. "3.1415…"). [CHAR_LIMIT=1] -->
     <string name="const_pi" translatable="false">π</string>
 
+    <!-- Parenthesis (e.g. "log(", "2 × (3 - 1)". [CHAR_LIMIT=1] -->
+    <string name="paren" translatable="false">( )</string>
     <!-- Left parenthesis (e.g. "log(", "2 × (3 - 1)". [CHAR_LIMIT=1] -->
     <string name="lparen" translatable="false">(</string>
     <!-- Right parenthesis (e.g. "log(2)", "(3 - 1) × 2". [CHAR_LIMIT=1] -->
@@ -151,6 +153,8 @@
     <!-- Content description for '.' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_dec_point">point</string>
 
+    <!-- Content description for '( )' button. [CHAR_LIMIT=NONE] -->
+    <string name="desc_paren">parenthesis</string>
     <!-- Content description for '(' button. [CHAR_LIMIT=NONE] -->
     <string name="desc_lparen">left parenthesis</string>
     <!-- Content description for ')' button. [CHAR_LIMIT=NONE] -->
