@@ -31,9 +31,9 @@
         android:layout_height="0dip"
         android:layout_weight="1">
 
+        <include layout="@layout/pad_advanced" />
         <include layout="@layout/pad_numeric" />
         <include layout="@layout/pad_operator" />
-        <include layout="@layout/pad_advanced" />
 
     </LinearLayout>
 
