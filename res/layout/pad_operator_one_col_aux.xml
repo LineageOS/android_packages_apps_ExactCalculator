@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2023 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<androidx.gridlayout.widget.GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/pad_operator_aux"
+    style="@style/PadLayoutStyle.OperatorAux"
+    android:background="@color/pad_operator_background_color"
+    app:rowCount="1"
+    app:columnCount="4">
+
+    <com.android.calculator2.HapticButton
+        android:id="@+id/clr"
+        style="@style/PadButtonStyle.Operator.Text"
+        android:contentDescription="@string/desc_clr"
+        android:text="@string/clr"
+        app:layout_row="0"
+        app:layout_column="0" />
+
+    <com.android.calculator2.HapticButton
+        android:id="@+id/paren"
+        style="@style/PadButtonStyle.Operator"
+        android:contentDescription="@string/desc_paren"
+        android:text="@string/paren"
+        app:layout_row="0"
+        app:layout_column="1" />
+
+    <com.android.calculator2.HapticButton
+        android:id="@+id/lparen"
+        style="@style/PadButtonStyle.Operator"
+        android:contentDescription="@string/desc_lparen"
+        android:text="@string/lparen"
+        android:visibility="gone"
+        app:layout_row="0"
+        app:layout_column="1" />
+
+    <com.android.calculator2.HapticButton
+        android:id="@+id/rparen"
+        style="@style/PadButtonStyle.Operator"
+        android:contentDescription="@string/desc_rparen"
+        android:text="@string/rparen"
+        android:visibility="gone"
+        app:layout_row="0"
+        app:layout_column="1" />
+
+    <com.android.calculator2.HapticButton
+        android:id="@+id/op_pct"
+        style="@style/PadButtonStyle.Operator"
+        android:contentDescription="@string/desc_op_pct"
+        android:text="@string/op_pct"
+        app:layout_row="0"
+        app:layout_column="2" />
+
+    <com.android.calculator2.HapticButton
+        android:id="@+id/op_div"
+        style="@style/PadButtonStyle.Operator"
+        android:contentDescription="@string/desc_op_div"
+        android:text="@string/op_div"
+        app:layout_row="0"
+        app:layout_column="3" />
+
+</androidx.gridlayout.widget.GridLayout>
