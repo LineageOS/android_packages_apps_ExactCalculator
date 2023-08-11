@@ -102,10 +102,10 @@
         app:layout_column="1" />
 
     <com.android.calculator2.HapticButton
-        android:id="@+id/eq"
-        style="@style/PadButtonStyle.Numeric.Equals"
-        android:contentDescription="@string/desc_eq"
-        android:text="@string/eq"
+        android:id="@+id/del"
+        style="@style/PadButtonStyle.Numeric.Image"
+        android:contentDescription="@string/desc_del"
+        app:icon="@drawable/ic_del"
         app:layout_row="3"
         app:layout_column="2" />
 

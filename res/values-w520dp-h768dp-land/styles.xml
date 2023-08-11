@@ -31,10 +31,6 @@
         <item name="android:textSize">38dip</item>
     </style>
 
-    <style name="PadButtonStyle.Numeric.Equals">
-        <item name="android:visibility">gone</item>
-    </style>
-
     <style name="PadButtonStyle.Operator">
         <item name="android:textSize">36dip</item>
     </style>

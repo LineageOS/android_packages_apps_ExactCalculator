@@ -489,15 +489,6 @@ public class Calculator extends AppCompatActivity
             }
             mCurrentState = state;
 
-            if (mCurrentState == CalculatorState.RESULT) {
-                // No longer do this for ERROR; allow mistakes to be corrected.
-                mDeleteButton.setVisibility(View.GONE);
-                mClearButton.setVisibility(View.VISIBLE);
-            } else {
-                mDeleteButton.setVisibility(View.VISIBLE);
-                mClearButton.setVisibility(View.GONE);
-            }
-
             if (mIsOneLine) {
                 if (mCurrentState == CalculatorState.RESULT
                         || mCurrentState == CalculatorState.EVALUATE
