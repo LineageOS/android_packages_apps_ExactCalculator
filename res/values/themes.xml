@@ -17,19 +17,15 @@
 
 <resources>
 
-    <style name="Theme" parent="@android:style/Theme.Material.Light">
-        <item name="colorPrimary">@color/calculator_primary_color</item>
-        <item name="colorAccent">@color/calculator_accent_color</item>
+    <style name="Theme" parent="Theme.Material3.DayNight">
         <item name="android:statusBarColor">@color/calculator_statusbar_color</item>
+        <item name="android:windowLightStatusBar">?isLightTheme</item>
         <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
         <item name="android:navigationBarColor">@color/navigationBar_color</item>
-        <item name="android:navigationBarDividerColor">@color/navigationBar_divider</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightNavigationBar">?isLightTheme</item>
     </style>
 
     <style name="Theme.Calculator">
-        <item name="windowActionBar">false</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="windowNoTitle">true</item>
