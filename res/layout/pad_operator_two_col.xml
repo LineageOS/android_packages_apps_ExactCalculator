@@ -33,19 +33,10 @@
         app:layout_column="0" />
 
     <com.android.calculator2.HapticButton
-        android:id="@+id/del"
-        style="@style/PadButtonStyle.Operator.Image"
-        android:contentDescription="@string/desc_del"
-        app:icon="@drawable/ic_del"
-        app:layout_row="0"
-        app:layout_column="1" />
-
-    <com.android.calculator2.HapticButton
         android:id="@+id/clr"
         style="@style/PadButtonStyle.Operator.Text"
         android:contentDescription="@string/desc_clr"
         android:text="@string/clr"
-        android:visibility="gone"
         app:layout_row="0"
         app:layout_column="1" />
 
