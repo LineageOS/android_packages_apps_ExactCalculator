@@ -851,6 +851,20 @@ public class Calculator extends AppCompatActivity
                 evaluateInstantIfNecessary();
             }
             return;
+        } else if (id == R.id.paren) {
+            String expr = mEvaluator.getExprAsString(0);
+            int openCount = expr.length() - expr.replace(KeyMaps.toString(this,R.id.lparen),
+                    "").length();
+            int closeCount = expr.length() - expr.replace(KeyMaps.toString(this,R.id.rparen),
+                    "").length();
+
+            if (openCount > closeCount && !expr.endsWith(KeyMaps.toString(this,
+                    R.id.lparen))) {
+                addChars(KeyMaps.toString(this,R.id.rparen), true);
+            }
+            else {
+                addChars(KeyMaps.toString(this,R.id.lparen), true);
+            }
         } else {
             cancelIfEvaluating(false);
             if (haveUnprocessed()) {
