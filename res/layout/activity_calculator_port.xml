@@ -28,11 +28,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="500">
+        android:orientation="vertical"
+        android:layout_weight="250">
 
-        <include layout="@layout/pad_numeric"/>
-        <include layout="@layout/pad_operator" />
+        <include layout="@layout/pad_operator_aux" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"
+            android:layout_weight="750">
 
+            <include layout="@layout/pad_numeric"/>
+            <include layout="@layout/pad_operator" />
+        </LinearLayout>
+      </LinearLayout>
 </LinearLayout>
