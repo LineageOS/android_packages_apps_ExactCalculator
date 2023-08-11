@@ -26,13 +26,10 @@
         android:id="@+id/history_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
         android:elevation="4dip"
         android:minHeight="?attr/actionBarSize"
         android:navigationContentDescription="@string/desc_navigate_up"
         app:navigationIcon="?attr/homeAsUpIndicator"
-        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:theme="@style/Theme.Toolbar"
         app:title="@string/title_history" />
 
     <androidx.recyclerview.widget.RecyclerView
