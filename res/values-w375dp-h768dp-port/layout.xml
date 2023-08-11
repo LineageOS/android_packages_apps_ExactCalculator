@@ -18,5 +18,6 @@
 <resources>
     <item name="display" type="layout">@layout/display_two_line</item>
     <item name="pad_advanced" type="layout">@layout/pad_advanced_4x3</item>
-    <item name="pad_operator" type="layout">@layout/pad_operator_two_col</item>
+    <item name="pad_operator_aux" type="layout">@layout/pad_operator_one_col_aux</item>
+    <item name="pad_operator" type="layout">@layout/pad_operator_one_col</item>
 </resources>
