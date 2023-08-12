@@ -507,14 +507,11 @@ public class Calculator extends AppCompatActivity
                         ContextCompat.getColor(this, R.color.calculator_error_color);
                 mFormulaText.setTextColor(errorColor);
                 mResultText.setTextColor(errorColor);
-                getWindow().setStatusBarColor(errorColor);
             } else if (mCurrentState != CalculatorState.RESULT) {
                 mFormulaText.setTextColor(
                         ContextCompat.getColor(this, R.color.display_formula_text_color));
                 mResultText.setTextColor(
                         ContextCompat.getColor(this, R.color.display_result_text_color));
-                getWindow().setStatusBarColor(
-                        ContextCompat.getColor(this, R.color.calculator_statusbar_color));
             }
 
             invalidateOptionsMenu();
