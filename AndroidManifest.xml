@@ -20,6 +20,7 @@
     package="com.android.calculator2">
 
     <application
+        android:name=".CalculatorApplication"
         android:allowBackup="false"
         android:appCategory="productivity"
         android:icon="@mipmap/ic_launcher"
