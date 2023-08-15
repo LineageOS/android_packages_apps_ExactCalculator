@@ -17,52 +17,13 @@
 
 <resources>
 
-    <!-- Default accent color. -->
-    <color name="calculator_accent_color">#167c80</color>
+    <!-- Display background -->
+    <color name="empty_history_color">@color/material_dynamic_neutral90</color>
+    <color name="display_background_color">@color/material_dynamic_neutral90</color>
 
-    <!-- Primary color (Color for the toolbars). -->
-    <color name="calculator_primary_color">#fafafa</color>
-
-    <!-- Status bar color. -->
-    <color name="calculator_statusbar_color">#f0f0f0</color>
-
-    <!-- Color to indicate an error has occured. -->
-    <color name="calculator_error_color">#d0422d</color>
-
-    <!-- Background color of the calculator display. -->
-    <color name="display_background_color">@color/calculator_primary_color</color>
-
-    <!-- Text color for the formula in the calculator display. -->
-    <color name="display_formula_text_color">#000000</color>
-
-    <!-- Text color for the result in the calculator display. -->
-    <color name="display_result_text_color">#6C000000</color>
-
-    <!-- Lighter color for exponent while scrolling. -->
-    <color name="display_result_exponent_text_color">#40000000</color>
-
-    <!-- Background color for the numeric pad. -->
-    <color name="pad_numeric_background_color">@color/calculator_primary_color</color>
-
-    <!-- Background color for the operator pad. -->
-    <color name="pad_operator_background_color">@color/calculator_statusbar_color</color>
-
-    <!-- Background color for the advanced pad. -->
-    <color name="pad_advanced_background_color">@color/calculator_accent_color</color>
-
-    <!-- Text color for a button in a pad. -->
-    <color name="pad_button_text_color">#333</color>
-
-    <!-- Text color for a button in the advanced pad. -->
-    <color name="pad_button_advanced_text_color">@android:color/white</color>
-
-    <!-- Ripple color when a button is pressed in a pad. -->
-    <color name="pad_button_ripple_color">#33000000</color>
-
-    <!-- Ripple color when a button is pressed in a pad. -->
-    <color name="pad_button_advanced_ripple_color">#1A000000</color>
-
-    <!-- Background color for empty history view. -->
-    <color name="empty_history_color">@color/calculator_primary_color</color>
+    <!-- Display text -->
+    <color name="display_formula_text_color">@color/material_dynamic_neutral20</color>
+    <color name="display_result_text_color">@color/material_dynamic_neutral40</color>
+    <color name="display_result_exponent_text_color">@color/material_dynamic_neutral40</color>
 
 </resources>

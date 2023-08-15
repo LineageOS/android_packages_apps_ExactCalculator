@@ -77,7 +77,6 @@
     </style>
 
     <style name="PadButtonStyle.Image">
-        <item name="iconTint">@color/pad_button_text_color</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">0dp</item>
         <item name="iconSize">32dp</item>
@@ -90,10 +89,6 @@
 
     <style name="PadButtonStyle.SmallText">
         <item name="android:textSize">22dip</item>
-    </style>
-
-    <style name="PadButtonStyle.SmallText.Background">
-        <item name="android:textColor">@color/pad_button_advanced_text_color</item>
     </style>
 
     <style name="PadLayoutStyle">
