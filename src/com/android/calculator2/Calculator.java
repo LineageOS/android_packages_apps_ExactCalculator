@@ -28,7 +28,6 @@ package com.android.calculator2;
 import static com.android.calculator2.CalculatorFormula.OnFormulaContextMenuClickListener;
 
 import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -38,7 +37,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -56,8 +54,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewAnimationUtils;
-import android.view.ViewGroupOverlay;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.HorizontalScrollView;
@@ -253,9 +249,6 @@ public class Calculator extends AppCompatActivity
     private HorizontalScrollView mFormulaContainer;
     private DragLayout mDragLayout;
 
-    private View mDeleteButton;
-    private View mClearButton;
-    private View mEqualButton;
     private View mMainCalculator;
 
     private TextView mInverseToggle;
@@ -264,7 +257,6 @@ public class Calculator extends AppCompatActivity
     private View[] mInvertibleButtons;
     private View[] mInverseButtons;
 
-    private View mCurrentButton;
     private Animator mCurrentAnimator;
 
     // Characters that were recently entered at the end of the display that have not yet
@@ -379,13 +371,7 @@ public class Calculator extends AppCompatActivity
         mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
         KeyMaps.setActivity(this);
 
-        mDeleteButton = findViewById(R.id.del);
-        mClearButton = findViewById(R.id.clr);
         final View numberPad = findViewById(R.id.pad_numeric);
-        mEqualButton = numberPad.findViewById(R.id.eq);
-        if (mEqualButton == null || mEqualButton.getVisibility() != View.VISIBLE) {
-            mEqualButton = findViewById(R.id.pad_operator).findViewById(R.id.eq);
-        }
         final TextView decimalPointButton = (TextView) numberPad.findViewById(R.id.dec_point);
         decimalPointButton.setText(getDecimalSeparator());
 
@@ -620,15 +606,12 @@ public class Calculator extends AppCompatActivity
             case KeyEvent.KEYCODE_NUMPAD_ENTER:
             case KeyEvent.KEYCODE_ENTER:
             case KeyEvent.KEYCODE_DPAD_CENTER:
-                mCurrentButton = mEqualButton;
                 onEquals();
                 return true;
             case KeyEvent.KEYCODE_DEL:
-                mCurrentButton = mDeleteButton;
                 onDelete();
                 return true;
             case KeyEvent.KEYCODE_CLEAR:
-                mCurrentButton = mClearButton;
                 onClear();
                 return true;
             default:
@@ -644,7 +627,6 @@ public class Calculator extends AppCompatActivity
                 }
                 char c = (char) raw;
                 if (c == '=') {
-                    mCurrentButton = mEqualButton;
                     onEquals();
                 } else {
                     addChars(String.valueOf(c), true);
@@ -796,7 +778,6 @@ public class Calculator extends AppCompatActivity
 
     public void onButtonClick(View view) {
         // Any animation is ended before we get here.
-        mCurrentButton = view;
         stopActionModeOrContextMenu();
 
         // See onKey above for the rationale behind some of the behavior below:
@@ -996,65 +977,11 @@ public class Calculator extends AppCompatActivity
         redisplayAfterFormulaChange();
     }
 
-    private void reveal(View sourceView, int colorRes, AnimatorListener listener) {
-        final ViewGroupOverlay groupOverlay =
-                (ViewGroupOverlay) getWindow().getDecorView().getOverlay();
-
-        final Rect displayRect = new Rect();
-        mDisplayView.getGlobalVisibleRect(displayRect);
-
-        // Make reveal cover the display and status bar.
-        final View revealView = new View(this);
-        revealView.setBottom(displayRect.bottom);
-        revealView.setLeft(displayRect.left);
-        revealView.setRight(displayRect.right);
-        revealView.setBackgroundColor(ContextCompat.getColor(this, colorRes));
-        groupOverlay.add(revealView);
-
-        final int[] clearLocation = new int[2];
-        sourceView.getLocationInWindow(clearLocation);
-        clearLocation[0] += sourceView.getWidth() / 2;
-        clearLocation[1] += sourceView.getHeight() / 2;
-
-        final int revealCenterX = clearLocation[0] - revealView.getLeft();
-        final int revealCenterY = clearLocation[1] - revealView.getTop();
-
-        final double x1_2 = Math.pow(revealView.getLeft() - revealCenterX, 2);
-        final double x2_2 = Math.pow(revealView.getRight() - revealCenterX, 2);
-        final double y_2 = Math.pow(revealView.getTop() - revealCenterY, 2);
-        final float revealRadius = (float) Math.max(Math.sqrt(x1_2 + y_2), Math.sqrt(x2_2 + y_2));
-
-        final Animator revealAnimator =
-                ViewAnimationUtils.createCircularReveal(revealView,
-                        revealCenterX, revealCenterY, 0.0f, revealRadius);
-        revealAnimator.setDuration(
-                getResources().getInteger(android.R.integer.config_longAnimTime));
-        revealAnimator.addListener(listener);
-
-        final Animator alphaAnimator = ObjectAnimator.ofFloat(revealView, View.ALPHA, 0.0f);
-        alphaAnimator.setDuration(
-                getResources().getInteger(android.R.integer.config_mediumAnimTime));
-
-        final AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(revealAnimator).before(alphaAnimator);
-        animatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                groupOverlay.remove(revealView);
-                mCurrentAnimator = null;
-            }
-        });
-
-        mCurrentAnimator = animatorSet;
-        animatorSet.start();
-    }
-
     private void announceClearedForAccessibility() {
         mResultText.announceForAccessibility(getResources().getString(R.string.cleared));
     }
 
-    public void onClearAnimationEnd() {
+    public void onClearEnd() {
          mUnprocessedChars = null;
          mResultText.clear();
          mEvaluator.clearMain();
@@ -1068,13 +995,8 @@ public class Calculator extends AppCompatActivity
         }
         cancelIfEvaluating(true);
         announceClearedForAccessibility();
-        reveal(mCurrentButton, R.color.calculator_primary_color, new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                onClearAnimationEnd();
-                showOrHideToolbar();
-            }
-        });
+        onClearEnd();
+        showOrHideToolbar();
     }
 
     // Evaluation encountered en error.  Display the error.
@@ -1086,14 +1008,8 @@ public class Calculator extends AppCompatActivity
         if (mCurrentState == CalculatorState.EVALUATE) {
             setState(CalculatorState.ANIMATE);
             mResultText.announceForAccessibility(getResources().getString(errorResourceId));
-            reveal(mCurrentButton, R.color.calculator_error_color,
-                    new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                           setState(CalculatorState.ERROR);
-                           mResultText.onError(index, errorResourceId);
-                        }
-                    });
+            setState(CalculatorState.ERROR);
+            mResultText.onError(index, errorResourceId);
         } else if (mCurrentState == CalculatorState.INIT
                 || mCurrentState == CalculatorState.INIT_FOR_RESULT /* very unlikely */) {
             setState(CalculatorState.ERROR);
@@ -1208,8 +1124,8 @@ public class Calculator extends AppCompatActivity
                 // handle expressions to which they refer?
                 mEvaluator.clearEverything();
                 // TODO: It's not clear what we should really do here. This is an initial hack.
-                // May want to make onClearAnimationEnd() private if/when we fix this.
-                onClearAnimationEnd();
+                // May want to make onClearEnd() private if/when we fix this.
+                onClearEnd();
                 mEvaluatorCallback.onMemoryStateChanged();
                 onBackPressed();
             } else if (Evaluator.TIMEOUT_DIALOG_TAG.equals(fragment.getTag())) {
@@ -1441,7 +1357,6 @@ public class Calculator extends AppCompatActivity
                 }
             }
             if (k != View.NO_ID) {
-                mCurrentButton = findViewById(k);
                 if (explicit) {
                     addExplicitKeyToExpr(k);
                 } else {
@@ -1456,7 +1371,6 @@ public class Calculator extends AppCompatActivity
             }
             int f = KeyMaps.funForString(moreChars, current);
             if (f != View.NO_ID) {
-                mCurrentButton = findViewById(f);
                 if (explicit) {
                     addExplicitKeyToExpr(f);
                 } else {
