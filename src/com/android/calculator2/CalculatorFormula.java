@@ -341,16 +341,15 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.memory_recall:
-                mOnContextMenuClickListener.onMemoryRecall();
-                return true;
-            case R.id.menu_paste:
-                paste();
-                return true;
-            default:
-                return false;
+        int itemId = item.getItemId();
+        if (itemId == R.id.memory_recall) {
+            mOnContextMenuClickListener.onMemoryRecall();
+            return true;
+        } else if (itemId == R.id.menu_paste) {
+            paste();
+            return true;
         }
+        return false;
     }
 
     @Override
