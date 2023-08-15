@@ -25,10 +25,11 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 /**
  * Display a message with a dismiss putton, and optionally a second button.
@@ -102,14 +103,10 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
         dialogFragment.show(manager, tag /* tag */);
     }
 
-    public AlertDialogFragment() {
-        setStyle(STYLE_NO_TITLE, android.R.attr.alertDialogTheme);
-    }
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Bundle args = getArguments() == null ? Bundle.EMPTY : getArguments();
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
 
         final LayoutInflater inflater = LayoutInflater.from(builder.getContext());
         final TextView messageView = (TextView) inflater.inflate(
