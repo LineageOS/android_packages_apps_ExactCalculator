@@ -102,6 +102,12 @@
         <item name="android:textSize">12dip</item>
     </style>
 
+    <style name="PadButtonStyle.Operator.Image">
+        <item name="iconTint">@color/pad_button_text_color</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconSize">32dp</item>
+    </style>
+
     <style name="PadLayoutStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
