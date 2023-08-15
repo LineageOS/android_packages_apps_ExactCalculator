@@ -24,11 +24,11 @@
     app:rowCount="5"
     app:columnCount="1">
 
-    <com.android.calculator2.HapticImageButton
+    <com.android.calculator2.HapticButton
         android:id="@+id/del"
-        style="@style/PadButtonStyle.Operator"
+        style="@style/PadButtonStyle.Operator.Image"
         android:contentDescription="@string/desc_del"
-        android:src="@drawable/ic_del"
+        app:icon="@drawable/ic_del"
         app:layout_row="0"
         app:layout_column="0" />
 
