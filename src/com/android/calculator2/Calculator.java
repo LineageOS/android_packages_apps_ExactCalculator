@@ -57,7 +57,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.motion.widget.MotionLayout;
@@ -125,10 +124,6 @@ public class Calculator extends AppCompatActivity
      */
     private static final String KEY_EVAL_STATE = NAME + "_eval_state";
     private static final String KEY_INVERSE_MODE = NAME + "_inverse_mode";
-    /**
-     * Associated value is an boolean holding the visibility state of the toolbar.
-     */
-    private static final String KEY_SHOW_TOOLBAR = NAME + "_show_toolbar";
 
     private final ViewTreeObserver.OnPreDrawListener mPreDrawListener =
             new ViewTreeObserver.OnPreDrawListener() {
@@ -222,7 +217,6 @@ public class Calculator extends AppCompatActivity
     private CalculatorState mCurrentState;
     private Evaluator mEvaluator;
 
-    private CalculatorDisplay mDisplayView;
     private TextView mModeView;
     private CalculatorFormula mFormulaText;
     private CalculatorResult mResultText;
@@ -289,11 +283,6 @@ public class Calculator extends AppCompatActivity
                 mEvaluator.clearMain();
             }
         }
-        if (savedInstanceState.getBoolean(KEY_SHOW_TOOLBAR, true)) {
-            showAndMaybeHideToolbar();
-        } else {
-            mDisplayView.hideToolbar();
-        }
         onInverseToggled(savedInstanceState.getBoolean(KEY_INVERSE_MODE));
         // TODO: We're currently not saving and restoring scroll position.
         //       We probably should.  Details may require care to deal with:
@@ -328,16 +317,7 @@ public class Calculator extends AppCompatActivity
         // Hide all default options in the ActionBar.
         getSupportActionBar().setDisplayOptions(0);
 
-        // Ensure the toolbar stays visible while the options menu is displayed.
-        getSupportActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
-            @Override
-            public void onMenuVisibilityChanged(boolean isVisible) {
-                mDisplayView.setForceToolbarVisible(isVisible);
-            }
-        });
-
         mMainCalculator = findViewById(R.id.main_calculator);
-        mDisplayView = (CalculatorDisplay) findViewById(R.id.display);
         mModeView = (TextView) findViewById(R.id.mode);
         mFormulaText = (CalculatorFormula) findViewById(R.id.formula);
         mResultText = (CalculatorResult) findViewById(R.id.result);
@@ -409,7 +389,6 @@ public class Calculator extends AppCompatActivity
         } else {
             mCurrentState = CalculatorState.INPUT;
             mEvaluator.clearMain();
-            showAndMaybeHideToolbar();
             onInverseToggled(false);
         }
         restoreDisplay();
@@ -418,9 +397,6 @@ public class Calculator extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (mDisplayView.isToolbarVisible()) {
-            showAndMaybeHideToolbar();
-        }
         // If HistoryFragment is showing, hide the main Calculator elements from accessibility.
         // This is because Talkback does not use visibility as a cue for RelativeLayout elements,
         // and RelativeLayout is the base class of DragLayout.
@@ -448,7 +424,6 @@ public class Calculator extends AppCompatActivity
         }
         outState.putByteArray(KEY_EVAL_STATE, byteArrayStream.toByteArray());
         outState.putBoolean(KEY_INVERSE_MODE, mInverseToggle.isSelected());
-        outState.putBoolean(KEY_SHOW_TOOLBAR, mDisplayView.isToolbarVisible());
         // We must wait for asynchronous writes to complete, since outState may contain
         // references to expressions being written.
         mEvaluator.waitForWrites();
@@ -728,29 +703,6 @@ public class Calculator extends AppCompatActivity
         }
     }
 
-    /**
-     * Show the toolbar.
-     * Automatically hide it again if it's not relevant to current formula.
-     */
-    private void showAndMaybeHideToolbar() {
-        final boolean shouldBeVisible =
-                mCurrentState == CalculatorState.INPUT && mEvaluator.hasTrigFuncs();
-        mDisplayView.showToolbar(!shouldBeVisible);
-    }
-
-    /**
-     * Display or hide the toolbar depending on calculator state.
-     */
-    private void showOrHideToolbar() {
-        final boolean shouldBeVisible =
-                mCurrentState == CalculatorState.INPUT && mEvaluator.hasTrigFuncs();
-        if (shouldBeVisible) {
-            mDisplayView.showToolbar(false);
-        } else {
-            mDisplayView.hideToolbar();
-        }
-    }
-
     public void onButtonClick(View view) {
         // Any animation is ended before we get here.
         stopActionModeOrContextMenu();
@@ -785,8 +737,6 @@ public class Calculator extends AppCompatActivity
             // In input mode, we reinterpret already entered trig functions.
             mEvaluator.setDegreeMode(mode);
             onModeChanged(mode);
-            // Show the toolbar to highlight the mode change.
-            showAndMaybeHideToolbar();
             setState(CalculatorState.INPUT);
             mResultText.clear();
             if (!haveUnprocessed()) {
@@ -816,7 +766,6 @@ public class Calculator extends AppCompatActivity
                 redisplayAfterFormulaChange();
             }
         }
-        showOrHideToolbar();
     }
 
     void redisplayFormula() {
@@ -968,7 +917,6 @@ public class Calculator extends AppCompatActivity
         cancelIfEvaluating(true);
         announceClearedForAccessibility();
         onClearEnd();
-        showOrHideToolbar();
     }
 
     // Evaluation encountered en error.  Display the error.
@@ -1279,12 +1227,10 @@ public class Calculator extends AppCompatActivity
             // There are characters left, but we can't convert them to button presses.
             mUnprocessedChars = moreChars.substring(current);
             redisplayAfterFormulaChange();
-            showOrHideToolbar();
             return;
         }
         mUnprocessedChars = null;
         redisplayAfterFormulaChange();
-        showOrHideToolbar();
     }
 
     private void clearIfNotInputState() {
