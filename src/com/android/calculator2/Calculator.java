@@ -489,8 +489,8 @@ public class Calculator extends AppCompatActivity
             }
 
             if (mCurrentState == CalculatorState.ERROR) {
-                final int errorColor =
-                        ContextCompat.getColor(this, R.color.calculator_error_color);
+                final int errorColor = ContextCompat.getColor(this,
+                        com.google.android.material.R.color.design_default_color_error);
                 mFormulaText.setTextColor(errorColor);
                 mResultText.setTextColor(errorColor);
             } else if (mCurrentState != CalculatorState.RESULT) {
