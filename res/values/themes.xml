@@ -18,10 +18,10 @@
 <resources>
 
     <style name="Theme" parent="Theme.Material3.DayNight">
-        <item name="android:statusBarColor">@color/calculator_statusbar_color</item>
+        <item name="android:statusBarColor">@color/display_background_color</item>
         <item name="android:windowLightStatusBar">?isLightTheme</item>
         <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
-        <item name="android:navigationBarColor">@color/navigationBar_color</item>
+        <item name="android:navigationBarColor">?colorSurface</item>
         <item name="android:windowLightNavigationBar">?isLightTheme</item>
     </style>
 
@@ -34,6 +34,24 @@
 
     <style name="Theme.Licenses">
         <item name="title">@string/menu_licenses</item>
+    </style>
+
+    <style name="Theme.Button" parent="ThemeOverlay.Material3.Button.TextButton">
+    </style>
+
+    <style name="Theme.Button.Advanced">
+        <item name="colorContainer">?colorSurface</item>
+        <item name="colorOnContainer">?colorOnSurface</item>
+    </style>
+
+    <style name="Theme.Button.Numeric">
+        <item name="colorContainer">?colorSurfaceContainer</item>
+        <item name="colorOnContainer">?colorOnSurface</item>
+    </style>
+
+    <style name="Theme.Button.Operator">
+        <item name="colorContainer">?colorSecondaryContainer</item>
+        <item name="colorOnContainer">?colorOnSecondaryContainer</item>
     </style>
 
 </resources>
