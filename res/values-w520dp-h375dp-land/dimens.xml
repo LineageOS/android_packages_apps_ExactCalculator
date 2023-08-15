@@ -22,7 +22,7 @@
     <dimen name="formula_padding_start">36dip</dimen>
     <dimen name="formula_padding_end">36dip</dimen>
     <dimen name="formula_min_textsize">32dip</dimen>
-    <dimen name="formula_max_textsize">32dip</dimen>
+    <dimen name="formula_max_textsize">48dip</dimen>
     <dimen name="formula_step_textsize">8dip</dimen>
 
     <!-- Dimens for display result. -->
