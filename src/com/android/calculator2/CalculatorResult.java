@@ -1148,28 +1148,27 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.memory_add:
-                onMemoryAdd();
-                return true;
-            case R.id.memory_subtract:
-                onMemorySubtract();
-                return true;
-            case R.id.memory_store:
-                onMemoryStore();
-                return true;
-            case R.id.menu_copy:
-                if (mEvaluator.evaluationInProgress(mIndex)) {
-                    // Refuse to copy placeholder characters.
-                    return false;
-                } else {
-                    copyContent();
-                    unhighlightResult();
-                    return true;
-                }
-            default:
+        int itemId = item.getItemId();
+        if (itemId == R.id.memory_add) {
+            onMemoryAdd();
+            return true;
+        } else if (itemId == R.id.memory_subtract) {
+            onMemorySubtract();
+            return true;
+        } else if (itemId == R.id.memory_store) {
+            onMemoryStore();
+            return true;
+        } else if (itemId == R.id.menu_copy) {
+            if (mEvaluator.evaluationInProgress(mIndex)) {
+                // Refuse to copy placeholder characters.
                 return false;
+            } else {
+                copyContent();
+                unhighlightResult();
+                return true;
+            }
         }
+        return false;
     }
 
     @Override

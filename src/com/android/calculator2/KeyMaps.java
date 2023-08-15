@@ -40,78 +40,74 @@ public class KeyMaps {
      * Pure function.
      */
     public static String toString(Context context, int id) {
-        switch(id) {
-            case R.id.const_pi:
-                return context.getString(R.string.const_pi);
-            case R.id.const_e:
-                return context.getString(R.string.const_e);
-            case R.id.op_sqrt:
-                return context.getString(R.string.op_sqrt);
-            case R.id.op_fact:
-                return context.getString(R.string.op_fact);
-            case R.id.op_pct:
-                return context.getString(R.string.op_pct);
-            case R.id.fun_sin:
-                return context.getString(R.string.fun_sin) + context.getString(R.string.lparen);
-            case R.id.fun_cos:
-                return context.getString(R.string.fun_cos) + context.getString(R.string.lparen);
-            case R.id.fun_tan:
-                return context.getString(R.string.fun_tan) + context.getString(R.string.lparen);
-            case R.id.fun_arcsin:
-                return context.getString(R.string.fun_arcsin) + context.getString(R.string.lparen);
-            case R.id.fun_arccos:
-                return context.getString(R.string.fun_arccos) + context.getString(R.string.lparen);
-            case R.id.fun_arctan:
-                return context.getString(R.string.fun_arctan) + context.getString(R.string.lparen);
-            case R.id.fun_ln:
-                return context.getString(R.string.fun_ln) + context.getString(R.string.lparen);
-            case R.id.fun_log:
-                return context.getString(R.string.fun_log) + context.getString(R.string.lparen);
-            case R.id.fun_exp:
-                // Button label doesn't work.
-                return context.getString(R.string.exponential) + context.getString(R.string.lparen);
-            case R.id.lparen:
-                return context.getString(R.string.lparen);
-            case R.id.rparen:
-                return context.getString(R.string.rparen);
-            case R.id.op_pow:
-                return context.getString(R.string.op_pow);
-            case R.id.op_mul:
-                return context.getString(R.string.op_mul);
-            case R.id.op_div:
-                return context.getString(R.string.op_div);
-            case R.id.op_add:
-                return context.getString(R.string.op_add);
-            case R.id.op_sub:
-                return context.getString(R.string.op_sub);
-            case R.id.op_sqr:
-                // Button label doesn't work.
-                return context.getString(R.string.squared);
-            case R.id.dec_point:
-                return context.getString(R.string.dec_point);
-            case R.id.digit_0:
-                return context.getString(R.string.digit_0);
-            case R.id.digit_1:
-                return context.getString(R.string.digit_1);
-            case R.id.digit_2:
-                return context.getString(R.string.digit_2);
-            case R.id.digit_3:
-                return context.getString(R.string.digit_3);
-            case R.id.digit_4:
-                return context.getString(R.string.digit_4);
-            case R.id.digit_5:
-                return context.getString(R.string.digit_5);
-            case R.id.digit_6:
-                return context.getString(R.string.digit_6);
-            case R.id.digit_7:
-                return context.getString(R.string.digit_7);
-            case R.id.digit_8:
-                return context.getString(R.string.digit_8);
-            case R.id.digit_9:
-                return context.getString(R.string.digit_9);
-            default:
-                return "";
+        if (id == R.id.const_pi) {
+            return context.getString(R.string.const_pi);
+        } else if (id == R.id.const_e) {
+            return context.getString(R.string.const_e);
+        } else if (id == R.id.op_sqrt) {
+            return context.getString(R.string.op_sqrt);
+        } else if (id == R.id.op_fact) {
+            return context.getString(R.string.op_fact);
+        } else if (id == R.id.op_pct) {
+            return context.getString(R.string.op_pct);
+        } else if (id == R.id.fun_sin) {
+            return context.getString(R.string.fun_sin) + context.getString(R.string.lparen);
+        } else if (id == R.id.fun_cos) {
+            return context.getString(R.string.fun_cos) + context.getString(R.string.lparen);
+        } else if (id == R.id.fun_tan) {
+            return context.getString(R.string.fun_tan) + context.getString(R.string.lparen);
+        } else if (id == R.id.fun_arcsin) {
+            return context.getString(R.string.fun_arcsin) + context.getString(R.string.lparen);
+        } else if (id == R.id.fun_arccos) {
+            return context.getString(R.string.fun_arccos) + context.getString(R.string.lparen);
+        } else if (id == R.id.fun_arctan) {
+            return context.getString(R.string.fun_arctan) + context.getString(R.string.lparen);
+        } else if (id == R.id.fun_ln) {
+            return context.getString(R.string.fun_ln) + context.getString(R.string.lparen);
+        } else if (id == R.id.fun_log) {
+            return context.getString(R.string.fun_log) + context.getString(R.string.lparen);
+        } else if (id == R.id.fun_exp) {// Button label doesn't work.
+            return context.getString(R.string.exponential) + context.getString(R.string.lparen);
+        } else if (id == R.id.lparen) {
+            return context.getString(R.string.lparen);
+        } else if (id == R.id.rparen) {
+            return context.getString(R.string.rparen);
+        } else if (id == R.id.op_pow) {
+            return context.getString(R.string.op_pow);
+        } else if (id == R.id.op_mul) {
+            return context.getString(R.string.op_mul);
+        } else if (id == R.id.op_div) {
+            return context.getString(R.string.op_div);
+        } else if (id == R.id.op_add) {
+            return context.getString(R.string.op_add);
+        } else if (id == R.id.op_sub) {
+            return context.getString(R.string.op_sub);
+        } else if (id == R.id.op_sqr) {// Button label doesn't work.
+            return context.getString(R.string.squared);
+        } else if (id == R.id.dec_point) {
+            return context.getString(R.string.dec_point);
+        } else if (id == R.id.digit_0) {
+            return context.getString(R.string.digit_0);
+        } else if (id == R.id.digit_1) {
+            return context.getString(R.string.digit_1);
+        } else if (id == R.id.digit_2) {
+            return context.getString(R.string.digit_2);
+        } else if (id == R.id.digit_3) {
+            return context.getString(R.string.digit_3);
+        } else if (id == R.id.digit_4) {
+            return context.getString(R.string.digit_4);
+        } else if (id == R.id.digit_5) {
+            return context.getString(R.string.digit_5);
+        } else if (id == R.id.digit_6) {
+            return context.getString(R.string.digit_6);
+        } else if (id == R.id.digit_7) {
+            return context.getString(R.string.digit_7);
+        } else if (id == R.id.digit_8) {
+            return context.getString(R.string.digit_8);
+        } else if (id == R.id.digit_9) {
+            return context.getString(R.string.digit_9);
         }
+        return "";
     }
 
     /**
@@ -122,75 +118,52 @@ public class KeyMaps {
     public static byte toByte(int id) {
         char result;
         // We only use characters with single-byte UTF8 encodings in the range 0x20-0x7F.
-        switch(id) {
-            case R.id.const_pi:
-                result = 'p';
-                break;
-            case R.id.const_e:
-                result = 'e';
-                break;
-            case R.id.op_sqrt:
-                result = 'r';
-                break;
-            case R.id.op_fact:
-                result = '!';
-                break;
-            case R.id.op_pct:
-                result = '%';
-                break;
-            case R.id.fun_sin:
-                result = 's';
-                break;
-            case R.id.fun_cos:
-                result = 'c';
-                break;
-            case R.id.fun_tan:
-                result = 't';
-                break;
-            case R.id.fun_arcsin:
-                result = 'S';
-                break;
-            case R.id.fun_arccos:
-                result = 'C';
-                break;
-            case R.id.fun_arctan:
-                result = 'T';
-                break;
-            case R.id.fun_ln:
-                result = 'l';
-                break;
-            case R.id.fun_log:
-                result = 'L';
-                break;
-            case R.id.fun_exp:
-                result = 'E';
-                break;
-            case R.id.lparen:
-                result = '(';
-                break;
-            case R.id.rparen:
-                result = ')';
-                break;
-            case R.id.op_pow:
-                result = '^';
-                break;
-            case R.id.op_mul:
-                result = '*';
-                break;
-            case R.id.op_div:
-                result = '/';
-                break;
-            case R.id.op_add:
-                result = '+';
-                break;
-            case R.id.op_sub:
-                result = '-';
-                break;
-            case R.id.op_sqr:
-                result = '2';
-                break;
-            default:
-                throw new AssertionError("Unexpected key id");
+        if (id == R.id.const_pi) {
+            result = 'p';
+        } else if (id == R.id.const_e) {
+            result = 'e';
+        } else if (id == R.id.op_sqrt) {
+            result = 'r';
+        } else if (id == R.id.op_fact) {
+            result = '!';
+        } else if (id == R.id.op_pct) {
+            result = '%';
+        } else if (id == R.id.fun_sin) {
+            result = 's';
+        } else if (id == R.id.fun_cos) {
+            result = 'c';
+        } else if (id == R.id.fun_tan) {
+            result = 't';
+        } else if (id == R.id.fun_arcsin) {
+            result = 'S';
+        } else if (id == R.id.fun_arccos) {
+            result = 'C';
+        } else if (id == R.id.fun_arctan) {
+            result = 'T';
+        } else if (id == R.id.fun_ln) {
+            result = 'l';
+        } else if (id == R.id.fun_log) {
+            result = 'L';
+        } else if (id == R.id.fun_exp) {
+            result = 'E';
+        } else if (id == R.id.lparen) {
+            result = '(';
+        } else if (id == R.id.rparen) {
+            result = ')';
+        } else if (id == R.id.op_pow) {
+            result = '^';
+        } else if (id == R.id.op_mul) {
+            result = '*';
+        } else if (id == R.id.op_div) {
+            result = '/';
+        } else if (id == R.id.op_add) {
+            result = '+';
+        } else if (id == R.id.op_sub) {
+            result = '-';
+        } else if (id == R.id.op_sqr) {
+            result = '2';
+        } else {
+            throw new AssertionError("Unexpected key id");
         }
         return (byte)result;
     }
@@ -258,47 +231,45 @@ public class KeyMaps {
      * Pure function.
      */
     public static String toDescriptiveString(Context context, int id) {
-        switch(id) {
-            case R.id.op_fact:
-                return context.getString(R.string.desc_op_fact);
-            case R.id.fun_sin:
-                return context.getString(R.string.desc_fun_sin)
-                        + " " + context.getString(R.string.desc_lparen);
-            case R.id.fun_cos:
-                return context.getString(R.string.desc_fun_cos)
-                        + " " + context.getString(R.string.desc_lparen);
-            case R.id.fun_tan:
-                return context.getString(R.string.desc_fun_tan)
-                        + " " + context.getString(R.string.desc_lparen);
-            case R.id.fun_arcsin:
-                return context.getString(R.string.desc_fun_arcsin)
-                        + " " + context.getString(R.string.desc_lparen);
-            case R.id.fun_arccos:
-                return context.getString(R.string.desc_fun_arccos)
-                        + " " + context.getString(R.string.desc_lparen);
-            case R.id.fun_arctan:
-                return context.getString(R.string.desc_fun_arctan)
-                        + " " + context.getString(R.string.desc_lparen);
-            case R.id.fun_ln:
-                return context.getString(R.string.desc_fun_ln)
-                        + " " + context.getString(R.string.desc_lparen);
-            case R.id.fun_log:
-                return context.getString(R.string.desc_fun_log)
-                        + " " + context.getString(R.string.desc_lparen);
-            case R.id.fun_exp:
-                return context.getString(R.string.desc_fun_exp)
-                        + " " + context.getString(R.string.desc_lparen);
-            case R.id.lparen:
-                return context.getString(R.string.desc_lparen);
-            case R.id.rparen:
-                return context.getString(R.string.desc_rparen);
-            case R.id.op_pow:
-                return context.getString(R.string.desc_op_pow);
-            case R.id.dec_point:
-                return context.getString(R.string.desc_dec_point);
-            default:
-                return null;
+        if (id == R.id.op_fact) {
+            return context.getString(R.string.desc_op_fact);
+        } else if (id == R.id.fun_sin) {
+            return context.getString(R.string.desc_fun_sin)
+                    + " " + context.getString(R.string.desc_lparen);
+        } else if (id == R.id.fun_cos) {
+            return context.getString(R.string.desc_fun_cos)
+                    + " " + context.getString(R.string.desc_lparen);
+        } else if (id == R.id.fun_tan) {
+            return context.getString(R.string.desc_fun_tan)
+                    + " " + context.getString(R.string.desc_lparen);
+        } else if (id == R.id.fun_arcsin) {
+            return context.getString(R.string.desc_fun_arcsin)
+                    + " " + context.getString(R.string.desc_lparen);
+        } else if (id == R.id.fun_arccos) {
+            return context.getString(R.string.desc_fun_arccos)
+                    + " " + context.getString(R.string.desc_lparen);
+        } else if (id == R.id.fun_arctan) {
+            return context.getString(R.string.desc_fun_arctan)
+                    + " " + context.getString(R.string.desc_lparen);
+        } else if (id == R.id.fun_ln) {
+            return context.getString(R.string.desc_fun_ln)
+                    + " " + context.getString(R.string.desc_lparen);
+        } else if (id == R.id.fun_log) {
+            return context.getString(R.string.desc_fun_log)
+                    + " " + context.getString(R.string.desc_lparen);
+        } else if (id == R.id.fun_exp) {
+            return context.getString(R.string.desc_fun_exp)
+                    + " " + context.getString(R.string.desc_lparen);
+        } else if (id == R.id.lparen) {
+            return context.getString(R.string.desc_lparen);
+        } else if (id == R.id.rparen) {
+            return context.getString(R.string.desc_rparen);
+        } else if (id == R.id.op_pow) {
+            return context.getString(R.string.desc_op_pow);
+        } else if (id == R.id.dec_point) {
+            return context.getString(R.string.desc_dec_point);
         }
+        return null;
     }
 
     /**
@@ -306,16 +277,11 @@ public class KeyMaps {
      * Pure function.
      */
     public static boolean isBinary(int id) {
-        switch(id) {
-            case R.id.op_pow:
-            case R.id.op_mul:
-            case R.id.op_div:
-            case R.id.op_add:
-            case R.id.op_sub:
-                return true;
-            default:
-                return false;
+        if (id == R.id.op_pow || id == R.id.op_mul || id == R.id.op_div || id == R.id.op_add
+                || id == R.id.op_sub) {
+            return true;
         }
+        return false;
     }
 
     /**
@@ -323,17 +289,11 @@ public class KeyMaps {
      * Pure function.
      */
     public static boolean isTrigFunc(int id) {
-        switch(id) {
-            case R.id.fun_sin:
-            case R.id.fun_cos:
-            case R.id.fun_tan:
-            case R.id.fun_arcsin:
-            case R.id.fun_arccos:
-            case R.id.fun_arctan:
-                return true;
-            default:
-                return false;
+        if (id == R.id.fun_sin || id == R.id.fun_cos || id == R.id.fun_tan || id == R.id.fun_arcsin
+                || id == R.id.fun_arccos || id == R.id.fun_arctan) {
+            return true;
         }
+        return false;
     }
 
     /**
@@ -344,14 +304,10 @@ public class KeyMaps {
         if (isTrigFunc(id)) {
             return true;
         }
-        switch(id) {
-            case R.id.fun_ln:
-            case R.id.fun_log:
-            case R.id.fun_exp:
-                return true;
-            default:
-                return false;
+        if (id == R.id.fun_ln || id == R.id.fun_log || id == R.id.fun_exp) {
+            return true;
         }
+        return false;
     }
 
     /**
@@ -359,27 +315,20 @@ public class KeyMaps {
      * Pure function.
      */
     public static boolean isPrefix(int id) {
-        switch(id) {
-            case R.id.op_sqrt:
-            case R.id.op_sub:
-                return true;
-            default:
-                return false;
+        if (id == R.id.op_sqrt || id == R.id.op_sub) {
+            return true;
         }
+        return false;
     }
 
     /**
      * Does a button id correspond to a suffix operator?
      */
     public static boolean isSuffix(int id) {
-        switch (id) {
-            case R.id.op_fact:
-            case R.id.op_pct:
-            case R.id.op_sqr:
-                return true;
-            default:
-                return false;
+        if (id == R.id.op_fact || id == R.id.op_pct || id == R.id.op_sqr) {
+            return true;
         }
+        return false;
     }
 
     public static final int NOT_DIGIT = 10;
@@ -393,30 +342,28 @@ public class KeyMaps {
      * Pure function.
      */
     public static int digVal(int id) {
-        switch (id) {
-        case R.id.digit_0:
+        if (id == R.id.digit_0) {
             return 0;
-        case R.id.digit_1:
+        } else if (id == R.id.digit_1) {
             return 1;
-        case R.id.digit_2:
+        } else if (id == R.id.digit_2) {
             return 2;
-        case R.id.digit_3:
+        } else if (id == R.id.digit_3) {
             return 3;
-        case R.id.digit_4:
+        } else if (id == R.id.digit_4) {
             return 4;
-        case R.id.digit_5:
+        } else if (id == R.id.digit_5) {
             return 5;
-        case R.id.digit_6:
+        } else if (id == R.id.digit_6) {
             return 6;
-        case R.id.digit_7:
+        } else if (id == R.id.digit_7) {
             return 7;
-        case R.id.digit_8:
+        } else if (id == R.id.digit_8) {
             return 8;
-        case R.id.digit_9:
+        } else if (id == R.id.digit_9) {
             return 9;
-        default:
-            return NOT_DIGIT;
         }
+        return NOT_DIGIT;
     }
 
     /**

@@ -736,86 +736,83 @@ class CalculatorExpr {
             return new EvalRet(i+1, res);
         }
         EvalRet argVal;
-        switch(((Operator)(t)).id) {
-        case R.id.const_pi:
-            return new EvalRet(i+1, UnifiedReal.PI);
-        case R.id.const_e:
-            return new EvalRet(i+1, UnifiedReal.E);
-        case R.id.op_sqrt:
-            // Seems to have highest precedence.
+        if (((Operator) (t)).id == R.id.const_pi) {
+            return new EvalRet(i + 1, UnifiedReal.PI);
+        } else if (((Operator) (t)).id == R.id.const_e) {
+            return new EvalRet(i + 1, UnifiedReal.E);
+        } else if (((Operator) (t)).id == R.id.op_sqrt) {// Seems to have highest precedence.
             // Does not add implicit paren.
             // Does seem to accept a leading minus.
-            if (isOperator(i+1, R.id.op_sub, ec)) {
-                argVal = evalUnary(i+2, ec);
+            if (isOperator(i + 1, R.id.op_sub, ec)) {
+                argVal = evalUnary(i + 2, ec);
                 return new EvalRet(argVal.pos, argVal.val.negate().sqrt());
             } else {
-                argVal = evalUnary(i+1, ec);
+                argVal = evalUnary(i + 1, ec);
                 return new EvalRet(argVal.pos, argVal.val.sqrt());
             }
-        case R.id.lparen:
-            argVal = evalExpr(i+1, ec);
+        } else if (((Operator) (t)).id == R.id.lparen) {
+            argVal = evalExpr(i + 1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
             return new EvalRet(argVal.pos, argVal.val);
-        case R.id.fun_sin:
-            argVal = evalExpr(i+1, ec);
+        } else if (((Operator) (t)).id == R.id.fun_sin) {
+            argVal = evalExpr(i + 1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
             return new EvalRet(argVal.pos, toRadians(argVal.val, ec).sin());
-        case R.id.fun_cos:
-            argVal = evalExpr(i+1, ec);
+        } else if (((Operator) (t)).id == R.id.fun_cos) {
+            argVal = evalExpr(i + 1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            return new EvalRet(argVal.pos, toRadians(argVal.val,ec).cos());
-        case R.id.fun_tan:
-            argVal = evalExpr(i+1, ec);
+            return new EvalRet(argVal.pos, toRadians(argVal.val, ec).cos());
+        } else if (((Operator) (t)).id == R.id.fun_tan) {
+            argVal = evalExpr(i + 1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
             UnifiedReal arg = toRadians(argVal.val, ec);
             return new EvalRet(argVal.pos, arg.sin().divide(arg.cos()));
-        case R.id.fun_ln:
-            argVal = evalExpr(i+1, ec);
+        } else if (((Operator) (t)).id == R.id.fun_ln) {
+            argVal = evalExpr(i + 1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
             return new EvalRet(argVal.pos, argVal.val.ln());
-        case R.id.fun_exp:
-            argVal = evalExpr(i+1, ec);
+        } else if (((Operator) (t)).id == R.id.fun_exp) {
+            argVal = evalExpr(i + 1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
             return new EvalRet(argVal.pos, argVal.val.exp());
-        case R.id.fun_log:
-            argVal = evalExpr(i+1, ec);
+        } else if (((Operator) (t)).id == R.id.fun_log) {
+            argVal = evalExpr(i + 1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
             return new EvalRet(argVal.pos, argVal.val.ln().divide(UnifiedReal.TEN.ln()));
-        case R.id.fun_arcsin:
-            argVal = evalExpr(i+1, ec);
+        } else if (((Operator) (t)).id == R.id.fun_arcsin) {
+            argVal = evalExpr(i + 1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
             return new EvalRet(argVal.pos, fromRadians(argVal.val.asin(), ec));
-        case R.id.fun_arccos:
-            argVal = evalExpr(i+1, ec);
+        } else if (((Operator) (t)).id == R.id.fun_arccos) {
+            argVal = evalExpr(i + 1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
             return new EvalRet(argVal.pos, fromRadians(argVal.val.acos(), ec));
-        case R.id.fun_arctan:
-            argVal = evalExpr(i+1, ec);
+        } else if (((Operator) (t)).id == R.id.fun_arctan) {
+            argVal = evalExpr(i + 1, ec);
             if (isOperator(argVal.pos, R.id.rparen, ec)) {
                 argVal.pos++;
             }
-            return new EvalRet(argVal.pos, fromRadians(argVal.val.atan(),ec));
-        default:
-            throw new SyntaxException("Unrecognized token in expression");
+            return new EvalRet(argVal.pos, fromRadians(argVal.val.atan(), ec));
         }
+        throw new SyntaxException("Unrecognized token in expression");
     }
 
     private static final UnifiedReal ONE_HUNDREDTH = new UnifiedReal(100).inverse();
@@ -869,13 +866,10 @@ class CalculatorExpr {
         if (!(t instanceof Operator)) return true;
         int id = ((Operator)(t)).id;
         if (KeyMaps.isBinary(id)) return false;
-        switch (id) {
-            case R.id.op_fact:
-            case R.id.rparen:
-                return false;
-            default:
-                return true;
+        if (id == R.id.op_fact || id == R.id.rparen) {
+            return false;
         }
+        return true;
     }
 
     private EvalRet evalTerm(int i, EvalContext ec) throws SyntaxException {
