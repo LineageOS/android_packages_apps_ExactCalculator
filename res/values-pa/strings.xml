@@ -22,7 +22,6 @@
     <string name="mode_deg" msgid="1146123354434332479">"ਡਿਗਰੀ"</string>
     <string name="mode_rad" msgid="1434228830085760996">"rad"</string>
     <string name="cleared" msgid="3952521190281880880">"ਸਾਫ਼ ਕੀਤਾ ਗਿਆ"</string>
-    <string name="del" msgid="5878069000864178910">"ਮਿਟਾਓ"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"Euler ਦੀ ਸੰਖਿਆ"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"pi"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"ਬਿੰਦੂ"</string>
