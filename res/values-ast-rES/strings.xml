@@ -20,7 +20,6 @@
     <string name="mode_deg">º</string>
     <string name="mode_rad">rad</string>
     <string name="cleared">llimpiaos</string>
-    <string name="del">del</string>
     <string name="desc_const_e">númberu d\'Euler</string>
     <string name="desc_const_pi">pi</string>
     <string name="desc_dec_point">puntu</string>

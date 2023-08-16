@@ -22,7 +22,6 @@
     <string name="mode_deg" msgid="1146123354434332479">"ອົງ​ສາ"</string>
     <string name="mode_rad" msgid="1434228830085760996">"ຣາ​ດຽງ"</string>
     <string name="cleared" msgid="3952521190281880880">"ລ້າງ​ແລ້ວ"</string>
-    <string name="del" msgid="5878069000864178910">"ລຶບ"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"ຈຳ​ນວນ​ຄ່າ​ຄົງ​ທີ່"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"​ປີ່"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"​ຈ້ຳ​ເມັດ"</string>
