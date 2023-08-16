@@ -124,8 +124,6 @@
       Announced when all characters are removed from Formula, e.g. after clear. [CHAR_LIMIT=NONE]
       -->
     <string name="cleared">cleared</string>
-    <!-- Delete button to remove last entered token. [CHAR_LIMIT=4] -->
-    <string name="del">del</string>
     <!-- Toggle button to show/hide inverse functions. [CHAR_LIMIT=4] -->
     <string name="inv" translatable="false">inv</string>
 

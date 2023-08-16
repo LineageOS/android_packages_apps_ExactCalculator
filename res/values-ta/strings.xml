@@ -22,7 +22,6 @@
     <string name="mode_deg" msgid="1146123354434332479">"டிகிரி"</string>
     <string name="mode_rad" msgid="1434228830085760996">"ரேடியன்"</string>
     <string name="cleared" msgid="3952521190281880880">"அழிக்கப்பட்டது"</string>
-    <string name="del" msgid="5878069000864178910">"நீக்கு"</string>
     <string name="desc_const_e" msgid="1889187337970539507">"ஆய்லரின் எண்"</string>
     <string name="desc_const_pi" msgid="5430918714009441655">"பை"</string>
     <string name="desc_dec_point" msgid="5725254504360445023">"புள்ளி"</string>
