@@ -98,7 +98,7 @@
 
     <style name="PadLayoutStyle.Advanced">
         <item name="android:layout_height">0dip</item>
-        <item name="android:layout_weight">125</item>
+        <item name="android:layout_weight">100</item>
         <item name="android:paddingTop">2dip</item>
         <item name="android:paddingBottom">8dip</item>
         <item name="android:paddingStart">18dip</item>
