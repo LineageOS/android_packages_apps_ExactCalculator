@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:orientation="vertical"
-        android:layout_weight="250">
+        android:layout_weight="225">
 
         <include layout="@layout/pad_operator_aux" />
 
