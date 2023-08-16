@@ -17,18 +17,18 @@
 
 <resources>
     <!-- Dimens for display formula. -->
-    <dimen name="formula_padding_top">16dip</dimen>
-    <dimen name="formula_padding_bottom">32dip</dimen>
+    <dimen name="formula_padding_top">32dip</dimen>
+    <dimen name="formula_padding_bottom">22dip</dimen>
     <dimen name="formula_padding_start">44dip</dimen>
     <dimen name="formula_padding_end">44dip</dimen>
     <dimen name="formula_min_textsize">48dip</dimen>
-    <dimen name="formula_max_textsize">96dip</dimen>
+    <dimen name="formula_max_textsize">128dip</dimen>
     <dimen name="formula_step_textsize">8dip</dimen>
 
     <!-- Dimens for display result. -->
-    <dimen name="result_padding_top">20dip</dimen>
-    <dimen name="result_padding_bottom">48dip</dimen>
+    <dimen name="result_padding_top">22dip</dimen>
+    <dimen name="result_padding_bottom">64dip</dimen>
     <dimen name="result_padding_start">44dip</dimen>
     <dimen name="result_padding_end">44dip</dimen>
-    <dimen name="result_textsize">64dip</dimen>
+    <dimen name="result_textsize">72dip</dimen>
 </resources>

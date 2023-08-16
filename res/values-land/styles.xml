@@ -17,9 +17,35 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="PadLayoutStyle.Advanced">
-        <item name="android:layout_weight">5</item>
+    <style name="PadButtonStyle" parent="Widget.Material3.Button">
         <item name="android:layout_width">0dip</item>
+        <item name="android:layout_height">0dip</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">22dip</item>
+        <item name="android:onClick">onButtonClick</item>
+        <item name="android:fontFeatureSettings">tnum, cv03, cv04</item>
+        <item name="android:layout_marginHorizontal">4dp</item>
+    </style>
+
+    <style name="PadButtonStyle.Image">
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconSize">22dp</item>
+    </style>
+
+    <style name="PadButtonStyle.SmallCaps">
+        <item name="textAllCaps">true</item>
+        <item name="android:textSize">12dip</item>
+    </style>
+
+    <style name="PadButtonStyle.SmallText">
+        <item name="android:textSize">14dip</item>
+    </style>
+
+    <style name="PadLayoutStyle.Advanced">
+        <item name="android:layout_width">0dip</item>
+        <item name="android:layout_weight">150</item>
         <item name="android:paddingTop">8dip</item>
         <item name="android:paddingBottom">8dip</item>
         <item name="android:paddingStart">12dip</item>
@@ -28,7 +54,7 @@
 
     <style name="PadLayoutStyle.Numeric">
         <item name="android:layout_width">0dip</item>
-        <item name="android:layout_weight">5</item>
+        <item name="android:layout_weight">200</item>
         <item name="android:paddingTop">8dip</item>
         <item name="android:paddingBottom">8dip</item>
         <item name="android:paddingStart">12dip</item>
@@ -37,7 +63,7 @@
 
     <style name="PadLayoutStyle.Operator">
         <item name="android:layout_width">0dip</item>
-        <item name="android:layout_weight">3</item>
+        <item name="android:layout_weight">125</item>
         <item name="android:paddingTop">8dip</item>
         <item name="android:paddingBottom">8dip</item>
         <item name="android:paddingStart">12dip</item>
