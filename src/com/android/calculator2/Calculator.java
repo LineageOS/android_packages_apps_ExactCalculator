@@ -344,7 +344,7 @@ public class Calculator extends AppCompatActivity
         mModeView = (TextView) findViewById(R.id.mode);
         mFormulaText = (CalculatorFormula) findViewById(R.id.formula);
         mResultText = (CalculatorResult) findViewById(R.id.result);
-        mFormulaContainer = (HorizontalScrollView) findViewById(R.id.formula_container);
+        mFormulaContainer = (HorizontalScrollView) findViewById(R.id.formula_scroll_view);
         mEvaluator = Evaluator.getInstance(this);
         mEvaluator.setCallback(mEvaluatorCallback);
         mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
