@@ -19,38 +19,48 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/display"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@drawable/rounded_bottom"
     android:elevation="4dip"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
 
-    <com.android.calculator2.CalculatorScrollView
-        android:id="@+id/formula_container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:overScrollMode="never"
-        android:scrollbars="none">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-       <com.android.calculator2.CalculatorFormula
-            android:id="@+id/formula"
-            style="@style/DisplayTextStyle.Formula"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:ellipsize="none"
-            android:maxLines="1"
-            android:textColor="@color/display_formula_text_color" />
+        <com.android.calculator2.CalculatorScrollView
+            android:id="@+id/formula_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
-    </com.android.calculator2.CalculatorScrollView>
+            <com.android.calculator2.CalculatorFormula
+                android:id="@+id/formula"
+                style="@style/DisplayTextStyle.Formula"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:ellipsize="none"
+                android:maxLines="1"
+                android:textColor="@color/display_formula_text_color" />
+        </com.android.calculator2.CalculatorScrollView>
 
-    <com.android.calculator2.CalculatorResult
-        android:id="@+id/result"
-        style="@style/DisplayTextStyle.Result"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:bufferType="spannable"
-        android:singleLine="true"
-        android:textColor="@color/display_result_text_color" />
+        <com.android.calculator2.CalculatorResult
+            android:id="@+id/result"
+            style="@style/DisplayTextStyle.Result"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:bufferType="spannable"
+            android:singleLine="true"
+            android:textColor="@color/display_result_text_color" />
+    </LinearLayout>
+
+    <include layout="@layout/drag_handle" />
 
 </com.android.calculator2.CalculatorDisplay>

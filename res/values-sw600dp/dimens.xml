@@ -16,6 +16,8 @@
   -->
 
 <resources>
+    <dimen name="drag_handle_margin">16dp</dimen>
+
     <!-- Dimens for display formula. -->
     <dimen name="formula_padding_top">32dip</dimen>
     <dimen name="formula_padding_bottom">22dip</dimen>
