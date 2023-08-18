@@ -56,7 +56,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroupOverlay;
 import android.view.ViewTreeObserver;
@@ -86,9 +85,9 @@ import java.io.ObjectOutputStream;
 import java.text.DecimalFormatSymbols;
 
 public class Calculator extends AppCompatActivity
-        implements OnTextSizeChangeListener, OnLongClickListener,
-        AlertDialogFragment.OnClickListener, Evaluator.EvaluationListener /* for main result */,
-        DragLayout.CloseCallback, DragLayout.DragCallback {
+        implements OnTextSizeChangeListener, AlertDialogFragment.OnClickListener,
+        Evaluator.EvaluationListener /* for main result */, DragLayout.CloseCallback,
+        DragLayout.DragCallback {
 
     private static final String TAG = "Calculator";
     /**
@@ -422,7 +421,6 @@ public class Calculator extends AppCompatActivity
 
         mFormulaText.setOnTextSizeChangeListener(this);
         mFormulaText.addTextChangedListener(mFormulaTextWatcher);
-        mDeleteButton.setOnLongClickListener(this);
 
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState);
@@ -881,17 +879,6 @@ public class Calculator extends AppCompatActivity
         mFormulaText.changeTextTo(formula);
         mFormulaText.setContentDescription(TextUtils.isEmpty(formula)
                 ? getString(R.string.desc_formula) : null);
-    }
-
-    @Override
-    public boolean onLongClick(View view) {
-        mCurrentButton = view;
-
-        if (view.getId() == R.id.del) {
-            onClear();
-            return true;
-        }
-        return false;
     }
 
     // Initial evaluation completed successfully.  Initiate display.
