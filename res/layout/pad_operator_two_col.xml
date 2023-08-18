@@ -35,7 +35,7 @@
     <com.android.calculator2.HapticButton
         android:id="@+id/clr"
         style="@style/PadButtonStyle.Caps"
-        android:theme="@style/Theme.Button.Operator"
+        android:theme="@style/Theme.Button.Clear"
         android:contentDescription="@string/desc_clr"
         android:text="@string/clr"
         app:layout_row="0"
@@ -109,7 +109,7 @@
     <com.android.calculator2.HapticButton
         android:id="@+id/eq"
         style="@style/PadButtonStyle.SmallText"
-        android:theme="@style/Theme.Button.Operator"
+        android:theme="@style/Theme.Button.Action"
         android:contentDescription="@string/desc_eq"
         android:text="@string/eq"
         app:layout_row="3"
