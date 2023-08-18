@@ -19,7 +19,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/display"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@drawable/rounded_bottom"
     android:clipChildren="false"
     android:elevation="4dip"
@@ -29,13 +29,13 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <com.android.calculator2.CalculatorScrollView
-            android:id="@+id/formula_container"
+            android:id="@+id/formula_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:layout_height="match_parent"
             android:overScrollMode="never"
             android:scrollbars="none">
 
@@ -44,9 +44,7 @@
                 style="@style/DisplayTextStyle.Formula"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="bottom|end"
                 android:ellipsize="none"
-                android:gravity="bottom|end"
                 android:longClickable="true"
                 android:singleLine="true"
                 android:textColor="@color/display_formula_text_color"
@@ -58,13 +56,13 @@
             android:id="@+id/result"
             style="@style/DisplayTextStyle.Result"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:layout_height="match_parent"
             android:bufferType="spannable"
             android:singleLine="true"
             android:textColor="@color/display_result_text_color"
             android:visibility="invisible" />
-
     </FrameLayout>
+
+    <include layout="@layout/drag_handle" />
 
 </com.android.calculator2.CalculatorDisplay>
