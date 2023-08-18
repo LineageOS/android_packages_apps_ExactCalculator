@@ -20,7 +20,7 @@
     android:id="@+id/display"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/display_background_color"
+    android:background="@drawable/rounded_bottom"
     android:clipChildren="false"
     android:elevation="4dip"
     android:orientation="vertical">

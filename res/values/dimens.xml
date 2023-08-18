@@ -22,6 +22,8 @@
     <dimen name="history_item_text_padding_top">8dip</dimen>
     <dimen name="history_item_text_padding_bottom">16dip</dimen>
 
+    <dimen name="display_corner_radius">16dp</dimen>
+
     <!-- Dimens for display formula. -->
     <dimen name="formula_padding_top">16dip</dimen>
     <dimen name="formula_padding_bottom">8dip</dimen>
