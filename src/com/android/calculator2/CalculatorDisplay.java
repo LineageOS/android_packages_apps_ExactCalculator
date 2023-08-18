@@ -17,6 +17,8 @@
 package com.android.calculator2;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Outline;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.transition.TransitionManager;
@@ -24,6 +26,7 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.LinearLayout;
 
@@ -101,6 +104,18 @@ public class CalculatorDisplay extends LinearLayout
 
         // Draw the children in reverse order so that the toolbar is on top.
         setChildrenDrawingOrderEnabled(true);
+
+        // Get rounded corner outline for correct elevation shadows
+        ViewOutlineProvider viewOutlineProvider = new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                Resources resources = view.getResources();
+                float dimension = resources.getDimension(R.dimen.display_corner_radius);
+                outline.setRoundRect(0, (int) -dimension, view.getWidth(), view.getHeight(),
+                        dimension);
+            }
+        };
+        setOutlineProvider(viewOutlineProvider);
     }
 
     @Override
