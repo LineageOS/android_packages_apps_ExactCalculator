@@ -54,4 +54,14 @@
         <item name="colorOnContainer">?colorOnSecondaryContainer</item>
     </style>
 
+    <style name="Theme.Button.Clear">
+        <item name="colorContainer">?colorTertiaryContainer</item>
+        <item name="colorOnContainer">?colorOnTertiaryContainer</item>
+    </style>
+
+    <style name="Theme.Button.Action">
+        <item name="colorContainer">?colorPrimaryContainer</item>
+        <item name="colorOnContainer">?colorOnPrimaryContainer</item>
+    </style>
+
 </resources>
