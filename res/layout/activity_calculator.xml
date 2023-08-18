@@ -21,9 +21,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/display" />
+    <include layout="@layout/display_two_line" />
 
-    <include layout="@layout/pad_advanced" />
+    <include layout="@layout/pad_advanced_4x3" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
         android:orientation="vertical"
         android:layout_weight="225">
 
-        <include layout="@layout/pad_operator_aux" />
+        <include layout="@layout/pad_operator_one_col_aux" />
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -39,7 +39,7 @@
             android:layout_weight="750">
 
             <include layout="@layout/pad_numeric"/>
-            <include layout="@layout/pad_operator" />
+            <include layout="@layout/pad_operator_one_col" />
         </LinearLayout>
       </LinearLayout>
 </LinearLayout>
