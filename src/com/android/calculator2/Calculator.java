@@ -350,9 +350,8 @@ public class Calculator extends AppCompatActivity
         mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
         KeyMaps.setActivity(this);
 
-        final View numberPad = findViewById(R.id.pad_numeric);
-        final TextView decimalPointButton = (TextView) numberPad.findViewById(R.id.dec_point);
-        decimalPointButton.setText(getDecimalSeparator());
+        final TextView dpButton = findViewById(R.id.input_pad).findViewById(R.id.dec_point);
+        dpButton.setText(getDecimalSeparator());
 
         mInverseToggle = (TextView) findViewById(R.id.toggle_inv);
         mModeToggle = (TextView) findViewById(R.id.toggle_mode);
