@@ -63,13 +63,10 @@
         <item name="android:layout_height">0dip</item>
         <item name="android:gravity">center</item>
         <item name="android:includeFontPadding">false</item>
-        <item name="android:textSize">32dip</item>
+        <item name="android:textSize">32sp</item>
         <item name="android:onClick">onButtonClick</item>
         <item name="android:fontFeatureSettings">tnum, cv03, cv04</item>
-
-        <!-- Attributes from androidx.appcompat.gridlayout -->
-        <item name="layout_rowWeight">1</item>
-        <item name="layout_columnWeight">1</item>
+        <item name="android:layout_marginHorizontal">4dp</item>
     </style>
 
     <style name="PadButtonStyle.Caps">
@@ -84,52 +81,26 @@
 
     <style name="PadButtonStyle.SmallCaps">
         <item name="textAllCaps">true</item>
-        <item name="android:textSize">18dip</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="PadButtonStyle.SmallText">
-        <item name="android:textSize">22dip</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_marginHorizontal">2dp</item>
     </style>
 
     <style name="PadLayoutStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingTop">8dip</item>
+        <item name="android:paddingBottom">8dip</item>
+        <item name="android:paddingStart">8dip</item>
+        <item name="android:paddingEnd">8dip</item>
     </style>
 
     <style name="PadLayoutStyle.Advanced">
-        <item name="android:layout_height">0dip</item>
-        <item name="android:layout_weight">100</item>
-        <item name="android:paddingTop">2dip</item>
-        <item name="android:paddingBottom">8dip</item>
-        <item name="android:paddingStart">18dip</item>
-        <item name="android:paddingEnd">18dip</item>
-    </style>
-
-	<style name="PadLayoutStyle.OperatorAux">
-        <item name="android:layout_height">0dip</item>
-        <item name="android:layout_weight">200</item>
         <item name="android:paddingTop">8dip</item>
-        <item name="android:paddingBottom">0dip</item>
-        <item name="android:paddingStart">8dip</item>
-        <item name="android:paddingEnd">8dip</item>
-    </style>
-
-    <style name="PadLayoutStyle.Numeric">
-        <item name="android:layout_width">0dip</item>
-        <item name="android:layout_weight">750</item>
-        <item name="android:paddingTop">0dip</item>
         <item name="android:paddingBottom">8dip</item>
-        <item name="android:paddingStart">8dip</item>
-        <item name="android:paddingEnd">0dip</item>
-    </style>
-
-    <style name="PadLayoutStyle.Operator">
-        <item name="android:layout_width">0dip</item>
-        <item name="android:layout_weight">250</item>
-        <item name="android:paddingTop">0dip</item>
-        <item name="android:paddingBottom">8dip</item>
-        <item name="android:paddingStart">0dip</item>
-        <item name="android:paddingEnd">8dip</item>
+        <item name="android:paddingStart">16dip</item>
+        <item name="android:paddingEnd">16dip</item>
     </style>
 
 </resources>
