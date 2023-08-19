@@ -38,7 +38,6 @@ android_app {
         "androidx.appcompat_appcompat",
         "androidx.customview_customview",
         "androidx.fragment_fragment",
-        "androidx.gridlayout_gridlayout",
         "androidx.recyclerview_recyclerview",
         "com.google.android.material_material",
     ],
