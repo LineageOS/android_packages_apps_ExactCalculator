@@ -15,31 +15,38 @@
   limitations under the License.
   -->
 
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/display_two_line" />
-
-    <include layout="@layout/pad_advanced_4x3" />
-
-    <LinearLayout
+    <include
+        android:id="@+id/display"
+        layout="@layout/display_two_line"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:orientation="vertical"
-        android:layout_weight="225">
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/advanced_pad"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <include layout="@layout/pad_operator_one_col_aux" />
+    <include
+        android:id="@+id/advanced_pad"
+        layout="@layout/advanced_pad"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/input_pad"
+        app:layout_constraintTop_toBottomOf="@id/display"
+        app:layout_constraintVertical_weight="30" />
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="0dip"
-            android:layout_weight="750">
+    <include
+        android:id="@+id/input_pad"
+        layout="@layout/input_pad"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/advanced_pad"
+        app:layout_constraintVertical_weight="70" />
 
-            <include layout="@layout/pad_numeric"/>
-            <include layout="@layout/pad_operator_one_col" />
-        </LinearLayout>
-      </LinearLayout>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
