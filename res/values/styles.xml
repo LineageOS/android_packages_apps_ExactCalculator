@@ -63,11 +63,8 @@
         <item name="android:layout_height">0dip</item>
         <item name="android:gravity">center</item>
         <item name="android:includeFontPadding">false</item>
-        <item name="android:minWidth">0dip</item>
-        <item name="android:minHeight">0dip</item>
+        <item name="android:textSize">32dip</item>
         <item name="android:onClick">onButtonClick</item>
-        <item name="textAllCaps">false</item>
-        <item name="android:textColor">@color/pad_button_text_color</item>
         <item name="android:fontFeatureSettings">tnum, cv03, cv04</item>
 
         <!-- Attributes from androidx.appcompat.gridlayout -->
@@ -75,34 +72,28 @@
         <item name="layout_columnWeight">1</item>
     </style>
 
-    <style name="PadButtonStyle.Advanced">
-        <item name="android:textColor">@color/pad_button_advanced_text_color</item>
-        <item name="android:textSize">14dip</item>
-    </style>
-
-    <style name="PadButtonStyle.Advanced.Text">
+    <style name="PadButtonStyle.Caps">
         <item name="textAllCaps">true</item>
-        <item name="android:textSize">12dip</item>
     </style>
 
-    <style name="PadButtonStyle.Numeric">
-        <item name="android:textSize">16dip</item>
-    </style>
-
-    <style name="PadButtonStyle.Numeric.Image">
+    <style name="PadButtonStyle.Image">
         <item name="iconTint">@color/pad_button_text_color</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">0dp</item>
         <item name="iconSize">32dp</item>
     </style>
 
-    <style name="PadButtonStyle.Operator">
-        <item name="android:textSize">14dip</item>
+    <style name="PadButtonStyle.SmallCaps">
+        <item name="textAllCaps">true</item>
+        <item name="android:textSize">18dip</item>
     </style>
 
-    <style name="PadButtonStyle.Operator.Text">
-        <item name="textAllCaps">true</item>
-        <item name="android:textSize">12dip</item>
+    <style name="PadButtonStyle.SmallText">
+        <item name="android:textSize">22dip</item>
+    </style>
+
+    <style name="PadButtonStyle.SmallText.Background">
+        <item name="android:textColor">@color/pad_button_advanced_text_color</item>
     </style>
 
     <style name="PadLayoutStyle">

@@ -17,28 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="PadButtonStyle.Advanced">
-        <item name="android:textSize">20dip</item>
-    </style>
-
-    <style name="PadButtonStyle.Advanced.Text">
-        <item name="textAllCaps">true</item>
-        <item name="android:textSize">17dip</item>
-    </style>
-
-    <style name="PadButtonStyle.Numeric">
-        <item name="android:textSize">23dip</item>
-    </style>
-
-    <style name="PadButtonStyle.Operator">
-        <item name="android:textSize">20dip</item>
-    </style>
-
-    <style name="PadButtonStyle.Operator.Text">
-        <item name="textAllCaps">true</item>
-        <item name="android:textSize">17dip</item>
-    </style>
-
     <style name="PadLayoutStyle.Advanced">
         <item name="android:layout_weight">5</item>
         <item name="android:layout_width">0dip</item>
