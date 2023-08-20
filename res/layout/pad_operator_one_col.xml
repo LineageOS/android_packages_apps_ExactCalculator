@@ -26,7 +26,7 @@
 
     <com.android.calculator2.HapticButton
         android:id="@+id/op_mul"
-        style="@style/PadButtonStyle.Operator"
+        style="@style/PadButtonStyle.SmallText"
         android:contentDescription="@string/desc_op_mul"
         android:text="@string/op_mul"
         app:layout_row="0"
@@ -34,7 +34,7 @@
 
     <com.android.calculator2.HapticButton
         android:id="@+id/op_sub"
-        style="@style/PadButtonStyle.Operator"
+        style="@style/PadButtonStyle.SmallText"
         android:contentDescription="@string/desc_op_sub"
         android:text="@string/op_sub"
         app:layout_row="1"
@@ -42,7 +42,7 @@
 
     <com.android.calculator2.HapticButton
         android:id="@+id/op_add"
-        style="@style/PadButtonStyle.Operator"
+        style="@style/PadButtonStyle.SmallText"
         android:contentDescription="@string/desc_op_add"
         android:text="@string/op_add"
         app:layout_row="2"
@@ -50,7 +50,7 @@
 
     <com.android.calculator2.HapticButton
         android:id="@+id/eq"
-        style="@style/PadButtonStyle.Operator"
+        style="@style/PadButtonStyle.SmallText"
         android:contentDescription="@string/desc_eq"
         android:text="@string/eq"
         app:layout_row="3"
