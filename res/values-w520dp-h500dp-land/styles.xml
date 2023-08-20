@@ -17,26 +17,30 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="PadButtonStyle.Advanced">
-        <item name="android:textSize">23dip</item>
+    <style name="PadButtonStyle" parent="Widget.Material3.Button">
+        <item name="android:layout_width">0dip</item>
+        <item name="android:layout_height">0dip</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">22dip</item>
+        <item name="android:onClick">onButtonClick</item>
+        <item name="android:fontFeatureSettings">tnum, cv03, cv04</item>
+        <item name="android:layout_marginHorizontal">4dp</item>
     </style>
 
-    <style name="PadButtonStyle.Advanced.Text">
+    <style name="PadButtonStyle.Image">
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconSize">22dp</item>
+    </style>
+
+    <style name="PadButtonStyle.SmallCaps">
         <item name="textAllCaps">true</item>
-        <item name="android:textSize">20dip</item>
+        <item name="android:textSize">12dip</item>
     </style>
 
-    <style name="PadButtonStyle.Numeric">
-        <item name="android:textSize">36dip</item>
-    </style>
-
-    <style name="PadButtonStyle.Operator">
-        <item name="android:textSize">27dip</item>
-    </style>
-
-    <style name="PadButtonStyle.Operator.Text">
-        <item name="textAllCaps">true</item>
-        <item name="android:textSize">20dip</item>
+    <style name="PadButtonStyle.SmallText">
+        <item name="android:textSize">14dip</item>
     </style>
 
     <style name="PadLayoutStyle.Advanced">
