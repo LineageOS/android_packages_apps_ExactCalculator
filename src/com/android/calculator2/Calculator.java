@@ -60,10 +60,10 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.android.calculator2.CalculatorFormula.OnTextSizeChangeListener;
 
@@ -78,8 +78,7 @@ import java.text.DecimalFormatSymbols;
 
 public class Calculator extends AppCompatActivity
         implements OnTextSizeChangeListener, AlertDialogFragment.OnClickListener,
-        Evaluator.EvaluationListener /* for main result */, DragLayout.CloseCallback,
-        DragLayout.DragCallback {
+        Evaluator.EvaluationListener /* for main result */ {
 
     private static final String TAG = "Calculator";
     /**
@@ -228,9 +227,7 @@ public class Calculator extends AppCompatActivity
     private CalculatorFormula mFormulaText;
     private CalculatorResult mResultText;
     private HorizontalScrollView mFormulaContainer;
-    private DragLayout mDragLayout;
-
-    private View mMainCalculator;
+    private MotionLayout mMainCalculator;
 
     private TextView mInverseToggle;
     private TextView mModeToggle;
@@ -325,7 +322,7 @@ public class Calculator extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_calculator_main);
+        setContentView(R.layout.activity_calculator);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         // Hide all default options in the ActionBar.
@@ -375,10 +372,31 @@ public class Calculator extends AppCompatActivity
                 findViewById(R.id.op_sqr)
         };
 
-        mDragLayout = (DragLayout) findViewById(R.id.drag_layout);
-        mDragLayout.removeDragCallback(this);
-        mDragLayout.addDragCallback(this);
-        mDragLayout.setCloseCallback(this);
+        mMainCalculator.setTransitionListener(new MotionLayout.TransitionListener() {
+            @Override
+            public void onTransitionStarted(MotionLayout motionLayout, int startId, int endId) {
+                if (startId == R.id.start_state) {
+                    showHistoryFragment();
+                }
+            }
+
+            @Override
+            public void onTransitionChange(MotionLayout motionLayout, int startId, int endId,
+                                           float progress) {
+            }
+
+            @Override
+            public void onTransitionCompleted(MotionLayout motionLayout, int currentId) {
+                if (currentId == R.id.start_state) {
+                    removeHistoryFragment();
+                }
+            }
+
+            @Override
+            public void onTransitionTrigger(MotionLayout motionLayout, int triggerId,
+                                            boolean positive, float progress) {
+            }
+        });
 
         mFormulaText.setOnContextMenuClickListener(mOnFormulaContextMenuClickListener);
         mFormulaText.setOnDisplayMemoryOperationsListener(mOnDisplayMemoryOperationsListener);
@@ -409,7 +427,8 @@ public class Calculator extends AppCompatActivity
         // If we did not do this, it would be possible to traverse to main Calculator elements from
         // HistoryFragment.
         mMainCalculator.setImportantForAccessibility(
-                mDragLayout.isOpen() ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                mMainCalculator.getCurrentState() == R.id.end_state
+                        ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                         : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     }
 
@@ -487,12 +506,6 @@ public class Calculator extends AppCompatActivity
         return mIsOneLine;
     }
 
-    @Override
-    protected void onDestroy() {
-        mDragLayout.removeDragCallback(this);
-        super.onDestroy();
-    }
-
     /**
      * Destroy the evaluator and close the underlying database.
      */
@@ -523,7 +536,8 @@ public class Calculator extends AppCompatActivity
             stopActionModeOrContextMenu();
 
             final HistoryFragment historyFragment = getHistoryFragment();
-            if (mDragLayout.isOpen() && historyFragment != null) {
+            if (mMainCalculator.getCurrentState() == R.id.end_state
+                && historyFragment != null) {
                 historyFragment.stopActionModeOrContextMenu();
             }
         }
@@ -534,10 +548,9 @@ public class Calculator extends AppCompatActivity
     public void onBackPressed() {
         if (!stopActionModeOrContextMenu()) {
             final HistoryFragment historyFragment = getHistoryFragment();
-            if (mDragLayout.isOpen() && historyFragment != null) {
-                if (!historyFragment.stopActionModeOrContextMenu()) {
-                    removeHistoryFragment();
-                }
+            if (mMainCalculator.getCurrentState() == R.id.end_state
+                && historyFragment != null) {
+                mMainCalculator.transitionToStart();
                 return;
             }
         }
@@ -1096,7 +1109,7 @@ public class Calculator extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.menu_history) {
-            showHistoryFragment();
+            mMainCalculator.transitionToEnd();
             return true;
         } else if (itemId == R.id.menu_leading) {
             displayFull();
@@ -1110,43 +1123,6 @@ public class Calculator extends AppCompatActivity
         }
         return super.onOptionsItemSelected(item);
     }
-
-    /* Begin override CloseCallback method. */
-
-    @Override
-    public void onClose() {
-        removeHistoryFragment();
-    }
-
-    /* End override CloseCallback method. */
-
-    /* Begin override DragCallback methods */
-
-    public void onStartDraggingOpen() {
-        mDisplayView.hideToolbar();
-        showHistoryFragment();
-    }
-
-    @Override
-    public void onInstanceStateRestored(boolean isOpen) {
-    }
-
-    @Override
-    public void whileDragging(float yFraction) {
-    }
-
-    @Override
-    public boolean shouldCaptureView(View view, int x, int y) {
-        return view.getId() == R.id.history_frame
-            && (mDragLayout.isMoving() || mDragLayout.isViewUnder(view, x, y));
-    }
-
-    @Override
-    public int getDisplayHeight() {
-        return mDisplayView.getMeasuredHeight();
-    }
-
-    /* End override DragCallback methods */
 
     /**
      * Change evaluation state to one that's friendly to the history fragment.
@@ -1186,15 +1162,12 @@ public class Calculator extends AppCompatActivity
 
         final FragmentManager manager = getSupportFragmentManager();
         if (manager == null || manager.isDestroyed() || !prepareForHistory()) {
-            // If the history fragment can not be shown, close the draglayout.
-            mDragLayout.setClosed();
             return;
         }
 
         stopActionModeOrContextMenu();
         manager.beginTransaction()
                 .replace(R.id.history_frame, new HistoryFragment(), HistoryFragment.TAG)
-                .setTransition(FragmentTransaction.TRANSIT_NONE)
                 .addToBackStack(HistoryFragment.TAG)
                 .commit();
 

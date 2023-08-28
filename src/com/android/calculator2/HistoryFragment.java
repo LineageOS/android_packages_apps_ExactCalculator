@@ -18,13 +18,14 @@ package com.android.calculator2;
 
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 
-import android.animation.Animator;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -32,16 +33,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class HistoryFragment extends Fragment implements DragLayout.DragCallback {
+public class HistoryFragment extends Fragment {
 
     public static final String TAG = "HistoryFragment";
     public static final String CLEAR_DIALOG_TAG = "clear";
 
-    private final DragController mDragController = new DragController();
-
     private RecyclerView mRecyclerView;
     private HistoryAdapter mAdapter;
-    private DragLayout mDragLayout;
 
     private Evaluator mEvaluator;
 
@@ -60,9 +58,6 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
             Bundle savedInstanceState) {
         final View view = inflater.inflate(
                 R.layout.fragment_history, container, false /* attachToRoot */);
-
-        mDragLayout = (DragLayout) container.getRootView().findViewById(R.id.drag_layout);
-        mDragLayout.addDragCallback(this);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.history_recycler_view);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -105,15 +100,14 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         final Calculator activity = (Calculator) getActivity();
         mEvaluator = Evaluator.getInstance(activity);
         mAdapter.setEvaluator(mEvaluator);
 
         final boolean isResultLayout = activity.isResultLayout();
-        final boolean isOneLine = activity.isOneLine();
 
         // Snapshot display state here. For the rest of the lifecycle of this current
         // HistoryFragment, this is what we will consider the display state.
@@ -121,22 +115,10 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
         final CalculatorExpr mainExpr = mEvaluator.getExpr(Evaluator.MAIN_INDEX);
         mIsDisplayEmpty = mainExpr == null || mainExpr.isEmpty();
 
-        initializeController(isResultLayout, isOneLine, mIsDisplayEmpty);
-
         final long maxIndex = mEvaluator.getMaxIndex();
 
         final ArrayList<HistoryItem> newDataSet = new ArrayList<>();
 
-        if (!mIsDisplayEmpty && !isResultLayout) {
-            // Add the current expression as the first element in the list (the layout is
-            // reversed and we want the current expression to be the last one in the
-            // RecyclerView).
-            // If we are in the result state, the result will animate to the last history
-            // element in the list and there will be no "Current Expression."
-            mEvaluator.copyMainToHistory();
-            newDataSet.add(new HistoryItem(Evaluator.HISTORY_MAIN_INDEX,
-                    System.currentTimeMillis(), mEvaluator.getExprAsSpannable(0)));
-        }
         for (long i = 0; i < maxIndex; ++i) {
             newDataSet.add(null);
         }
@@ -155,42 +137,14 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        final Calculator activity = (Calculator) getActivity();
-        mDragController.initializeAnimation(activity.isResultLayout(), activity.isOneLine(),
-                mIsDisplayEmpty);
-    }
-
-    @Override
-    public Animator onCreateAnimator(int transit, boolean enter, int nextAnim) {
-        return mDragLayout.createAnimator(enter);
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
-
-        if (mDragLayout != null) {
-            mDragLayout.removeDragCallback(this);
-        }
 
         if (mEvaluator != null) {
             // Note that the view is destroyed when the fragment backstack is popped, so
             // these are essentially called when the DragLayout is closed.
             mEvaluator.cancelNonMain();
         }
-    }
-
-    private void initializeController(boolean isResult, boolean isOneLine, boolean isDisplayEmpty) {
-        mDragController.setDisplayFormula(
-                (CalculatorFormula) getActivity().findViewById(R.id.formula));
-        mDragController.setDisplayResult(
-                (CalculatorResult) getActivity().findViewById(R.id.result));
-        mDragController.setToolbar(getActivity().findViewById(R.id.toolbar));
-        mDragController.setEvaluator(mEvaluator);
-        mDragController.initializeController(isResult, isOneLine, isDisplayEmpty);
     }
 
     public boolean stopActionModeOrContextMenu() {
@@ -208,37 +162,4 @@ public class HistoryFragment extends Fragment implements DragLayout.DragCallback
         }
         return false;
     }
-
-    /* Begin override DragCallback methods. */
-
-    @Override
-    public void onStartDraggingOpen() {
-        // no-op
-    }
-
-    @Override
-    public void onInstanceStateRestored(boolean isOpen) {
-        if (isOpen) {
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void whileDragging(float yFraction) {
-        if (isVisible() || isRemoving()) {
-            mDragController.animateViews(yFraction, mRecyclerView);
-        }
-    }
-
-    @Override
-    public boolean shouldCaptureView(View view, int x, int y) {
-        return !mRecyclerView.canScrollVertically(1 /* scrolling down */);
-    }
-
-    @Override
-    public int getDisplayHeight() {
-        return 0;
-    }
-
-    /* End override DragCallback methods. */
 }
