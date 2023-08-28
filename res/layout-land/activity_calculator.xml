@@ -3,20 +3,32 @@
     SPDX-FileCopyrightText: 2023 The LineageOS Project
     SPDX-License-Identifier: Apache-2.0
 -->
-<androidx.constraintlayout.widget.ConstraintLayout
+<com.android.calculator2.DisplayMotionLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_calculator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    app:layoutDescription="@xml/activity_calculator_scene">
+
+    <FrameLayout
+        android:id="@+id/history_frame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <include
         android:id="@+id/display"
         layout="@layout/display_one_line"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/advanced_pad"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="@dimen/layout_display_ratio"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
@@ -24,8 +36,8 @@
         layout="@layout/advanced_pad"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/layout_vertical_guideline"
+        app:layout_constraintHeight_percent="@dimen/layout_pads_ratio"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/display" />
 
@@ -34,16 +46,25 @@
         layout="@layout/input_pad"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="@dimen/layout_pads_ratio"
         app:layout_constraintStart_toEndOf="@id/layout_vertical_guideline"
         app:layout_constraintTop_toBottomOf="@id/display" />
+
+    <FrameLayout
+        android:id="@+id/animation_helper"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="@dimen/layout_pads_ratio"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/layout_vertical_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.35" />
+        app:layout_constraintGuide_percent="@dimen/layout_advanced_pad_ratio" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.android.calculator2.DisplayMotionLayout>
