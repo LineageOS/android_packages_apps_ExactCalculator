@@ -75,10 +75,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.mFormula.setText(item.getFormula());
         // Note: HistoryItems that are not the current expression will always have interesting ops.
         holder.mResult.setEvaluator(mEvaluator, item.getEvaluatorIndex());
-        if (item.getEvaluatorIndex() == Evaluator.HISTORY_MAIN_INDEX) {
-            holder.mDate.setText(R.string.title_current_expression);
-            holder.mResult.setVisibility(mIsOneLine ? View.GONE : View.VISIBLE);
-        } else {
+        if (item.getEvaluatorIndex() != Evaluator.HISTORY_MAIN_INDEX) {
             // If the previous item occurred on the same date, the current item does not need
             // a date header.
             if (shouldShowHeader(position, item)) {
@@ -145,12 +142,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     private int getEvaluatorIndex(int position) {
-        if (mIsDisplayEmpty || mIsResultLayout) {
-            return (int) (mEvaluator.getMaxIndex() - position);
-        } else {
-            // Account for the additional "Current Expression" with the +1.
-            return (int) (mEvaluator.getMaxIndex() - position + 1);
-        }
+        return (int) (mEvaluator.getMaxIndex() - position);
     }
 
     private boolean shouldShowHeader(int position, HistoryItem item) {
