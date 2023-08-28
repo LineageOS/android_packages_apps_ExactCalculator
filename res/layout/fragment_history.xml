@@ -39,8 +39,8 @@
         android:background="@color/display_background_color"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:nestedScrollingEnabled="false"
         android:paddingBottom="@dimen/history_divider_padding"
-        android:visibility="invisible"
         app:layoutManager="LinearLayoutManager"
         app:reverseLayout="true" />
 
