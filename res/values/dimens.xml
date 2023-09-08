@@ -41,4 +41,16 @@
     <dimen name="result_padding_end">16dip</dimen>
     <dimen name="result_textsize">32dip</dimen>
 
+    <!-- Pads -->
+    <dimen name="pads_horizontal_edge_padding">8dp</dimen>
+    <dimen name="pads_vertical_edge_padding">8dp</dimen>
+    <dimen name="pads_intra_padding">4dp</dimen>
+
+    <!-- Buttons -->
+    <dimen name="button_horizontal_margin">4dp</dimen>
+    <dimen name="button_small_horizontal_margin">2dp</dimen>
+    <dimen name="button_textsize">32sp</dimen>
+    <dimen name="button_iconsize">32dp</dimen>
+    <dimen name="button_small_textsize">18sp</dimen>
+    <dimen name="button_smallcaps_textsize">16sp</dimen>
 </resources>
