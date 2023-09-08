@@ -63,10 +63,11 @@
         <item name="android:layout_height">0dip</item>
         <item name="android:gravity">center</item>
         <item name="android:includeFontPadding">false</item>
-        <item name="android:textSize">32sp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:textSize">@dimen/button_textsize</item>
         <item name="android:onClick">onButtonClick</item>
         <item name="android:fontFeatureSettings">tnum, cv03, cv04</item>
-        <item name="android:layout_marginHorizontal">4dp</item>
+        <item name="android:layout_marginHorizontal">@dimen/button_horizontal_margin</item>
     </style>
 
     <style name="PadButtonStyle.Caps">
@@ -76,31 +77,32 @@
     <style name="PadButtonStyle.Image">
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">0dp</item>
-        <item name="iconSize">32dp</item>
+        <item name="iconSize">@dimen/button_iconsize</item>
     </style>
 
     <style name="PadButtonStyle.SmallCaps">
         <item name="textAllCaps">true</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">@dimen/button_smallcaps_textsize</item>
+        <item name="android:layout_marginHorizontal">@dimen/button_small_horizontal_margin</item>
     </style>
 
     <style name="PadButtonStyle.SmallText">
-        <item name="android:textSize">18sp</item>
-        <item name="android:layout_marginHorizontal">2dp</item>
+        <item name="android:textSize">@dimen/button_small_textsize</item>
+        <item name="android:layout_marginHorizontal">@dimen/button_small_horizontal_margin</item>
     </style>
 
     <style name="PadLayoutStyle">
-        <item name="android:paddingTop">8dip</item>
-        <item name="android:paddingBottom">8dip</item>
-        <item name="android:paddingStart">8dip</item>
-        <item name="android:paddingEnd">8dip</item>
+        <item name="android:paddingTop">@dimen/pads_intra_padding</item>
+        <item name="android:paddingBottom">@dimen/pads_vertical_edge_padding</item>
+        <item name="android:paddingStart">@dimen/pads_horizontal_edge_padding</item>
+        <item name="android:paddingEnd">@dimen/pads_horizontal_edge_padding</item>
     </style>
 
     <style name="PadLayoutStyle.Advanced">
-        <item name="android:paddingTop">8dip</item>
-        <item name="android:paddingBottom">8dip</item>
-        <item name="android:paddingStart">16dip</item>
-        <item name="android:paddingEnd">16dip</item>
+        <item name="android:paddingTop">@dimen/pads_vertical_edge_padding</item>
+        <item name="android:paddingBottom">@dimen/pads_intra_padding</item>
+        <item name="android:paddingStart">@dimen/pads_horizontal_edge_padding</item>
+        <item name="android:paddingEnd">@dimen/pads_horizontal_edge_padding</item>
     </style>
 
 </resources>
