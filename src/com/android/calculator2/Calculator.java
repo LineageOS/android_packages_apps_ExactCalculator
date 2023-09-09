@@ -27,11 +27,8 @@ package com.android.calculator2;
 
 import static com.android.calculator2.CalculatorFormula.OnFormulaContextMenuClickListener;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -46,7 +43,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.util.Property;
 import android.view.ActionMode;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
@@ -100,7 +96,6 @@ public class Calculator extends AppCompatActivity
                         // during reinitialization.  Do not animate on completion.
         INIT_FOR_RESULT,  // Identical to INIT, but evaluation is known to terminate
                           // with result, and current expression has been copied to history.
-        ANIMATE,        // Result computed, animation to enlarge result window in progress.
         RESULT,         // Result displayed, formula invisible.
                         // If we are in RESULT state, the formula was evaluated without
                         // error to initial precision.
@@ -109,7 +104,7 @@ public class Calculator extends AppCompatActivity
                         // Display similar to INPUT state.
     }
     // Normal transition sequence is
-    // INPUT -> EVALUATE -> ANIMATE -> RESULT (or ERROR) -> INPUT
+    // INPUT -> EVALUATE -> RESULT (or ERROR) -> INPUT
     // A RESULT -> ERROR transition is possible in rare corner cases, in which
     // a higher precision evaluation exposes an error.  This is possible, since we
     // initially evaluate assuming we were given a well-defined problem.  If we
@@ -117,25 +112,11 @@ public class Calculator extends AppCompatActivity
     // unless we are asked for enough precision that we can distinguish the argument from zero.
     // ERROR and RESULT are translated to INIT or INIT_FOR_RESULT state if the application
     // is restarted in that state.  This leads us to recompute and redisplay the result
-    // ASAP. We avoid saving the ANIMATE state or activating history in that state.
+    // ASAP.
     // In INIT_FOR_RESULT, and RESULT state, a copy of the current
-    // expression has been saved in the history db; in the other non-ANIMATE states,
-    // it has not.
+    // expression has been saved in the history db; in the other states, it has not.
     // TODO: Possibly save a bit more information, e.g. its initial display string
     // or most significant digit position, to speed up restart.
-
-    private final Property<TextView, Integer> TEXT_COLOR =
-            new Property<TextView, Integer>(Integer.class, "textColor") {
-        @Override
-        public Integer get(TextView textView) {
-            return textView.getCurrentTextColor();
-        }
-
-        @Override
-        public void set(TextView textView, Integer textColor) {
-            textView.setTextColor(textColor);
-        }
-    };
 
     private static final String NAME = "Calculator";
     private static final String KEY_DISPLAY_STATE = NAME + "_display_state";
@@ -257,8 +238,6 @@ public class Calculator extends AppCompatActivity
     private View[] mInvertibleButtons;
     private View[] mInverseButtons;
 
-    private Animator mCurrentAnimator;
-
     // Characters that were recently entered at the end of the display that have not yet
     // been added to the underlying expression.
     private String mUnprocessedChars = null;
@@ -285,7 +264,7 @@ public class Calculator extends AppCompatActivity
             case EVALUATE:
             case INPUT:
                 return savedState;
-            default:  // Includes ANIMATE state.
+            default:
                 throw new AssertionError("Impossible saved state");
         }
     }
@@ -438,10 +417,6 @@ public class Calculator extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         mEvaluator.cancelAll(true);
-        // If there's an animation in progress, cancel it first to ensure our state is up-to-date.
-        if (mCurrentAnimator != null) {
-            mCurrentAnimator.cancel();
-        }
 
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_DISPLAY_STATE, mCurrentState.ordinal());
@@ -475,8 +450,7 @@ public class Calculator extends AppCompatActivity
 
             if (mIsOneLine) {
                 if (mCurrentState == CalculatorState.RESULT
-                        || mCurrentState == CalculatorState.EVALUATE
-                        || mCurrentState == CalculatorState.ANIMATE) {
+                        || mCurrentState == CalculatorState.EVALUATE) {
                     mFormulaText.setVisibility(View.VISIBLE);
                     mResultText.setVisibility(View.VISIBLE);
                 } else if (mCurrentState == CalculatorState.ERROR) {
@@ -542,17 +516,6 @@ public class Calculator extends AppCompatActivity
     private boolean stopActionModeOrContextMenu() {
         return mResultText.stopActionModeOrContextMenu()
                 || mFormulaText.stopActionModeOrContextMenu();
-    }
-
-    @Override
-    public void onUserInteraction() {
-        super.onUserInteraction();
-
-        // If there's an animation in progress, end it immediately, so the user interaction can
-        // be handled.
-        if (mCurrentAnimator != null) {
-            mCurrentAnimator.end();
-        }
     }
 
     @Override
@@ -870,8 +833,7 @@ public class Calculator extends AppCompatActivity
         mResultText.onEvaluate(index, initDisplayPrec, msd, leastDigPos, truncatedWholeNumber);
         if (mCurrentState != CalculatorState.INPUT) {
             // In EVALUATE, INIT, RESULT, or INIT_FOR_RESULT state.
-            onResult(mCurrentState == CalculatorState.EVALUATE /* animate */,
-                     mCurrentState == CalculatorState.INIT_FOR_RESULT
+            onResult(mCurrentState == CalculatorState.INIT_FOR_RESULT
                     || mCurrentState == CalculatorState.RESULT /* previously preserved */);
         }
     }
@@ -1004,7 +966,6 @@ public class Calculator extends AppCompatActivity
             throw new AssertionError("Unexpected error source");
         }
         if (mCurrentState == CalculatorState.EVALUATE) {
-            setState(CalculatorState.ANIMATE);
             mResultText.announceForAccessibility(getResources().getString(errorResourceId));
             setState(CalculatorState.ERROR);
             mResultText.onError(index, errorResourceId);
@@ -1017,14 +978,13 @@ public class Calculator extends AppCompatActivity
         }
     }
 
-    // Animate movement of result into the top formula slot.
     // Result window now remains translated in the top slot while the result is displayed.
     // (We convert it back to formula use only when the user provides new input.)
     // Historical note: In the Lollipop version, this invisibly and instantaneously moved
     // formula and result displays back at the end of the animation.  We no longer do that,
     // so that we can continue to properly support scrolling of the result.
     // We assume the result already contains the text to be expanded.
-    private void onResult(boolean animate, boolean resultWasPreserved) {
+    private void onResult(boolean resultWasPreserved) {
         // Calculate the textSize that would be used to display the result in the formula.
         // For scrollable results just use the minimum textSize to maximize the number of digits
         // that are visible on screen.
@@ -1064,39 +1024,12 @@ public class Calculator extends AppCompatActivity
             mEvaluator.preserve(Evaluator.MAIN_INDEX, true);
         }
 
-        if (animate) {
-            mResultText.announceForAccessibility(getResources().getString(R.string.desc_eq));
-            mResultText.announceForAccessibility(mResultText.getText());
-            setState(CalculatorState.ANIMATE);
-            final AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.playTogether(
-                    ObjectAnimator.ofPropertyValuesHolder(mResultText,
-                            PropertyValuesHolder.ofFloat(View.SCALE_X, resultScale),
-                            PropertyValuesHolder.ofFloat(View.SCALE_Y, resultScale),
-                            PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, resultTranslationY)),
-                    ObjectAnimator.ofArgb(mResultText, TEXT_COLOR, formulaTextColor),
-                    ObjectAnimator.ofFloat(mFormulaContainer, View.TRANSLATION_Y,
-                            formulaTranslationY));
-            animatorSet.setDuration(getResources().getInteger(
-                    android.R.integer.config_longAnimTime));
-            animatorSet.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    setState(CalculatorState.RESULT);
-                    mCurrentAnimator = null;
-                }
-            });
-
-            mCurrentAnimator = animatorSet;
-            animatorSet.start();
-        } else /* No animation desired; get there fast when restarting */ {
-            mResultText.setScaleX(resultScale);
-            mResultText.setScaleY(resultScale);
-            mResultText.setTranslationY(resultTranslationY);
-            mResultText.setTextColor(formulaTextColor);
-            mFormulaContainer.setTranslationY(formulaTranslationY);
-            setState(CalculatorState.RESULT);
-        }
+        mResultText.setScaleX(resultScale);
+        mResultText.setScaleY(resultScale);
+        mResultText.setTranslationY(resultTranslationY);
+        mResultText.setTextColor(formulaTextColor);
+        mFormulaContainer.setTranslationY(formulaTranslationY);
+        setState(CalculatorState.RESULT);
     }
 
     // Restore positions of the formula and result displays back to their original,
@@ -1221,16 +1154,7 @@ public class Calculator extends AppCompatActivity
      * Return false if that was not easily possible.
      */
     private boolean prepareForHistory() {
-        if (mCurrentState == CalculatorState.ANIMATE) {
-            // End the current animation and signal that preparation has failed.
-            // onUserInteraction is unreliable and onAnimationEnd() is asynchronous, so we
-            // aren't guaranteed to be out of the ANIMATE state by the time prepareForHistory is
-            // called.
-            if (mCurrentAnimator != null) {
-                mCurrentAnimator.end();
-            }
-            return false;
-        } else if (mCurrentState == CalculatorState.EVALUATE) {
+        if (mCurrentState == CalculatorState.EVALUATE) {
             // Cancel current evaluation
             cancelIfEvaluating(true /* quiet */ );
             setState(CalculatorState.INPUT);
