@@ -18,7 +18,6 @@
 <resources>
 
     <!-- Display background -->
-    <color name="empty_history_color">@color/material_dynamic_neutral90</color>
     <color name="display_background_color">@color/material_dynamic_neutral90</color>
 
     <!-- Display text -->
