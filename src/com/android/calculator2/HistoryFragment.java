@@ -123,8 +123,6 @@ public class HistoryFragment extends Fragment {
             newDataSet.add(null);
         }
         final boolean isEmpty = newDataSet.isEmpty();
-        mRecyclerView.setBackgroundColor(ContextCompat.getColor(activity,
-                isEmpty ? R.color.empty_history_color : R.color.display_background_color));
         if (isEmpty) {
             newDataSet.add(new HistoryItem());
         }
