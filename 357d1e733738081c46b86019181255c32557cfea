@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1012445_2191823a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6360
+      },
+      "writtenOn": "2023-10-15T12:19:50Z",
+      "side": 1,
+      "message": "packages/apps/ExactCalculator/res/values/themes.xml:47: error: resource attr/colorSurfaceContainer (aka com.android.calculator2:attr/colorSurfaceContainer) not found.\npackages/apps/ExactCalculator/res/values/themes.xml:47: error: resource attr/colorSurfaceContainer (aka com.android.calculator2:attr/colorSurfaceContainer) not found.",
+      "revId": "357d1e733738081c46b86019181255c32557cfea",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
