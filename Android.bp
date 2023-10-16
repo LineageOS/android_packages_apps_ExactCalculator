@@ -33,13 +33,9 @@ android_app {
 
     static_libs: [
         "cr",
-        "androidx.core_core",
-        "androidx.annotation_annotation",
-        "androidx.appcompat_appcompat",
-        "androidx.customview_customview",
-        "androidx.fragment_fragment",
+        // DO NOT EDIT THIS SECTION MANUALLY
         "androidx.gridlayout_gridlayout",
-        "androidx.recyclerview_recyclerview",
-        "com.google.android.material_material",
+        "androidx.webkit_webkit",
+        "ExactCalculator_com.google.android.material_material",
     ],
 }
