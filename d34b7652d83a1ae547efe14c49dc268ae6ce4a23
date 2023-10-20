@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5187f0f2_3503f610",
+        "filename": "src/com/android/calculator2/Calculator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 856,
+      "author": {
+        "id": 13028
+      },
+      "writtenOn": "2023-10-20T17:00:31Z",
+      "side": 1,
+      "message": "space after comma",
+      "revId": "d34b7652d83a1ae547efe14c49dc268ae6ce4a23",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db637eb6_05058cb6",
+        "filename": "src/com/android/calculator2/Calculator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 858,
+      "author": {
+        "id": 13028
+      },
+      "writtenOn": "2023-10-20T17:00:31Z",
+      "side": 1,
+      "message": "space after comma",
+      "revId": "d34b7652d83a1ae547efe14c49dc268ae6ce4a23",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0887c262_794591df",
+        "filename": "src/com/android/calculator2/Calculator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 865,
+      "author": {
+        "id": 13028
+      },
+      "writtenOn": "2023-10-20T17:00:31Z",
+      "side": 1,
+      "message": "else in same line as closing } above",
+      "revId": "d34b7652d83a1ae547efe14c49dc268ae6ce4a23",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
