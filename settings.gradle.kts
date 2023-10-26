@@ -15,6 +15,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://raw.githubusercontent.com/lineage-next/crcalc/main/.m2")
     }
 }
 rootProject.name = "ExactCalculator"
