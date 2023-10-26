@@ -18,6 +18,24 @@
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea0a7608_94a8639a",
+        "filename": "src/com/android/calculator2/Calculator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 856,
+      "author": {
+        "id": 5911
+      },
+      "writtenOn": "2023-10-26T13:33:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5187f0f2_3503f610",
+      "revId": "d34b7652d83a1ae547efe14c49dc268ae6ce4a23",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "db637eb6_05058cb6",
@@ -35,6 +53,24 @@
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "32d35fa4_4a1e6d0c",
+        "filename": "src/com/android/calculator2/Calculator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 858,
+      "author": {
+        "id": 5911
+      },
+      "writtenOn": "2023-10-26T13:33:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "db637eb6_05058cb6",
+      "revId": "d34b7652d83a1ae547efe14c49dc268ae6ce4a23",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0887c262_794591df",
@@ -48,6 +84,24 @@
       "writtenOn": "2023-10-20T17:00:31Z",
       "side": 1,
       "message": "else in same line as closing } above",
+      "revId": "d34b7652d83a1ae547efe14c49dc268ae6ce4a23",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "498a86a7_1e2b9878",
+        "filename": "src/com/android/calculator2/Calculator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 865,
+      "author": {
+        "id": 5911
+      },
+      "writtenOn": "2023-10-26T13:33:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0887c262_794591df",
       "revId": "d34b7652d83a1ae547efe14c49dc268ae6ce4a23",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
