@@ -1,8 +1,13 @@
+/*
+ * SPDX-FileCopyrightText: 2023 The LineageOS Project
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 pluginManagement {
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
-        gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
@@ -12,3 +17,4 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+rootProject.name = "ExactCalculator"
