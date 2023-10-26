@@ -32,13 +32,9 @@ android_app {
     product_specific: true,
 
     static_libs: [
-        "cr",
-        "androidx.core_core",
-        "androidx.annotation_annotation",
-        "androidx.appcompat_appcompat",
-        "androidx.customview_customview",
-        "androidx.fragment_fragment",
-        "androidx.recyclerview_recyclerview",
-        "com.google.android.material_material",
+        // DO NOT EDIT THIS SECTION MANUALLY
+        "androidx.webkit_webkit",
+        "ExactCalculator_com.google.android.material_material",
+        "ExactCalculator_com.hp_crcalc",
     ],
 }
