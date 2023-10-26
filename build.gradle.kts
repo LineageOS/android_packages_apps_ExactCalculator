@@ -3,9 +3,27 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import org.lineageos.generatebp.GenerateBpPlugin
+import org.lineageos.generatebp.GenerateBpPluginExtension
+import org.lineageos.generatebp.models.Module
+
 plugins {
     id("com.android.application") version "8.1.2"
     id("org.jetbrains.kotlin.android") version "1.7.10"
+}
+
+apply {
+    plugin<GenerateBpPlugin>()
+}
+
+buildscript {
+    repositories {
+        maven("https://raw.githubusercontent.com/lineage-next/gradle-generatebp/v1.3/.m2")
+    }
+
+    dependencies {
+        classpath("org.lineageos:gradle-generatebp:+")
+    }
 }
 
 android {
@@ -61,4 +79,22 @@ dependencies {
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.webkit:webkit:1.7.0")
     implementation("com.google.android.material:material:1.9.0")
+}
+
+configure<GenerateBpPluginExtension> {
+    targetSdk.set(android.defaultConfig.targetSdk!!)
+    availableInAOSP.set { module: Module ->
+        when {
+            module.group.startsWith("androidx") -> {
+                // We provide our own androidx.appcompat
+                !module.group.startsWith("androidx.appcompat")
+            }
+            module.group.startsWith("org.jetbrains") -> true
+            module.group == "com.google.auto.value" -> true
+            module.group == "com.google.guava" -> true
+            module.group == "junit" -> true
+            module.group == "cr" -> true
+            else -> false
+        }
+    }
 }
