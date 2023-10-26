@@ -74,11 +74,10 @@ android {
 }
 
 dependencies {
-    implementation(files("cr.jar"))
-
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.webkit:webkit:1.7.0")
     implementation("com.google.android.material:material:1.9.0")
+    implementation("com.hp:crcalc:1.0")
 }
 
 configure<GenerateBpPluginExtension> {
