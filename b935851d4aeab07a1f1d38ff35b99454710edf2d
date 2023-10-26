@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "94a68b0d_346f6d39",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5911
+      },
+      "writtenOn": "2023-10-26T15:01:00Z",
+      "side": 1,
+      "message": "generateBp devs: not quite sure how to solve this in the best way. \"CR\" is a reference to https://android.googlesource.com/platform/external/crcalc/+/refs/heads/main\n\ni included the JAR in gradle so it builds in Android Studio. it also needs to be in Android.bp for the AOSP build, but generateBp removes it.",
+      "revId": "b935851d4aeab07a1f1d38ff35b99454710edf2d",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
