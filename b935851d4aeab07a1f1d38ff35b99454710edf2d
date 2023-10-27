@@ -34,6 +34,24 @@
       "parentUuid": "94a68b0d_346f6d39",
       "revId": "b935851d4aeab07a1f1d38ff35b99454710edf2d",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5584e78b_31eba6e1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5911
+      },
+      "writtenOn": "2023-10-27T06:07:22Z",
+      "side": 1,
+      "message": "see discord, reworking this cause luk published the jar on lineage-next",
+      "parentUuid": "7adbe37d_e13834b1",
+      "revId": "b935851d4aeab07a1f1d38ff35b99454710edf2d",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
