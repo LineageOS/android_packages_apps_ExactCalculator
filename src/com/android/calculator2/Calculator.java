@@ -529,6 +529,7 @@ public class Calculator extends AppCompatActivity
                 return;
             }
         }
+        moveTaskToBack(true);
     }
 
     @Override
