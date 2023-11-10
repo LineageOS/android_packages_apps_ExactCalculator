@@ -16,6 +16,24 @@
       "message": "packages/apps/ExactCalculator/res/values/themes.xml:47: error: resource attr/colorSurfaceContainer (aka com.android.calculator2:attr/colorSurfaceContainer) not found.\npackages/apps/ExactCalculator/res/values/themes.xml:47: error: resource attr/colorSurfaceContainer (aka com.android.calculator2:attr/colorSurfaceContainer) not found.",
       "revId": "357d1e733738081c46b86019181255c32557cfea",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b3d4c68_e3fcf3b0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 31578
+      },
+      "writtenOn": "2023-11-10T06:03:30Z",
+      "side": 1,
+      "message": "```\ndiff --git a/res/values/themes.xml b/res/values/themes.xml\nindex f9c82d7c..9bfe0084 100644\n--- a/res/values/themes.xml\n+++ b/res/values/themes.xml\n@@ -44,7 +44,7 @@\n     \u003c/style\u003e\n \n     \u003cstyle name\u003d\"Theme.Button.Numeric\"\u003e\n-        \u003citem name\u003d\"colorContainer\"\u003e?colorSurfaceContainer\u003c/item\u003e\n+        \u003citem name\u003d\"colorContainer\"\u003e?colorSurface\u003c/item\u003e\n         \u003citem name\u003d\"colorOnContainer\"\u003e?colorOnSurface\u003c/item\u003e\n     \u003c/style\u003e\n```\nCould fix this?",
+      "parentUuid": "d1012445_2191823a",
+      "revId": "357d1e733738081c46b86019181255c32557cfea",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
