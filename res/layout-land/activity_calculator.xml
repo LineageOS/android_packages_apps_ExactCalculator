@@ -16,6 +16,7 @@
         android:id="@+id/history_frame"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/display_background_color"
         app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
