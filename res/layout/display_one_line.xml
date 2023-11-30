@@ -22,7 +22,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/rounded_bottom"
     android:clipChildren="false"
-    android:elevation="4dip"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
