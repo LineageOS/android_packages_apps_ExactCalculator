@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f38d8a3e_adb1eaf7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2023-12-24T20:38:18Z",
+      "side": 1,
+      "message": "When pulling down the history drawer, the toolbar blinks with a darker color before turning into the right one",
+      "revId": "2eaf40a0e93d8820aa9a9acd76b6306d057b8089",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
