@@ -13,37 +13,14 @@
     android:background="?colorSurface">
 
     <com.android.calculator2.HapticButton
-        android:id="@+id/clr"
-        style="@style/PadButtonStyle.Caps"
-        android:contentDescription="@string/desc_clr"
-        android:text="@string/clr"
-        android:theme="@style/Theme.Button.Clear"
-        app:layout_constraintBottom_toTopOf="@id/rowGuide1"
-        app:layout_constraintEnd_toStartOf="@id/columnGuide1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.android.calculator2.HapticButton
-        android:id="@+id/paren"
-        style="@style/PadButtonStyle"
-        android:contentDescription="@string/desc_paren"
-        android:text="@string/paren"
-        android:theme="@style/Theme.Button.Operator"
-        app:layout_constraintBottom_toTopOf="@id/rowGuide1"
-        app:layout_constraintEnd_toStartOf="@id/columnGuide2"
-        app:layout_constraintStart_toStartOf="@id/columnGuide1"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.android.calculator2.HapticButton
         android:id="@+id/lparen"
         style="@style/PadButtonStyle"
         android:contentDescription="@string/desc_lparen"
         android:text="@string/lparen"
         android:theme="@style/Theme.Button.Operator"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/rowGuide1"
-        app:layout_constraintEnd_toStartOf="@id/columnGuide2"
-        app:layout_constraintStart_toStartOf="@id/columnGuide1"
+        app:layout_constraintEnd_toStartOf="@id/columnGuide1"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.android.calculator2.HapticButton
@@ -52,7 +29,6 @@
         android:contentDescription="@string/desc_rparen"
         android:text="@string/rparen"
         android:theme="@style/Theme.Button.Operator"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/rowGuide1"
         app:layout_constraintEnd_toStartOf="@id/columnGuide2"
         app:layout_constraintStart_toStartOf="@id/columnGuide1"

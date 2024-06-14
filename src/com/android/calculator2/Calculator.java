@@ -50,6 +50,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.HorizontalScrollView;
@@ -77,7 +78,8 @@ import java.text.DecimalFormatSymbols;
 
 public class Calculator extends AppCompatActivity
         implements OnTextSizeChangeListener, AlertDialogFragment.OnClickListener,
-        Evaluator.EvaluationListener /* for main result */ {
+        Evaluator.EvaluationListener, /* for main result */
+        OnLongClickListener {
 
     private static final String TAG = "Calculator";
     /**
@@ -219,6 +221,7 @@ public class Calculator extends AppCompatActivity
 
     private TextView mModeView;
     private CalculatorFormula mFormulaText;
+    private HapticButton mDeleteButton;
     private CalculatorResult mResultText;
     private HorizontalScrollView mFormulaContainer;
     private MotionLayout mMainCalculator;
@@ -320,6 +323,7 @@ public class Calculator extends AppCompatActivity
         mMainCalculator = findViewById(R.id.main_calculator);
         mModeView = (TextView) findViewById(R.id.mode);
         mFormulaText = (CalculatorFormula) findViewById(R.id.formula);
+        mDeleteButton = (HapticButton) findViewById(R.id.del);
         mResultText = (CalculatorResult) findViewById(R.id.result);
         mFormulaContainer = (HorizontalScrollView) findViewById(R.id.formula_scroll_view);
         mEvaluator = Evaluator.getInstance(this);
@@ -383,6 +387,7 @@ public class Calculator extends AppCompatActivity
 
         mFormulaText.setOnTextSizeChangeListener(this);
         mFormulaText.addTextChangedListener(mFormulaTextWatcher);
+        mDeleteButton.setOnLongClickListener(this);
 
         if (savedInstanceState != null) {
             restoreInstanceState(savedInstanceState);
@@ -716,9 +721,6 @@ public class Calculator extends AppCompatActivity
             onEquals();
         } else if (id == R.id.del) {
             onDelete();
-        } else if (id == R.id.clr) {
-            onClear();
-            return;  // Toolbar visibility adjusted at end of animation.
         } else if (id == R.id.toggle_inv) {
             final boolean selected = !mInverseToggle.isSelected();
             mInverseToggle.setSelected(selected);
@@ -744,18 +746,6 @@ public class Calculator extends AppCompatActivity
                 evaluateInstantIfNecessary();
             }
             return;
-        } else if (id == R.id.paren) {
-            String expr = mEvaluator.getExprAsString(0);
-            int openCount = expr.length() - expr.replace(KeyMaps.toString(this, R.id.lparen), "")
-                    .length();
-            int closeCount = expr.length() - expr.replace(KeyMaps.toString(this, R.id.rparen), "")
-                    .length();
-
-            if (openCount > closeCount && !expr.endsWith(KeyMaps.toString(this, R.id.lparen))) {
-                addChars(KeyMaps.toString(this, R.id.rparen), true);
-            } else {
-                addChars(KeyMaps.toString(this, R.id.lparen), true);
-            }
         } else {
             cancelIfEvaluating(false);
             if (haveUnprocessed()) {
@@ -781,6 +771,16 @@ public class Calculator extends AppCompatActivity
         mFormulaText.setContentDescription(TextUtils.isEmpty(formula)
                 ? getString(R.string.desc_formula) : null);
     }
+
+    @Override
+    public boolean onLongClick(View view) {
+        if (view.getId() == R.id.del) {
+            onClear();
+            return true;
+        }
+        return false;
+    }
+
 
     // Initial evaluation completed successfully.  Initiate display.
     public void onEvaluate(long index, int initDisplayPrec, int msd, int leastDigPos,

@@ -13,38 +13,15 @@
     android:background="?colorSurface">
 
     <com.android.calculator2.HapticButton
-        android:id="@+id/clr"
-        style="@style/PadButtonStyle.Caps"
-        android:contentDescription="@string/desc_clr"
-        android:text="@string/clr"
-        android:theme="@style/Theme.Button.Clear"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/columnGuide4"
-        app:layout_constraintTop_toBottomOf="@id/rowGuide3" />
-
-    <com.android.calculator2.HapticButton
-        android:id="@+id/paren"
-        style="@style/PadButtonStyle"
-        android:contentDescription="@string/desc_paren"
-        android:text="@string/paren"
-        android:theme="@style/Theme.Button.Operator"
-        app:layout_constraintBottom_toTopOf="@id/rowGuide3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/columnGuide4"
-        app:layout_constraintTop_toTopOf="@id/rowGuide2" />
-
-    <com.android.calculator2.HapticButton
         android:id="@+id/lparen"
         style="@style/PadButtonStyle"
         android:contentDescription="@string/desc_lparen"
         android:text="@string/lparen"
         android:theme="@style/Theme.Button.Operator"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/rowGuide3"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/columnGuide4"
-        app:layout_constraintTop_toTopOf="@id/rowGuide2" />
+        app:layout_constraintTop_toBottomOf="@id/rowGuide3" />
 
     <com.android.calculator2.HapticButton
         android:id="@+id/rparen"
@@ -52,7 +29,6 @@
         android:contentDescription="@string/desc_rparen"
         android:text="@string/rparen"
         android:theme="@style/Theme.Button.Operator"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/rowGuide3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/columnGuide4"
