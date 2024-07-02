@@ -751,7 +751,8 @@ public class Calculator extends AppCompatActivity
             int closeCount = expr.length() - expr.replace(KeyMaps.toString(this, R.id.rparen), "")
                     .length();
 
-            if (openCount > closeCount && !expr.endsWith(KeyMaps.toString(this, R.id.lparen))) {
+            if (openCount > closeCount && !expr.endsWith(KeyMaps.toString(this, R.id.lparen)) &&
+                    !KeyMaps.isBinary(KeyMaps.keyForChar(expr.charAt(expr.length() - 1)))) {
                 addChars(KeyMaps.toString(this, R.id.rparen), true);
             } else {
                 addChars(KeyMaps.toString(this, R.id.lparen), true);
