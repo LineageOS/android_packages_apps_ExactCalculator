@@ -16,6 +16,24 @@
       "message": "What about https://review.lineageos.org/c/LineageOS/android_packages_apps_ExactCalculator/+/394194",
       "revId": "a92b5295520729398a42707fff79004510141fda",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c9ef1091_c064d327",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 26671
+      },
+      "writtenOn": "2024-07-02T12:57:15Z",
+      "side": 1,
+      "message": "oh. didn\u0027t notice it. that\u0027d do it as well",
+      "parentUuid": "479e297b_da53b5db",
+      "revId": "a92b5295520729398a42707fff79004510141fda",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
