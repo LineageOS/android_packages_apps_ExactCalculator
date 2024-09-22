@@ -33,6 +33,24 @@
       "message": "and without any hint in the ui",
       "revId": "737dfc62c7c5925651c85c23df646d12966d3077",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6cdd6284_1a1f030f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2024-09-22T00:45:54Z",
+      "side": 1,
+      "message": "ah, shit, fair point.",
+      "parentUuid": "05caea41_8a55abab",
+      "revId": "737dfc62c7c5925651c85c23df646d12966d3077",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ],
   "submitRequirementResults": []
