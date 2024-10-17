@@ -19,7 +19,7 @@ android_app {
 
     resource_dirs: ["res"],
 
-    sdk_version: "current",
+    sdk_version: "34",
 
     overrides: ["Calculator"],
 
