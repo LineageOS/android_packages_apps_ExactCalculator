@@ -8,8 +8,8 @@ import org.lineageos.generatebp.GenerateBpPluginExtension
 import org.lineageos.generatebp.models.Module
 
 plugins {
-    id("com.android.application") version "8.1.2"
-    id("org.jetbrains.kotlin.android") version "1.7.10"
+    id("com.android.application") version "8.7.1"
+    id("org.jetbrains.kotlin.android") version "1.9.23"
 }
 
 apply {
@@ -18,7 +18,7 @@ apply {
 
 buildscript {
     repositories {
-        maven("https://raw.githubusercontent.com/lineage-next/gradle-generatebp/v1.4/.m2")
+        maven("https://raw.githubusercontent.com/lineage-next/gradle-generatebp/v1.13/.m2")
     }
 
     dependencies {
@@ -75,8 +75,8 @@ android {
 
 dependencies {
     implementation("androidx.gridlayout:gridlayout:1.0.0")
-    implementation("androidx.webkit:webkit:1.7.0")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("androidx.webkit:webkit:1.7.0-alpha02")
+    implementation("com.google.android.material:material:1.11.0")
     implementation("com.hp:crcalc:1.0")
 }
 
@@ -86,6 +86,7 @@ configure<GenerateBpPluginExtension> {
         when {
             module.group.startsWith("androidx") -> true
             module.group.startsWith("org.jetbrains") -> true
+            module.group == "com.google.android.material" -> true
             module.group == "com.google.errorprone" -> true
             module.group == "com.google.guava" -> true
             module.group == "junit" -> true
