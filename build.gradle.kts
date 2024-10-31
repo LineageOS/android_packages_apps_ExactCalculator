@@ -8,7 +8,7 @@ import org.lineageos.generatebp.GenerateBpPluginExtension
 import org.lineageos.generatebp.models.Module
 
 plugins {
-    id("com.android.application") version "8.1.2"
+    id("com.android.application") version "8.7.1"
     id("org.jetbrains.kotlin.android") version "1.7.10"
 }
 
