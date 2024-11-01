@@ -18,9 +18,7 @@
 <resources>
 
     <style name="Theme" parent="Theme.Material3.DayNight">
-        <item name="android:statusBarColor">@color/display_background_color</item>
         <item name="android:windowLightStatusBar">?isLightTheme</item>
-        <item name="android:navigationBarColor">?colorSurface</item>
         <item name="android:windowLightNavigationBar">?isLightTheme</item>
     </style>
 

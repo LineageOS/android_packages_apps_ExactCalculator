@@ -21,6 +21,7 @@
     android:id="@+id/main_calculator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/display_background_color"
     android:orientation="vertical"
     app:layoutDescription="@xml/activity_calculator_scene">
 
