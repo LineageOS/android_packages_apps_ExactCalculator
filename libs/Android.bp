@@ -8,7 +8,7 @@
 java_import {
     name: "ExactCalculator_com.hp_crcalc-nodeps",
     jars: ["com/hp/crcalc/1.0/crcalc-1.0.jar"],
-    sdk_version: "34",
+    sdk_version: "35",
     min_sdk_version: "14",
     apex_available: [
         "//apex_available:platform",
@@ -18,7 +18,7 @@ java_import {
 
 java_library_static {
     name: "ExactCalculator_com.hp_crcalc",
-    sdk_version: "34",
+    sdk_version: "35",
     min_sdk_version: "14",
     apex_available: [
         "//apex_available:platform",
