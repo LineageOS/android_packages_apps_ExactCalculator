@@ -27,13 +27,13 @@ buildscript {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
     namespace = "com.android.calculator2"
 
     defaultConfig {
         applicationId = "com.android.calculator2"
         minSdk = 31
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
