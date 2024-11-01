@@ -6,6 +6,7 @@
 <resources>
 
     <!-- Display background -->
+    <color name="history_background_color">@color/material_dynamic_neutral30</color>
     <color name="display_background_color">@color/material_dynamic_neutral20</color>
 
     <!-- Display text -->

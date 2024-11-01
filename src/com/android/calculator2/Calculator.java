@@ -25,6 +25,9 @@
 
 package com.android.calculator2;
 
+import static androidx.core.view.WindowInsetsCompat.Type.displayCutout;
+import static androidx.core.view.WindowInsetsCompat.Type.ime;
+import static androidx.core.view.WindowInsetsCompat.Type.systemBars;
 import static com.android.calculator2.CalculatorFormula.OnFormulaContextMenuClickListener;
 
 import android.animation.AnimatorSet;
@@ -62,6 +65,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -315,6 +322,7 @@ public class Calculator extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_calculator);
+        setupEdgeToEdge();
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         // Hide all default options in the ActionBar.
@@ -1261,5 +1269,15 @@ public class Calculator extends AppCompatActivity
 
     public interface OnDisplayMemoryOperationsListener {
         boolean shouldDisplayMemory();
+    }
+
+    private void setupEdgeToEdge() {
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        ViewCompat.setOnApplyWindowInsetsListener(requireViewById(R.id.main_calculator),
+            (v, windowInsets) -> {
+                Insets insets = windowInsets.getInsets(systemBars() | ime() | displayCutout());
+                v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+                return WindowInsetsCompat.CONSUMED;
+            });
     }
 }
