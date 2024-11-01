@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e51545fa_3c0e009c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19612
+      },
+      "writtenOn": "2024-11-01T08:24:01Z",
+      "side": 1,
+      "message": "Someone should run `generateBp` task to drop the included material library as AOSP has an updated version now.",
+      "revId": "c0e11499171bfeb5d03e9ffc560d09e1e0dea200",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
