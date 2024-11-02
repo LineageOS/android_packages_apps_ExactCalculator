@@ -16,6 +16,23 @@
       "message": "This deals with edge to edge for this activity.",
       "revId": "3366065e3d6ff538106247c475b0f86d12aac81c",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b6186a7_a2948244",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2024-11-02T21:47:11Z",
+      "side": 1,
+      "message": "I am getting this here:\n\npackages/apps/ExactCalculator/src/com/android/calculator2/Licenses.java:23: error: cannot find symbol\n        setContentView(R.layout.activity_license);\n                               ^\n  symbol:   variable activity_license\n  location: class layout\npackages/apps/ExactCalculator/src/com/android/calculator2/Licenses.java:28: error: cannot find symbol\n        WebView webView \u003d requireViewById(R.id.webview);\n                                              ^\n  symbol:   variable webview\n  location: class id\n2 errors",
+      "revId": "3366065e3d6ff538106247c475b0f86d12aac81c",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
