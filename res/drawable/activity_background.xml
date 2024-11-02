@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2023 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromDegrees="180">
+    <shape>
+        <gradient
+            android:centerX="-10.0"
+            android:startColor="@color/display_background_color"
+            android:endColor="?colorSurface"
+            android:type="sweep" />
+    </shape>
+</rotate>
