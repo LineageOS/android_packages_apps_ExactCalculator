@@ -16,6 +16,24 @@
       "message": "When pulling down the history drawer, the toolbar blinks with a darker color before turning into the right one",
       "revId": "2eaf40a0e93d8820aa9a9acd76b6306d057b8089",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0635b442_7da0ab8e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19612
+      },
+      "writtenOn": "2024-11-02T06:30:49Z",
+      "side": 1,
+      "message": "Fixed, it was happening due to the activity background color being different from the toolbar.",
+      "parentUuid": "f38d8a3e_adb1eaf7",
+      "revId": "2eaf40a0e93d8820aa9a9acd76b6306d057b8089",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
