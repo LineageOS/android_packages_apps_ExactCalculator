@@ -25,6 +25,10 @@
 
 package com.android.calculator2;
 
+import static androidx.core.view.WindowInsetsCompat.Type.displayCutout;
+import static androidx.core.view.WindowInsetsCompat.Type.ime;
+import static androidx.core.view.WindowInsetsCompat.Type.navigationBars;
+import static androidx.core.view.WindowInsetsCompat.Type.systemBars;
 import static com.android.calculator2.CalculatorFormula.OnFormulaContextMenuClickListener;
 
 import android.animation.AnimatorSet;
@@ -62,6 +66,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -232,6 +239,9 @@ public class Calculator extends AppCompatActivity
     private View[] mInvertibleButtons;
     private View[] mInverseButtons;
 
+    private Insets statInsets;
+    private Insets navInsets;
+
     // Characters that were recently entered at the end of the display that have not yet
     // been added to the underlying expression.
     private String mUnprocessedChars = null;
@@ -315,6 +325,7 @@ public class Calculator extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_calculator);
+        setupEdgeToEdge();
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         // Hide all default options in the ActionBar.
@@ -373,7 +384,11 @@ public class Calculator extends AppCompatActivity
             public void onTransitionCompleted(MotionLayout motionLayout, int currentId) {
                 if (currentId == R.id.start_state) {
                     removeHistoryFragment();
+                    requireViewById(R.id.display).setPadding(0, statInsets.top, 0, 0);
+                } else {
+                    requireViewById(R.id.display).setPadding(0, 0, 0, navInsets.bottom);
                 }
+
             }
 
             @Override
@@ -1261,5 +1276,19 @@ public class Calculator extends AppCompatActivity
 
     public interface OnDisplayMemoryOperationsListener {
         boolean shouldDisplayMemory();
+    }
+
+    private void setupEdgeToEdge() {
+        ViewCompat.setOnApplyWindowInsetsListener(requireViewById(R.id.main_calculator),
+            (v, windowInsets) -> {
+                statInsets = windowInsets.getInsets(systemBars() | ime() | displayCutout());
+                navInsets = windowInsets.getInsets(navigationBars());
+
+                requireViewById(R.id.display).setPadding(0, statInsets.top, 0, 0);
+                requireViewById(R.id.history_frame).setPadding(0, statInsets.top, 0, 0);
+                requireViewById(R.id.input_pad).setPadding(0, 0, 0, navInsets.bottom);
+
+                return WindowInsetsCompat.CONSUMED;
+            });
     }
 }
