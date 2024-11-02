@@ -19,8 +19,11 @@
         <item name="android:layoutDirection">ltr</item>
     </style>
 
-    <style name="Theme.Licenses">
-        <item name="title">@string/menu_licenses</item>
+    <style name="Theme.Licenses" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">?colorSurface</item>
+        <item name="android:windowLightStatusBar">?isLightTheme</item>
+        <item name="android:navigationBarColor">?colorSurface</item>
+        <item name="android:windowLightNavigationBar">?isLightTheme</item>
     </style>
 
     <style name="Theme.Button" parent="ThemeOverlay.Material3.Button.TextButton">

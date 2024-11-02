@@ -6,10 +6,10 @@
 package com.android.calculator2;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.webkit.WebView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 public class Licenses extends AppCompatActivity {
 
@@ -18,19 +18,12 @@ public class Licenses extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_license);
 
-        final WebView webView = new WebView(this);
+        Toolbar toolbar = requireViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
+
+        WebView webView = requireViewById(R.id.webview);
         webView.loadUrl(LICENSE_URL);
-
-        setContentView(webView);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }
