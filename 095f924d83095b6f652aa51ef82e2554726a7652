@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb3196c3_6098ee4f",
+        "filename": "src/com/android/calculator2/Calculator.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 1267,
+      "author": {
+        "id": 25732
+      },
+      "writtenOn": "2024-11-09T13:53:20Z",
+      "side": 1,
+      "message": "systemBars should be enough\n\nOne thing for sure is that ime isn\u0027t needed",
+      "range": {
+        "startLine": 1267,
+        "startChar": 55,
+        "endLine": 1267,
+        "endChar": 93
+      },
+      "revId": "095f924d83095b6f652aa51ef82e2554726a7652",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
