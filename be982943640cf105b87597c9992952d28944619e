@@ -50,6 +50,23 @@
       "message": "This is probably fine?",
       "revId": "be982943640cf105b87597c9992952d28944619e",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "197205ea_e736b59f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5911
+      },
+      "writtenOn": "2025-07-08T14:08:39Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "be982943640cf105b87597c9992952d28944619e",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
