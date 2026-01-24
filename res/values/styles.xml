@@ -46,7 +46,7 @@
         <item name="android:textSize">@dimen/result_textsize</item>
     </style>
 
-    <style name="PadButtonStyle" parent="Widget.Material3.Button">
+    <style name="PadButtonStyle" parent="Widget.Material3Expressive.Button">
         <item name="android:layout_width">0dip</item>
         <item name="android:layout_height">0dip</item>
         <item name="android:gravity">center</item>
