@@ -203,7 +203,7 @@
         android:id="@+id/del"
         style="@style/PadButtonStyle.Image"
         android:contentDescription="@string/desc_del"
-        android:theme="@style/Theme.Button.Numeric"
+        android:theme="@style/Theme.Button.Clear"
         app:icon="@drawable/ic_del"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/columnGuide3"
