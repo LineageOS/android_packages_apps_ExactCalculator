@@ -66,10 +66,8 @@ class CalculatorExpr {
                                      // as a list of tokens.  Constant
                                      // tokens are always nonempty.
 
-    private static enum TokenKind { CONSTANT, OPERATOR, PRE_EVAL };
+    private enum TokenKind { CONSTANT, OPERATOR, PRE_EVAL };
     private static TokenKind[] tokenKindValues = TokenKind.values();
-    private final static BigInteger BIG_MILLION = BigInteger.valueOf(1000000);
-    private final static BigInteger BIG_BILLION = BigInteger.valueOf(1000000000);
 
     private static abstract class Token {
         abstract TokenKind kind();
@@ -137,9 +135,7 @@ class CalculatorExpr {
         Constant() {
             mWhole = "";
             mFraction = "";
-            // mSawDecimal = false;
-            // mExponent = 0;
-        };
+        }
 
         Constant(DataInput in) throws IOException {
             mWhole = in.readUTF();
@@ -226,7 +222,7 @@ class CalculatorExpr {
         }
 
         public boolean isEmpty() {
-            return (mSawDecimal == false && mWhole.isEmpty());
+            return (!mSawDecimal && mWhole.isEmpty());
         }
 
         /**
@@ -379,7 +375,7 @@ class CalculatorExpr {
     }
 
     CalculatorExpr() {
-        mExpr = new ArrayList<Token>();
+        mExpr = new ArrayList<>();
     }
 
     private CalculatorExpr(ArrayList<Token> expr) {
@@ -390,7 +386,7 @@ class CalculatorExpr {
      * Construct CalculatorExpr, by reading it from in.
      */
     CalculatorExpr(DataInput in) throws IOException {
-        mExpr = new ArrayList<Token>();
+        mExpr = new ArrayList<>();
         int size = in.readInt();
         for (int i = 0; i < size; ++i) {
             mExpr.add(newToken(in));
@@ -653,9 +649,6 @@ class CalculatorExpr {
             mPrefixLength = len;
             mExprResolver = er;
         }
-        void write(DataOutput out) throws IOException {
-            out.writeBoolean(mDegreeMode);
-        }
     }
 
     private UnifiedReal toRadians(UnifiedReal x, EvalContext ec) {
@@ -854,10 +847,7 @@ class CalculatorExpr {
         if (!(t instanceof Operator)) return true;
         int id = ((Operator)(t)).id;
         if (KeyMaps.isBinary(id)) return false;
-        if (id == R.id.op_fact || id == R.id.rparen) {
-            return false;
-        }
-        return true;
+        return id != R.id.op_fact && id != R.id.rparen;
     }
 
     private EvalRet evalTerm(int i, EvalContext ec) throws SyntaxException {
@@ -877,7 +867,6 @@ class CalculatorExpr {
                 val = val.multiply(tmp.val);
             }
             cpos = tmp.pos;
-            is_mul = is_div = false;
         }
         return new EvalRet(cpos, val);
     }
@@ -1029,7 +1018,7 @@ class CalculatorExpr {
         // for positive and negative indices separately, but not their union. Currently we
         // just settle for reverse breadth-first-search order, which handles the common case
         // of simple dependency chains well.
-        ArrayList<Long> list = new ArrayList<Long>();
+        ArrayList<Long> list = new ArrayList<>();
         int scanned = 0;  // We've added expressions referenced by [0, scanned) to the list
         addReferencedExprs(list, er);
         while (scanned != list.size()) {

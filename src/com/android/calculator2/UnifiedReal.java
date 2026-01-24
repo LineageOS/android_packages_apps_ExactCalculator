@@ -314,7 +314,6 @@ public class UnifiedReal {
         if (r1 == r2) {
             return false;
         }
-        CR other;
         if (r1 == CR_E || r1 == CR_PI) {
             return definitelyAlgebraic(r2);
         }
@@ -423,19 +422,6 @@ public class UnifiedReal {
         return mCrFactor == CR_ONE || mRatFactor == BoundedRational.ZERO || definitelyIrrational();
     }
 
-    /**
-     * Return a double approximation.
-     * Rational arguments are currently rounded to nearest, with ties away from zero.
-     * TODO: Improve rounding.
-     */
-    public double doubleValue() {
-        if (mCrFactor == CR_ONE) {
-            return mRatFactor.doubleValue(); // Hopefully correctly rounded
-        } else {
-            return crValue().doubleValue(); // Approximately correctly rounded
-        }
-    }
-
     public CR crValue() {
         return mRatFactor.crValue().multiply(mCrFactor);
     }
@@ -534,46 +520,10 @@ public class UnifiedReal {
         throw new AssertionError("Can't compare UnifiedReals for exact equality");
     }
 
-    /**
-     * Returns true if values are definitely known not to be equal, false in all other cases.
-     * Performs no approximate evaluation.
-     */
-    public boolean definitelyNotEquals(UnifiedReal u) {
-        boolean isNamed = isNamed(mCrFactor);
-        boolean uIsNamed = isNamed(u.mCrFactor);
-        if (isNamed && uIsNamed) {
-            if (definitelyIndependent(mCrFactor, u.mCrFactor)) {
-                return mRatFactor.signum() != 0 || u.mRatFactor.signum() != 0;
-            } else if (mCrFactor == u.mCrFactor) {
-                return !mRatFactor.equals(u.mRatFactor);
-            }
-            return !mRatFactor.equals(u.mRatFactor);
-        }
-        if (mRatFactor.signum() == 0) {
-            return uIsNamed && u.mRatFactor.signum() != 0;
-        }
-        if (u.mRatFactor.signum() == 0) {
-            return isNamed && mRatFactor.signum() != 0;
-        }
-        return false;
-    }
-
     // And some slightly faster convenience functions for special cases:
 
     public boolean definitelyZero() {
         return mRatFactor.signum() == 0;
-    }
-
-    /**
-     * Can this number be determined to be definitely nonzero without performing approximate
-     * evaluation?
-     */
-    public boolean definitelyNonZero() {
-        return isNamed(mCrFactor) && mRatFactor.signum() != 0;
-    }
-
-    public boolean definitelyOne() {
-        return mCrFactor == CR_ONE && mRatFactor.equals(BoundedRational.ONE);
     }
 
     /**
@@ -794,22 +744,6 @@ public class UnifiedReal {
         return new UnifiedReal(crValue().cos());
     }
 
-    public UnifiedReal tan() {
-        BigInteger piTwelfths = getPiTwelfths();
-        if (piTwelfths != null) {
-            int i = piTwelfths.intValue();
-            if (i == 6 || i == 18) {
-                throw new ArithmeticException("Tangent undefined");
-            }
-            UnifiedReal top = sinPiTwelfths(i);
-            UnifiedReal bottom = cosPiTwelfths(i);
-            if (top != null && bottom != null) {
-                return top.divide(bottom);
-            }
-        }
-        return sin().divide(cos());
-    }
-
     // Throw an exception if the argument is definitely out of bounds for asin or acos.
     private void checkAsinDomain() {
         if (isComparable(ONE) && (compareTo(ONE) > 0 || compareTo(MINUS_ONE) < 0)) {
@@ -893,8 +827,6 @@ public class UnifiedReal {
         }
         return new UnifiedReal(UnaryCRFunction.atanFunction.execute(crValue()));
     }
-
-    private static final BigInteger BIG_TWO = BigInteger.valueOf(2);
 
     // The (in abs value) integral exponent for which we attempt to use a recursive
     // algorithm for evaluating pow(). The recursive algorithm works independent of the sign of the
@@ -1062,7 +994,6 @@ public class UnifiedReal {
             return 0;
         }
         long result = 0;
-        BigInteger remaining = n;
         BigInteger bigBase = BigInteger.valueOf(base);
         BigInteger base16th = null;  // base^16, computed lazily
         while (n.mod(bigBase).signum() == 0) {

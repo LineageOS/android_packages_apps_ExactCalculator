@@ -102,11 +102,11 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
         /**
          * Called if evaluation was explicitly cancelled or evaluation timed out.
          */
-        public void onCancelled(long index);
+        void onCancelled(long index);
         /**
          * Called if evaluation resulted in an error.
          */
-        public void onError(long index, int errorId);
+        void onError(long index, int errorId);
         /**
          * Called if evaluation completed normally.
          * @param index index of expression whose evaluation completed
@@ -116,14 +116,14 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
          *        expansion
          * @param truncatedWholePart the integer part of the result
          */
-        public void onEvaluate(long index, int initPrecOffset, int msdIndex, int lsdOffset,
-                String truncatedWholePart);
+        void onEvaluate(long index, int initPrecOffset, int msdIndex, int lsdOffset,
+                        String truncatedWholePart);
         /**
          * Called in response to a reevaluation request, once more precision is available.
          * Typically the listener wil respond by calling getString() to retrieve the new
          * better approximation.
          */
-        public void onReevaluate(long index);  // More precision is now available; please redraw.
+        void onReevaluate(long index);  // More precision is now available; please redraw.
     }
 
     /**
@@ -137,7 +137,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
          * Return the maximum number of (adjusted, digit-width) characters that will fit in the
          * result display.  May be called asynchronously from non-UI thread.
          */
-       public int getMaxChars();
+        int getMaxChars();
         /**
          * Return the number of additional digit widths required to add digit separators to
          * the supplied string prefix.
@@ -145,17 +145,17 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
          * represent a whole number. Callable from non-UI thread.
          * Returns zero if metrics information is not yet available.
          */
-        public float separatorChars(String s, int len);
+        float separatorChars(String s, int len);
         /**
          * Return extra width credit for presence of a decimal point, as fraction of a digit width.
          * May be called by non-UI thread.
          */
-        public float getDecimalCredit();
+        float getDecimalCredit();
         /**
          * Return extra width credit for absence of ellipsis, as fraction of a digit width.
          * May be called by non-UI thread.
          */
-        public float getNoEllipsisCredit();
+        float getNoEllipsisCredit();
     }
 
     /**
@@ -536,12 +536,7 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                 // invoke the listener with onCancelled.
                 timeout = NON_MAIN_TIMEOUT;
             }
-            mTimeoutRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    handleTimeout();
-                }
-            };
+            mTimeoutRunnable = this::handleTimeout;
             mTimeoutHandler.removeCallbacks(mTimeoutRunnable);
             mTimeoutHandler.postDelayed(mTimeoutRunnable, timeout);
         }
@@ -747,11 +742,9 @@ public class Evaluator implements CalculatorExpr.ExprResolver {
                 final int precOffset = prec[0].intValue();
                 return new ReevalResult(mExprInfo.mVal.get().toStringTruncated(precOffset),
                         precOffset);
-            } catch(ArithmeticException e) {
+            } catch (ArithmeticException | CR.PrecisionOverflowException e) {
                 return null;
-            } catch(CR.PrecisionOverflowException e) {
-                return null;
-            } catch(CR.AbortedException e) {
+            } catch (CR.AbortedException e) {
                 // Should only happen if the task was cancelled, in which case we don't look at
                 // the result.
                 return null;

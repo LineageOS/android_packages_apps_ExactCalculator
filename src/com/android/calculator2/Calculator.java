@@ -48,7 +48,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -309,17 +308,17 @@ public class Calculator extends AppCompatActivity
 
         setContentView(R.layout.activity_calculator);
         setupEdgeToEdge();
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar(findViewById(R.id.toolbar));
 
         // Hide all default options in the ActionBar.
         getSupportActionBar().setDisplayOptions(0);
 
         mMainCalculator = findViewById(R.id.main_calculator);
-        mModeView = (TextView) findViewById(R.id.mode);
-        mFormulaText = (CalculatorFormula) findViewById(R.id.formula);
-        mDeleteButton = (HapticButton) findViewById(R.id.del);
-        mResultText = (CalculatorResult) findViewById(R.id.result);
-        mFormulaContainer = (HorizontalScrollView) findViewById(R.id.formula_scroll_view);
+        mModeView = findViewById(R.id.mode);
+        mFormulaText = findViewById(R.id.formula);
+        mDeleteButton = findViewById(R.id.del);
+        mResultText = findViewById(R.id.result);
+        mFormulaContainer = findViewById(R.id.formula_scroll_view);
         mEvaluator = Evaluator.getInstance(this);
         mEvaluator.setCallback(mEvaluatorCallback);
         mResultText.setEvaluator(mEvaluator, Evaluator.MAIN_INDEX);
@@ -328,8 +327,8 @@ public class Calculator extends AppCompatActivity
         final TextView dpButton = findViewById(R.id.input_pad).findViewById(R.id.dec_point);
         dpButton.setText(getDecimalSeparator());
 
-        mInverseToggle = (TextView) findViewById(R.id.toggle_inv);
-        mModeToggle = (TextView) findViewById(R.id.toggle_mode);
+        mInverseToggle = findViewById(R.id.toggle_inv);
+        mModeToggle = findViewById(R.id.toggle_mode);
 
         mIsOneLine = mResultText.getVisibility() == View.INVISIBLE;
 

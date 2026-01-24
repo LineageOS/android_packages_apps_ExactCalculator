@@ -9,14 +9,12 @@ import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,7 +46,7 @@ public class HistoryFragment extends Fragment {
         final View view = inflater.inflate(
                 R.layout.fragment_history, container, false /* attachToRoot */);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.history_recycler_view);
+        mRecyclerView = view.findViewById(R.id.history_recycler_view);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -63,28 +61,20 @@ public class HistoryFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
 
-        final Toolbar toolbar = (Toolbar) view.findViewById(R.id.history_toolbar);
+        final Toolbar toolbar = view.findViewById(R.id.history_toolbar);
         toolbar.inflateMenu(R.menu.fragment_history);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.menu_clear_history) {
-                    final Calculator calculator = (Calculator) getActivity();
-                    AlertDialogFragment.showMessageDialog(calculator, "" /* title */,
-                            getString(R.string.dialog_clear),
-                            getString(R.string.menu_clear_history),
-                            CLEAR_DIALOG_TAG);
-                    return true;
-                }
-                return onOptionsItemSelected(item);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.menu_clear_history) {
+                final Calculator calculator = (Calculator) getActivity();
+                AlertDialogFragment.showMessageDialog(calculator, "" /* title */,
+                        getString(R.string.dialog_clear),
+                        getString(R.string.menu_clear_history),
+                        CLEAR_DIALOG_TAG);
+                return true;
             }
+            return onOptionsItemSelected(item);
         });
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
         return view;
     }
 

@@ -272,12 +272,9 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
                 outRect.left = (int) (outRect.right * 0.9f);
             }
         };
-        setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                mActionMode = startActionMode(mPasteActionModeCallback, ActionMode.TYPE_FLOATING);
-                return true;
-            }
+        setOnLongClickListener(v -> {
+            mActionMode = startActionMode(mPasteActionModeCallback, ActionMode.TYPE_FLOATING);
+            return true;
         });
     }
 
@@ -285,24 +282,15 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
      * Use ContextMenu for paste support on L and lower.
      */
     private void setupContextMenu() {
-        setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
-            @Override
-            public void onCreateContextMenu(ContextMenu contextMenu, View view,
-                    ContextMenu.ContextMenuInfo contextMenuInfo) {
-                final MenuInflater inflater = new MenuInflater(getContext());
-                createContextMenu(inflater, contextMenu);
-                mContextMenu = contextMenu;
-                for (int i = 0; i < contextMenu.size(); i++) {
-                    contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorFormula.this);
-                }
+        setOnCreateContextMenuListener((contextMenu, view, contextMenuInfo) -> {
+            final MenuInflater inflater = new MenuInflater(getContext());
+            createContextMenu(inflater, contextMenu);
+            mContextMenu = contextMenu;
+            for (int i = 0; i < contextMenu.size(); i++) {
+                contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorFormula.this);
             }
         });
-        setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                return showContextMenu();
-            }
-        });
+        setOnLongClickListener(v -> showContextMenu());
     }
 
     private boolean createContextMenu(MenuInflater inflater, Menu menu) {

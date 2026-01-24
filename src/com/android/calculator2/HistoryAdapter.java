@@ -178,9 +178,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             if (viewType == EMPTY_VIEW_TYPE) {
                 return;
             }
-            mDate = (TextView) v.findViewById(R.id.history_date);
-            mFormula = (AlignedTextView) v.findViewById(R.id.history_formula);
-            mResult = (CalculatorResult) v.findViewById(R.id.history_result);
+            mDate = v.findViewById(R.id.history_date);
+            mFormula = v.findViewById(R.id.history_formula);
+            mResult = v.findViewById(R.id.history_result);
             mDivider = v.findViewById(R.id.history_divider);
         }
 
@@ -190,14 +190,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         public CalculatorResult getResult() {
             return mResult;
-        }
-
-        public TextView getDate() {
-            return mDate;
-        }
-
-        public View getDivider() {
-            return mDivider;
         }
     }
 }

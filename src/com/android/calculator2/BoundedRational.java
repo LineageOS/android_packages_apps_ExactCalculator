@@ -127,13 +127,6 @@ public class BoundedRational {
         return result;
     }
 
-    public static String toString(BoundedRational r) {
-        if (r == null) {
-            return "not a small rational";
-        }
-        return r.toString();
-    }
-
     /**
      * Returns a truncated (rounded towards 0) representation of the result.
      * Includes n digits to the right of the decimal point.
@@ -334,10 +327,6 @@ public class BoundedRational {
         return new BoundedRational(r.mNum.negate(), r.mDen);
     }
 
-    public static BoundedRational subtract(BoundedRational r1, BoundedRational r2) {
-        return add(r1, negate(r2));
-    }
-
     /**
      * Return product of r1 and r2 without reducing the result.
      */
@@ -418,14 +407,6 @@ public class BoundedRational {
     public final static BoundedRational MINUS_TWO = new BoundedRational(-2);
     public final static BoundedRational TEN = new BoundedRational(10);
     public final static BoundedRational TWELVE = new BoundedRational(12);
-    public final static BoundedRational THIRTY = new BoundedRational(30);
-    public final static BoundedRational MINUS_THIRTY = new BoundedRational(-30);
-    public final static BoundedRational FORTY_FIVE = new BoundedRational(45);
-    public final static BoundedRational MINUS_FORTY_FIVE = new BoundedRational(-45);
-    public final static BoundedRational NINETY = new BoundedRational(90);
-    public final static BoundedRational MINUS_NINETY = new BoundedRational(-90);
-
-    private static final BigInteger BIG_TWO = BigInteger.valueOf(2);
     private static final BigInteger BIG_MINUS_ONE = BigInteger.valueOf(-1);
 
     /**
