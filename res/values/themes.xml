@@ -5,7 +5,7 @@
 -->
 <resources>
 
-    <style name="Theme" parent="Theme.Material3.DayNight">
+    <style name="Theme" parent="Theme.Material3Expressive.DayNight">
         <item name="android:statusBarColor">@color/display_background_color</item>
         <item name="android:windowLightStatusBar">?isLightTheme</item>
         <item name="android:navigationBarColor">?colorSurface</item>
@@ -19,14 +19,14 @@
         <item name="android:layoutDirection">ltr</item>
     </style>
 
-    <style name="Theme.Licenses" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.Licenses" parent="Theme.Material3Expressive.DayNight.NoActionBar">
         <item name="android:statusBarColor">?colorSurface</item>
         <item name="android:windowLightStatusBar">?isLightTheme</item>
         <item name="android:navigationBarColor">?colorSurface</item>
         <item name="android:windowLightNavigationBar">?isLightTheme</item>
     </style>
 
-    <style name="Theme.Button" parent="ThemeOverlay.Material3.Button.TextButton">
+    <style name="Theme.Button" parent="ThemeOverlay.Material3Expressive.Button.TextButton">
     </style>
 
     <style name="Theme.Button.Advanced">
@@ -45,8 +45,8 @@
     </style>
 
     <style name="Theme.Button.Clear">
-        <item name="colorContainer">?colorTertiaryContainer</item>
-        <item name="colorOnContainer">?colorOnTertiaryContainer</item>
+        <item name="colorContainer">?colorSurfaceVariant</item>
+        <item name="colorOnContainer">?colorOnSurfaceVariant</item>
     </style>
 
     <style name="Theme.Button.Action">

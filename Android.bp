@@ -26,6 +26,7 @@ android_app {
 
     static_libs: [
         // DO NOT EDIT THIS SECTION MANUALLY
+        "androidx.graphics_graphics-shapes",
         "androidx.gridlayout_gridlayout",
         "androidx.webkit_webkit",
         "com.google.android.material_material",
