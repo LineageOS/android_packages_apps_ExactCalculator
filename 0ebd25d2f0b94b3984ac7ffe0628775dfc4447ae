@@ -33,6 +33,24 @@
       "message": "Can you check how we avoid importing this into our apps? It\u0027s some gradle thingy",
       "revId": "0ebd25d2f0b94b3984ac7ffe0628775dfc4447ae",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa010d7b_2fb97a3d",
+        "filename": "libs/Android.bp",
+        "patchSetId": 3
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 10067
+      },
+      "writtenOn": "2026-01-27T23:47:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d4b1bfdc_8bf6d839",
+      "revId": "0ebd25d2f0b94b3984ac7ffe0628775dfc4447ae",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
