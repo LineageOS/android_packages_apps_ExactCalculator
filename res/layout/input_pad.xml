@@ -180,9 +180,9 @@
         app:layout_constraintTop_toBottomOf="@id/rowGuide3" />
 
     <com.android.calculator2.HapticButton
-        android:id="@+id/dec_point"
+        android:id="@+id/digit_0"
         style="@style/PadButtonStyle"
-        android:contentDescription="@string/desc_dec_point"
+        android:text="@string/digit_0"
         android:theme="@style/Theme.Button.Numeric"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/columnGuide1"
@@ -190,9 +190,9 @@
         app:layout_constraintTop_toBottomOf="@id/rowGuide4" />
 
     <com.android.calculator2.HapticButton
-        android:id="@+id/digit_0"
+        android:id="@+id/dec_point"
         style="@style/PadButtonStyle"
-        android:text="@string/digit_0"
+        android:contentDescription="@string/desc_dec_point"
         android:theme="@style/Theme.Button.Numeric"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/columnGuide2"
