@@ -5,9 +5,9 @@
 
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         google()
         mavenCentral()
+        gradlePluginPortal()
         maven("https://raw.githubusercontent.com/lineage-next/gradle-generatebp/v1.31/.m2")
     }
 }
@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ExactCalculator"
+include(":app")
