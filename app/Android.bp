@@ -1,5 +1,5 @@
 //
-// SPDX-FileCopyrightText: 2020 The LineageOS Project
+// SPDX-FileCopyrightText: The LineageOS Project
 // SPDX-License-Identifier: Apache-2.0
 //
 
@@ -10,19 +10,18 @@ package {
 android_app {
     name: "ExactCalculator",
 
-    resource_dirs: ["res"],
-
-    sdk_version: "35",
-
-    overrides: ["Calculator"],
-
-    srcs: ["src/**/*.java"],
-
-    optimize: {
-        proguard_flags_files: ["proguard.flags"],
-    },
+    srcs: [
+        "src/main/java/**/*.java",
+    ],
+    resource_dirs: ["src/main/res"],
+    asset_dirs: ["src/main/assets"],
+    manifest: "src/main/AndroidManifest.xml",
 
     product_specific: true,
+
+    overrides: [
+        "Calculator",
+    ],
 
     static_libs: [
         // DO NOT EDIT THIS SECTION MANUALLY
@@ -33,4 +32,10 @@ android_app {
         "ExactCalculator_com.hp_crcalc",
         "kotlin-stdlib",
     ],
+
+    sdk_version: "35",
+
+    optimize: {
+        proguard_flags_files: ["proguard.flags"],
+    },
 }
