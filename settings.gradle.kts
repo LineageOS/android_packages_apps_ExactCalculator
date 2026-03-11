@@ -1,13 +1,13 @@
 /*
- * SPDX-FileCopyrightText: 2023-2025 The LineageOS Project
+ * SPDX-FileCopyrightText: The LineageOS Project
  * SPDX-License-Identifier: Apache-2.0
  */
 
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         google()
         mavenCentral()
+        gradlePluginPortal()
         maven("https://raw.githubusercontent.com/lineage-next/gradle-generatebp/v1.31/.m2")
     }
 }
@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ExactCalculator"
+include(":app")
