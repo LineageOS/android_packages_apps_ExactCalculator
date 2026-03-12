@@ -4,13 +4,12 @@
 #
 
 [versions]
-agp = "8.7.1"
+agp = "9.1.0"
 crcalc = "1.0"
 generatebp = "+"
-gridlayout = "1.0.0"
-kotlin = "1.9.23"
-material = "1.14.0-alpha09"
-webkit = "1.7.0-alpha02"
+gridlayout = "1.1.0"
+material = "1.14.0-alpha10"
+webkit = "1.15.0"
 
 [libraries]
 androidx-gridlayout = { group = "androidx.gridlayout", name = "gridlayout", version.ref = "gridlayout" }
@@ -20,5 +19,4 @@ crcalc = { group = "com.hp", name = "crcalc", version.ref = "crcalc" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 lineageos-generatebp = { id = "org.lineageos.generatebp", version.ref = "generatebp" }
