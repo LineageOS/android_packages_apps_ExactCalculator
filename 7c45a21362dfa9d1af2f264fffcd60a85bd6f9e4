@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6dc25779_0565bef4",
+        "filename": "gradle/wrapper/gradle-wrapper.properties",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 25732
+      },
+      "writtenOn": "2026-03-15T00:56:22Z",
+      "side": 1,
+      "message": "Run `./gradlew wrapper`",
+      "revId": "7c45a21362dfa9d1af2f264fffcd60a85bd6f9e4",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
