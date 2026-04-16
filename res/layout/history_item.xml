@@ -49,6 +49,8 @@
 
     </com.android.calculator2.CalculatorScrollView>
 
+    <!-- TODO: make formula selectable -->
+
     <com.android.calculator2.CalculatorResult
         android:id="@+id/history_result"
         style="@style/HistoryItemTextStyle"
