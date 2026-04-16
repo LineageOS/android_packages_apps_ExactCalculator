@@ -714,6 +714,8 @@ public class Calculator extends AppCompatActivity
             onEquals();
         } else if (id == R.id.del) {
             onDelete();
+        } else if (id == R.id.clr) {
+            onClear();
         } else if (id == R.id.toggle_inv) {
             final boolean selected = !mInverseToggle.isSelected();
             mInverseToggle.setSelected(selected);
@@ -739,6 +741,19 @@ public class Calculator extends AppCompatActivity
                 evaluateInstantIfNecessary();
             }
             return;
+        } else if (id == R.id.paren) {
+            // If we just added a function or left paren, add another.
+            // If we don't have any open parentheses, add a left one.
+            // If we end with a digit or a right parenthesis, add a right one.
+            // If we end with an operator, add a left one.
+            if (!mEvaluator.getExpr(Evaluator.MAIN_INDEX).hasTrailingLeftParen() &&
+                    mEvaluator.getExpr(Evaluator.MAIN_INDEX).hasOpenParentheses() &&
+                    (mEvaluator.getExpr(Evaluator.MAIN_INDEX).hasTrailingRightParen() ||
+                            mEvaluator.getExpr(Evaluator.MAIN_INDEX).hasTrailingConstant()))
+                addExplicitKeyToExpr(R.id.rparen);
+            else
+                addExplicitKeyToExpr(R.id.lparen);
+            redisplayAfterFormulaChange();
         } else {
             cancelIfEvaluating(false);
             if (haveUnprocessed()) {

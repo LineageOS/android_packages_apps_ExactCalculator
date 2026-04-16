@@ -445,6 +445,47 @@ class CalculatorExpr {
     }
 
     /**
+     * Does this expression contain an unmatched lparen?
+     */
+    boolean hasOpenParentheses() {
+        int open = 0;
+        for (Token t : mExpr) {
+            if (!(t instanceof Operator)) continue;
+            int id = ((Operator) t).id;
+            if (id == R.id.lparen || KeyMaps.isFunc(id)) {
+                open++;
+            } else if (id == R.id.rparen) {
+                open--;
+            }
+        }
+        return open > 0;
+    }
+
+    /**
+     * Does this expression end with a left parenthesis?
+     */
+    boolean hasTrailingLeftParen() {
+        int s = mExpr.size();
+        if (s == 0) return false;
+        Token t = mExpr.get(s-1);
+        if (!(t instanceof Operator)) return false;
+        int id = ((Operator) t).id;
+        return id == R.id.lparen || KeyMaps.isFunc(id);
+    }
+
+    /**
+     * Does this expression end with a right parenthesis?
+     */
+    boolean hasTrailingRightParen() {
+        int s = mExpr.size();
+        if (s == 0) return false;
+        Token t = mExpr.get(s-1);
+        if (!(t instanceof Operator)) return false;
+        int id = ((Operator) t).id;
+        return id == R.id.rparen;
+    }
+
+    /**
      * Append press of button with given id to expression.
      * If the insertion would clearly result in a syntax error, either just return false
      * and do nothing, or make an adjustment to avoid the problem.  We do the latter only
