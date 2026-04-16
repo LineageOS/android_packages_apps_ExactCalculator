@@ -37,6 +37,8 @@
                 android:textColor="@color/display_formula_text_color" />
         </com.android.calculator2.CalculatorScrollView>
 
+        <!-- TODO: make formula selectable, add cursor -->
+
         <com.android.calculator2.CalculatorResult
             android:id="@+id/result"
             style="@style/DisplayTextStyle.Result"
