@@ -13,10 +13,10 @@
     android:background="?colorSurface">
 
     <com.android.calculator2.HapticButton
-        android:id="@+id/lparen"
+        android:id="@+id/clr"
         style="@style/PadButtonStyle"
-        android:contentDescription="@string/desc_lparen"
-        android:text="@string/lparen"
+        android:contentDescription="@string/desc_clr"
+        android:text="@string/clr"
         android:theme="@style/Theme.Button.Operator"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,10 +24,10 @@
         app:layout_constraintTop_toBottomOf="@id/rowGuide3" />
 
     <com.android.calculator2.HapticButton
-        android:id="@+id/rparen"
+        android:id="@+id/paren"
         style="@style/PadButtonStyle"
-        android:contentDescription="@string/desc_rparen"
-        android:text="@string/rparen"
+        android:contentDescription="@string/desc_paren"
+        android:text="@string/paren"
         android:theme="@style/Theme.Button.Operator"
         app:layout_constraintBottom_toTopOf="@id/rowGuide3"
         app:layout_constraintEnd_toEndOf="parent"
