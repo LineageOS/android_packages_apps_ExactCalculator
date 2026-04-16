@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8ed3599_3bd26174",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 24418
+      },
+      "writtenOn": "2026-04-16T22:25:54Z",
+      "side": 1,
+      "message": "I\u0027ve done a good amount of testing with this, but it\u0027d be good to have someone else play with the smart parentheses.",
+      "revId": "535edcf295e063e81cf18921ab5233c9e4758564",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
