@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "74efe1f8_2e7331f4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 24418
+      },
+      "writtenOn": "2026-04-16T22:44:01Z",
+      "side": 1,
+      "message": "Added a screenshot of Google Calculator to https://gistpreview.github.io/?90857947dddf60ee7dd964c393451d37.",
+      "revId": "01a32364fe5d5ee8207ea87809ba539c97ffd1a1",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
