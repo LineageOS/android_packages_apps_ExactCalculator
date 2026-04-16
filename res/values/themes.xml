@@ -35,7 +35,7 @@
     </style>
 
     <style name="Theme.Button.Numeric">
-        <item name="colorContainer">?colorSurfaceContainer</item>
+        <item name="colorContainer">?colorSurfaceVariant</item>
         <item name="colorOnContainer">?colorOnSurface</item>
     </style>
 
@@ -52,6 +52,11 @@
     <style name="Theme.Button.Action">
         <item name="colorContainer">?colorPrimaryContainer</item>
         <item name="colorOnContainer">?colorOnPrimaryContainer</item>
+    </style>
+
+    <style name="Theme.Button.Equals">
+        <item name="colorContainer">?colorTertiary</item>
+        <item name="colorOnContainer">?colorOnTertiary</item>
     </style>
 
 </resources>

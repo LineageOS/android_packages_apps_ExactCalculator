@@ -215,7 +215,7 @@
         style="@style/PadButtonStyle"
         android:contentDescription="@string/desc_eq"
         android:text="@string/eq"
-        android:theme="@style/Theme.Button.Action"
+        android:theme="@style/Theme.Button.Equals"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/columnGuide4"
         app:layout_constraintStart_toEndOf="@id/columnGuide3"

@@ -14,4 +14,7 @@
     <color name="display_result_text_color">@color/material_dynamic_neutral70</color>
     <color name="display_result_exponent_text_color">@color/material_dynamic_secondary60</color>
 
+    <!-- Button pad -->
+    <!-- TODO -->
+
 </resources>
