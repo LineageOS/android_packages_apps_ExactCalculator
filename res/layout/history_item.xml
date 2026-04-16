@@ -58,4 +58,6 @@
         android:maxLines="1"
         android:textColor="@color/display_result_text_color" />
 
+    <!-- TODO: make result and formula clickable (with ripple), appending it to the end of the current formula -->
+
 </LinearLayout>
