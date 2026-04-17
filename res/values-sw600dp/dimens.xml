@@ -4,6 +4,7 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources>
+    <dimen name="advanced_pad_toggle_margin">32dp</dimen>
     <dimen name="drag_handle_margin">16dp</dimen>
 
     <!-- Dimens for display formula. -->

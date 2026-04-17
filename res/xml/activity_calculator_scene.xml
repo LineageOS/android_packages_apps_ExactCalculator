@@ -18,7 +18,53 @@
             motion:touchAnchorSide="bottom" />
     </Transition>
 
+    <Transition
+        motion:constraintSetStart="@+id/start_state"
+        motion:constraintSetEnd="@+id/collapsed_state"
+        motion:duration="300" />
+
+    <Transition
+        motion:constraintSetEnd="@+id/end_state"
+        motion:constraintSetStart="@+id/collapsed_state"
+        motion:duration="1000"
+        motion:layoutDuringTransition="honorRequest">
+        <OnSwipe
+            motion:dragDirection="dragDown"
+            motion:limitBoundsTo="@id/display"
+            motion:touchAnchorId="@id/display"
+            motion:touchAnchorSide="bottom" />
+        <KeyFrameSet>
+            <KeyAttribute
+                motion:framePosition="0"
+                motion:motionTarget="@id/advanced_pad"
+                android:alpha="0" />
+            <KeyAttribute
+                motion:framePosition="100"
+                motion:motionTarget="@id/advanced_pad"
+                android:alpha="0" />
+        </KeyFrameSet>
+    </Transition>
+
     <ConstraintSet android:id="@+id/start_state" />
+
+    <ConstraintSet android:id="@+id/collapsed_state">
+        <Constraint
+            android:id="@id/advanced_pad"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintHeight_percent="0.0"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/display" />
+        <Constraint
+            android:id="@id/input_pad"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            motion:layout_constraintDimensionRatio="H,4:5"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/advanced_pad" />
+    </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end_state">
         <Constraint

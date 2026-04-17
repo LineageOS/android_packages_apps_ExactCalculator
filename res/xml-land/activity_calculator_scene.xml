@@ -18,7 +18,30 @@
             motion:touchAnchorSide="bottom" />
     </Transition>
 
+    <Transition
+        motion:constraintSetStart="@+id/start_state"
+        motion:constraintSetEnd="@+id/collapsed_state"
+        motion:duration="300" />
+
+    <Transition
+        motion:constraintSetEnd="@+id/end_state"
+        motion:constraintSetStart="@+id/collapsed_state"
+        motion:duration="1000"
+        motion:layoutDuringTransition="honorRequest">
+        <OnSwipe
+            motion:dragDirection="dragDown"
+            motion:limitBoundsTo="@id/display"
+            motion:touchAnchorId="@id/display"
+            motion:touchAnchorSide="bottom" />
+    </Transition>
+
     <ConstraintSet android:id="@+id/start_state" />
+
+    <ConstraintSet android:id="@+id/collapsed_state">
+        <Constraint
+            android:id="@id/layout_vertical_guideline"
+            motion:layout_constraintGuide_percent="0.0" />
+    </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end_state">
         <Constraint
