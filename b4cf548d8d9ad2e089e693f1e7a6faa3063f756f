@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5108063_df82e0d8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 24418
+      },
+      "writtenOn": "2026-04-17T03:10:51Z",
+      "side": 1,
+      "message": "Still need to fix the initial state, split the collapsed/expanded state from the history state, and fix the extra space at the bottom when collapsed.",
+      "revId": "b4cf548d8d9ad2e089e693f1e7a6faa3063f756f",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
