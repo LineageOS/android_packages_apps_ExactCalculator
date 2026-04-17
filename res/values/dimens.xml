@@ -11,6 +11,7 @@
     <dimen name="history_item_text_padding_bottom">16dip</dimen>
 
     <dimen name="drag_handle_margin">8dp</dimen>
+    <dimen name="advanced_pad_toggle_margin">16dp</dimen>
     <dimen name="display_corner_radius">16dp</dimen>
 
     <!-- Dimens for display formula. -->
