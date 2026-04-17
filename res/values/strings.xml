@@ -219,6 +219,11 @@
     <!-- Content description for "inv" button to hide inverse functions. [CHAR_LIMIT=NONE] -->
     <string name="desc_inv_on">hide inverse functions</string>
 
+    <!-- Content descriptions for toggle to hide advanced pad. [CHAR_LIMIT=NONE] -->
+    <string name="desc_collapse_advanced_pad">hide scientific buttons</string>
+    <!-- Content descriptions for toggle to show advanced pad. [CHAR_LIMIT=NONE] -->
+    <string name="desc_expand_advanced_pad">show scientific buttons</string>
+
     <!-- Content description for formula field when it is empty. [CHAR_LIMIT=NONE] -->
     <string name="desc_formula">No formula</string>
     <!-- Content description for result field when it is empty. [CHAR_LIMIT=NONE] -->

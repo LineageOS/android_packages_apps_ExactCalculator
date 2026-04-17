@@ -118,6 +118,7 @@ public class Calculator extends AppCompatActivity
      */
     private static final String KEY_EVAL_STATE = NAME + "_eval_state";
     private static final String KEY_INVERSE_MODE = NAME + "_inverse_mode";
+    private static final String KEY_ADVANCED_PAD_COLLAPSED = NAME + "_advanced_pad_collapsed";
 
     private final ViewTreeObserver.OnPreDrawListener mPreDrawListener =
             new ViewTreeObserver.OnPreDrawListener() {
@@ -220,6 +221,7 @@ public class Calculator extends AppCompatActivity
 
     private TextView mInverseToggle;
     private TextView mModeToggle;
+    private View mToggleAdvancedPadButton;
 
     private View[] mInvertibleButtons;
     private View[] mInverseButtons;
@@ -279,6 +281,18 @@ public class Calculator extends AppCompatActivity
             }
         }
         onInverseToggled(savedInstanceState.getBoolean(KEY_INVERSE_MODE));
+        if (savedInstanceState.getBoolean(KEY_ADVANCED_PAD_COLLAPSED, false)) {
+            mMainCalculator.post(() -> {
+                mMainCalculator.setTransition(R.id.start_state, R.id.collapsed_state);
+                mMainCalculator.setProgress(1.0f);
+                float base = mIsOneLine ? 90f : 0f;
+                mToggleAdvancedPadButton.setRotation(base + 180f);
+                mToggleAdvancedPadButton.setContentDescription(
+                        getString(R.string.desc_expand_advanced_pad));
+                mToggleAdvancedPadButton.setTooltipText(
+                        getString(R.string.desc_expand_advanced_pad));
+            });
+        }
         // TODO: We're currently not saving and restoring scroll position.
         //       We probably should.  Details may require care to deal with:
         //         - new display size
@@ -329,6 +343,8 @@ public class Calculator extends AppCompatActivity
 
         mInverseToggle = findViewById(R.id.toggle_inv);
         mModeToggle = findViewById(R.id.toggle_mode);
+        mToggleAdvancedPadButton = findViewById(R.id.toggle_advanced_pad);
+        mToggleAdvancedPadButton.setOnClickListener(v -> onToggleAdvancedPad());
 
         mIsOneLine = mResultText.getVisibility() == View.INVISIBLE;
 
@@ -352,20 +368,42 @@ public class Calculator extends AppCompatActivity
         mMainCalculator.setTransitionListener(new MotionLayout.TransitionListener() {
             @Override
             public void onTransitionStarted(MotionLayout motionLayout, int startId, int endId) {
-                if (startId == R.id.start_state) {
+                if (endId == R.id.end_state) {
                     showHistoryFragment();
                 }
+                mToggleAdvancedPadButton.setEnabled(endId != R.id.end_state
+                        && startId != R.id.end_state);
             }
 
             @Override
             public void onTransitionChange(MotionLayout motionLayout, int startId, int endId,
                                            float progress) {
+                if ((startId == R.id.start_state && endId == R.id.collapsed_state
+                            || startId == R.id.collapsed_state && endId == R.id.start_state)) {
+                    float base = mIsOneLine ? 90f : 0f;
+                    float collapsed = endId == R.id.collapsed_state ? progress : (1f - progress);
+                    mToggleAdvancedPadButton.setRotation(base + collapsed * 180f);
+                }
             }
 
             @Override
             public void onTransitionCompleted(MotionLayout motionLayout, int currentId) {
-                if (currentId == R.id.start_state) {
+                if (currentId == R.id.start_state || currentId == R.id.collapsed_state) {
                     removeHistoryFragment();
+                }
+                mToggleAdvancedPadButton.setEnabled(currentId != R.id.end_state);
+                if (currentId == R.id.start_state || currentId == R.id.collapsed_state) {
+                    float base = mIsOneLine ? 90f : 0f;
+                    mToggleAdvancedPadButton.setRotation(
+                            currentId == R.id.collapsed_state ? base + 180f : base);
+                    mToggleAdvancedPadButton.setContentDescription(getString(
+                            currentId == R.id.collapsed_state
+                                    ? R.string.desc_expand_advanced_pad
+                                    : R.string.desc_collapse_advanced_pad));
+                    mToggleAdvancedPadButton.setTooltipText(getString(
+                            currentId == R.id.collapsed_state
+                                    ? R.string.desc_expand_advanced_pad
+                                    : R.string.desc_collapse_advanced_pad));
                 }
             }
 
@@ -422,6 +460,8 @@ public class Calculator extends AppCompatActivity
         }
         outState.putByteArray(KEY_EVAL_STATE, byteArrayStream.toByteArray());
         outState.putBoolean(KEY_INVERSE_MODE, mInverseToggle.isSelected());
+        outState.putBoolean(KEY_ADVANCED_PAD_COLLAPSED,
+                mMainCalculator.getCurrentState() == R.id.collapsed_state);
         // We must wait for asynchronous writes to complete, since outState may contain
         // references to expressions being written.
         mEvaluator.waitForWrites();
@@ -582,6 +622,15 @@ public class Calculator extends AppCompatActivity
                     redisplayAfterFormulaChange();
                 }
                 return true;
+        }
+    }
+
+    private void onToggleAdvancedPad() {
+        int current = mMainCalculator.getCurrentState();
+        if (current == R.id.start_state) {
+            mMainCalculator.transitionToState(R.id.collapsed_state);
+        } else if (current == R.id.collapsed_state) {
+            mMainCalculator.transitionToState(R.id.start_state);
         }
     }
 
