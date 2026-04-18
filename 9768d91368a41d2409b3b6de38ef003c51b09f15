@@ -16,6 +16,23 @@
       "message": "Apparently the whole smart parentheses thing was tried in the past in I9c72066fbc8ba77fefd78b59c5b78db9d2ad3ece and reverted in I8fe696e23d75545a1ee23641448ea31ce31da0c0... my take at it in I778dc2d466e8181080ae30fc827c72124a64bee4 was better, but was still missing a few cases... I think I have everything now.",
       "revId": "9768d91368a41d2409b3b6de38ef003c51b09f15",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d2e4d30_533376e9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 11883
+      },
+      "writtenOn": "2026-04-18T08:17:25Z",
+      "side": 1,
+      "message": "lol we can always revert if shit hits the fan",
+      "revId": "9768d91368a41d2409b3b6de38ef003c51b09f15",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
