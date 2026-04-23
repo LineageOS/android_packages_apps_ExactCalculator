@@ -7,19 +7,18 @@ import org.lineageos.generatebp.GenerateBpPluginExtension
 import org.lineageos.generatebp.models.Module
 
 plugins {
-    id("com.android.application") version "8.7.1"
-    id("org.jetbrains.kotlin.android") version "1.9.23"
+    id("com.android.application") version "9.2.0"
     id("org.lineageos.generatebp") version "+"
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 36
     namespace = "com.android.calculator2"
 
     defaultConfig {
         applicationId = "com.android.calculator2"
         minSdk = 31
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }
@@ -35,7 +34,7 @@ android {
             // Includes the default ProGuard rules files.
             setProguardFiles(
                 listOf(
-                    getDefaultProguardFile("proguard-android.txt"),
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard.flags"
                 )
             )
@@ -51,18 +50,19 @@ android {
     }
     sourceSets {
         getByName("main") {
-            res.srcDirs("res")
-            java.srcDirs("src")
-            assets.srcDirs("assets")
+            res.directories.add("res")
+            res.directories.add("res")
+            java.directories.add("src")
+            assets.directories.add("assets")
             manifest.srcFile("AndroidManifest.xml")
         }
     }
 }
 
 dependencies {
-    implementation("androidx.gridlayout:gridlayout:1.0.0")
+    implementation("androidx.gridlayout:gridlayout:1.1.0")
     implementation("androidx.webkit:webkit:1.7.0-alpha02")
-    implementation("com.google.android.material:material:1.14.0-alpha09")
+    implementation("com.google.android.material:material:1.14.0-beta01")
     implementation("com.hp:crcalc:1.0")
 }
 
