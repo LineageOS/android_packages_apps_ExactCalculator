@@ -7,6 +7,7 @@ package com.android.calculator2;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 
@@ -40,5 +41,13 @@ public class HapticButton extends MaterialButton {
             // Passthrough
             return false;
         });
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (getIcon() == null) {
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, h * 0.4f);
+        }
     }
 }
