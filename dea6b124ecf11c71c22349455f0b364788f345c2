@@ -16,6 +16,23 @@
       "message": "works, any better idea?",
       "revId": "dea6b124ecf11c71c22349455f0b364788f345c2",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7350bbff_331207b5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 11883
+      },
+      "writtenOn": "2026-05-18T13:50:35Z",
+      "side": 1,
+      "message": "Looks fine to me, but maybe we should make those dp dimensions so that they get scaled automatically instead of _manually_ doing that in the View @patrick@pgaskin.net",
+      "revId": "dea6b124ecf11c71c22349455f0b364788f345c2",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
