@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "46797f40_4d1b4135",
+        "filename": "src/com/android/calculator2/HapticButton.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 10067
+      },
+      "writtenOn": "2026-05-19T14:30:30Z",
+      "side": 1,
+      "message": "changing text size breaks delete button icon alignment...",
+      "revId": "8986a0cd51e95287c3b2b4265a422859cc1cf865",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
