@@ -40,73 +40,14 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 public class ExpressionDB {
-    private final boolean CONTINUE_WITH_BAD_DB = false;
-
-    /* Table contents */
-    public static class ExpressionEntry implements BaseColumns {
-        public static final String TABLE_NAME = "expressions";
-        public static final String COLUMN_NAME_EXPRESSION = "expression";
-        public static final String COLUMN_NAME_FLAGS = "flags";
-        // Time stamp as returned by currentTimeMillis().
-        public static final String COLUMN_NAME_TIMESTAMP = "timeStamp";
-    }
-
-    /* Data to be written to or read from a row in the table */
-    public static class RowData {
-        private static final int DEGREE_MODE = 2;
-        private static final int LONG_TIMEOUT = 1;
-        public final byte[] mExpression;
-        public final int mFlags;
-        public long mTimeStamp;  // 0 ==> this and next field to be filled in when written.
-        private static int flagsFromDegreeAndTimeout(Boolean DegreeMode, Boolean LongTimeout) {
-            return (DegreeMode ? DEGREE_MODE : 0) | (LongTimeout ? LONG_TIMEOUT : 0);
-        }
-        private boolean degreeModeFromFlags(int flags) {
-            return (flags & DEGREE_MODE) != 0;
-        }
-        private boolean longTimeoutFromFlags(int flags) {
-            return (flags & LONG_TIMEOUT) != 0;
-        }
-        private RowData(byte[] expr, int flags, long timeStamp) {
-            mExpression = expr;
-            mFlags = flags;
-            mTimeStamp = timeStamp;
-        }
-        /**
-         * More client-friendly constructor that hides implementation ugliness.
-         * utcOffset here is uncompressed, in milliseconds.
-         * A zero timestamp will cause it to be automatically filled in.
-         */
-        public RowData(byte[] expr, boolean degreeMode, boolean longTimeout, long timeStamp) {
-            this(expr, flagsFromDegreeAndTimeout(degreeMode, longTimeout), timeStamp);
-        }
-        public boolean degreeMode() {
-            return degreeModeFromFlags(mFlags);
-        }
-        public boolean longTimeout() {
-            return longTimeoutFromFlags(mFlags);
-        }
-        /**
-         * Return a ContentValues object representing the current data.
-         */
-        public ContentValues toContentValues() {
-            ContentValues cvs = new ContentValues();
-            cvs.put(ExpressionEntry.COLUMN_NAME_EXPRESSION, mExpression);
-            cvs.put(ExpressionEntry.COLUMN_NAME_FLAGS, mFlags);
-            if (mTimeStamp == 0) {
-                mTimeStamp = System.currentTimeMillis();
-            }
-            cvs.put(ExpressionEntry.COLUMN_NAME_TIMESTAMP, mTimeStamp);
-            return cvs;
-        }
-    }
-
+    // Never allocate new negative indicees (row ids) >= MAXIMUM_MIN_INDEX.
+    public static final long MAXIMUM_MIN_INDEX = -10;
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + ExpressionEntry.TABLE_NAME + " ("
-            + ExpressionEntry._ID + " INTEGER PRIMARY KEY,"
-            + ExpressionEntry.COLUMN_NAME_EXPRESSION + " BLOB,"
-            + ExpressionEntry.COLUMN_NAME_FLAGS + " INTEGER,"
-            + ExpressionEntry.COLUMN_NAME_TIMESTAMP + " INTEGER)";
+                    + ExpressionEntry._ID + " INTEGER PRIMARY KEY,"
+                    + ExpressionEntry.COLUMN_NAME_EXPRESSION + " BLOB,"
+                    + ExpressionEntry.COLUMN_NAME_FLAGS + " INTEGER,"
+                    + ExpressionEntry.COLUMN_NAME_TIMESTAMP + " INTEGER)";
     private static final String SQL_DROP_TABLE =
             "DROP TABLE IF EXISTS " + ExpressionEntry.TABLE_NAME;
     private static final String SQL_GET_MIN = "SELECT MIN(" + ExpressionEntry._ID
@@ -117,40 +58,18 @@ public class ExpressionDB {
             + " WHERE " + ExpressionEntry._ID + " = ?";
     private static final String SQL_GET_ALL = "SELECT * FROM " + ExpressionEntry.TABLE_NAME
             + " WHERE " + ExpressionEntry._ID + " <= ? AND " +
-            ExpressionEntry._ID +  " >= ?" + " ORDER BY " + ExpressionEntry._ID + " DESC ";
+            ExpressionEntry._ID + " >= ?" + " ORDER BY " + ExpressionEntry._ID + " DESC ";
     // We may eventually need an index by timestamp. We don't use it yet.
     private static final String SQL_CREATE_TIMESTAMP_INDEX =
             "CREATE INDEX timestamp_index ON " + ExpressionEntry.TABLE_NAME + "("
-            + ExpressionEntry.COLUMN_NAME_TIMESTAMP + ")";
+                    + ExpressionEntry.COLUMN_NAME_TIMESTAMP + ")";
     private static final String SQL_DROP_TIMESTAMP_INDEX = "DROP INDEX IF EXISTS timestamp_index";
-
-    private class ExpressionDBHelper extends SQLiteOpenHelper {
-        // If you change the database schema, you must increment the database version.
-        public static final int DATABASE_VERSION = 1;
-        public static final String DATABASE_NAME = "Expressions.db";
-
-        public ExpressionDBHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL(SQL_CREATE_ENTRIES);
-            db.execSQL(SQL_CREATE_TIMESTAMP_INDEX);
-        }
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            // For now just throw away history on database version upgrade/downgrade.
-            db.execSQL(SQL_DROP_TIMESTAMP_INDEX);
-            db.execSQL(SQL_DROP_TABLE);
-            onCreate(db);
-        }
-        public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            onUpgrade(db, oldVersion, newVersion);
-        }
-    }
-
-    private ExpressionDBHelper mExpressionDBHelper;
-
+    // Gap between negative and positive row ids in the database.
+    // Expressions with index [MAXIMUM_MIN_INDEX .. 0] are not stored.
+    private static final long GAP = -MAXIMUM_MIN_INDEX + 1;
+    private final boolean CONTINUE_WITH_BAD_DB = false;
+    private final ExpressionDBHelper mExpressionDBHelper;
     private SQLiteDatabase mExpressionDB;  // Constant after initialization.
-
     // Expression indices between mMinAccessible and mMaxAccessible inclusive can be accessed.
     // We set these to more interesting values if a database access fails.
     // We punt on writes outside this range. We should never read outside this range.
@@ -159,37 +78,28 @@ public class ExpressionDB {
     // huge value.
     private long mMinAccessible = -10000000L;
     private long mMaxAccessible = 10000000L;
-
-    // Never allocate new negative indicees (row ids) >= MAXIMUM_MIN_INDEX.
-    public static final long MAXIMUM_MIN_INDEX = -10;
-
     // Minimum index value in DB.
     private long mMinIndex;
     // Maximum index value in DB.
     private long mMaxIndex;
-
     // A cursor that refers to the whole table, in reverse order.
     private AbstractWindowedCursor mAllCursor;
-
     // Expression index corresponding to a zero absolute offset for mAllCursor.
     // This is the argument we passed to the query.
     // We explicitly query only for entries that existed when we started, to avoid
     // interference from updates as we're running. It's unclear whether or not this matters.
     private int mAllCursorBase;
-
     // Database has been opened, mMinIndex and mMaxIndex are correct, mAllCursorBase and
     // mAllCursor have been set.
     private boolean mDBInitialized;
-
-    // Gap between negative and positive row ids in the database.
-    // Expressions with index [MAXIMUM_MIN_INDEX .. 0] are not stored.
-    private static final long GAP = -MAXIMUM_MIN_INDEX + 1;
-
     // mLock protects mExpressionDB, mMinAccessible, and mMaxAccessible, mAllCursor,
     // mAllCursorBase, mMinIndex, mMaxIndex, and mDBInitialized. We access mExpressionDB without
     // synchronization after it's known to be initialized.  Used to wait for database
     // initialization.
-    private Object mLock = new Object();
+    private final Object mLock = new Object();
+    private boolean databaseWarningIssued;
+    private int mIncompleteWrites = 0;
+    private final Object mWriteCountsLock = new Object();  // Protects the preceding field.
 
     public ExpressionDB(Context context) {
         mExpressionDBHelper = new ExpressionDBHelper(context);
@@ -204,7 +114,7 @@ public class ExpressionDB {
         if (!CONTINUE_WITH_BAD_DB) {
             return false;
         }
-        synchronized(mLock) {
+        synchronized (mLock) {
             return mMinAccessible > mMaxAccessible;
         }
     }
@@ -214,7 +124,7 @@ public class ExpressionDB {
         if (!CONTINUE_WITH_BAD_DB) {
             return true;
         }
-        synchronized(mLock) {
+        synchronized (mLock) {
             return index >= mMinAccessible && index <= mMaxAccessible;
         }
     }
@@ -226,78 +136,11 @@ public class ExpressionDB {
             throw new RuntimeException("Database access failed");
         }
         displayDatabaseWarning();
-        synchronized(mLock) {
+        synchronized (mLock) {
             mMinAccessible = 1L;
             mMaxAccessible = -1L;
         }
     }
-
-    /**
-     * Initialize the database in the background.
-     */
-    private class AsyncInitializer extends AsyncTask<ExpressionDBHelper, Void, SQLiteDatabase> {
-        @Override
-        protected SQLiteDatabase doInBackground(ExpressionDBHelper... helper) {
-            try {
-                SQLiteDatabase db = helper[0].getWritableDatabase();
-                synchronized(mLock) {
-                    mExpressionDB = db;
-                    try (Cursor minResult = db.rawQuery(SQL_GET_MIN, null)) {
-                        if (!minResult.moveToFirst()) {
-                            // Empty database.
-                            mMinIndex = MAXIMUM_MIN_INDEX;
-                        } else {
-                            mMinIndex = Math.min(minResult.getLong(0), MAXIMUM_MIN_INDEX);
-                        }
-                    }
-                    try (Cursor maxResult = db.rawQuery(SQL_GET_MAX, null)) {
-                        if (!maxResult.moveToFirst()) {
-                            // Empty database.
-                            mMaxIndex = 0L;
-                        } else {
-                            mMaxIndex = Math.max(maxResult.getLong(0), 0L);
-                        }
-                    }
-                    if (mMaxIndex > Integer.MAX_VALUE) {
-                        throw new AssertionError("Expression index absurdly large");
-                    }
-                    mAllCursorBase = (int)mMaxIndex;
-                    if (mMaxIndex != 0L || mMinIndex != MAXIMUM_MIN_INDEX) {
-                        // Set up a cursor for reading the entire database.
-                        String args[] = new String[]
-                                { Long.toString(mAllCursorBase), Long.toString(mMinIndex) };
-                        mAllCursor = (AbstractWindowedCursor) db.rawQuery(SQL_GET_ALL, args);
-                        if (!mAllCursor.moveToFirst()) {
-                            setBadDB();
-                            return null;
-                        }
-                    }
-                    mDBInitialized = true;
-                    // We notify here, since there are unlikely cases in which the UI thread
-                    // may be blocked on us, preventing onPostExecute from running.
-                    mLock.notifyAll();
-                }
-                return db;
-            } catch(SQLiteException e) {
-                Log.e("Calculator", "Database initialization failed.\n", e);
-                synchronized(mLock) {
-                    setBadDB();
-                    mLock.notifyAll();
-                }
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(SQLiteDatabase result) {
-            if (result == null) {
-                displayDatabaseWarning();
-            } // else doInBackground already set expressionDB.
-        }
-        // On cancellation we do nothing;
-    }
-
-    private boolean databaseWarningIssued;
 
     /**
      * Display a warning message that a database access failed.
@@ -314,13 +157,13 @@ public class ExpressionDB {
      * Wait until the database and mAllCursor, etc. have been initialized.
      */
     private void waitForDBInitialized() {
-        synchronized(mLock) {
+        synchronized (mLock) {
             // InterruptedExceptions are inconvenient here. Defer.
             boolean caught = false;
             while (!mDBInitialized && !isDBBad()) {
                 try {
                     mLock.wait();
-                } catch(InterruptedException e) {
+                } catch (InterruptedException e) {
                     caught = true;
                 }
             }
@@ -331,41 +174,6 @@ public class ExpressionDB {
     }
 
     /**
-     * Erase the entire database. Assumes no other accesses to the database are
-     * currently in progress
-     * These tasks must be executed on a serial executor to avoid reordering writes.
-     */
-    private class AsyncEraser extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... nothings) {
-            mExpressionDB.execSQL(SQL_DROP_TIMESTAMP_INDEX);
-            mExpressionDB.execSQL(SQL_DROP_TABLE);
-            try {
-                mExpressionDB.execSQL("VACUUM");
-            } catch(Exception e) {
-                Log.v("Calculator", "Database VACUUM failed\n", e);
-                // Should only happen with concurrent execution, which should be impossible.
-            }
-            mExpressionDB.execSQL(SQL_CREATE_ENTRIES);
-            mExpressionDB.execSQL(SQL_CREATE_TIMESTAMP_INDEX);
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void nothing) {
-            synchronized(mLock) {
-                // Reinitialize everything to an empty and fully functional database.
-                mMinAccessible = -10000000L;
-                mMaxAccessible = 10000000L;
-                mMinIndex = MAXIMUM_MIN_INDEX;
-                mMaxIndex = mAllCursorBase = 0;
-                mDBInitialized = true;
-                mLock.notifyAll();
-            }
-        }
-        // On cancellation we do nothing;
-    }
-
-    /**
      * Erase ALL database entries.
      * This is currently only safe if expressions that may refer to them are also erased.
      * Should only be called when concurrent references to the database are impossible.
@@ -373,21 +181,15 @@ public class ExpressionDB {
      */
     public void eraseAll() {
         waitForDBInitialized();
-        synchronized(mLock) {
+        synchronized (mLock) {
             mDBInitialized = false;
         }
         AsyncEraser eraser = new AsyncEraser();
         eraser.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    // We track the number of outstanding writes to prevent onSaveInstanceState from
-    // completing with in-flight database writes.
-
-    private int mIncompleteWrites = 0;
-    private Object mWriteCountsLock = new Object();  // Protects the preceding field.
-
     private void writeCompleted() {
-        synchronized(mWriteCountsLock) {
+        synchronized (mWriteCountsLock) {
             if (--mIncompleteWrites == 0) {
                 mWriteCountsLock.notifyAll();
             }
@@ -395,7 +197,7 @@ public class ExpressionDB {
     }
 
     private void writeStarted() {
-        synchronized(mWriteCountsLock) {
+        synchronized (mWriteCountsLock) {
             ++mIncompleteWrites;
         }
     }
@@ -407,7 +209,7 @@ public class ExpressionDB {
      * in deadlock.
      */
     public void waitForWrites() {
-        synchronized(mWriteCountsLock) {
+        synchronized (mWriteCountsLock) {
             boolean caught = false;
             while (mIncompleteWrites != 0) {
                 try {
@@ -422,40 +224,8 @@ public class ExpressionDB {
         }
     }
 
-    /**
-     * Insert the given row in the database without blocking the UI thread.
-     * These tasks must be executed on a serial executor to avoid reordering writes.
-     */
-    private class AsyncWriter extends AsyncTask<ContentValues, Void, Long> {
-        @Override
-        protected Long doInBackground(ContentValues... cvs) {
-            long index = cvs[0].getAsLong(ExpressionEntry._ID);
-            long result = mExpressionDB.insert(ExpressionEntry.TABLE_NAME, null, cvs[0]);
-            writeCompleted();
-            // Return 0 on success, row id on failure.
-            if (result == -1) {
-                return index;
-            } else if (result != index) {
-                throw new AssertionError("Expected row id " + index + ", got " + result);
-            } else {
-                return 0L;
-            }
-        }
-        @Override
-        protected void onPostExecute(Long result) {
-            if (result != 0) {
-                synchronized(mLock) {
-                    if (result > 0) {
-                        mMaxAccessible = result - 1;
-                    } else {
-                        mMinAccessible = result + 1;
-                    }
-                }
-                displayDatabaseWarning();
-            }
-        }
-        // On cancellation we do nothing;
-    }
+    // We track the number of outstanding writes to prevent onSaveInstanceState from
+    // completing with in-flight database writes.
 
     /**
      * Add a row with index outside existing range.
@@ -467,7 +237,7 @@ public class ExpressionDB {
     public long addRow(boolean negativeIndex, RowData data) {
         long newIndex;
         waitForDBInitialized();
-        synchronized(mLock) {
+        synchronized (mLock) {
             if (negativeIndex) {
                 newIndex = mMinIndex - 1;
                 mMinIndex = newIndex;
@@ -511,7 +281,7 @@ public class ExpressionDB {
      */
     private RowData getRowDirect(long index) {
         RowData result;
-        String args[] = new String[] { Long.toString(index) };
+        String[] args = new String[]{Long.toString(index)};
         try (Cursor resultC = mExpressionDB.rawQuery(SQL_GET_ROW, args)) {
             if (!resultC.moveToFirst()) {
                 setBadDB();
@@ -530,14 +300,14 @@ public class ExpressionDB {
      * We assume that the database has been initialized, and the argument has been range checked.
      */
     private RowData getRowFromCursor(int offset) {
-        synchronized(mLock) {
+        synchronized (mLock) {
             if (!mAllCursor.moveToPosition(offset)) {
                 Log.e("Calculator", "Failed to move cursor to position " + offset);
                 setBadDB();
                 return makeBadRow();
             }
             return new RowData(mAllCursor.getBlob(1), mAllCursor.getInt(2) /* flags */,
-                        mAllCursor.getLong(3) /* timestamp */);
+                    mAllCursor.getLong(3) /* timestamp */);
         }
     }
 
@@ -555,7 +325,7 @@ public class ExpressionDB {
             displayDatabaseWarning();
             return makeBadRow();
         }
-        int position =  mAllCursorBase - (int)index;
+        int position = mAllCursorBase - (int) index;
         // We currently assume that the only gap between expression indices is the one around 0.
         if (index < 0) {
             position -= GAP;
@@ -569,7 +339,7 @@ public class ExpressionDB {
             // since we're likely to have to return to the current position.
             // This is a heuristic; we don't worry about doing the "wrong" thing in the race case.
             int endPosition;
-            synchronized(mLock) {
+            synchronized (mLock) {
                 CursorWindow window = mAllCursor.getWindow();
                 endPosition = window.getStartPosition() + window.getNumRows();
             }
@@ -584,20 +354,250 @@ public class ExpressionDB {
 
     public long getMinIndex() {
         waitForDBInitialized();
-        synchronized(mLock) {
+        synchronized (mLock) {
             return mMinIndex;
         }
     }
 
     public long getMaxIndex() {
         waitForDBInitialized();
-        synchronized(mLock) {
+        synchronized (mLock) {
             return mMaxIndex;
         }
     }
 
     public void close() {
         mExpressionDBHelper.close();
+    }
+
+    /* Table contents */
+    public static class ExpressionEntry implements BaseColumns {
+        public static final String TABLE_NAME = "expressions";
+        public static final String COLUMN_NAME_EXPRESSION = "expression";
+        public static final String COLUMN_NAME_FLAGS = "flags";
+        // Time stamp as returned by currentTimeMillis().
+        public static final String COLUMN_NAME_TIMESTAMP = "timeStamp";
+    }
+
+    /* Data to be written to or read from a row in the table */
+    public static class RowData {
+        private static final int DEGREE_MODE = 2;
+        private static final int LONG_TIMEOUT = 1;
+        public final byte[] mExpression;
+        public final int mFlags;
+        public long mTimeStamp;  // 0 ==> this and next field to be filled in when written.
+
+        private RowData(byte[] expr, int flags, long timeStamp) {
+            mExpression = expr;
+            mFlags = flags;
+            mTimeStamp = timeStamp;
+        }
+
+        /**
+         * More client-friendly constructor that hides implementation ugliness.
+         * utcOffset here is uncompressed, in milliseconds.
+         * A zero timestamp will cause it to be automatically filled in.
+         */
+        public RowData(byte[] expr, boolean degreeMode, boolean longTimeout, long timeStamp) {
+            this(expr, flagsFromDegreeAndTimeout(degreeMode, longTimeout), timeStamp);
+        }
+
+        private static int flagsFromDegreeAndTimeout(Boolean DegreeMode, Boolean LongTimeout) {
+            return (DegreeMode ? DEGREE_MODE : 0) | (LongTimeout ? LONG_TIMEOUT : 0);
+        }
+
+        private boolean degreeModeFromFlags(int flags) {
+            return (flags & DEGREE_MODE) != 0;
+        }
+
+        private boolean longTimeoutFromFlags(int flags) {
+            return (flags & LONG_TIMEOUT) != 0;
+        }
+
+        public boolean degreeMode() {
+            return degreeModeFromFlags(mFlags);
+        }
+
+        public boolean longTimeout() {
+            return longTimeoutFromFlags(mFlags);
+        }
+
+        /**
+         * Return a ContentValues object representing the current data.
+         */
+        public ContentValues toContentValues() {
+            ContentValues cvs = new ContentValues();
+            cvs.put(ExpressionEntry.COLUMN_NAME_EXPRESSION, mExpression);
+            cvs.put(ExpressionEntry.COLUMN_NAME_FLAGS, mFlags);
+            if (mTimeStamp == 0) {
+                mTimeStamp = System.currentTimeMillis();
+            }
+            cvs.put(ExpressionEntry.COLUMN_NAME_TIMESTAMP, mTimeStamp);
+            return cvs;
+        }
+    }
+
+    private class ExpressionDBHelper extends SQLiteOpenHelper {
+        // If you change the database schema, you must increment the database version.
+        public static final int DATABASE_VERSION = 1;
+        public static final String DATABASE_NAME = "Expressions.db";
+
+        public ExpressionDBHelper(Context context) {
+            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        }
+
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL(SQL_CREATE_ENTRIES);
+            db.execSQL(SQL_CREATE_TIMESTAMP_INDEX);
+        }
+
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            // For now just throw away history on database version upgrade/downgrade.
+            db.execSQL(SQL_DROP_TIMESTAMP_INDEX);
+            db.execSQL(SQL_DROP_TABLE);
+            onCreate(db);
+        }
+
+        public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            onUpgrade(db, oldVersion, newVersion);
+        }
+    }
+
+    /**
+     * Initialize the database in the background.
+     */
+    private class AsyncInitializer extends AsyncTask<ExpressionDBHelper, Void, SQLiteDatabase> {
+        @Override
+        protected SQLiteDatabase doInBackground(ExpressionDBHelper... helper) {
+            try {
+                SQLiteDatabase db = helper[0].getWritableDatabase();
+                synchronized (mLock) {
+                    mExpressionDB = db;
+                    try (Cursor minResult = db.rawQuery(SQL_GET_MIN, null)) {
+                        if (!minResult.moveToFirst()) {
+                            // Empty database.
+                            mMinIndex = MAXIMUM_MIN_INDEX;
+                        } else {
+                            mMinIndex = Math.min(minResult.getLong(0), MAXIMUM_MIN_INDEX);
+                        }
+                    }
+                    try (Cursor maxResult = db.rawQuery(SQL_GET_MAX, null)) {
+                        if (!maxResult.moveToFirst()) {
+                            // Empty database.
+                            mMaxIndex = 0L;
+                        } else {
+                            mMaxIndex = Math.max(maxResult.getLong(0), 0L);
+                        }
+                    }
+                    if (mMaxIndex > Integer.MAX_VALUE) {
+                        throw new AssertionError("Expression index absurdly large");
+                    }
+                    mAllCursorBase = (int) mMaxIndex;
+                    if (mMaxIndex != 0L || mMinIndex != MAXIMUM_MIN_INDEX) {
+                        // Set up a cursor for reading the entire database.
+                        String[] args = new String[]
+                                {Long.toString(mAllCursorBase), Long.toString(mMinIndex)};
+                        mAllCursor = (AbstractWindowedCursor) db.rawQuery(SQL_GET_ALL, args);
+                        if (!mAllCursor.moveToFirst()) {
+                            setBadDB();
+                            return null;
+                        }
+                    }
+                    mDBInitialized = true;
+                    // We notify here, since there are unlikely cases in which the UI thread
+                    // may be blocked on us, preventing onPostExecute from running.
+                    mLock.notifyAll();
+                }
+                return db;
+            } catch (SQLiteException e) {
+                Log.e("Calculator", "Database initialization failed.\n", e);
+                synchronized (mLock) {
+                    setBadDB();
+                    mLock.notifyAll();
+                }
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(SQLiteDatabase result) {
+            if (result == null) {
+                displayDatabaseWarning();
+            } // else doInBackground already set expressionDB.
+        }
+        // On cancellation we do nothing;
+    }
+
+    /**
+     * Erase the entire database. Assumes no other accesses to the database are
+     * currently in progress
+     * These tasks must be executed on a serial executor to avoid reordering writes.
+     */
+    private class AsyncEraser extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... nothings) {
+            mExpressionDB.execSQL(SQL_DROP_TIMESTAMP_INDEX);
+            mExpressionDB.execSQL(SQL_DROP_TABLE);
+            try {
+                mExpressionDB.execSQL("VACUUM");
+            } catch (Exception e) {
+                Log.v("Calculator", "Database VACUUM failed\n", e);
+                // Should only happen with concurrent execution, which should be impossible.
+            }
+            mExpressionDB.execSQL(SQL_CREATE_ENTRIES);
+            mExpressionDB.execSQL(SQL_CREATE_TIMESTAMP_INDEX);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void nothing) {
+            synchronized (mLock) {
+                // Reinitialize everything to an empty and fully functional database.
+                mMinAccessible = -10000000L;
+                mMaxAccessible = 10000000L;
+                mMinIndex = MAXIMUM_MIN_INDEX;
+                mMaxIndex = mAllCursorBase = 0;
+                mDBInitialized = true;
+                mLock.notifyAll();
+            }
+        }
+        // On cancellation we do nothing;
+    }
+
+    /**
+     * Insert the given row in the database without blocking the UI thread.
+     * These tasks must be executed on a serial executor to avoid reordering writes.
+     */
+    private class AsyncWriter extends AsyncTask<ContentValues, Void, Long> {
+        @Override
+        protected Long doInBackground(ContentValues... cvs) {
+            long index = cvs[0].getAsLong(ExpressionEntry._ID);
+            long result = mExpressionDB.insert(ExpressionEntry.TABLE_NAME, null, cvs[0]);
+            writeCompleted();
+            // Return 0 on success, row id on failure.
+            if (result == -1) {
+                return index;
+            } else if (result != index) {
+                throw new AssertionError("Expected row id " + index + ", got " + result);
+            } else {
+                return 0L;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Long result) {
+            if (result != 0) {
+                synchronized (mLock) {
+                    if (result > 0) {
+                        mMaxAccessible = result - 1;
+                    } else {
+                        mMinAccessible = result + 1;
+                    }
+                }
+                displayDatabaseWarning();
+            }
+        }
+        // On cancellation we do nothing;
     }
 
 }

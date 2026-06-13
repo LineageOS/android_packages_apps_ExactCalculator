@@ -12,9 +12,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
-import androidx.annotation.IntDef;
-import androidx.core.content.ContextCompat;
-import androidx.core.os.BuildCompat;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -36,6 +33,10 @@ import android.view.ViewConfiguration;
 import android.widget.OverScroller;
 import android.widget.Toast;
 
+import androidx.annotation.IntDef;
+import androidx.core.content.ContextCompat;
+import androidx.core.os.BuildCompat;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -43,27 +44,57 @@ import java.lang.annotation.RetentionPolicy;
 // and obtains the text to display via a callback to Logic.
 public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenuItemClickListener,
         Evaluator.EvaluationListener, Evaluator.CharMetricsInfo {
+    public static final int SHOULD_REQUIRE = 2;
+    public static final int SHOULD_EVALUATE = 1;
+    public static final int SHOULD_NOT_EVALUATE = 0;
+    // Listener to use if/when evaluation is requested.
+    public static final int MAX_LEADING_ZEROES = 6;
+    // Maximum number of leading zeroes after decimal point before we
+    // switch to scientific notation with negative exponent.
+    public static final int MAX_TRAILING_ZEROES = 6;
     static final int MAX_RIGHT_SCROLL = 10000000;
     static final int INVALID = MAX_RIGHT_SCROLL + 10000;
-        // A larger value is unlikely to avoid running out of space
+    // Maximum number of trailing zeroes before the decimal point before
+    // we switch to scientific notation with positive exponent.
+    private static final int SCI_NOTATION_EXTRA = 1;
+    // Extra digits for standard scientific notation.  In this case we
+    // have a decimal point and no ellipsis.
+    // We assume that we do not drop digits to make room for the decimal
+    // point in ordinary scientific notation. Thus >= 1.
+    private static final int MAX_COPY_EXTRA = 100;
+    // The number of extra digits we are willing to compute to copy
+    // a result as an exact number.
+    private static final int MAX_RECOMPUTE_DIGITS = 2000;
+    // A larger value is unlikely to avoid running out of space
     final OverScroller mScroller;
     final GestureDetector mGestureDetector;
+    // The result fits entirely in the display, even with an exponent,
+    // but not with grouping separators. Since the result is not
+    // scrollable, and we do not add the exponent to max. scroll position,
+    // append an exponent insteadd of replacing trailing digits.
+    private final Object mWidthLock = new Object();
+    // The maximum number of digits we're willing to recompute in the UI
+    // thread.  We only do this for known rational results, where we
+    // can bound the computation cost.
+    private final ForegroundColorSpan mExponentColorSpan;
+    private final BackgroundColorSpan mHighlightSpan;
+    private final int MAX_COPY_SIZE = 1000000;
     private long mIndex;  // Index of expression we are displaying.
     private Evaluator mEvaluator;
     private boolean mScrollable = false;
-                            // A scrollable result is currently displayed.
+    // A scrollable result is currently displayed.
     private boolean mValid = false;
-                            // The result holds a valid number (not an error message).
+    // The result holds a valid number (not an error message).
     // A suffix of "Pos" denotes a pixel offset.  Zero represents a scroll position
     // in which the decimal point is just barely visible on the right of the display.
     private int mCurrentPos;// Position of right of display relative to decimal point, in pixels.
-                            // Large positive values mean the decimal point is scrolled off the
-                            // left of the display.  Zero means decimal point is barely displayed
-                            // on the right.
+    // Large positive values mean the decimal point is scrolled off the
+    // left of the display.  Zero means decimal point is barely displayed
+    // on the right.
     private int mLastPos;   // Position already reflected in display. Pixels.
     private int mMinPos;    // Minimum position to avoid unnecessary blanks on the left. Pixels.
     private int mMaxPos;    // Maximum position before we start displaying the infinite
-                            // sequence of trailing zeroes on the right. Pixels.
+    // sequence of trailing zeroes on the right. Pixels.
     private int mWholeLen;  // Length of the whole part of current result.
     // In the following, we use a suffix of Offset to denote a character position in a numeric
     // string relative to the decimal point.  Positive is to the right and negative is to
@@ -72,72 +103,38 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     // We use the suffix "Index" to denote a zero-based index into a string representing a
     // result.
     private int mMaxCharOffset;  // Character offset from decimal point of rightmost digit
-                                 // that should be displayed, plus the length of any exponent
-                                 // needed to display that digit.
-                                 // Limited to MAX_RIGHT_SCROLL. Often the same as:
+    // that should be displayed, plus the length of any exponent
+    // needed to display that digit.
+    // Limited to MAX_RIGHT_SCROLL. Often the same as:
     private int mLsdOffset;      // Position of least-significant digit in result
     private int mLastDisplayedOffset; // Offset of last digit actually displayed after adding
-                                      // exponent.
+    // exponent.
     private boolean mWholePartFits;  // Scientific notation not needed for initial display.
     private float mNoExponentCredit;
-                            // Fraction of digit width saved by avoiding scientific notation.
-                            // Only accessed from UI thread.
+    // Fraction of digit width saved by avoiding scientific notation.
+    // Only accessed from UI thread.
     private boolean mAppendExponent;
-                            // The result fits entirely in the display, even with an exponent,
-                            // but not with grouping separators. Since the result is not
-                            // scrollable, and we do not add the exponent to max. scroll position,
-                            // append an exponent insteadd of replacing trailing digits.
-    private final Object mWidthLock = new Object();
-                            // Protects the next five fields.  These fields are only
-                            // updated by the UI thread, and read accesses by the UI thread
-                            // sometimes do not acquire the lock.
+    // Protects the next five fields.  These fields are only
+    // updated by the UI thread, and read accesses by the UI thread
+    // sometimes do not acquire the lock.
     private int mWidthConstraint = 0;
-                            // Our total width in pixels minus space for ellipsis.
-                            // 0 ==> uninitialized.
+    // Our total width in pixels minus space for ellipsis.
+    // 0 ==> uninitialized.
     private float mCharWidth = 1;
-                            // Maximum character width. For now we pretend that all characters
-                            // have this width.
-                            // TODO: We're not really using a fixed width font.  But it appears
-                            // to be close enough for the characters we use that the difference
-                            // is not noticeable.
+    // Maximum character width. For now we pretend that all characters
+    // have this width.
+    // TODO: We're not really using a fixed width font.  But it appears
+    // to be close enough for the characters we use that the difference
+    // is not noticeable.
     private float mGroupingSeparatorWidthRatio;
-                            // Fraction of digit width occupied by a digit separator.
+    // Fraction of digit width occupied by a digit separator.
     private float mDecimalCredit;
-                            // Fraction of digit width saved by replacing digit with decimal point.
+    // Fraction of digit width saved by replacing digit with decimal point.
     private float mNoEllipsisCredit;
-                            // Fraction of digit width saved by both replacing ellipsis with digit
-                            // and avoiding scientific notation.
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SHOULD_REQUIRE, SHOULD_EVALUATE, SHOULD_NOT_EVALUATE})
-    public @interface EvaluationRequest {}
-    public static final int SHOULD_REQUIRE = 2;
-    public static final int SHOULD_EVALUATE = 1;
-    public static final int SHOULD_NOT_EVALUATE = 0;
-    @EvaluationRequest private int mEvaluationRequest = SHOULD_REQUIRE;
-                            // Should we evaluate when layout completes, and how?
+    @EvaluationRequest
+    private int mEvaluationRequest = SHOULD_REQUIRE;
+    // Should we evaluate when layout completes, and how?
     private Evaluator.EvaluationListener mEvaluationListener = this;
-                            // Listener to use if/when evaluation is requested.
-    public static final int MAX_LEADING_ZEROES = 6;
-                            // Maximum number of leading zeroes after decimal point before we
-                            // switch to scientific notation with negative exponent.
-    public static final int MAX_TRAILING_ZEROES = 6;
-                            // Maximum number of trailing zeroes before the decimal point before
-                            // we switch to scientific notation with positive exponent.
-    private static final int SCI_NOTATION_EXTRA = 1;
-                            // Extra digits for standard scientific notation.  In this case we
-                            // have a decimal point and no ellipsis.
-                            // We assume that we do not drop digits to make room for the decimal
-                            // point in ordinary scientific notation. Thus >= 1.
-    private static final int MAX_COPY_EXTRA = 100;
-                            // The number of extra digits we are willing to compute to copy
-                            // a result as an exact number.
-    private static final int MAX_RECOMPUTE_DIGITS = 2000;
-                            // The maximum number of digits we're willing to recompute in the UI
-                            // thread.  We only do this for known rational results, where we
-                            // can bound the computation cost.
-    private final ForegroundColorSpan mExponentColorSpan;
-    private final BackgroundColorSpan mHighlightSpan;
-
     private ActionMode mActionMode;
     private ActionMode.Callback mCopyActionModeCallback;
     private ContextMenu mContextMenu;
@@ -152,56 +149,59 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         mExponentColorSpan = new ForegroundColorSpan(
                 ContextCompat.getColor(context, R.color.display_result_exponent_text_color));
         mGestureDetector = new GestureDetector(context,
-            new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onDown(MotionEvent e) {
-                    return true;
-                }
-                @Override
-                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-                        float velocityY) {
-                    if (!mScroller.isFinished()) {
-                        mCurrentPos = mScroller.getFinalX();
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onDown(MotionEvent e) {
+                        return true;
                     }
-                    mScroller.forceFinished(true);
-                    stopActionModeOrContextMenu();
-                    CalculatorResult.this.cancelLongPress();
-                    // Ignore scrolls of error string, etc.
-                    if (!mScrollable) return true;
-                    mScroller.fling(mCurrentPos, 0, - (int) velocityX, 0  /* horizontal only */,
-                                    mMinPos, mMaxPos, 0, 0);
-                    postInvalidateOnAnimation();
-                    return true;
-                }
-                @Override
-                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-                        float distanceY) {
-                    int distance = (int)distanceX;
-                    if (!mScroller.isFinished()) {
-                        mCurrentPos = mScroller.getFinalX();
+
+                    @Override
+                    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                                           float velocityY) {
+                        if (!mScroller.isFinished()) {
+                            mCurrentPos = mScroller.getFinalX();
+                        }
+                        mScroller.forceFinished(true);
+                        stopActionModeOrContextMenu();
+                        CalculatorResult.this.cancelLongPress();
+                        // Ignore scrolls of error string, etc.
+                        if (!mScrollable) return true;
+                        mScroller.fling(mCurrentPos, 0, -(int) velocityX, 0  /* horizontal only */,
+                                mMinPos, mMaxPos, 0, 0);
+                        postInvalidateOnAnimation();
+                        return true;
                     }
-                    mScroller.forceFinished(true);
-                    stopActionModeOrContextMenu();
-                    CalculatorResult.this.cancelLongPress();
-                    if (!mScrollable) return true;
-                    if (mCurrentPos + distance < mMinPos) {
-                        distance = mMinPos - mCurrentPos;
-                    } else if (mCurrentPos + distance > mMaxPos) {
-                        distance = mMaxPos - mCurrentPos;
+
+                    @Override
+                    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+                                            float distanceY) {
+                        int distance = (int) distanceX;
+                        if (!mScroller.isFinished()) {
+                            mCurrentPos = mScroller.getFinalX();
+                        }
+                        mScroller.forceFinished(true);
+                        stopActionModeOrContextMenu();
+                        CalculatorResult.this.cancelLongPress();
+                        if (!mScrollable) return true;
+                        if (mCurrentPos + distance < mMinPos) {
+                            distance = mMinPos - mCurrentPos;
+                        } else if (mCurrentPos + distance > mMaxPos) {
+                            distance = mMaxPos - mCurrentPos;
+                        }
+                        int duration = (int) (e2.getEventTime() - e1.getEventTime());
+                        if (duration < 1 || duration > 100) duration = 10;
+                        mScroller.startScroll(mCurrentPos, 0, distance, 0, duration);
+                        postInvalidateOnAnimation();
+                        return true;
                     }
-                    int duration = (int)(e2.getEventTime() - e1.getEventTime());
-                    if (duration < 1 || duration > 100) duration = 10;
-                    mScroller.startScroll(mCurrentPos, 0, distance, 0, duration);
-                    postInvalidateOnAnimation();
-                    return true;
-                }
-                @Override
-                public void onLongPress(MotionEvent e) {
-                    if (mValid) {
-                        performLongClick();
+
+                    @Override
+                    public void onLongPress(MotionEvent e) {
+                        if (mValid) {
+                            performLongClick();
+                        }
                     }
-                }
-            });
+                });
 
         final int slop = ViewConfiguration.get(context).getScaledTouchSlop();
         setOnTouchListener(new View.OnTouchListener() {
@@ -244,12 +244,6 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         setContentDescription(context.getString(R.string.desc_result));
     }
 
-    void setEvaluator(Evaluator evaluator, long index) {
-        mEvaluator = evaluator;
-        mIndex = index;
-        requestLayout();
-    }
-
     // Compute maximum digit width the hard way.
     private static float getMaxDigitWidth(TextPaint paint) {
         // Compute the maximum advance width for each digit, thus accounting for between-character
@@ -263,6 +257,28 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             maxWidth = Math.max(x, maxWidth);
         }
         return maxWidth;
+    }
+
+    /*
+     * Return the most significant digit position in the given string or Evaluator.INVALID_MSD.
+     * Unlike Evaluator.getMsdIndexOf, we treat a final 1 as significant.
+     * Pure function; callable from anywhere.
+     */
+    public static int getNaiveMsdIndexOf(String s) {
+        final int len = s.length();
+        for (int i = 0; i < len; ++i) {
+            char c = s.charAt(i);
+            if (c != '-' && c != '.' && c != '0') {
+                return i;
+            }
+        }
+        return Evaluator.INVALID_MSD;
+    }
+
+    void setEvaluator(Evaluator evaluator, long index) {
+        mEvaluator = evaluator;
+        mIndex = index;
+        requestLayout();
     }
 
     @Override
@@ -304,9 +320,9 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         final float minusWidth = Layout.getDesiredWidth(context.getString(R.string.op_sub), paint);
         final float minusExtraWidth = Math.max(minusWidth - newCharWidth, 0.0f);
         final float ellipsisWidth = Layout.getDesiredWidth(KeyMaps.ELLIPSIS, paint);
-        final float ellipsisExtraWidth =  Math.max(ellipsisWidth - newCharWidth, 0.0f);
+        final float ellipsisExtraWidth = Math.max(ellipsisWidth - newCharWidth, 0.0f);
         final float expWidth = Layout.getDesiredWidth(KeyMaps.translateResult("e"), paint);
-        final float expExtraWidth =  Math.max(expWidth - newCharWidth, 0.0f);
+        final float expExtraWidth = Math.max(expWidth - newCharWidth, 0.0f);
         final float type1Extra = 2 * minusExtraWidth + expExtraWidth + decimalSeparatorWidth;
         final float type2Extra = ellipsisExtraWidth + expExtraWidth + minusExtraWidth;
         final float extraWidth = Math.max(type1Extra, type2Extra);
@@ -323,7 +339,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         final float decimalCredit = Math.max(newCharWidth - decimalSeparatorWidth, 0.0f);
 
         mNoExponentCredit = noExponentCredit / newCharWidth;
-        synchronized(mWidthLock) {
+        synchronized (mWidthLock) {
             mWidthConstraint = newWidthConstraint;
             mCharWidth = newCharWidth;
             mNoEllipsisCredit = noEllipsisCredit / newCharWidth;
@@ -352,10 +368,11 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
 
     /**
      * Specify whether we should evaluate result on layout.
+     *
      * @param should one of SHOULD_REQUIRE, SHOULD_EVALUATE, SHOULD_NOT_EVALUATE
      */
     public void setShouldEvaluateResult(@EvaluationRequest int request,
-            Evaluator.EvaluationListener listener) {
+                                        Evaluator.EvaluationListener listener) {
         mEvaluationListener = listener;
         mEvaluationRequest = request;
     }
@@ -372,7 +389,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         final int nDigits = len - start;
         // We currently insert a digit separator every three digits.
         final int nSeparators = (nDigits - 1) / 3;
-        synchronized(mWidthLock) {
+        synchronized (mWidthLock) {
             // Always return an upper bound, even in the presence of rounding errors.
             return nSeparators * mGroupingSeparatorWidthRatio;
         }
@@ -381,7 +398,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     // From Evaluator.CharMetricsInfo.
     @Override
     public float getNoEllipsisCredit() {
-        synchronized(mWidthLock) {
+        synchronized (mWidthLock) {
             return mNoEllipsisCredit;
         }
     }
@@ -389,7 +406,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     // From Evaluator.CharMetricsInfo.
     @Override
     public float getDecimalCredit() {
-        synchronized(mWidthLock) {
+        synchronized (mWidthLock) {
             return mDecimalCredit;
         }
     }
@@ -398,7 +415,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     // characters.
     private int expLen(int exp) {
         if (exp == 0) return 0;
-        final int abs_exp_digits = (int) Math.ceil(Math.log10(Math.abs((double)exp))
+        final int abs_exp_digits = (int) Math.ceil(Math.log10(Math.abs((double) exp))
                 + 0.0000000001d /* Round whole numbers to next integer */);
         return abs_exp_digits + (exp >= 0 ? 1 : 2);
     }
@@ -407,19 +424,20 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * Initiate display of a new result.
      * Only called from UI thread.
      * The parameters specify various properties of the result.
-     * @param index Index of expression that was just evaluated. Currently ignored, since we only
-     *            expect notification for the expression result being displayed.
-     * @param initPrec Initial display precision computed by evaluator. (1 = tenths digit)
-     * @param msd Position of most significant digit.  Offset from left of string.
-                  Evaluator.INVALID_MSD if unknown.
-     * @param leastDigPos Position of least significant digit (1 = tenths digit)
-     *                    or Integer.MAX_VALUE.
+     *
+     * @param index              Index of expression that was just evaluated. Currently ignored, since we only
+     *                           expect notification for the expression result being displayed.
+     * @param initPrec           Initial display precision computed by evaluator. (1 = tenths digit)
+     * @param msd                Position of most significant digit.  Offset from left of string.
+     *                           Evaluator.INVALID_MSD if unknown.
+     * @param leastDigPos        Position of least significant digit (1 = tenths digit)
+     *                           or Integer.MAX_VALUE.
      * @param truncatedWholePart Result up to but not including decimal point.
-                                 Currently we only use the length.
+     *                           Currently we only use the length.
      */
     @Override
     public void onEvaluate(long index, int initPrec, int msd, int leastDigPos,
-            String truncatedWholePart) {
+                           String truncatedWholePart) {
         initPositions(initPrec, msd, leastDigPos, truncatedWholePart);
 
         if (mStoreToMemoryRequested) {
@@ -467,7 +485,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      * Only called from UI thread.
      */
     private void initPositions(int initPrecOffset, int msdIndex, int lsdOffset,
-            String truncatedWholePart) {
+                               String truncatedWholePart) {
         int maxChars = getMaxChars();
         mWholeLen = truncatedWholePart.length();
         // Allow a tiny amount of slop for associativity/rounding differences in length
@@ -475,7 +493,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         // We reserved one extra pixel, so the extra length is OK.
         final int nSeparatorChars = (int) Math.ceil(
                 separatorChars(truncatedWholePart, truncatedWholePart.length())
-                - getNoEllipsisCredit() - 0.0001f);
+                        - getNoEllipsisCredit() - 0.0001f);
         mWholePartFits = mWholeLen + nSeparatorChars <= maxChars;
         mLastPos = INVALID;
         mLsdOffset = lsdOffset;
@@ -487,7 +505,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             if (lsdOffset == Integer.MIN_VALUE) {
                 // Definite zero value.
                 mMaxPos = mMinPos;
-                mMaxCharOffset = Math.round(mMaxPos/mCharWidth);
+                mMaxCharOffset = Math.round(mMaxPos / mCharWidth);
                 mScrollable = false;
             } else {
                 // May be very small nonzero value.  Allow user to find out.
@@ -601,66 +619,49 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         }
     }
 
-    private final int MAX_COPY_SIZE = 1000000;
-
-    /*
-     * Return the most significant digit position in the given string or Evaluator.INVALID_MSD.
-     * Unlike Evaluator.getMsdIndexOf, we treat a final 1 as significant.
-     * Pure function; callable from anywhere.
-     */
-    public static int getNaiveMsdIndexOf(String s) {
-        final int len = s.length();
-        for (int i = 0; i < len; ++i) {
-            char c = s.charAt(i);
-            if (c != '-' && c != '.' && c != '0') {
-                return i;
-            }
-        }
-        return Evaluator.INVALID_MSD;
-    }
-
     /**
      * Format a result returned by Evaluator.getString() into a single line containing ellipses
      * (if appropriate) and an exponent (if appropriate).
      * We add two distinct kinds of exponents:
      * (1) If the final result contains the leading digit we use standard scientific notation.
      * (2) If not, we add an exponent corresponding to an interpretation of the final result as
-     *     an integer.
+     * an integer.
      * We add an ellipsis on the left if the result was truncated.
      * We add ellipses and exponents in a way that leaves most digits in the position they
      * would have been in had we not done so. This minimizes jumps as a result of scrolling.
      * Result is NOT internationalized, uses "E" for exponent.
      * Called only from UI thread; We sometimes omit locking for fields.
-     * @param precOffset The value that was passed to getString. Identifies the significance of
-                the rightmost digit. A value of 1 means the rightmost digits corresponds to tenths.
-     * @param maxDigs The maximum number of characters in the result
-     * @param truncated The in parameter was already truncated, beyond possibly removing the
-                minus sign.
-     * @param negative The in parameter represents a negative result. (Minus sign may be removed
-                without setting truncated.)
-     * @param lastDisplayedOffset  If not null, we set lastDisplayedOffset[0] to the offset of
-                the last digit actually appearing in the display.
-     * @param forcePrecision If true, we make sure that the last displayed digit corresponds to
-                precOffset, and allow maxDigs to be exceeded in adding the exponent and commas.
-     * @param forceSciNotation Force scientific notation. May be set because we don't have
-                space for grouping separators, but whole number otherwise fits.
-     * @param insertCommas Insert commas (literally, not internationalized) as digit separators.
-                We only ever do this for the integral part of a number, and only when no
-                exponent is displayed in the initial position. The combination of which means
-                that we only do it when no exponent is displayed.
-                We insert commas in a way that does consider the width of the actual localized digit
-                separator. Commas count towards maxDigs as the appropriate fraction of a digit.
+     *
+     * @param precOffset          The value that was passed to getString. Identifies the significance of
+     *                            the rightmost digit. A value of 1 means the rightmost digits corresponds to tenths.
+     * @param maxDigs             The maximum number of characters in the result
+     * @param truncated           The in parameter was already truncated, beyond possibly removing the
+     *                            minus sign.
+     * @param negative            The in parameter represents a negative result. (Minus sign may be removed
+     *                            without setting truncated.)
+     * @param lastDisplayedOffset If not null, we set lastDisplayedOffset[0] to the offset of
+     *                            the last digit actually appearing in the display.
+     * @param forcePrecision      If true, we make sure that the last displayed digit corresponds to
+     *                            precOffset, and allow maxDigs to be exceeded in adding the exponent and commas.
+     * @param forceSciNotation    Force scientific notation. May be set because we don't have
+     *                            space for grouping separators, but whole number otherwise fits.
+     * @param insertCommas        Insert commas (literally, not internationalized) as digit separators.
+     *                            We only ever do this for the integral part of a number, and only when no
+     *                            exponent is displayed in the initial position. The combination of which means
+     *                            that we only do it when no exponent is displayed.
+     *                            We insert commas in a way that does consider the width of the actual localized digit
+     *                            separator. Commas count towards maxDigs as the appropriate fraction of a digit.
      */
     private String formatResult(String in, int precOffset, int maxDigs, boolean truncated,
-            boolean negative, int lastDisplayedOffset[], boolean forcePrecision,
-            boolean forceSciNotation, boolean insertCommas) {
+                                boolean negative, int[] lastDisplayedOffset, boolean forcePrecision,
+                                boolean forceSciNotation, boolean insertCommas) {
         final int minusSpace = negative ? 1 : 0;
         final int msdIndex = truncated ? -1 : getNaiveMsdIndexOf(in);  // INVALID_MSD is OK.
         String result = in;
         boolean needEllipsis = false;
         if (truncated || (negative && result.charAt(0) != '-')) {
             needEllipsis = true;
-            result = KeyMaps.ELLIPSIS + result.substring(1, result.length());
+            result = KeyMaps.ELLIPSIS + result.substring(1);
             // Ellipsis may be removed again in the type(1) scientific notation case.
         }
         final int decIndex = result.indexOf('.');
@@ -668,7 +669,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             lastDisplayedOffset[0] = precOffset;
         }
         if (forceSciNotation || (decIndex == -1 || msdIndex != Evaluator.INVALID_MSD
-                && msdIndex - decIndex > MAX_LEADING_ZEROES + 1) &&  precOffset != -1) {
+                && msdIndex - decIndex > MAX_LEADING_ZEROES + 1) && precOffset != -1) {
             // Either:
             // 1) No decimal point displayed, and it's not just to the right of the last digit, or
             // 2) we are at the front of a number whos integral part is too large to allow
@@ -693,12 +694,12 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                     // In the forceSciNotation, we can have a decimal point in the relevant digit
                     // range. Remove it.
                     result = result.substring(0, decIndex)
-                            + result.substring(decIndex + 1, result.length());
+                            + result.substring(decIndex + 1);
                     // msdIndex and precOffset unaffected.
                 }
                 final int resLen = result.length();
                 String fraction = result.substring(msdIndex + 1, resLen);
-                result = (negative ? "-" : "") + result.substring(msdIndex, msdIndex + 1)
+                result = (negative ? "-" : "") + result.charAt(msdIndex)
                         + "." + fraction;
                 // Original exp was correct for decimal point at right of fraction.
                 // Adjust by length of fraction.
@@ -722,7 +723,8 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                     // Exponent depends on the number of digits we drop, which depends on
                     // exponent ...
                     for (dropDigits = 2; expLen(initExponent + dropDigits) > dropDigits;
-                            ++dropDigits) {}
+                         ++dropDigits) {
+                    }
                     exponent = initExponent + dropDigits;
                     if (precOffset - dropDigits > mLsdOffset) {
                         // This can happen if e.g. result = 10^40 + 10^10
@@ -742,7 +744,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                     lastDisplayedOffset[0] -= dropDigits;
                 }
             }
-            result = result + "E" + Integer.toString(exponent);
+            result = result + "E" + exponent;
         } else if (insertCommas) {
             // Add commas to the whole number section, and then truncate on left to fit,
             // counting commas as a fractional digit.
@@ -768,7 +770,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             // As above, we allow for a tiny amount of extra length here, for consistency with
             // getPreferredPrec().
             if (effectiveLen - ellipsisAdjustment > (float) (maxDigs - wholeStart) + 0.0001f
-                && !forcePrecision) {
+                    && !forcePrecision) {
                 float deletedWidth = 0.0f;
                 while (effectiveLen - mNoExponentCredit - deletedWidth
                         > (float) (maxDigs - 1 /* for ellipsis */)) {
@@ -781,7 +783,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
                 }
             }
             if (deletedChars > 0) {
-                result = KeyMaps.ELLIPSIS + result.substring(deletedChars, result.length());
+                result = KeyMaps.ELLIPSIS + result.substring(deletedChars);
             } else if (needEllipsis) {
                 result = KeyMaps.ELLIPSIS + result;
             }
@@ -791,29 +793,31 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
 
     /**
      * Get formatted, but not internationalized, result from mEvaluator.
-     * @param precOffset requested position (1 = tenths) of last included digit
-     * @param maxSize maximum number of characters (more or less) in result
+     *
+     * @param precOffset          requested position (1 = tenths) of last included digit
+     * @param maxSize             maximum number of characters (more or less) in result
      * @param lastDisplayedOffset zeroth entry is set to actual offset of last included digit,
      *                            after adjusting for exponent, etc.  May be null.
-     * @param forcePrecision Ensure that last included digit is at pos, at the expense
-     *                       of treating maxSize as a soft limit.
-     * @param forceSciNotation Force scientific notation, even if not required by maxSize.
-     * @param insertCommas Insert commas as digit separators.
+     * @param forcePrecision      Ensure that last included digit is at pos, at the expense
+     *                            of treating maxSize as a soft limit.
+     * @param forceSciNotation    Force scientific notation, even if not required by maxSize.
+     * @param insertCommas        Insert commas as digit separators.
      */
-    private String getFormattedResult(int precOffset, int maxSize, int lastDisplayedOffset[],
-            boolean forcePrecision, boolean forceSciNotation, boolean insertCommas) {
-        final boolean truncated[] = new boolean[1];
-        final boolean negative[] = new boolean[1];
-        final int requestedPrecOffset[] = {precOffset};
+    private String getFormattedResult(int precOffset, int maxSize, int[] lastDisplayedOffset,
+                                      boolean forcePrecision, boolean forceSciNotation, boolean insertCommas) {
+        final boolean[] truncated = new boolean[1];
+        final boolean[] negative = new boolean[1];
+        final int[] requestedPrecOffset = {precOffset};
         final String rawResult = mEvaluator.getString(mIndex, requestedPrecOffset, mMaxCharOffset,
                 maxSize, truncated, negative, this);
         return formatResult(rawResult, requestedPrecOffset[0], maxSize, truncated[0], negative[0],
                 lastDisplayedOffset, forcePrecision, forceSciNotation, insertCommas);
-   }
+    }
 
     /**
      * Return entire result (within reason) up to current displayed precision.
-     * @param withSeparators  Add digit separators
+     *
+     * @param withSeparators Add digit separators
      */
     public String getFullText(boolean withSeparators) {
         if (!mValid) return "";
@@ -865,7 +869,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
      */
     @Override
     public int getMaxChars() {
-        synchronized(mWidthLock) {
+        synchronized (mWidthLock) {
             return (int) Math.floor(mWidthConstraint / mCharWidth);
         }
     }
@@ -917,19 +921,19 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
         }
         int currentCharOffset = getCharOffset(mCurrentPos);
-        int lastDisplayedOffset[] = new int[1];
+        int[] lastDisplayedOffset = new int[1];
         String result = getFormattedResult(currentCharOffset, maxChars, lastDisplayedOffset,
                 mAppendExponent /* forcePrecision; preserve entire result */,
                 !mWholePartFits
-                &&  currentCharOffset == getCharOffset(mMinPos) /* forceSciNotation */,
-                mWholePartFits /* insertCommas */ );
+                        && currentCharOffset == getCharOffset(mMinPos) /* forceSciNotation */,
+                mWholePartFits /* insertCommas */);
         int expIndex = result.indexOf('E');
         result = KeyMaps.translateResult(result);
         if (expIndex > 0 && result.indexOf('.') == -1) {
-          // Gray out exponent if used as position indicator
+            // Gray out exponent if used as position indicator
             SpannableString formattedResult = new SpannableString(result);
             formattedResult.setSpan(mExponentColorSpan, expIndex, result.length(),
-                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             setText(formattedResult);
         } else {
             setText(result);
@@ -941,7 +945,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
 
     @Override
     protected void onTextChanged(java.lang.CharSequence text, int start, int lengthBefore,
-            int lengthAfter) {
+                                 int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
 
         if (!mScrollable || mScroller.isFinished()) {
@@ -970,9 +974,9 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         }
 
         if (!mScroller.isFinished()) {
-                postInvalidateOnAnimation();
-                setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_NONE);
-        } else if (length() > 0){
+            postInvalidateOnAnimation();
+            setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_NONE);
+        } else if (length() > 0) {
             setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_POLITE);
         }
     }
@@ -1057,7 +1061,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
             final MenuInflater inflater = new MenuInflater(getContext());
             createContextMenu(inflater, contextMenu);
             mContextMenu = contextMenu;
-            for (int i = 0; i < contextMenu.size(); i ++) {
+            for (int i = 0; i < contextMenu.size(); i++) {
                 contextMenu.getItem(i).setOnMenuItemClickListener(CalculatorResult.this);
             }
         });
@@ -1110,7 +1114,7 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
         // We include a tag URI, to allow us to recognize our own results and handle them
         // specially.
         ClipData.Item newItem = new ClipData.Item(text, null, mEvaluator.capture(mIndex));
-        String[] mimeTypes = new String[] {ClipDescription.MIMETYPE_TEXT_PLAIN};
+        String[] mimeTypes = new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN};
         ClipData cd = new ClipData("calculator result", mimeTypes, newItem);
         clipboard.setPrimaryClip(cd);
         Toast.makeText(getContext(), R.string.text_copied_toast, Toast.LENGTH_SHORT).show();
@@ -1145,5 +1149,12 @@ public class CalculatorResult extends AlignedTextView implements MenuItem.OnMenu
     protected void onDetachedFromWindow() {
         stopActionModeOrContextMenu();
         super.onDetachedFromWindow();
+    }
+
+    // Fraction of digit width saved by both replacing ellipsis with digit
+    // and avoiding scientific notation.
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SHOULD_REQUIRE, SHOULD_EVALUATE, SHOULD_NOT_EVALUATE})
+    public @interface EvaluationRequest {
     }
 }

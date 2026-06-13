@@ -363,6 +363,7 @@ public class CalculatorFormula extends AlignedTextView implements MenuItem.OnMen
 
     public interface OnFormulaContextMenuClickListener {
         boolean onPaste(ClipData clip);
+
         void onMemoryRecall();
     }
 }

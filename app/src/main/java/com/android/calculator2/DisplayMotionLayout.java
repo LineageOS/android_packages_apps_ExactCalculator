@@ -17,11 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 
 public class DisplayMotionLayout extends MotionLayout {
+    private final int mTouchSlop;
     private int mPointerId;
     private boolean mIsScrolling;
     private PointF mPreviousPoint;
     private MotionEvent mPreviousEvent;
-    private final int mTouchSlop;
     private boolean mOutOfBounds;
 
     public DisplayMotionLayout(@NonNull Context context) {
@@ -48,7 +48,7 @@ public class DisplayMotionLayout extends MotionLayout {
 
                 findViewById(R.id.display).getHitRect(hitRect);
                 if (hitRect.contains((int) motionEvent.getX(), (int) motionEvent.getY())) {
-                    mPreviousPoint = new PointF(motionEvent.getX(),motionEvent.getY());
+                    mPreviousPoint = new PointF(motionEvent.getX(), motionEvent.getY());
                     mPointerId = motionEvent.getPointerId(0);
                     mIsScrolling = false;
                     mOutOfBounds = false;
@@ -92,8 +92,7 @@ public class DisplayMotionLayout extends MotionLayout {
         mPreviousEvent = MotionEvent.obtain(motionEvent);
     }
 
-    private void clearLastMotion()
-    {
+    private void clearLastMotion() {
         if (mPreviousEvent != null) {
             mPreviousEvent.recycle();
             mPreviousEvent = null;

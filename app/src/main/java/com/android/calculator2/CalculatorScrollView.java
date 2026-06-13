@@ -5,15 +5,15 @@
 
 package com.android.calculator2;
 
+import static android.view.View.MeasureSpec.UNSPECIFIED;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
-
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class CalculatorScrollView extends HorizontalScrollView {
 
@@ -40,7 +40,7 @@ public class CalculatorScrollView extends HorizontalScrollView {
 
     @Override
     protected void measureChild(View child, int parentWidthMeasureSpec,
-            int parentHeightMeasureSpec) {
+                                int parentHeightMeasureSpec) {
         // Allow child to be as wide as they want.
         parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
                 MeasureSpec.getSize(parentWidthMeasureSpec), UNSPECIFIED);
@@ -56,7 +56,7 @@ public class CalculatorScrollView extends HorizontalScrollView {
 
     @Override
     protected void measureChildWithMargins(View child, int parentWidthMeasureSpec, int widthUsed,
-            int parentHeightMeasureSpec, int heightUsed) {
+                                           int parentHeightMeasureSpec, int heightUsed) {
         // Allow child to be as wide as they want.
         parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
                 MeasureSpec.getSize(parentWidthMeasureSpec), UNSPECIFIED);

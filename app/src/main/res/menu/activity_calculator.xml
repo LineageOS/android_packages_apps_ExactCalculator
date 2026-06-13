@@ -9,13 +9,16 @@
         android:id="@+id/menu_history"
         android:title="@string/menu_history" />
 
-    <item android:id="@+id/menu_leading"
+    <item
+        android:id="@+id/menu_leading"
         android:title="@string/menu_leading" />
 
-    <item android:id="@+id/menu_fraction"
+    <item
+        android:id="@+id/menu_fraction"
         android:title="@string/menu_fraction" />
 
-    <item android:id="@+id/menu_licenses"
+    <item
+        android:id="@+id/menu_licenses"
         android:title="@string/menu_licenses" />
 
 </menu>

@@ -10,13 +10,16 @@ import android.text.format.DateUtils;
 
 public class HistoryItem {
 
+    /**
+     * This is true only for the "empty history" view.
+     */
+    private final boolean mIsEmpty;
     private long mEvaluatorIndex;
-    /** Date in millis */
+    /**
+     * Date in millis
+     */
     private long mTimeInMillis;
     private Spannable mFormula;
-
-    /** This is true only for the "empty history" view. */
-    private final boolean mIsEmpty;
 
     public HistoryItem(long evaluatorIndex, long millis, Spannable formula) {
         mEvaluatorIndex = evaluatorIndex;
@@ -25,12 +28,12 @@ public class HistoryItem {
         mIsEmpty = false;
     }
 
-    public long getEvaluatorIndex() {
-        return mEvaluatorIndex;
-    }
-
     public HistoryItem() {
         mIsEmpty = true;
+    }
+
+    public long getEvaluatorIndex() {
+        return mEvaluatorIndex;
     }
 
     public boolean isEmptyView() {

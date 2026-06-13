@@ -25,18 +25,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
  */
 public class AlertDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-    public interface OnClickListener {
-        /**
-         * This method will be invoked when a button in the dialog is clicked.
-         *
-         * @param fragment the AlertDialogFragment that received the click
-         * @param which the button that was clicked (e.g.
-         *            {@link DialogInterface#BUTTON_POSITIVE}) or the position
-         *            of the item clicked
-         */
-        void onClick(AlertDialogFragment fragment, int which);
-    }
-
     private static final String NAME = AlertDialogFragment.class.getName();
     private static final String KEY_MESSAGE = NAME + "_message";
     private static final String KEY_BUTTON_NEGATIVE = NAME + "_button_negative";
@@ -47,11 +35,11 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
      * Convenience method for creating and showing a DialogFragment with the given message and
      * title.
      *
-     * @param activity originating Activity
-     * @param title resource id for the title string
-     * @param message resource id for the displayed message string
+     * @param activity            originating Activity
+     * @param title               resource id for the title string
+     * @param message             resource id for the displayed message string
      * @param positiveButtonLabel label for second button, if any.  If non-null, activity must
-     * implement AlertDialogFragment.OnClickListener to respond.
+     *                            implement AlertDialogFragment.OnClickListener to respond.
      */
     public static void showMessageDialog(AppCompatActivity activity, @StringRes int title,
                                          @StringRes int message, @StringRes int positiveButtonLabel,
@@ -65,17 +53,16 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     /**
      * Create and show a DialogFragment with the given message.
      *
-     * @param activity originating Activity
-     * @param title displayed title, if any
-     * @param message displayed message
+     * @param activity            originating Activity
+     * @param title               displayed title, if any
+     * @param message             displayed message
      * @param positiveButtonLabel label for second button, if any.  If non-null, activity must
-     * implement AlertDialogFragment.OnClickListener to respond.
+     *                            implement AlertDialogFragment.OnClickListener to respond.
      */
     public static void showMessageDialog(AppCompatActivity activity, @Nullable CharSequence title,
                                          CharSequence message,
                                          @Nullable CharSequence positiveButtonLabel,
-                                         @Nullable String tag)
-    {
+                                         @Nullable String tag) {
         final FragmentManager manager = activity.getSupportFragmentManager();
         if (manager == null || manager.isDestroyed()) {
             return;
@@ -121,5 +108,17 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
         if (activity instanceof AlertDialogFragment.OnClickListener /* always true */) {
             ((AlertDialogFragment.OnClickListener) activity).onClick(this, which);
         }
+    }
+
+    public interface OnClickListener {
+        /**
+         * This method will be invoked when a button in the dialog is clicked.
+         *
+         * @param fragment the AlertDialogFragment that received the click
+         * @param which    the button that was clicked (e.g.
+         *                 {@link DialogInterface#BUTTON_POSITIVE}) or the position
+         *                 of the item clicked
+         */
+        void onClick(AlertDialogFragment fragment, int which);
     }
 }
