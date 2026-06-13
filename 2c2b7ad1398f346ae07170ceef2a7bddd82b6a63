@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a3c269a3_f35f2908",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 34693
+      },
+      "writtenOn": "2026-06-13T22:34:55Z",
+      "side": 1,
+      "message": "Somehow broke trigonometry calculations. Shouldn\u0027t happen",
+      "revId": "2c2b7ad1398f346ae07170ceef2a7bddd82b6a63",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
