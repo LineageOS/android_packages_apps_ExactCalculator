@@ -54,7 +54,7 @@ public class StringUtils {
      * If so, return the remaining subsequence of whole. If not, return null.
      */
     public static CharSequence getExtensionIgnoring(CharSequence whole, CharSequence prefix,
-            char c) {
+                                                    char c) {
         int wIndex = 0;
         int pIndex = 0;
         final int wLen = whole.length();
@@ -69,7 +69,7 @@ public class StringUtils {
             if (pIndex == pLen) {
                 break;
             }
-            if (wIndex == wLen || whole.charAt(wIndex) != prefix.charAt(pIndex) ) {
+            if (wIndex == wLen || whole.charAt(wIndex) != prefix.charAt(pIndex)) {
                 return null;
             }
             ++pIndex;

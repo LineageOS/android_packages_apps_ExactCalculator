@@ -5,11 +5,12 @@
 
 package com.android.calculator2;
 
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,15 +21,11 @@ import java.util.List;
  */
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
-    private static final String TAG = "HistoryAdapter";
-
-    private static final int EMPTY_VIEW_TYPE = 0;
     public static final int HISTORY_VIEW_TYPE = 1;
-
-    private Evaluator mEvaluator;
-
+    private static final String TAG = "HistoryAdapter";
+    private static final int EMPTY_VIEW_TYPE = 0;
     private final Calendar mCalendar = Calendar.getInstance();
-
+    private Evaluator mEvaluator;
     private List<HistoryItem> mDataSet;
 
     private boolean mIsResultLayout;

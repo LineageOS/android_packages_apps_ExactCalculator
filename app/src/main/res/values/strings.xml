@@ -97,7 +97,7 @@
       -->
     <string name="squared" translatable="false">²</string>
     <!-- Abbrev. name of exponential function in formula.  -->
-    <string name="exponential" translatable = "false">exp</string>
+    <string name="exponential" translatable="false">exp</string>
 
     <!-- Abbrev. name of degree mode [CHAR_LIMIT=4] -->
     <string name="mode_deg">deg</string>

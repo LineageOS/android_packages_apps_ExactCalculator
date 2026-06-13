@@ -5,8 +5,8 @@
 -->
 <resources>
     <!-- layout_display_ratio + layout_pads_ratio = 1 -->
-    <item type="dimen" format="float" name="layout_display_ratio">0.4</item>
-    <item type="dimen" format="float" name="layout_pads_ratio">0.6</item>
+    <item name="layout_display_ratio" format="float" type="dimen">0.4</item>
+    <item name="layout_pads_ratio" format="float" type="dimen">0.6</item>
 
-    <item type="dimen" format="float" name="layout_advanced_pad_ratio">0.33</item>
+    <item name="layout_advanced_pad_ratio" format="float" type="dimen">0.33</item>
 </resources>

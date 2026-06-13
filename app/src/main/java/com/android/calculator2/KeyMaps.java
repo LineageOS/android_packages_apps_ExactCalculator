@@ -25,6 +25,43 @@ import java.util.Locale;
  * All functions are either pure, or are assumed to be called only from a single UI thread.
  */
 public class KeyMaps {
+    public static final int NOT_DIGIT = 10;
+    public static final String ELLIPSIS = "\u2026";
+    public static final char MINUS_SIGN = '\u2212';
+    /**
+     * Character used as a placeholder for digits that are currently unknown in a result that
+     * is being computed.  We initially generate blanks, and then use this as a replacement
+     * during final translation.
+     * <p/>
+     * Note: the character must correspond closely to the width of a digit,
+     * otherwise the UI will visibly shift once the computation is finished.
+     */
+    private static final char CHAR_DIGIT_UNKNOWN = '\u2007';
+    // The following two are only used for recognizing additional
+    // input characters from a physical keyboard.  They are not used
+    // for output internationalization.
+    private static char mDecimalPt;
+    private static char mPiChar;
+    /**
+     * Map typed function name strings to corresponding button ids.
+     * We (now redundantly?) include both localized and English names.
+     */
+    private static HashMap<String, Integer> sKeyValForFun;
+    /**
+     * Result string corresponding to a character in the calculator result.
+     * The string values in the map are expected to be one character long.
+     */
+    private static HashMap<Character, String> sOutputForResultChar;
+    /**
+     * Locale corresponding to preceding map and character constants.
+     * We recompute the map if this is not the current locale.
+     */
+    private static Locale sLocaleForMaps = null;
+    /**
+     * Activity to use for looking up buttons.
+     */
+    private static AppCompatActivity mActivity;
+
     /**
      * Map key id to corresponding (internationalized) display string.
      * Pure function.
@@ -155,7 +192,7 @@ public class KeyMaps {
         } else {
             throw new AssertionError("Unexpected key id");
         }
-        return (byte)result;
+        return (byte) result;
     }
 
     /**
@@ -163,7 +200,7 @@ public class KeyMaps {
      * key id.
      */
     public static int fromByte(byte b) {
-        switch((char)b) {
+        switch ((char) b) {
             case 'p':
                 return R.id.const_pi;
             case 'e':
@@ -267,11 +304,8 @@ public class KeyMaps {
      * Pure function.
      */
     public static boolean isBinary(int id) {
-        if (id == R.id.op_pow || id == R.id.op_mul || id == R.id.op_div || id == R.id.op_add
-                || id == R.id.op_sub) {
-            return true;
-        }
-        return false;
+        return id == R.id.op_pow || id == R.id.op_mul || id == R.id.op_div || id == R.id.op_add
+                || id == R.id.op_sub;
     }
 
     /**
@@ -279,11 +313,8 @@ public class KeyMaps {
      * Pure function.
      */
     public static boolean isTrigFunc(int id) {
-        if (id == R.id.fun_sin || id == R.id.fun_cos || id == R.id.fun_tan || id == R.id.fun_arcsin
-                || id == R.id.fun_arccos || id == R.id.fun_arctan) {
-            return true;
-        }
-        return false;
+        return id == R.id.fun_sin || id == R.id.fun_cos || id == R.id.fun_tan || id == R.id.fun_arcsin
+                || id == R.id.fun_arccos || id == R.id.fun_arctan;
     }
 
     /**
@@ -294,10 +325,7 @@ public class KeyMaps {
         if (isTrigFunc(id)) {
             return true;
         }
-        if (id == R.id.fun_ln || id == R.id.fun_log || id == R.id.fun_exp) {
-            return true;
-        }
-        return false;
+        return id == R.id.fun_ln || id == R.id.fun_log || id == R.id.fun_exp;
     }
 
     /**
@@ -305,27 +333,15 @@ public class KeyMaps {
      * Pure function.
      */
     public static boolean isPrefix(int id) {
-        if (id == R.id.op_sqrt || id == R.id.op_sub) {
-            return true;
-        }
-        return false;
+        return id == R.id.op_sqrt || id == R.id.op_sub;
     }
 
     /**
      * Does a button id correspond to a suffix operator?
      */
     public static boolean isSuffix(int id) {
-        if (id == R.id.op_fact || id == R.id.op_pct || id == R.id.op_sqr) {
-            return true;
-        }
-        return false;
+        return id == R.id.op_fact || id == R.id.op_pct || id == R.id.op_sqr;
     }
-
-    public static final int NOT_DIGIT = 10;
-
-    public static final String ELLIPSIS = "\u2026";
-
-    public static final char MINUS_SIGN = '\u2212';
 
     /**
      * Map key id to digit or NOT_DIGIT
@@ -361,71 +377,31 @@ public class KeyMaps {
      * Pure function.
      */
     public static int keyForDigVal(int v) {
-        switch(v) {
-        case 0:
-            return R.id.digit_0;
-        case 1:
-            return R.id.digit_1;
-        case 2:
-            return R.id.digit_2;
-        case 3:
-            return R.id.digit_3;
-        case 4:
-            return R.id.digit_4;
-        case 5:
-            return R.id.digit_5;
-        case 6:
-            return R.id.digit_6;
-        case 7:
-            return R.id.digit_7;
-        case 8:
-            return R.id.digit_8;
-        case 9:
-            return R.id.digit_9;
-        default:
-            return View.NO_ID;
+        switch (v) {
+            case 0:
+                return R.id.digit_0;
+            case 1:
+                return R.id.digit_1;
+            case 2:
+                return R.id.digit_2;
+            case 3:
+                return R.id.digit_3;
+            case 4:
+                return R.id.digit_4;
+            case 5:
+                return R.id.digit_5;
+            case 6:
+                return R.id.digit_6;
+            case 7:
+                return R.id.digit_7;
+            case 8:
+                return R.id.digit_8;
+            case 9:
+                return R.id.digit_9;
+            default:
+                return View.NO_ID;
         }
     }
-
-    // The following two are only used for recognizing additional
-    // input characters from a physical keyboard.  They are not used
-    // for output internationalization.
-    private static char mDecimalPt;
-
-    private static char mPiChar;
-
-    /**
-     * Character used as a placeholder for digits that are currently unknown in a result that
-     * is being computed.  We initially generate blanks, and then use this as a replacement
-     * during final translation.
-     * <p/>
-     * Note: the character must correspond closely to the width of a digit,
-     * otherwise the UI will visibly shift once the computation is finished.
-     */
-    private static final char CHAR_DIGIT_UNKNOWN = '\u2007';
-
-    /**
-     * Map typed function name strings to corresponding button ids.
-     * We (now redundantly?) include both localized and English names.
-     */
-    private static HashMap<String, Integer> sKeyValForFun;
-
-    /**
-     * Result string corresponding to a character in the calculator result.
-     * The string values in the map are expected to be one character long.
-     */
-    private static HashMap<Character, String> sOutputForResultChar;
-
-    /**
-     * Locale corresponding to preceding map and character constants.
-     * We recompute the map if this is not the current locale.
-     */
-    private static Locale sLocaleForMaps = null;
-
-    /**
-     * Activity to use for looking up buttons.
-     */
-    private static AppCompatActivity mActivity;
 
     /**
      * Set acttivity used for looking up button labels.
@@ -480,8 +456,8 @@ public class KeyMaps {
             default:
                 if (c == mDecimalPt) return R.id.dec_point;
                 if (c == mPiChar) return R.id.const_pi;
-                    // pi is not translated, but it might be typable on a Greek keyboard,
-                    // or pasted in, so we check ...
+                // pi is not translated, but it might be typable on a Greek keyboard,
+                // or pasted in, so we check ...
                 return View.NO_ID;
         }
     }
@@ -511,7 +487,7 @@ public class KeyMaps {
     static void validateMaps() {
         Locale locale = Locale.getDefault();
         if (!locale.equals(sLocaleForMaps)) {
-            Log.v ("Calculator", "Setting locale to: " + locale.toLanguageTag());
+            Log.v("Calculator", "Setting locale to: " + locale.toLanguageTag());
             sKeyValForFun = new HashMap<>();
             sKeyValForFun.put("sin", R.id.fun_sin);
             sKeyValForFun.put("cos", R.id.fun_cos);
@@ -536,9 +512,9 @@ public class KeyMaps {
 
             // Set locale-dependent character "constants"
             mDecimalPt =
-                DecimalFormatSymbols.getInstance().getDecimalSeparator();
-                // We recognize this in keyboard input, even if we use
-                // a different character.
+                    DecimalFormatSymbols.getInstance().getDecimalSeparator();
+            // We recognize this in keyboard input, even if we use
+            // a different character.
             Resources res = mActivity.getResources();
             mPiChar = 0;
             String piString = res.getString(R.string.const_pi);
@@ -565,7 +541,7 @@ public class KeyMaps {
             addButtonToOutputMap('-', R.id.op_sub);
             addButtonToOutputMap('.', R.id.dec_point);
             for (int i = 0; i <= 9; ++i) {
-                addButtonToOutputMap((char)('0' + i), keyForDigVal(i));
+                addButtonToOutputMap((char) ('0' + i), keyForDigVal(i));
             }
 
             sLocaleForMaps = locale;
@@ -608,7 +584,7 @@ public class KeyMaps {
                 if (translation == null) {
                     // Should not get here.  Report if we do.
                     Log.v("Calculator", "Bad character:" + c);
-                    result.append(String.valueOf(c));
+                    result.append(c);
                 } else {
                     result.append(translation);
                 }

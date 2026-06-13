@@ -8,8 +8,8 @@
     <shape>
         <gradient
             android:centerX="-10.0"
-            android:startColor="@color/display_background_color"
             android:endColor="?colorSurface"
+            android:startColor="@color/display_background_color"
             android:type="sweep" />
     </shape>
 </rotate>

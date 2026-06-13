@@ -4,6 +4,6 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources>
-    <item name="lparen" type="id"/>
-    <item name="rparen" type="id"/>
+    <item name="lparen" type="id" />
+    <item name="rparen" type="id" />
 </resources>

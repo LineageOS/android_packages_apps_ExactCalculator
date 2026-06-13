@@ -6,6 +6,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/display_background_color" />
     <corners
-         android:bottomLeftRadius="@dimen/display_corner_radius"
-         android:bottomRightRadius="@dimen/display_corner_radius" />
+        android:bottomLeftRadius="@dimen/display_corner_radius"
+        android:bottomRightRadius="@dimen/display_corner_radius" />
 </shape>

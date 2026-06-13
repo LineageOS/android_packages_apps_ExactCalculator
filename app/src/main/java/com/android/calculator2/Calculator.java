@@ -73,28 +73,12 @@ public class Calculator extends AppCompatActivity
         Evaluator.EvaluationListener, /* for main result */
         OnLongClickListener {
 
-    private static final String TAG = "Calculator";
     /**
      * Constant for an invalid resource id.
      */
     public static final int INVALID_RES_ID = -1;
-
-    private enum CalculatorState {
-        INPUT,          // Result and formula both visible, no evaluation requested,
-                        // Though result may be visible on bottom line.
-        EVALUATE,       // Both visible, evaluation requested, evaluation/animation incomplete.
-                        // Not used for instant result evaluation.
-        INIT,           // Very temporary state used as alternative to EVALUATE
-                        // during reinitialization.  Do not animate on completion.
-        INIT_FOR_RESULT,  // Identical to INIT, but evaluation is known to terminate
-                          // with result, and current expression has been copied to history.
-        RESULT,         // Result displayed, formula invisible.
-                        // If we are in RESULT state, the formula was evaluated without
-                        // error to initial precision.
-                        // The current formula is now also the last history entry.
-        ERROR           // Error displayed: Formula visible, result shows error message.
-                        // Display similar to INPUT state.
-    }
+    private static final String TAG = "Calculator";
+    private static final String NAME = "Calculator";
     // Normal transition sequence is
     // INPUT -> EVALUATE -> RESULT (or ERROR) -> INPUT
     // A RESULT -> ERROR transition is possible in rare corner cases, in which
@@ -109,8 +93,6 @@ public class Calculator extends AppCompatActivity
     // expression has been saved in the history db; in the other states, it has not.
     // TODO: Possibly save a bit more information, e.g. its initial display string
     // or most significant digit position, to speed up restart.
-
-    private static final String NAME = "Calculator";
     private static final String KEY_DISPLAY_STATE = NAME + "_display_state";
     private static final String KEY_UNPROCESSED_CHARS = NAME + "_unprocessed_chars";
     /**
@@ -118,20 +100,17 @@ public class Calculator extends AppCompatActivity
      */
     private static final String KEY_EVAL_STATE = NAME + "_eval_state";
     private static final String KEY_INVERSE_MODE = NAME + "_inverse_mode";
-
-    private final ViewTreeObserver.OnPreDrawListener mPreDrawListener =
-            new ViewTreeObserver.OnPreDrawListener() {
-        @Override
-        public boolean onPreDraw() {
-            mFormulaContainer.scrollTo(mFormulaText.getRight(), 0);
-            final ViewTreeObserver observer = mFormulaContainer.getViewTreeObserver();
-            if (observer.isAlive()) {
-                observer.removeOnPreDrawListener(this);
-            }
-            return false;
-        }
-    };
-
+    private CalculatorState mCurrentState;
+    private Evaluator mEvaluator;
+    private final OnDisplayMemoryOperationsListener mOnDisplayMemoryOperationsListener =
+            new OnDisplayMemoryOperationsListener() {
+                @Override
+                public boolean shouldDisplayMemory() {
+                    return mEvaluator.getMemoryIndex() != 0;
+                }
+            };
+    private TextView mModeView;
+    private CalculatorFormula mFormulaText;
     private final Evaluator.Callback mEvaluatorCallback = new Evaluator.Callback() {
         @Override
         public void onMemoryStateChanged() {
@@ -140,55 +119,27 @@ public class Calculator extends AppCompatActivity
 
         @Override
         public void showMessageDialog(@StringRes int title, @StringRes int message,
-                @StringRes int positiveButtonLabel, String tag) {
+                                      @StringRes int positiveButtonLabel, String tag) {
             AlertDialogFragment.showMessageDialog(Calculator.this, title, message,
                     positiveButtonLabel, tag);
 
         }
     };
-
-    private final OnDisplayMemoryOperationsListener mOnDisplayMemoryOperationsListener =
-            new OnDisplayMemoryOperationsListener() {
-        @Override
-        public boolean shouldDisplayMemory() {
-            return mEvaluator.getMemoryIndex() != 0;
-        }
-    };
-
-    private final OnFormulaContextMenuClickListener mOnFormulaContextMenuClickListener =
-            new OnFormulaContextMenuClickListener() {
-        @Override
-        public boolean onPaste(ClipData clip) {
-            final ClipData.Item item = clip.getItemCount() == 0 ? null : clip.getItemAt(0);
-            if (item == null) {
-                // nothing to paste, bail early...
-                return false;
-            }
-
-            // Check if the item is a previously copied result, otherwise paste as raw text.
-            final Uri uri = item.getUri();
-            if (uri != null && mEvaluator.isLastSaved(uri)) {
-                clearIfNotInputState();
-                mEvaluator.appendExpr(mEvaluator.getSavedIndex());
-                redisplayAfterFormulaChange();
-            } else {
-                addChars(item.coerceToText(Calculator.this).toString(), false);
-            }
-            return true;
-        }
-
-        @Override
-        public void onMemoryRecall() {
-            clearIfNotInputState();
-            long memoryIndex = mEvaluator.getMemoryIndex();
-            if (memoryIndex != 0) {
-                mEvaluator.appendExpr(mEvaluator.getMemoryIndex());
-                redisplayAfterFormulaChange();
-            }
-        }
-    };
-
-
+    private HapticButton mDeleteButton;
+    private CalculatorResult mResultText;
+    private HorizontalScrollView mFormulaContainer;
+    private final ViewTreeObserver.OnPreDrawListener mPreDrawListener =
+            new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mFormulaContainer.scrollTo(mFormulaText.getRight(), 0);
+                    final ViewTreeObserver observer = mFormulaContainer.getViewTreeObserver();
+                    if (observer.isAlive()) {
+                        observer.removeOnPreDrawListener(this);
+                    }
+                    return false;
+                }
+            };
     private final TextWatcher mFormulaTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
@@ -207,33 +158,51 @@ public class Calculator extends AppCompatActivity
             }
         }
     };
-
-    private CalculatorState mCurrentState;
-    private Evaluator mEvaluator;
-
-    private TextView mModeView;
-    private CalculatorFormula mFormulaText;
-    private HapticButton mDeleteButton;
-    private CalculatorResult mResultText;
-    private HorizontalScrollView mFormulaContainer;
     private MotionLayout mMainCalculator;
-
     private TextView mInverseToggle;
     private TextView mModeToggle;
-
     private View[] mInvertibleButtons;
     private View[] mInverseButtons;
-
     // Characters that were recently entered at the end of the display that have not yet
     // been added to the underlying expression.
     private String mUnprocessedChars = null;
-
     // Color to highlight unprocessed characters from physical keyboard.
     // TODO: should probably match this to the error color?
-    private ForegroundColorSpan mUnprocessedColorSpan = new ForegroundColorSpan(Color.RED);
-
+    private final ForegroundColorSpan mUnprocessedColorSpan = new ForegroundColorSpan(Color.RED);
     // Whether the display is one line.
     private boolean mIsOneLine;
+    private final OnFormulaContextMenuClickListener mOnFormulaContextMenuClickListener =
+            new OnFormulaContextMenuClickListener() {
+                @Override
+                public boolean onPaste(ClipData clip) {
+                    final ClipData.Item item = clip.getItemCount() == 0 ? null : clip.getItemAt(0);
+                    if (item == null) {
+                        // nothing to paste, bail early...
+                        return false;
+                    }
+
+                    // Check if the item is a previously copied result, otherwise paste as raw text.
+                    final Uri uri = item.getUri();
+                    if (uri != null && mEvaluator.isLastSaved(uri)) {
+                        clearIfNotInputState();
+                        mEvaluator.appendExpr(mEvaluator.getSavedIndex());
+                        redisplayAfterFormulaChange();
+                    } else {
+                        addChars(item.coerceToText(Calculator.this).toString(), false);
+                    }
+                    return true;
+                }
+
+                @Override
+                public void onMemoryRecall() {
+                    clearIfNotInputState();
+                    long memoryIndex = mEvaluator.getMemoryIndex();
+                    if (memoryIndex != 0) {
+                        mEvaluator.appendExpr(mEvaluator.getMemoryIndex());
+                        redisplayAfterFormulaChange();
+                    }
+                }
+            };
 
     /**
      * Map the old saved state to a new state reflecting requested result reevaluation.
@@ -288,7 +257,7 @@ public class Calculator extends AppCompatActivity
     private void restoreDisplay() {
         onModeChanged(mEvaluator.getDegreeMode(Evaluator.MAIN_INDEX));
         if (mCurrentState != CalculatorState.RESULT
-            && mCurrentState != CalculatorState.INIT_FOR_RESULT) {
+                && mCurrentState != CalculatorState.INIT_FOR_RESULT) {
             redisplayFormula();
         }
         if (mCurrentState == CalculatorState.INPUT) {
@@ -332,7 +301,7 @@ public class Calculator extends AppCompatActivity
 
         mIsOneLine = mResultText.getVisibility() == View.INVISIBLE;
 
-        mInvertibleButtons = new View[] {
+        mInvertibleButtons = new View[]{
                 findViewById(R.id.fun_sin),
                 findViewById(R.id.fun_cos),
                 findViewById(R.id.fun_tan),
@@ -340,7 +309,7 @@ public class Calculator extends AppCompatActivity
                 findViewById(R.id.fun_log),
                 findViewById(R.id.op_sqrt)
         };
-        mInverseButtons = new View[] {
+        mInverseButtons = new View[]{
                 findViewById(R.id.fun_arcsin),
                 findViewById(R.id.fun_arccos),
                 findViewById(R.id.fun_arctan),
@@ -510,7 +479,7 @@ public class Calculator extends AppCompatActivity
 
             final HistoryFragment historyFragment = getHistoryFragment();
             if (mMainCalculator.getCurrentState() == R.id.end_state
-                && historyFragment != null) {
+                    && historyFragment != null) {
                 historyFragment.stopActionModeOrContextMenu();
             }
         }
@@ -522,7 +491,7 @@ public class Calculator extends AppCompatActivity
         if (!stopActionModeOrContextMenu()) {
             final HistoryFragment historyFragment = getHistoryFragment();
             if (mMainCalculator.getCurrentState() == R.id.end_state
-                && historyFragment != null) {
+                    && historyFragment != null) {
                 mMainCalculator.transitionToStart();
                 return;
             }
@@ -740,7 +709,6 @@ public class Calculator extends AppCompatActivity
             if (!haveUnprocessed()) {
                 evaluateInstantIfNecessary();
             }
-            return;
         } else if (id == R.id.paren) {
             // If we just added a function or left paren, add another.
             // If we don't have any open parentheses, add a left one.
@@ -791,10 +759,9 @@ public class Calculator extends AppCompatActivity
         return false;
     }
 
-
     // Initial evaluation completed successfully.  Initiate display.
     public void onEvaluate(long index, int initDisplayPrec, int msd, int leastDigPos,
-            String truncatedWholeNumber) {
+                           String truncatedWholeNumber) {
         if (index != Evaluator.MAIN_INDEX) {
             throw new AssertionError("Unexpected evaluation result index\n");
         }
@@ -851,9 +818,10 @@ public class Calculator extends AppCompatActivity
 
     /**
      * Cancel any in-progress explicitly requested evaluations.
+     *
      * @param quiet suppress pop-up message.  Explicit evaluation can change the expression
-                    value, and certainly changes the display, so it seems reasonable to warn.
-     * @return      true if there was such an evaluation
+     *              value, and certainly changes the display, so it seems reasonable to warn.
+     * @return true if there was such an evaluation
      */
     private boolean cancelIfEvaluating(boolean quiet) {
         if (mCurrentState == CalculatorState.EVALUATE) {
@@ -863,7 +831,6 @@ public class Calculator extends AppCompatActivity
             return false;
         }
     }
-
 
     private void cancelUnrequested() {
         if (mCurrentState == CalculatorState.INPUT) {
@@ -914,11 +881,11 @@ public class Calculator extends AppCompatActivity
     }
 
     public void onClearEnd() {
-         mUnprocessedChars = null;
-         mResultText.clear();
-         mEvaluator.clearMain();
-         setState(CalculatorState.INPUT);
-         redisplayFormula();
+        mUnprocessedChars = null;
+        mResultText.clear();
+        mEvaluator.clearMain();
+        setState(CalculatorState.INPUT);
+        redisplayFormula();
     }
 
     private void onClear() {
@@ -1088,20 +1055,17 @@ public class Calculator extends AppCompatActivity
      * Return false if that was not easily possible.
      */
     private boolean prepareForHistory() {
+        // Easiest to just refuse.  Otherwise we can see a state change
+        // while in history mode, which causes all sorts of problems.
+        // TODO: Consider other alternatives. If we're just doing the decimal conversion
+        // at the end of an evaluation, we could treat this as RESULT state.
         if (mCurrentState == CalculatorState.EVALUATE) {
             // Cancel current evaluation
-            cancelIfEvaluating(true /* quiet */ );
+            cancelIfEvaluating(true /* quiet */);
             setState(CalculatorState.INPUT);
             return true;
-        } else if (mCurrentState == CalculatorState.INIT) {
-            // Easiest to just refuse.  Otherwise we can see a state change
-            // while in history mode, which causes all sorts of problems.
-            // TODO: Consider other alternatives. If we're just doing the decimal conversion
-            // at the end of an evaluation, we could treat this as RESULT state.
-            return false;
-        }
+        } else return mCurrentState != CalculatorState.INIT;
         // We should be in INPUT, INIT_FOR_RESULT, RESULT, or ERROR state.
-        return true;
     }
 
     private HistoryFragment getHistoryFragment() {
@@ -1163,8 +1127,9 @@ public class Calculator extends AppCompatActivity
      * Map them to the appropriate button pushes when possible.  Leftover characters
      * are added to mUnprocessedChars, which is presumed to immediately precede the newly
      * added characters.
+     *
      * @param moreChars characters to be added
-     * @param explicit these characters were explicitly typed by the user, not pasted
+     * @param explicit  these characters were explicitly typed by the user, not pasted
      */
     private void addChars(String moreChars, boolean explicit) {
         if (mUnprocessedChars != null) {
@@ -1269,17 +1234,34 @@ public class Calculator extends AppCompatActivity
         stopActionModeOrContextMenu();
     }
 
-    public interface OnDisplayMemoryOperationsListener {
-        boolean shouldDisplayMemory();
-    }
-
     private void setupEdgeToEdge() {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         ViewCompat.setOnApplyWindowInsetsListener(requireViewById(R.id.main_calculator),
-            (v, windowInsets) -> {
-                Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-                v.setPadding(0, insets.top, 0, insets.bottom);
-                return WindowInsetsCompat.CONSUMED;
-            });
+                (v, windowInsets) -> {
+                    Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    v.setPadding(0, insets.top, 0, insets.bottom);
+                    return WindowInsetsCompat.CONSUMED;
+                });
+    }
+
+    private enum CalculatorState {
+        INPUT,          // Result and formula both visible, no evaluation requested,
+        // Though result may be visible on bottom line.
+        EVALUATE,       // Both visible, evaluation requested, evaluation/animation incomplete.
+        // Not used for instant result evaluation.
+        INIT,           // Very temporary state used as alternative to EVALUATE
+        // during reinitialization.  Do not animate on completion.
+        INIT_FOR_RESULT,  // Identical to INIT, but evaluation is known to terminate
+        // with result, and current expression has been copied to history.
+        RESULT,         // Result displayed, formula invisible.
+        // If we are in RESULT state, the formula was evaluated without
+        // error to initial precision.
+        // The current formula is now also the last history entry.
+        ERROR           // Error displayed: Formula visible, result shows error message.
+        // Display similar to INPUT state.
+    }
+
+    public interface OnDisplayMemoryOperationsListener {
+        boolean shouldDisplayMemory();
     }
 }

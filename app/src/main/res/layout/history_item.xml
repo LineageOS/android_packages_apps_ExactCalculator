@@ -3,15 +3,14 @@
      SPDX-FileCopyrightText: 2016 The Android Open Source Project
      SPDX-License-Identifier: Apache-2.0
 -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/history_divider_padding"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:importantForAccessibility="no"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="@dimen/history_divider_padding">
 
     <View
         android:id="@+id/history_divider"
