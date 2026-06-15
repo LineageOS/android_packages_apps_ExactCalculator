@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "32985c83_88f41079",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 11883
+      },
+      "writtenOn": "2026-06-15T11:26:29Z",
+      "side": 1,
+      "message": "Seems fine, don\u0027t see anything that looks bad, @seba@sebaubuntu.dev ?",
+      "revId": "2522e4b1d826eb7d87d00e5762718e5264788b2b",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
