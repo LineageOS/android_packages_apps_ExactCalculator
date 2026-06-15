@@ -33,6 +33,24 @@
       "message": "adding mike since it\u0027ll require extra effort crowdin side.",
       "revId": "2522e4b1d826eb7d87d00e5762718e5264788b2b",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bff16840_ed89fbf0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 34693
+      },
+      "writtenOn": "2026-06-15T13:58:48Z",
+      "side": 1,
+      "message": "Fyi, I didn\u0027t reformat translation strings",
+      "parentUuid": "3a39b528_5b80bac6",
+      "revId": "2522e4b1d826eb7d87d00e5762718e5264788b2b",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
