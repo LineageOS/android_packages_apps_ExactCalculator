@@ -60,9 +60,9 @@ android {
 }
 
 dependencies {
-    implementation("androidx.gridlayout:gridlayout:1.0.0")
-    implementation("androidx.webkit:webkit:1.7.0-alpha02")
-    implementation("com.google.android.material:material:1.14.0-alpha09")
+    implementation("androidx.gridlayout:gridlayout:1.1.0")
+    implementation("androidx.webkit:webkit:1.17.0")
+    implementation("com.google.android.material:material:1.14.0")
     implementation("com.hp:crcalc:1.0")
 }
 
