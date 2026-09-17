@@ -33,6 +33,24 @@
       "message": "This should come from crowdin automatically, why is it not?",
       "revId": "fc6bd8cef1cdadff3168d72bb18031e32628dbe3",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db3c7464_1e71c950",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 11883
+      },
+      "writtenOn": "2026-09-17T21:35:00Z",
+      "side": 1,
+      "message": "Maybe we never updated those?",
+      "parentUuid": "c718d521_8adf712b",
+      "revId": "fc6bd8cef1cdadff3168d72bb18031e32628dbe3",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
