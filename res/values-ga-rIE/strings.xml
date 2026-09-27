@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2015 The Android Open Source Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string name="app_name">Áireamhán</string>
+    <string name="dec_point">.</string>
+    <string name="mode_deg">céim</string>
+    <string name="mode_rad">rad</string>
+    <string name="cleared">glanta</string>
+    <string name="desc_const_e">Uimhir Euler</string>
+    <string name="desc_const_pi">pi</string>
+    <string name="desc_dec_point">pointe</string>
+    <string name="desc_lparen">lúibín clé</string>
+    <string name="desc_rparen">lúibín deas</string>
+    <string name="desc_fun_cos">comhshíneas</string>
+    <string name="desc_fun_ln">logartam nádúrtha</string>
+    <string name="desc_fun_log">logartam</string>
+    <string name="desc_fun_sin">sine</string>
+    <string name="desc_fun_tan">tadhlaí</string>
+    <string name="desc_fun_arccos">cósín inbhéartach</string>
+    <string name="desc_fun_arcsin">sín inbhéartach</string>
+    <string name="desc_fun_arctan">tangant inbhéartach</string>
+    <string name="desc_fun_10pow">a deich a ardú go dtí an chumhacht</string>
+    <string name="desc_fun_exp">feidhm easpónantúil</string>
+    <string name="desc_op_sqr">cearnaithe</string>
+    <string name="desc_op_add">móide</string>
+    <string name="desc_op_div">roinn</string>
+    <string name="desc_op_fact">fachtóir</string>
+    <string name="desc_op_mul">iolrú</string>
+    <string name="desc_op_pct">céatadán</string>
+    <string name="desc_op_pow">cumhacht</string>
+    <string name="desc_op_sqrt">fréamh chearnach</string>
+    <string name="desc_op_sub">lúide</string>
+    <string name="desc_mode_deg">mód céime</string>
+    <string name="desc_mode_rad">mód radian</string>
+    <string name="desc_switch_deg">aistrigh go céimeanna</string>
+    <string name="desc_switch_rad">aistrigh go raidiáin</string>
+    <string name="desc_eq">cothrom le</string>
+    <string name="desc_clr">glan</string>
+    <string name="desc_del">scrios</string>
+    <string name="desc_inv_off">taispeáin feidhmeanna inbhéartacha</string>
+    <string name="desc_inv_on">feidhmeanna inbhéartaithe a cheilt</string>
+    <string name="desc_formula">Gan aon fhoirmle</string>
+    <string name="desc_result">Gan toradh</string>
+    <string name="error_nan">Ní uimhir í</string>
+    <string name="error_syntax">Drochléiriú</string>
+    <string name="error_aborted">Arna chur ar ceal</string>
+    <string name="error_overflow">Gan teorainn?</string>
+    <string name="error_zero_divide">Ní féidir a roinnt ar 0</string>
+    <string name="text_copied_toast">Téacs cóipeáilte</string>
+    <string name="cancelled">Cealaíodh an ríomh.</string>
+    <string name="timeout">Féadfaidh luach a bheith gan teorainn nó neamhshainithe.</string>
+    <string name="ok_remove_timeout">Bain úsáid as sosanna ama níos faide</string>
+    <string name="dismiss">Díbhe</string>
+    <string name="exact">(beacht)</string>
+    <string name="approximate">(±1 sa dhigit dheireanach)</string>
+    <string name="menu_leading">Freagra le digití tosaigh</string>
+    <string name="menu_fraction">Freagra mar chodán</string>
+    <string name="menu_licenses">Ceadúnais foinse oscailte</string>
+    <string name="menu_history">Stair</string>
+    <string name="menu_clear_history">Glan</string>
+    <string name="title_history">Stair</string>
+    <string name="desc_navigate_up">Nascleanúint suas</string>
+    <string name="dialog_timeout">Am críochnaithe</string>
+    <string name="dialog_clear">Stair agus cuimhne a ghlanadh?</string>
+    <string name="title_current_expression">Slonn Reatha</string>
+    <string name="no_history">Gan Stair</string>
+</resources>

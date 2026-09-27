@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2015 The Android Open Source Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string name="app_name">Kalkulator</string>
+    <string name="dec_point">,</string>
+    <string name="mode_deg">deg</string>
+    <string name="mode_rad">rad</string>
+    <string name="cleared">tømt</string>
+    <string name="desc_const_e">Eulers tal</string>
+    <string name="desc_const_pi">pi</string>
+    <string name="desc_dec_point">komma</string>
+    <string name="desc_paren">parentes</string>
+    <string name="desc_lparen">venstre parentes</string>
+    <string name="desc_rparen">høgre parentes</string>
+    <string name="desc_fun_cos">cosinus</string>
+    <string name="desc_fun_ln">naturleg logaritme</string>
+    <string name="desc_fun_log">logaritme</string>
+    <string name="desc_fun_sin">sinus</string>
+    <string name="desc_fun_tan">tangent</string>
+    <string name="desc_fun_arccos">invers cosinus</string>
+    <string name="desc_fun_arcsin">invers sinus</string>
+    <string name="desc_fun_arctan">invers tangent</string>
+    <string name="desc_fun_10pow">ti opphøgd i</string>
+    <string name="desc_fun_exp">eksponentialfunksjon</string>
+    <string name="desc_op_sqr">i andre</string>
+    <string name="desc_op_add">pluss</string>
+    <string name="desc_op_div">divisjon</string>
+    <string name="desc_op_fact">fakultet</string>
+    <string name="desc_op_mul">multiplikasjon</string>
+    <string name="desc_op_pct">prosent</string>
+    <string name="desc_op_pow">opphøgd i</string>
+    <string name="desc_op_sqrt">kvadratrot</string>
+    <string name="desc_op_sub">minus</string>
+    <string name="desc_mode_deg">gradar</string>
+    <string name="desc_mode_rad">radianar</string>
+    <string name="desc_switch_deg">byt til gradar</string>
+    <string name="desc_switch_rad">byt til radianar</string>
+    <string name="desc_eq">er lik</string>
+    <string name="desc_clr">tøm</string>
+    <string name="desc_del">slett</string>
+    <string name="desc_inv_off">vis inverse funksjonar</string>
+    <string name="desc_inv_on">gøym inverse funksjonar</string>
+    <string name="desc_formula">Ingen formel</string>
+    <string name="desc_result">Inkje resultat</string>
+    <string name="error_nan">Ikkje eit tal</string>
+    <string name="error_syntax">Feil i uttrykket</string>
+    <string name="error_aborted">Avbrote</string>
+    <string name="error_overflow">Uendeleg?</string>
+    <string name="error_zero_divide">Kan ikkje dela på 0</string>
+    <string name="text_copied_toast">Teksten er kopiert</string>
+    <string name="cancelled">Avbraut utrekninga.</string>
+    <string name="timeout">Verdien kan vera uendeleg eller udefinert.</string>
+    <string name="ok_remove_timeout">Bruk lengre tidsavbrot</string>
+    <string name="dismiss">Lukk</string>
+    <string name="exact">(nøyaktig)</string>
+    <string name="approximate">(±1 i siste siffer)</string>
+    <string name="menu_leading">Svar med innleiande siffer</string>
+    <string name="menu_fraction">Svar som brøk</string>
+    <string name="menu_licenses">Lisensar for open kjeldekode</string>
+    <string name="menu_history">Logg</string>
+    <string name="menu_clear_history">Tøm</string>
+    <string name="title_history">Logg</string>
+    <string name="desc_navigate_up">Gå opp</string>
+    <string name="dialog_timeout">Tidsavbrot</string>
+    <string name="dialog_clear">Vil du tøma loggen og minnet?</string>
+    <string name="title_current_expression">Gjeldande uttrykk</string>
+    <string name="no_history">Ingen logg</string>
+</resources>
