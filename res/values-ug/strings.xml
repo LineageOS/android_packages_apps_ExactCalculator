@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2015 The Android Open Source Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string name="app_name">ھېسابلىغۇچ</string>
+    <string name="dec_point">.</string>
+    <string name="mode_deg">گىرادۇس</string>
+    <string name="mode_rad">رادىئان</string>
+    <string name="cleared">تازىلاندى</string>
+    <string name="desc_const_e">ئېۋلېر سانى</string>
+    <string name="desc_const_pi">چەمبەر تۇراقلىقى</string>
+    <string name="desc_dec_point">نۇقتا</string>
+    <string name="desc_paren">كىچىك تىرناق</string>
+    <string name="desc_lparen">سول كىچىك تىرناق</string>
+    <string name="desc_rparen">ئوڭ كىچىك تىرناق</string>
+    <string name="desc_fun_cos">كوسىنوس</string>
+    <string name="desc_fun_ln">تەبىئىي لوگارىفما</string>
+    <string name="desc_fun_log">لوگارىفما</string>
+    <string name="desc_fun_sin">سىنۇس</string>
+    <string name="desc_fun_tan">تانگېنس</string>
+    <string name="desc_fun_arccos">ئارك كوسىنوس</string>
+    <string name="desc_fun_arcsin">ئارك سىنۇس</string>
+    <string name="desc_fun_arctan">ئارك تانگېنس</string>
+    <string name="desc_fun_10pow">ئوننىڭ دەرىجىسى</string>
+    <string name="desc_fun_exp">كۆرسەتكۈچلۈك فۇنكسىيە</string>
+    <string name="desc_op_sqr">كىۋادرات</string>
+    <string name="desc_op_add">قوشۇش</string>
+    <string name="desc_op_div">بۆلۈش</string>
+    <string name="desc_op_fact">فاكتورىئال</string>
+    <string name="desc_op_mul">كۆپەيتىش</string>
+    <string name="desc_op_pct">پىرسەنت</string>
+    <string name="desc_op_pow">دەرىجە</string>
+    <string name="desc_op_sqrt">كىۋادرات يىلتىز</string>
+    <string name="desc_op_sub">مىنۇس</string>
+    <string name="desc_mode_deg">دەرىجە ھالىتى</string>
+    <string name="desc_mode_rad">رادىيان ھالىتى</string>
+    <string name="desc_switch_deg">دەرىجىگە ئالماشتۇر</string>
+    <string name="desc_switch_rad">رادىيانغا ئالماشتۇر</string>
+    <string name="desc_eq">تەڭلىك</string>
+    <string name="desc_clr">تازىلا</string>
+    <string name="desc_del">ئۆچۈر</string>
+    <string name="desc_inv_off">تەتۈر فۇنكسىيەنى كۆرسىتىدۇ</string>
+    <string name="desc_inv_on">تەتۈر فۇنكسىيەنى يوشۇرىدۇ</string>
+    <string name="desc_formula">فورمۇلا يوق</string>
+    <string name="desc_result">نەتىجە يوق</string>
+    <string name="error_nan">سان ئەمەس</string>
+    <string name="error_syntax">خاتا ئىپادىلەش</string>
+    <string name="error_aborted">توختىتىلدى</string>
+    <string name="error_overflow">چەكسىز؟</string>
+    <string name="error_zero_divide">0 گە بۆلەلمەيدۇ</string>
+    <string name="text_copied_toast">تېكىست كۆچۈرۈلدى</string>
+    <string name="cancelled">ھېسابلاش ئەمەلدىن قالدۇرۇلدى.</string>
+    <string name="timeout">قىممىتى چەكسىز ياكى بەلگىلەنمىگەن بولۇشى مۇمكىن.</string>
+    <string name="ok_remove_timeout">ئۇزۇنراق ۋاقىت ھالقىشنى ئىشلىتىدۇ</string>
+    <string name="dismiss">تاقا</string>
+    <string name="exact">(دەل)</string>
+    <string name="approximate">(±1 ئاخىرقى خانىسىدا)</string>
+    <string name="menu_leading">سان ئالدى قوشۇلغۇچى بىلەن جاۋاب بېرىدۇ</string>
+    <string name="menu_fraction">فۇنكسىيە بىلەن جاۋاب قايتۇرىدۇ</string>
+    <string name="menu_licenses">ئوچۇق كودلۇق ئىجازەتنامە</string>
+    <string name="menu_history">تارىخ</string>
+    <string name="menu_clear_history">تازىلا</string>
+    <string name="title_history">تارىخ</string>
+    <string name="desc_navigate_up">ئۈستىگە يولباشچى</string>
+    <string name="dialog_timeout">ۋاقىت ھالقىش</string>
+    <string name="dialog_clear">تارىخى خاتىرىسى ۋە ئەسلەكنى تازىلامدۇ؟</string>
+    <string name="title_current_expression">نۆۋەتتىكى ئىپادە</string>
+    <string name="no_history">تارىخ خاتىرىسى يوق</string>
+</resources>
