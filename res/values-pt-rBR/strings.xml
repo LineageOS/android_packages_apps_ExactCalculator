@@ -12,6 +12,7 @@
     <string name="desc_const_e">Número de Euler</string>
     <string name="desc_const_pi">pi</string>
     <string name="desc_dec_point">ponto</string>
+    <string name="desc_paren">parênteses</string>
     <string name="desc_lparen">parêntese esquerdo</string>
     <string name="desc_rparen">parêntese direito</string>
     <string name="desc_fun_cos">cosseno</string>
