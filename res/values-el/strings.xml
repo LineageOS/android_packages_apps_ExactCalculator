@@ -12,6 +12,7 @@
     <string name="desc_const_e">Αριθμός Euler</string>
     <string name="desc_const_pi">πι</string>
     <string name="desc_dec_point">βαθμός</string>
+    <string name="desc_paren">παρένθεση</string>
     <string name="desc_lparen">αριστερή παρένθεση</string>
     <string name="desc_rparen">δεξιά παρένθεση</string>
     <string name="desc_fun_cos">συνημίτονο</string>
