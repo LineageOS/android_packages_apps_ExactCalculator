@@ -12,6 +12,7 @@
     <string name="desc_const_e">‏הקבוע e</string>
     <string name="desc_const_pi">פאי</string>
     <string name="desc_dec_point">נקודה</string>
+    <string name="desc_paren">סוגריים</string>
     <string name="desc_lparen">סוגר שמאלי</string>
     <string name="desc_rparen">סוגר ימני</string>
     <string name="desc_fun_cos">קוסינוס</string>
