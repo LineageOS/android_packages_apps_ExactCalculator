@@ -1,0 +1,24 @@
+#
+# SPDX-FileCopyrightText: The LineageOS Project
+# SPDX-License-Identifier: Apache-2.0
+#
+
+[versions]
+agp = "8.7.1"
+kotlin = "1.9.23"
+generatebp = "+"
+crcalc = "1.0"
+gridlayout = "1.0.0"
+material = "1.14.0-alpha09"
+webkit = "1.7.0-alpha02"
+
+[libraries]
+androidx-gridlayout = { module = "androidx.gridlayout:gridlayout", version.ref = "gridlayout" }
+androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
+crcalc = { module = "com.hp:crcalc", version.ref = "crcalc" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+lineageos-generatebp = { id = "org.lineageos.generatebp", version.ref = "generatebp" }
