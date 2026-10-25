@@ -7,9 +7,9 @@ import org.lineageos.generatebp.GenerateBpPluginExtension
 import org.lineageos.generatebp.models.Module
 
 plugins {
-    id("com.android.application") version "8.7.1"
-    id("org.jetbrains.kotlin.android") version "1.9.23"
-    id("org.lineageos.generatebp") version "+"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.kotlin)
+    alias(libs.plugins.lineageos.generatebp)
 }
 
 android {
@@ -60,10 +60,10 @@ android {
 }
 
 dependencies {
-    implementation("androidx.gridlayout:gridlayout:1.0.0")
-    implementation("androidx.webkit:webkit:1.7.0-alpha02")
-    implementation("com.google.android.material:material:1.14.0-alpha09")
-    implementation("com.hp:crcalc:1.0")
+    implementation(libs.androidx.gridlayout)
+    implementation(libs.androidx.webkit)
+    implementation(libs.material)
+    implementation(libs.crcalc)
 }
 
 configure<GenerateBpPluginExtension> {
