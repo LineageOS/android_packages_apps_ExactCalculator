@@ -16,7 +16,10 @@ android_app {
 
     overrides: ["Calculator"],
 
-    srcs: ["src/**/*.java"],
+    srcs: [
+        "src/**/*.java",
+        "src/**/*.kt",
+    ],
 
     optimize: {
         proguard_flags_files: ["proguard.flags"],
