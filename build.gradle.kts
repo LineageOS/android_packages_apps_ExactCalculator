@@ -59,6 +59,9 @@ android {
             assets.srcDirs("assets")
             manifest.srcFile("AndroidManifest.xml")
         }
+        getByName("test") {
+            java.srcDirs("tests/src")
+        }
     }
 }
 
@@ -67,6 +70,8 @@ dependencies {
     implementation(libs.androidx.webkit)
     implementation(libs.material)
     implementation(libs.crcalc)
+
+    testImplementation(libs.junit)
 }
 
 configure<GenerateBpPluginExtension> {
