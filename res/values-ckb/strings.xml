@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2015 The Android Open Source Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string name="app_name">بژمێر</string>
+    <string name="dec_point">.</string>
+    <string name="mode_deg">deg</string>
+    <string name="mode_rad">rad</string>
+    <string name="cleared">سڕایەوە</string>
+    <string name="desc_const_e">ژمارەی ئۆیلەر</string>
+    <string name="desc_const_pi">پای (π)</string>
+    <string name="desc_dec_point">خاڵ</string>
+    <string name="desc_paren">کەوانە</string>
+    <string name="desc_lparen">کەوانەی چەپ</string>
+    <string name="desc_rparen">کەوانەی ڕاست</string>
+    <string name="desc_fun_cos">کۆساین</string>
+    <string name="desc_fun_ln">لۆگاریتمی سروشتی</string>
+    <string name="desc_fun_log">لۆگاریتم</string>
+    <string name="desc_fun_sin">ساین</string>
+    <string name="desc_fun_tan">تانجێنت</string>
+    <string name="desc_fun_arccos">پێچەوانەی کۆساین</string>
+    <string name="desc_fun_arcsin">پێچەوانەی ساین</string>
+    <string name="desc_fun_arctan">پێچەوانەی تانجێنت</string>
+    <string name="desc_fun_10pow">دە بە توانی</string>
+    <string name="desc_fun_exp">نەخشەی توانی</string>
+    <string name="desc_op_sqr">دووجا</string>
+    <string name="desc_op_add">کۆ</string>
+    <string name="desc_op_div">دابەش</string>
+    <string name="desc_op_fact">فاکتۆریال</string>
+    <string name="desc_op_mul">کەڕەت</string>
+    <string name="desc_op_pct">لە سەد</string>
+    <string name="desc_op_pow">توان</string>
+    <string name="desc_op_sqrt">ڕەگی دووجا</string>
+    <string name="desc_op_sub">کەم</string>
+    <string name="desc_mode_deg">دۆخی پلە</string>
+    <string name="desc_mode_rad">دۆخی ڕادیان</string>
+    <string name="desc_switch_deg">گۆڕین بۆ پلە</string>
+    <string name="desc_switch_rad">گۆڕین بۆ ڕادیان</string>
+    <string name="desc_eq">یەکسانە بە</string>
+    <string name="desc_clr">سڕینەوە</string>
+    <string name="desc_del">سڕینەوە</string>
+    <string name="desc_inv_off">نیشاندانی نەخشە پێچەوانەکان</string>
+    <string name="desc_inv_on">شاردنەوەی نەخشە پێچەوانەکان</string>
+    <string name="desc_formula">هیچ هاوکێشەیەک نییە</string>
+    <string name="desc_result">هیچ ئەنجامێک نییە</string>
+    <string name="error_nan">ژمارە نییە</string>
+    <string name="error_syntax">دەربڕینی نادروست</string>
+    <string name="error_aborted">هەڵوەشێندرایەوە</string>
+    <string name="error_overflow">بێکۆتا؟</string>
+    <string name="error_zero_divide">دابەشکردن بەسەر 0 ناکرێت</string>
+    <string name="text_copied_toast">دەقەکە لەبەرگیرایەوە</string>
+    <string name="cancelled">ژماردنەکە هەڵوەشێندرایەوە.</string>
+    <string name="timeout">لەوانەیە بەهاکە بێکۆتا بێت یان پێناسەنەکراو بێت.</string>
+    <string name="ok_remove_timeout">ماوەی چاوەڕوانیی درێژتر بەکاربهێنە</string>
+    <string name="dismiss">لابردن</string>
+    <string name="exact">(تەواو)</string>
+    <string name="approximate">(±1 لە کۆتا ژمارە)</string>
+    <string name="menu_leading">وەڵامدانەوە بە ژمارە پێشەنگەکان</string>
+    <string name="menu_fraction">وەڵام وەک کەرت</string>
+    <string name="menu_licenses">مۆڵەتەکانی سەرچاوەکراوە</string>
+    <string name="menu_history">مێژوو</string>
+    <string name="menu_clear_history">سڕینەوە</string>
+    <string name="title_history">مێژوو</string>
+    <string name="desc_navigate_up">بڕۆ بەرەو سەرەوە</string>
+    <string name="dialog_timeout">کۆتاییهاتنی کات</string>
+    <string name="dialog_clear">مێژوو و بیرگە بسڕدرێتەوە؟</string>
+    <string name="title_current_expression">دەربڕینی ئێستا</string>
+    <string name="no_history">هیچ مێژوویەک نییە</string>
+</resources>

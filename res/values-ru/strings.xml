@@ -12,6 +12,7 @@
     <string name="desc_const_e">число Эйлера</string>
     <string name="desc_const_pi">число \"пи\"</string>
     <string name="desc_dec_point">десятичный разделитель</string>
+    <string name="desc_paren">скобки</string>
     <string name="desc_lparen">открывающая скобка</string>
     <string name="desc_rparen">закрывающая скобка</string>
     <string name="desc_fun_cos">косинус</string>
