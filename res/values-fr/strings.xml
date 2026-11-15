@@ -12,6 +12,7 @@
     <string name="desc_const_e">nombre d\'Euler</string>
     <string name="desc_const_pi">pi</string>
     <string name="desc_dec_point">virgule</string>
+    <string name="desc_paren">parenthèses</string>
     <string name="desc_lparen">parenthèse gauche</string>
     <string name="desc_rparen">parenthèse droite</string>
     <string name="desc_fun_cos">cosinus</string>
